@@ -2,7 +2,7 @@ const express = require('express');
 const authenticateToken = require('../middlewares/authenticateToken');
 const { createUser } = require('../controllers/user/createUserController');
 const { editUser } = require('../controllers/user/editUserController');
-const getUserById = require('../controllers/user/getUserByIdController');
+const { getUserById } = require('../controllers/user/getUserByIdController');
 const { getUsers } = require('../controllers/user/getUsersController');
 
 const router = express.Router();

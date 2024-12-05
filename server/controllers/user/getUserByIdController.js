@@ -1,22 +1,21 @@
-const pool = require("../../db")
+const db = require('../../data/index.js');
+const User = db.User;
 
 const getUserById = async (req, res) => {
-
-    try {
+    try{
         const userId = req.params.id;
-
-        const [rows] = await pool.execute('SELECT id, name_and_family, username, role, status, manager FROM tbl_users WHERE id = ?', [userId])
-
-        if (rows.length === 0) {
-            return res.status(404).send('User not found.')
-        }
-
-        res.json(rows[0]);
-
+        const user = await User.findByPk(userId, {
+            attributes: ['id', 'full_name', 'username', 'role', 'status', 'manager_id']
+        });//think about if the current user is admin, he can see all users, if not (so the current user is manager), he can see only his users, and if the current user is user, he can see only himself
+        if(!user)
+            return res.status(404).send('User not found.');
+        res.json(user);
     } catch (error) {
-        console.error('Database error:', err);
+        console.error('Database error:', error);
         res.status(500).send('Internal Server Error');
     }
 }
 
-module.exports = getUserById;
+module.exports = {
+    getUserById
+}
