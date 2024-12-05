@@ -1,46 +1,44 @@
 const hashPassword = require('../../utils/hashPassword');
-const pool = require("../../db")
-const { uniqueChecker } = require('../../utils/uniqueChecker');
+const db = require('../../data/index.js');
+const User = db.User;
 
 const createUser = async (req, res) => {
-    const { name_and_family, username, password, status, role } = req.body;
+    const { full_name, username, password, status, role } = req.body;
     const loggedUserId = req.user.id;
 
     try {
-        const isUnique = await uniqueChecker("username", username, "tbl_users");
+        const existingUser = await User.findOne({ where: { username } });
 
-        if (isUnique.length > 0) {
-            return res.status(404).send(`${name} already exists!`)
-        };
+        if (existingUser) {
+            return res.status(404).send(`${username} already exists!`);
+        }
 
         const hashedPassword = await hashPassword(password);
 
-        const query = `
-        INSERT INTO tbl_users (name_and_family, username, password, role, status, manager)
-        VALUES (?, ?, ?, ?, ?, ?);
-        `;
-
-        const values = [name_and_family, username, hashedPassword, role, status, loggedUserId];
-
-        const [result] = await pool.query(query, values);
-
-        const newUser = {
-            id: result.insertId,
-            name_and_family,
+        const newUser = await User.create({
+            full_name,
             username,
-            password,
+            hashedPassword,
             role,
             status,
             manager_id: loggedUserId
+        });
+
+        const userResponse = {
+            id: newUser.id,
+            full_name: newUser.full_name,
+            username: newUser.username,
+            role: newUser.role,
+            status: newUser.status,
+            manager_id: newUser.manager_id
         };
 
-        res.status(201).json({ message: 'User created successfully', user: newUser });
+        res.status(201).json({ message: 'User created successfully', user: userResponse });
 
     } catch (error) {
         res.status(500).json({ message: 'Error creating user', error });
     }
 };
-
 
 module.exports = {
     createUser

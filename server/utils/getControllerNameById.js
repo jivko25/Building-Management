@@ -1,3 +1,4 @@
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
 const pool = require("../db");
 
 const getControllerNameById = async (id, table, columnName) => {

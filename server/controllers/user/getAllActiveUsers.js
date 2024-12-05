@@ -1,16 +1,18 @@
-const pool = require("../../db");
+const db = require('../../data/index.js');
+const User = db.User;
 
 const getAllActiveUsers = async (req, res) => {
+    try{
+        const users = await User.findAll({
+            where: {
+                status: 'active'
+            }, 
+            attributes: ['id', 'full_name', 'username', 'role', 'status', 'manager_id']
+        });
 
-    try {
-        const query = 'SELECT * FROM tbl_users WHERE status = active';
-
-        const [rows] = await pool.execute(query);
-
-        res.json(rows);
-    }
-    catch (error) {
-        res.status(500).json({ message: 'Internal erver error!', error });
+        res.json(users);
+    } catch(error){
+        res.status(500).json({ message: 'Internal server error!', error });
     }
 };
 

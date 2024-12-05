@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const pool = require('../../db');
+const db = require('../../data/index.js');
+const User = db.User;
 const { generateTokenSetCookie } = require('../../utils/generateTokenCookieSetter');
 
 // Login function
@@ -12,20 +13,23 @@ const login = async (req, res) => {
     }
 
     try {
-        // Retrieve user from the database
-        const [rows] = await pool.execute('SELECT * FROM tbl_users WHERE username = ? AND status = "active"', [username]);
+        // Retrieve user from the database using Sequelize
+        const user = await User.findOne({
+            where: {
+                username: username,
+                status: 'active'
+            }
+        });
 
         // Check if user exists
-        if (!rows || rows.length === 0) {
+        if (!user) {
             console.log('No user found with the provided username');
             return res.status(401).json({
                 error: 'Invalid username or password'
             });
         }
 
-        const user = rows[0];
-
-        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        const isPasswordCorrect = await bcrypt.compare(password, user.hashedPassword);
 
         if (!isPasswordCorrect) {
             console.log('Password does not match for the provided username');
@@ -41,7 +45,7 @@ const login = async (req, res) => {
             message: 'Login successful',
             user: {
                 username: user.username,
-                name_and_family: user.name_and_family,
+                full_name: user.full_name,
                 role: user.role,
                 status: user.status,
             }
