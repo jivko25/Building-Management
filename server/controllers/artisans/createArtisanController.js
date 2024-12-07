@@ -1,37 +1,45 @@
-const pool = require('../../db');
-const { getControllerIdByName } = require('../../utils/getControllerIdByName');
+const db = require('../../data/index.js');
+const { Artisan, Company, User } = db;
+const ApiError = require('../../utils/apiError');
 
-const createArtisan = async (req, res) => {
-
+const createArtisan = async (req, res, next) => {
     const { name, note, number, email, company, artisanName, status } = req.body;
-
+    
     try {
-        const foundCompanyId = await getControllerIdByName(company, "tbl_companies");
+        const existingArtisan = await Artisan.findOne({ where: { name } });
+        if (existingArtisan) {
+            throw new ApiError(400, `${name} already exists!`);
+        }
 
-        const user_id = await getControllerIdByName(artisanName, "tbl_users");
+        const [companyRecord, userRecord] = await Promise.all([
+            Company.findOne({ where: { name: company } }),
+            User.findOne({ where: { full_name: artisanName } })
+        ]);
 
-        const query = 'INSERT INTO tbl_artisans(name, note, number, email, company_id, user_id, status) VALUES(?, ?, ?, ?, ?, ?, ?)';
+        if (!companyRecord) throw new ApiError(404, 'Company not found!');
+        if (!userRecord) throw new ApiError(404, 'User not found!');
 
-        const values = [name, note, number, email, foundCompanyId, user_id, status];
-
-        const [result] = await pool.execute(query, values);
-
-        const newArtisan = {
-            id: result.insertId,
+        const newArtisan = await Artisan.create({
             name,
-            note, 
-            number, 
+            note,
+            number,
             email,
-            company,
-            foundCompanyId,
-            user_id,
-            status,
-        };
+            company_id: companyRecord.id,
+            user_id: userRecord.id,
+            status
+        });
 
-        res.status(201).json({ message: 'Artisan created successfully!', artisan: newArtisan });
-
+        res.status(201).json({ 
+            message: 'Artisan created successfully!', 
+            artisan: newArtisan 
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Error creating the artisan!', error });
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            console.log(error);
+            next(new ApiError(500, 'Internal server Error!'));
+        }
     }
 };
 

@@ -1,32 +1,36 @@
-const pool = require('../../db');
-const { uniqueChecker } = require('../../utils/uniqueChecker');
+const db = require('../../data/index.js');
+const { Activity } = db;
+const ApiError = require('../../utils/apiError');
 
-const createActivity = async (req, res) => {
-
-    const { name, status } = req.body;
-
+const createActivity = async (req, res, next) => {
     try {
-        const isUnique = await uniqueChecker("name", name, "tbl_activities");
+        const { name, status } = req.body;
 
-        if (isUnique.length > 0) {
-            return res.status(404).send(`${name} already exists!`)
-        };
+        const existingActivity = await Activity.findOne({
+            where: { name }
+        });
 
-        const query = 'INSERT INTO tbl_activities(name, status) VALUES (?, ?)';
+        if (existingActivity) {
+            throw new ApiError(400, `Activity with name "${name}" already exists`);
+        }
 
-        const values = [name, status];
-        const [result] = await pool.execute(query, values);
-
-        const newActivity = {
-            id: result.insertId,
+        const newActivity = await Activity.create({
             name,
-            status,
-        };
+            status
+        });
 
-        res.status(201).json({ message: 'Activity created successfully!', activity: newActivity });
+        res.status(201).json({
+            success: true,
+            message: 'Activity created successfully!',
+            data: newActivity
+        });
 
     } catch (error) {
-        res.status(500).json({ message: 'Error creating the activity!', error });
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server error!'));
+        }
     }
 };
 

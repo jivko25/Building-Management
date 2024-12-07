@@ -1,46 +1,44 @@
-const pool = require("../../db");
-const { getControllerIdByName } = require("../../utils/getControllerIdByName");
-const { uniqueChecker } = require('../../utils/uniqueChecker');
+const db = require('../../data/index.js');
+const { Project, Company } = db;
+const ApiError = require('../../utils/apiError');
 
-const createProject = async (req, res) => {
-
+const createProject = async (req, res, next) => {
     const { name, company_name, email, address, start_date, end_date, note, status } = req.body;
     
     try {
-        const isUnique = await uniqueChecker("name", name, "tbl_projects");
+        const existingProject = await Project.findOne({ where: { name } });
+        if (existingProject) {
+            throw new ApiError(400, `${name} already exists!`);
+        }
 
-        if (isUnique.length > 0) {
-            return res.status(404).send(`${name} already exists!`)
-        };
+        const company = await Company.findOne({ where: { name: company_name } });
+        if (!company) {
+            throw new ApiError(404, 'Company not found!');
+        }
 
-        const companyId = await getControllerIdByName(company_name, "tbl_companies");
-
-        const query = `
-            INSERT INTO tbl_projects (name, company_id, company_name, email, address, start_date, end_date, note, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-        `;
-
-        const values = [name, companyId, company_name, email, address, start_date, end_date, note, status];
-
-        const [result] = await pool.query(query, values);
-
-        const newProject = {
-            id: result.insertId,
+        const newProject = await Project.create({
             name,
-            companyId,
+            company_id: company.id,
+            company_name,
             email,
             address,
             start_date,
             end_date,
             note,
             status
-        };
+        });
 
-        res.status(201).json({ message: 'Project created successfully!', project: newProject });
-
+        res.status(201).json({ 
+            message: 'Project created successfully!', 
+            project: newProject 
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Error creating the project!', error });
-    };
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
+    }
 };
 
 module.exports = {

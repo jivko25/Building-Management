@@ -12,6 +12,7 @@ const taskRoutes = require('./routes/tasksRoutes');
 const workItemRoutes = require('./routes/workItemRoutes');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const errorHandler = require('./middlewares/errorHandler');
 
 require('dotenv').config();
 
@@ -45,7 +46,9 @@ app.use('/', companyRoutes)
 app.use('/', taskRoutes)
 app.use('/', workItemRoutes)
 
-// Server can start with "npm start and will listen on port 3000"
+app.use(errorHandler);//Global error handler
+
+// Server can start with "npm start run:dev" and will listen on port 3000
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`)
 });

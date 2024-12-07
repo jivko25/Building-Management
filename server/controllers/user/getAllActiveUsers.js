@@ -1,7 +1,8 @@
 const db = require('../../data/index.js');
 const User = db.User;
+const ApiError = require('../../utils/apiError');
 
-const getAllActiveUsers = async (req, res) => {
+const getAllActiveUsers = async (req, res, next) => {
     try{
         const users = await User.findAll({
             where: {
@@ -12,7 +13,11 @@ const getAllActiveUsers = async (req, res) => {
 
         res.json(users);
     } catch(error){
-        res.status(500).json({ message: 'Internal server error!', error });
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server error!', error));
+        }
     }
 };
 

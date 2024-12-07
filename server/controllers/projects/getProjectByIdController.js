@@ -1,20 +1,29 @@
-const pool = require("../../db");
+const db = require('../../data/index.js');
+const { Project, Company } = db;
+const ApiError = require('../../utils/apiError');
 
-const getProjectById = async (req, res) => {
-
+const getProjectById = async (req, res, next) => {
     try {
-        const projectId = req.params.id;
+        const project = await Project.findByPk(req.params.id, {
+            include: [{
+                model: Company,
+                as: 'company',
+                attributes: ['name', 'id']
+            }]
+        });
 
-        const [rows] = await pool.execute('SELECT * FROM tbl_projects WHERE id = ?', [projectId])
-
-        if (rows.length === 0) {
-            return res.status(404).send('Project not found!')
+        if (!project) {
+            throw new ApiError(404, 'Project not found!');
         }
 
-        res.json(rows[0]);
-
+        res.json(project);
+        
     } catch (error) {
-        res.status(500).send('Internal server Error!');
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
     }
 };
 

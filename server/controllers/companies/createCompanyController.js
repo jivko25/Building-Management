@@ -1,27 +1,17 @@
-const pool = require('../../db');
-const { uniqueChecker } = require('../../utils/uniqueChecker');
+const db = require('../../data/index.js');
+const { Company } = db;
+const ApiError = require('../../utils/apiError');
 
-const createCompany = async (req, res) => {
-
+const createCompany = async (req, res, next) => {
     const { name, number, address, mol, email, phone, dds, status } = req.body;
 
     try {
-        const isUnique = await uniqueChecker("name", name, "tbl_companies");
+        const existingCompany = await Company.findOne({ where: { name } });
+        if (existingCompany) {
+            throw new ApiError(400, `${name} already exists!`);
+        }
 
-        if (isUnique.length > 0) {
-            return res.status(404).send(`${name} already exists!`)
-        };
-
-        const query = 
-        `INSERT INTO 
-        tbl_companies(name, number, address, mol, email, phone, dds, status)
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
-
-        const values = [name, number, address, mol, email, phone, dds, status];
-        const [result] = await pool.execute(query, values);
-
-        const newCompany = {
-            id: result.insertId,
+        const newCompany = await Company.create({
             name, 
             number, 
             address, 
@@ -30,12 +20,18 @@ const createCompany = async (req, res) => {
             phone, 
             dds, 
             status
-        };
+        });
 
-        res.status(201).json({ message: 'Company created successfully!', company: newCompany  });
-
+        res.status(201).json({ 
+            message: 'Company created successfully!', 
+            company: newCompany 
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Error creating the company!', error });
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
     }
 };
 

@@ -1,24 +1,31 @@
-const pool = require("../../db");
+const db = require('../../data/index.js');
+const { Measure } = db;
+const ApiError = require('../../utils/apiError');
 
-const getMeasureById = async (req, res) => {
-
+const getMeasureById = async (req, res, next) => {
     try {
-        const measureId = req.params.id;
-        const query = 'SELECT * FROM tbl_measures WHERE id = ?';
+        const { id } = req.params;
 
-        const [rows] = await pool.execute('SELECT * FROM tbl_measures WHERE id = ?', [measureId])
+        const measure = await Measure.findByPk(id);
 
-        if (rows.length === 0) {
-            return res.status(404).send('Measure not found!')
+        if (!measure) {
+            throw new ApiError(404, 'Measure not found');
         }
 
-        res.json(rows[0])
+        res.json({
+            success: true,
+            data: measure
+        });
     } 
     catch (error) {
-        res.status(500).json({ message: 'Internal server error', error });
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
     }
 };
 
 module.exports = {
-    getMeasureById,
+    getMeasureById
 };

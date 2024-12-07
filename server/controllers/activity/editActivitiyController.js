@@ -1,45 +1,40 @@
-const pool = require('../../db');
-const { getCurrentId } = require('../../utils/getCurrentId');
-const { uniqueChecker } = require('../../utils/uniqueChecker');
+const db = require('../../data/index.js');
+const Activity = db.Activity;
+const ApiError = require('../../utils/apiError');
 
-const editActivity = async (req, res) => {
-
+const editActivity = async (req, res, next) => {
     const activityId = req.params.id;
     const { name, status } = req.body;
 
     try {
-        const activity = await getCurrentId("tbl_activities", activityId);
+        const activity = await Activity.findByPk(activityId);
+        
+        if (!activity) {
+            throw new ApiError(404, 'Activity not found!');
+        }
 
         if (activity.name !== name) {
-            const isUnique = await uniqueChecker("name", name, "tbl_activities");
+            const existingActivity = await Activity.findOne({ where: { name } });
+            if (existingActivity) {
+                throw new ApiError(404, `${name} already exists!`);
+            }
+        }
 
-            if (isUnique.length > 0) {
-                return res.status(404).send(`${name} already exists!`)
-            };
-        };
+        await activity.update({ name, status });
 
-        const query = `UPDATE tbl_activities SET name = ?, status = ? WHERE id = ?`;
-
-        const values = [name, status, activityId];
-
-        const [result] = await pool.execute(query, values);
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Activity not found!' });
-        };
-
-        const updatedActivity = {
-            id: activityId,
-            name,
-            status,
-        };
-
-        res.status(200).json({ message: 'Activity updated successfully!', activity: updatedActivity });
+        res.status(200).json({ 
+            message: 'Activity updated successfully!', 
+            activity: activity.toJSON() 
+        });
 
     } catch (error) {
-        res.status(500).json({ message: 'Error updating the activity!', error });
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Error updating the activity!', error));
+        }
     }
-}
+};
 
 module.exports = {
     editActivity

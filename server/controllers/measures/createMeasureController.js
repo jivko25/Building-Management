@@ -1,33 +1,34 @@
-const pool = require('../../db');
-const { uniqueChecker } = require('../../utils/uniqueChecker');
+const db = require('../../data/index.js');
+const { Measure } = db;
+const ApiError = require('../../utils/apiError');
 
-const createMeasure = async (req, res) => {
-
-    const name = req.body.name;
-
+const createMeasure = async (req, res, next) => {
     try {
-        const isUnique = await uniqueChecker("name", name, "tbl_measures");
+        const { name } = req.body;
 
-        if (isUnique.length > 0) {
-            return res.status(404).send(`${name} already exists!`)
-        };
+        const existingMeasure = await Measure.findOne({
+            where: { name }
+        });
 
-        const query = 'INSERT INTO tbl_measures(name) VALUES(?)';
+        if (existingMeasure) {
+            throw new ApiError(400, `Measure with name "${name}" already exists`);
+        }
 
-        const values = [name];
+        const newMeasure = await Measure.create({ name });
 
-        const [result] = await pool.execute(query, values);
-
-        const newMeasure = {
-            id: result.insertId,
-            name
-        };
-
-        res.status(201).json({ message: 'Measure created successfully!', measure: newMeasure });
+        res.status(201).json({
+            success: true,
+            message: 'Measure created successfully!',
+            data: newMeasure
+        });
 
     } catch (error) {
-        res.status(500).json({ message: 'Error creating the measure!', error });
-    };
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
+    }
 };
 
 module.exports = {

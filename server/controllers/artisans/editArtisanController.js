@@ -1,40 +1,45 @@
-const pool = require('../../db');
-const { getControllerIdByName } = require('../../utils/getControllerIdByName');
+const db = require('../../data/index.js');
+const { Artisan, Company, User } = db;
+const ApiError = require('../../utils/apiError');
 
-const editArtisan = async (req, res) => {
-
-    const userId = req.params.id;
+const editArtisan = async (req, res, next) => {
+    const artisanId = req.params.id;
     const { name, note, number, email, company, artisanName, status } = req.body;
-
+    
     try {
-        const companyId = await getControllerIdByName(company, "tbl_companies");
+        const artisan = await Artisan.findByPk(artisanId);
+        if (!artisan) {
+            throw new ApiError(404, 'Artisan not found!');
+        }
 
-        const user_id = await getControllerIdByName(artisanName, "tbl_users");
+        const [companyRecord, userRecord] = await Promise.all([
+            Company.findOne({ where: { name: company } }),
+            User.findOne({ where: { full_name: artisanName } })
+        ]);
 
-        const query = `UPDATE tbl_artisans
-        SET name = ?, note = ?, number = ?, email = ?, company_id = ?, user_id = ?, status = ?
-        WHERE id = ?`;
+        if (!companyRecord) throw new ApiError(404, 'Company not found!');
+        if (!userRecord) throw new ApiError(404, 'User not found!');
 
-        const values = [name, note, number, email, companyId, user_id, status, userId];
-
-        const [result] = await pool.execute(query, values);
-
-        const updatedArtisan = {
-            id: userId,
+        const updatedArtisan = await artisan.update({
             name,
             note,
             number,
             email,
-            company,
-            companyId,
-            user_id,
-            status,
-        };
+            company_id: companyRecord.id,
+            user_id: userRecord.id,
+            status
+        });
 
-        res.status(201).json({ message: 'Artisan updated successfully!', artisan: updatedArtisan });
-
+        res.json({ 
+            message: 'Artisan updated successfully!', 
+            artisan: updatedArtisan 
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Error updating the artisan!', error });
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
     }
 };
 

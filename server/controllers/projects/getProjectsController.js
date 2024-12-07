@@ -1,16 +1,24 @@
-const pool = require("../../db");
+const db = require('../../data/index.js');
+const { Project, Company } = db;
 
-const getProjects = async (req, res) => {
-
+const getProjects = async (req, res, next) => {
     try {
-        let query = 'SELECT * FROM tbl_projects';
+        const projects = await Project.findAll({
+            include: [{
+                model: Company,
+                as: 'company',
+                attributes: ['name', 'id']
+            }],
+            order: [['id', 'DESC']]
+        });
 
-        const [rows] = await pool.query(query);
-
-        res.json(rows);
+        res.json({
+            success: true,
+            data: projects
+        });
     }
     catch (error) {
-        res.status(500).json({ message: 'Internal server error!', error });
+        next(error);
     }
 };
 
