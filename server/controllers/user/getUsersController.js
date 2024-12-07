@@ -1,8 +1,9 @@
 const db = require('../../data/index.js');
 const User = db.User;
 const { Op } = db.Sequelize;
+const ApiError = require('../../utils/apiError');
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
     const { _page = 1, _limit = 10, q = '' } = req.query;
     const offset = (parseInt(_page) - 1) * parseInt(_limit);
     const searchTerm = q ? `%${q}%` : null;
@@ -30,10 +31,11 @@ const getUsers = async (req, res) => {
             totalPages: Math.ceil(usersCount / parseInt(_limit))
         });
     } catch (error) {
-        res.status(500).json({
-            message: 'Internal server error',
-            error: error.message
-        });
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server error', error));
+        }
     }
 };
 

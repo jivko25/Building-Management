@@ -1,45 +1,35 @@
-const pool = require("../../db");
+const db = require('../../data/index.js');
+const { Company, Sequelize } = db;
+const ApiError = require('../../utils/apiError');
+const { Op } = Sequelize;
 
-const getPaginatedCompanies = async (req, res) => {
-    const { _page = 1, _limit = 10, q = '' } = req.query;
-    const searchTerm = q ? `%${q}%` : null;
-    const offset = (parseInt(_page) - 1) * parseInt(_limit);
-
+const getPaginatedCompanies = async (req, res, next) => {
     try {
-        let totalQuery = `SELECT COUNT(*) as total FROM tbl_companies`;
-        const totalQueryParams = [];
+        const { _page = 1, _limit = 10, q = '' } = req.query;
+        const offset = (parseInt(_page) - 1) * parseInt(_limit);
 
-        if (q) {
-            totalQuery += ' WHERE name LIKE ?';
-            totalQueryParams.push(searchTerm);
-        }
+        const whereClause = q ? {
+            name: {
+                [Op.like]: `%${q}%`
+            }
+        } : {};
 
-        const [[{ total }]] = await pool.query(totalQuery, totalQueryParams);
-
-        let query = `SELECT * FROM tbl_companies`;
-
-        const queryParams = [];
-
-        if (q) {
-            query += ' WHERE name LIKE ?';
-            queryParams.push(searchTerm)
-        }
-
-        query += ' LIMIT ? OFFSET ?';
-        queryParams.push(parseInt(_limit), offset);
-
-        const [rows] = await pool.query(query, queryParams);
+        const { count, rows } = await Company.findAndCountAll({
+            where: whereClause,
+            limit: parseInt(_limit),
+            offset: offset,
+            order: [['id', 'DESC']]
+        });
 
         res.json({
-            data: rows,
-            total,
+            companies: rows,
+            companiesCount: count,
             page: parseInt(_page),
             limit: parseInt(_limit),
-            totalPages: Math.ceil(total / parseInt(_limit))
+            totalPages: Math.ceil(count / parseInt(_limit))
         });
-    }
-    catch (error) {
-        res.status(500).json({ message: 'Internal server error!', error });
+    } catch (error) {
+        next(new ApiError(500, 'Internal server Error!'));
     }
 };
 

@@ -1,50 +1,53 @@
-const db = require('../../db');
-const { getControllerIdByName } = require('../../utils/getControllerIdByName');
-const { uniqueChecker } = require('../../utils/uniqueChecker');
+const db = require('../../data/index.js');
+const { Task, Artisan, Activity, Measure } = db;
+const ApiError = require('../../utils/apiError');
 
-const createTask = async (req, res) => {
-
+const createTask = async (req, res, next) => {
     const projectId = req.params.id;
-    const { name, artisan, activity, measure, price_per_measure, total_price, total_work_in_selected_measure, start_date, end_date, note, status } = req.body;
+    const { name, artisan, activity, measure, price_per_measure, total_price, 
+            total_work_in_selected_measure, start_date, end_date, note, status } = req.body;
+    
+    try {
+        const existingTask = await Task.findOne({ where: { name } });
+        if (existingTask) {
+            throw new ApiError(400, `${name} already exists!`);
+        }
 
-    try { 
-        const isUnique = await uniqueChecker("name", name, "tbl_tasks");
+        const [artisanRecord, activityRecord, measureRecord] = await Promise.all([
+            Artisan.findOne({ where: { name: artisan } }),
+            Activity.findOne({ where: { name: activity } }),
+            Measure.findOne({ where: { name: measure } })
+        ]);
 
-        if (isUnique.length > 0) {
-            return res.status(404).send(`${name} already exists!`)
-        };
+        if (!artisanRecord) throw new ApiError(404, 'Artisan not found!');
+        if (!activityRecord) throw new ApiError(404, 'Activity not found!');
+        if (!measureRecord) throw new ApiError(404, 'Measure not found!');
 
-        const artisanId = await getControllerIdByName(artisan, "tbl_artisans");
-        const activityId = await getControllerIdByName(activity, "tbl_activities");
-        const measureId = await getControllerIdByName(measure, "tbl_measures");
-
-        const query = 'INSERT INTO tbl_tasks(project_id, name, artisan_id, activity_id, measure_id, price_per_measure, total_price, total_work_in_selected_measure, start_date, end_date, note, status) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-
-        const values = [projectId, name, artisanId, activityId, measureId, price_per_measure, total_price, total_work_in_selected_measure, start_date, end_date, note, status];
-
-
-        const [result] = await db.execute(query, values);
-
-        const newTask = {
-            id: result.insertId,
-            projectId,
+        const newTask = await Task.create({
+            project_id: projectId,
             name,
-            artisanId,
-            activityId,
-            measureId,
-            price_per_measure, 
-            total_price, 
+            artisan_id: artisanRecord.id,
+            activity_id: activityRecord.id,
+            measure_id: measureRecord.id,
+            price_per_measure,
+            total_price,
             total_work_in_selected_measure,
             start_date,
             end_date,
             note,
-            status,
-        };
+            status
+        });
 
-        res.status(201).json({ message: 'Task created successfully!', task: newTask });
-
+        res.status(201).json({ 
+            message: 'Task created successfully!', 
+            task: newTask 
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Error creating the task!', error });
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
     }
 };
 

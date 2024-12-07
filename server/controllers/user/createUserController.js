@@ -1,8 +1,9 @@
 const hashPassword = require('../../utils/hashPassword');
 const db = require('../../data/index.js');
 const User = db.User;
+const ApiError = require('../../utils/apiError');
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
     const { full_name, username, password, status, role } = req.body;
     const loggedUserId = req.user.id;
 
@@ -10,7 +11,7 @@ const createUser = async (req, res) => {
         const existingUser = await User.findOne({ where: { username } });
 
         if (existingUser) {
-            return res.status(404).send(`${username} already exists!`);
+            throw new ApiError(404, `${username} already exists!`);
         }
 
         const hashedPassword = await hashPassword(password);
@@ -36,7 +37,11 @@ const createUser = async (req, res) => {
         res.status(201).json({ message: 'User created successfully', user: userResponse });
 
     } catch (error) {
-        res.status(500).json({ message: 'Error creating user', error });
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Error creating user', error));
+        }
     }
 };
 

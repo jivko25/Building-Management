@@ -1,5 +1,4 @@
 const express = require('express');
-const { homePage } = require('../controllers/home/homeController');
 const authenticateToken = require('../middlewares/authenticateToken');
 const { getArtisanTasks } = require('../controllers/home/getArtisanTasksController');
 const { getTaskWithProject } = require('../controllers/home/getArtisanTaskProjectController');

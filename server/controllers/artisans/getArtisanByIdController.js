@@ -1,25 +1,27 @@
-const pool = require("../../db");
-const { getControllerNameById } = require("../../utils/getControllerNameById");
+const db = require('../../data/index.js');
+const { Artisan, Company, User } = db;
+const ApiError = require('../../utils/apiError');
 
-const getArtisanById = async (req, res) => {
-
+const getArtisanById = async (req, res, next) => {
     try {
-        const artisanId = req.params.id;
+        const artisan = await Artisan.findByPk(req.params.id, {
+            include: [
+                { model: Company, as: 'company', attributes: ['name'] },
+                { model: User, as: 'user', attributes: ['full_name'] }
+            ]
+        });
 
-        const [rows] = await pool.execute('SELECT * FROM tbl_artisans WHERE id = ?', [artisanId]);
+        if (!artisan) {
+            throw new ApiError(404, 'Artisan not found!');
+        }
 
-        const company = await getControllerNameById(rows[0].company_id, "tbl_companies", "name");
-
-        if (rows.length === 0) {
-            return res.status(404).send('Artisan not found!')
-        };
-        
-        rows[0].company = company;
-
-        res.json(rows[0])
-    }
-    catch (error) {
-        res.status(500).json({ message: 'Internal server error!', error });
+        res.json(artisan);
+    } catch (error) {
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
     }
 };
 

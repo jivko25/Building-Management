@@ -1,40 +1,37 @@
-const pool = require('../../db');
-const { uniqueChecker } = require('../../utils/uniqueChecker');
+const db = require('../../data/index.js');
+const { WorkItem } = db;
+const ApiError = require('../../utils/apiError');
 
-const createWorkItem = async (req, res) => {
-
+const createWorkItem = async (req, res, next) => {
     const taskId = req.params.task_id;
-    
     const { name, start_date, end_date, note, finished_work, status } = req.body;
 
-    try { 
-        const isUnique = await uniqueChecker("name", name, "tbl_workItems");
+    try {
+        const existingWorkItem = await WorkItem.findOne({ where: { name } });
+        if (existingWorkItem) {
+            throw new ApiError(400, `${name} already exists!`);
+        }
 
-        if (isUnique.length > 0) {
-            return res.status(404).send(`${name} already exists!`)
-        };
-
-        const query = 'INSERT INTO tbl_workItems(task_id, name, start_date, end_date, note, finished_work, status) VALUES(?, ?, ?, ?, ?, ?, ?)';
-
-        const values = [taskId, name, start_date, end_date, note, finished_work, status];
-
-        const [result] = await pool.execute(query, values);
-
-        const newWorkItem = {
-            id: result.insertId,
-            taskId,
+        const newWorkItem = await WorkItem.create({
+            task_id: taskId,
             name,
             start_date,
             end_date,
             note,
             finished_work,
             status
-        };
+        });
 
-        res.status(201).json({ message: 'Work item created successfully!', workItem: newWorkItem });
-        
+        res.status(201).json({ 
+            message: 'Work item created successfully!', 
+            workItem: newWorkItem 
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Error creating the work item!', error });
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
     }
 };
 

@@ -1,19 +1,26 @@
-const pool = require("../../db");
+const db = require('../../data/index.js');
+const { Measure } = db;
 
-const getMeasures = async (req, res) => {
-
+const getMeasures = async (req, res, next) => {
     try {
-        const query = 'SELECT * FROM tbl_measures';
+        const measures = await Measure.findAll({
+            order: [['name', 'ASC']] 
+        });
 
-        const [rows] = await pool.execute(query)
-
-        res.json(rows)
+        res.json({
+            success: true,
+            data: measures
+        });
     } 
     catch (error) {
-        res.status(500).json({ message: 'Internal server error', error });
-    };
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
+    }
 };
 
 module.exports = {
-    getMeasures,
+    getMeasures
 };

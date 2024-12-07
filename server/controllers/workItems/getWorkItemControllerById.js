@@ -1,20 +1,24 @@
-const pool = require("../../db");
+const db = require('../../data/index.js');
+const { WorkItem } = db;
+const ApiError = require('../../utils/apiError');
 
-const getWorkItemById = async (req, res) => {
-    const workItemId = req.params.itemId;
+const getWorkItemById = async (req, res, next) => {
+    const workItemId = req.params.id;
 
     try {
-        
-        const [rows] = await pool.execute('SELECT * FROM tbl_workItems WHERE id = ?', [workItemId])
+        const workItem = await WorkItem.findByPk(workItemId);
 
-        if (rows.length === 0) {
-            return res.status(404).send('Work item not found!')
+        if (!workItem) {
+            throw new ApiError(404, 'Work item not found!');
         }
 
-        res.json(rows[0]);
-
+        res.json(workItem);
     } catch (error) {
-        res.status(500).send('Internal server Error!');
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
     }
 };
 

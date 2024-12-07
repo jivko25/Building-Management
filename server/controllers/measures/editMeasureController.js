@@ -1,43 +1,43 @@
-const pool = require("../../db");
-const { getCurrentId } = require('../../utils/getCurrentId');
-const { uniqueChecker } = require('../../utils/uniqueChecker');
+const db = require('../../data/index.js');
+const { Measure } = db;
+const ApiError = require('../../utils/apiError');
 
-const editMeasure = async (req, res) => {
-
-    const measureId = req.params.id;
-    const name = req.body.name;
-
+const editMeasure = async (req, res, next) => {
     try {
-        const activity = await getCurrentId("tbl_measures", measureId);
+        const { id } = req.params;
+        const { name } = req.body;
 
-        if (activity.name !== name) {
-            const isUnique = await uniqueChecker("name", name, "tbl_measures");
+        const measure = await Measure.findByPk(id);
 
-            if (isUnique.length > 0) {
-                return res.status(404).send(`${name} already exists!`)
-            };
-        };
+        if (!measure) {
+            throw new ApiError(404, 'Measure not found');
+        }
 
-        const query = 'UPDATE tbl_measures SET name = ? WHERE ID = ?';
+        if (name && name !== measure.name) {
+            const existingMeasure = await Measure.findOne({
+                where: { name }
+            });
 
-        const values = [name, measureId];
+            if (existingMeasure) {
+                throw new ApiError(400, `Measure with name "${name}" already exists`);
+            }
+        }
 
-        const [result] = await pool.execute(query, values);
+        await measure.update({ name });
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Measure not found!' });
-        };
-
-        const updatedMeasure = {
-            id: measureId,
-            name
-        };
-
-        res.status(200).json({ message: 'Measure updated successfully!', measure: updatedMeasure });
+        res.json({
+            success: true,
+            message: 'Measure updated successfully',
+            data: measure
+        });
 
     } catch (error) {
-        res.status(500).json({ message: 'Error updating the measure!', error });
-    };
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
+    }
 };
 
 module.exports = {

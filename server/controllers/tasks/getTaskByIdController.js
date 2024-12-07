@@ -1,35 +1,27 @@
-const pool = require("../../db");
-const { getControllerNameById } = require('../../utils/getControllerNameById');
+const db = require('../../data/index.js');
+const { Task, Artisan, Activity, Measure } = db;
+const ApiError = require('../../utils/apiError');
 
-const getTaskById = async (req, res) => {
-    const taskId = req.params.taskId;
-
+const getTaskById = async (req, res, next) => {
     try {
+        const task = await Task.findByPk(req.params.taskId, {
+            include: [
+                { model: Artisan, as: 'artisan', attributes: ['name'] },
+                { model: Activity, as: 'activity', attributes: ['name'] },
+                { model: Measure, as: 'measure', attributes: ['name'] }
+            ]
+        });
 
-        const [rows] = await pool.execute('SELECT * FROM tbl_tasks WHERE id = ?', [taskId])
-
-        if (rows.length === 0) {
-            return res.status(404).send('Task not found!')
+        if (!task) {
+            throw new ApiError(404, 'Task not found!');
         }
-
-        const task = rows[0];
-        const activityName = await getControllerNameById(task.activity_id, "tbl_activities", "name");
-        const artisanName = await getControllerNameById(task.artisan_id, "tbl_artisans", "name");
-        const measureName = await getControllerNameById(task.measure_id, "tbl_measures", "name");
-
-        const taskWithNames = {
-            ...task,
-            activityName,
-            artisanName,
-            measureName,
-        };
-
-        console.log(taskWithNames);
-
-        res.json(taskWithNames);
-
+        res.json(task);
     } catch (error) {
-        res.status(500).send('Internal server Error!');
+        if (error instanceof ApiError) {
+            next(error);
+        } else {
+            next(new ApiError(500, 'Internal server Error!'));
+        }
     }
 };
 
