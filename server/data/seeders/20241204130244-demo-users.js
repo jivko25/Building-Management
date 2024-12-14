@@ -9,8 +9,8 @@ module.exports = {
     const hashedManagerPassword = await bcrypt.hash('manager123', saltRounds);
 
     await queryInterface.bulkInsert('tbl_users', [
-      { id: 1, full_name: 'Админ Админов', username: 'admin', password: hashedAdminPassword, role: 'admin', status: 'active', manager_id: null },
-      { id: 2, full_name: 'Мениджър Мениджъров', username: 'manager', password: hashedManagerPassword, role: 'manager', status: 'active', manager_id: 1 }
+      { id: 1, full_name: 'Админ Админов', username: 'admin', hashedPassword: hashedAdminPassword, role: 'admin', status: 'active', manager_id: null },
+      { id: 2, full_name: 'Мениджър Мениджъров', username: 'manager', hashedPassword: hashedManagerPassword, role: 'manager', status: 'active', manager_id: 1 }
     ], {});
   },
 
