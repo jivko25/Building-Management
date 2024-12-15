@@ -1,8 +1,9 @@
-'use strict';
+//server\data\migrations\20241204123244-create-activities-table.js
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('tbl_activities', {
+    await queryInterface.createTable("tbl_activities", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -20,6 +21,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('tbl_activities');
+    await queryInterface.dropTable("tbl_activities");
   }
 };

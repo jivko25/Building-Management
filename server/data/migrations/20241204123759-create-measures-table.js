@@ -1,8 +1,9 @@
-'use strict';
+//server\data\migrations\20241204123759-create-measures-table.js
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('tbl_measures', {
+    await queryInterface.createTable("tbl_measures", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -16,6 +17,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('tbl_measures');
+    await queryInterface.dropTable("tbl_measures");
   }
 };

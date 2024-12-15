@@ -1,3 +1,4 @@
+--server\db_query.sql
 CREATE DATABASE db_project34;
 
 CREATE TABLE `tbl_activities` (
