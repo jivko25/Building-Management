@@ -1,8 +1,9 @@
-'use strict';
+//server\data\migrations\20241204123932-create-workitems-table.js
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('tbl_workitems', {
+    await queryInterface.createTable("tbl_workitems", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -12,11 +13,11 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'tbl_tasks',
-          key: 'id'
+          model: "tbl_tasks",
+          key: "id"
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
       },
       name: {
         type: Sequelize.STRING,
@@ -39,13 +40,13 @@ module.exports = {
         allowNull: true
       },
       status: {
-        type: Sequelize.ENUM('done', 'in_progress'),
-        defaultValue: 'in_progress'
+        type: Sequelize.ENUM("done", "in_progress"),
+        defaultValue: "in_progress"
       }
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('tbl_workitems');
+    await queryInterface.dropTable("tbl_workitems");
   }
 };

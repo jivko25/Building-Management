@@ -1,30 +1,31 @@
-const db = require('../../data/index.js');
+//server\controllers\tasks\getTaskByIdController.js
+const db = require("../../data/index.js");
 const { Task, Artisan, Activity, Measure } = db;
-const ApiError = require('../../utils/apiError');
+const ApiError = require("../../utils/apiError");
 
 const getTaskById = async (req, res, next) => {
-    try {
-        const task = await Task.findByPk(req.params.taskId, {
-            include: [
-                { model: Artisan, as: 'artisan', attributes: ['name'] },
-                { model: Activity, as: 'activity', attributes: ['name'] },
-                { model: Measure, as: 'measure', attributes: ['name'] }
-            ]
-        });
+  try {
+    const task = await Task.findByPk(req.params.taskId, {
+      include: [
+        { model: Artisan, as: "artisan", attributes: ["name"] },
+        { model: Activity, as: "activity", attributes: ["name"] },
+        { model: Measure, as: "measure", attributes: ["name"] }
+      ]
+    });
 
-        if (!task) {
-            throw new ApiError(404, 'Task not found!');
-        }
-        res.json(task);
-    } catch (error) {
-        if (error instanceof ApiError) {
-            next(error);
-        } else {
-            next(new ApiError(500, 'Internal server Error!'));
-        }
+    if (!task) {
+      throw new ApiError(404, "Task not found!");
     }
+    res.json(task);
+  } catch (error) {
+    if (error instanceof ApiError) {
+      next(error);
+    } else {
+      next(new ApiError(500, "Internal server Error!"));
+    }
+  }
 };
 
 module.exports = {
-    getTaskById
+  getTaskById
 };

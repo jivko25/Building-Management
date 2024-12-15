@@ -1,8 +1,9 @@
-'use strict';
+//server\data\migrations\20241204123816-create-users-table.js
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('tbl_users', {
+    await queryInterface.createTable("tbl_users", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -33,16 +34,16 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
-          model: 'tbl_users',
-          key: 'id'
+          model: "tbl_users",
+          key: "id"
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL"
       }
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('tbl_users');
+    await queryInterface.dropTable("tbl_users");
   }
 };

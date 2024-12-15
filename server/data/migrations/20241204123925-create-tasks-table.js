@@ -1,8 +1,9 @@
-'use strict';
+//server\data\migrations\20241204123925-create-tasks-table.js
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('tbl_tasks', {
+    await queryInterface.createTable("tbl_tasks", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -12,11 +13,11 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'tbl_projects',
-          key: 'id'
+          model: "tbl_projects",
+          key: "id"
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
       },
       name: {
         type: Sequelize.STRING,
@@ -26,31 +27,31 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
-          model: 'tbl_artisans',
-          key: 'id'
+          model: "tbl_artisans",
+          key: "id"
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL"
       },
       activity_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
-          model: 'tbl_activities',
-          key: 'id'
+          model: "tbl_activities",
+          key: "id"
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL"
       },
       measure_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
-          model: 'tbl_measures',
-          key: 'id'
+          model: "tbl_measures",
+          key: "id"
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL"
       },
       price_per_measure: {
         type: Sequelize.DECIMAL(10, 2),
@@ -77,13 +78,13 @@ module.exports = {
         allowNull: true
       },
       status: {
-        type: Sequelize.ENUM('active', 'inactive'),
-        defaultValue: 'active'
+        type: Sequelize.ENUM("active", "inactive"),
+        defaultValue: "active"
       }
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('tbl_tasks');
+    await queryInterface.dropTable("tbl_tasks");
   }
 };
