@@ -33,10 +33,12 @@ export interface UseGetPaginatedDataTypes extends FetchQueryOptions {
     search?: string;
 }
 
-export type PaginatedDataResponse<TData> = {
-    data: TData[];
-    limit?: number;
-    total?: number;
-    page?: number;
-    totalPages?: number;
-};
+export interface PaginatedDataResponse<T> {
+    users?: T[];
+    data?: T[];
+    usersCount?: number;
+    totalCount?: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
