@@ -21,10 +21,16 @@ const CompaniesTableBody = () => {
     });
 
     const {
-        data: companies,
+        data: companiesResponse,
         isPending,
         isError,
-    } = useGetPaginatedData<Company>({
+    } = useGetPaginatedData<{
+        companies: Company[];
+        companiesCount: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    }>({
         URL: '/companies',
         queryKey: ['companies'],
         limit: itemsLimit,
@@ -32,10 +38,10 @@ const CompaniesTableBody = () => {
         search: debounceSearchTerm,
     });
 
-    const totalPages: number | undefined = companies?.totalPages;
+    console.log("🏢 Companies response:", companiesResponse);
 
     if (isPending) {
-        return <CompaniesLoader companies={companies} />;
+        return <CompaniesLoader companies={companiesResponse?.companies} />;
     }
 
     if (isError) {
@@ -56,9 +62,9 @@ const CompaniesTableBody = () => {
                 <CompaniesHeader />
                 <TableBody>
                     <ConditionalRenderer
-                        data={companies.data}
-                        renderData={(companies) => (
-                            <CompaniesCard companies={companies as Company[]} />
+                        data={companiesResponse?.companies || []}
+                        renderData={(data) => (
+                            <CompaniesCard companies={data as Company[]} />
                         )}
                         noResults={{
                             title: 'No companies found',
@@ -82,7 +88,7 @@ const CompaniesTableBody = () => {
             <Pagination
                 page={page}
                 setSearchParams={setSearchParams}
-                totalPages={totalPages}
+                totalPages={companiesResponse?.totalPages}
             />
         </div>
     );
