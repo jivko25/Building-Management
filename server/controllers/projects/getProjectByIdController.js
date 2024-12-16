@@ -1,19 +1,11 @@
 //server\controllers\projects\getProjectByIdController.js
 const db = require("../../data/index.js");
-const { Project, Company } = db;
+const { Project } = db;
 const ApiError = require("../../utils/apiError");
 
 const getProjectById = async (req, res, next) => {
   try {
-    const project = await Project.findByPk(req.params.id, {
-      include: [
-        {
-          model: Company,
-          as: "company",
-          attributes: ["name", "id"]
-        }
-      ]
-    });
+    const project = await Project.findByPk(req.params.id);
 
     if (!project) {
       throw new ApiError(404, "Project not found!");
