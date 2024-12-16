@@ -14,7 +14,6 @@ import {
 import { Company } from "@/types/company-types/companyTypes";
 import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
-import { PaginatedData } from "../Pagination/Pagination";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 
 const CompanySelector = ({
@@ -25,13 +24,21 @@ const CompanySelector = ({
 }: TableFormSelectType) => {
   const { control } = useFormContext();
 
-  const { data: companies } = useFetchDataQuery<PaginatedData<Company>>({
+  const { data: companiesResponse } = useFetchDataQuery<{
+    companies: Company[];
+    companiesCount: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }>({
     URL: "/companies",
-    queryKey: ["companies"],
+    queryKey: ["companies-select"],
     options: {
       staleTime: Infinity,
     },
   });
+
+  console.log("🏢 Companies response:", companiesResponse);
 
   return (
     <FormField
@@ -47,14 +54,16 @@ const CompanySelector = ({
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              {companies &&
-                companies?.data
-                  ?.filter((company) => company.status === "active")
-                  .map((company) => (
-                    <SelectItem key={company.id} value={company.name}>
-                      {company.name}
-                    </SelectItem>
-                  ))}
+              {companiesResponse?.companies
+                ?.filter((company) => company.status === "active")
+                .map((company) => (
+                  <SelectItem
+                    key={company.id}
+                    value={company.name}
+                  >
+                    {company.name}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </FormItem>
