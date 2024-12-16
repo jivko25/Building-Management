@@ -28,7 +28,7 @@ CREATE TABLE `tbl_artisans` (
   `note` text NOT NULL,
   `number` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
-  `company_id` int(11) DEFAULT NULL,
+  `companyId` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
   `status` enum('active','inactive') DEFAULT 'inactive'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
@@ -37,7 +37,7 @@ CREATE TABLE `tbl_artisans` (
 -- Dumping data for table `tbl_artisans`
 --
 
-INSERT INTO `tbl_artisans` (`id`, `name`, `note`, `number`, `email`, `company_id`, `user_id`, `status`) VALUES
+INSERT INTO `tbl_artisans` (`id`, `name`, `note`, `number`, `email`, `companyId`, `user_id`, `status`) VALUES
 (28, 'Joro', '', '0888888888', 'joro@abv.bg', 1, 2, 'active');
 
 -- --------------------------------------------------------
@@ -97,7 +97,7 @@ INSERT INTO `tbl_measures` (`id`, `name`) VALUES
 CREATE TABLE `tbl_projects` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `company_id` int(11) DEFAULT NULL,
+  `companyId` int(11) DEFAULT NULL,
   `company_name` varchar(255) DEFAULT NULL,
   `email` varchar(255) NOT NULL,
   `address` varchar(255) NOT NULL,
@@ -111,7 +111,7 @@ CREATE TABLE `tbl_projects` (
 -- Dumping data for table `tbl_projects`
 --
 
-INSERT INTO `tbl_projects` (`id`, `name`, `company_id`, `company_name`, `email`, `address`, `start_date`, `end_date`, `note`, `status`) VALUES
+INSERT INTO `tbl_projects` (`id`, `name`, `companyId`, `company_name`, `email`, `address`, `start_date`, `end_date`, `note`, `status`) VALUES
 (30, 'Сграда Авигея', 1, 'БЛД', 'bld@abv.bg', 'Дружба 1', '2024-12-01', '2025-03-31', '', 'active');
 
 -- --------------------------------------------------------

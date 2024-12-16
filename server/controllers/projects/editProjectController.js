@@ -4,6 +4,7 @@ const { Project, Company } = db;
 const ApiError = require("../../utils/apiError");
 
 const editProject = async (req, res, next) => {
+  console.log("Editing project with data:", req.body);
   const projectId = req.params.id;
   const { name, company_name, email, address, start_date, end_date, note, status } = req.body;
 
@@ -28,7 +29,7 @@ const editProject = async (req, res, next) => {
 
     const updatedProject = await project.update({
       name,
-      company_id: company.id,
+      companyId: company.id,
       company_name,
       email,
       address,
@@ -38,11 +39,26 @@ const editProject = async (req, res, next) => {
       status
     });
 
+    // Форматиране на отговора според изисквания формат
+    const formattedProject = {
+      id: updatedProject.id.toString(),
+      name: updatedProject.name,
+      companyId: updatedProject.companyId,
+      company_name: updatedProject.company_name,
+      email: updatedProject.email,
+      address: updatedProject.address,
+      start_date: updatedProject.start_date,
+      end_date: updatedProject.end_date,
+      note: updatedProject.note,
+      status: updatedProject.status
+    };
+
     res.json({
       message: "Project updated successfully!",
-      project: updatedProject
+      project: formattedProject
     });
   } catch (error) {
+    console.error("Error updating project:", error);
     if (error instanceof ApiError) {
       next(error);
     } else {

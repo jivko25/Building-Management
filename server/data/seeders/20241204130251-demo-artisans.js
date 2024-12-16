@@ -6,8 +6,8 @@ module.exports = {
     await queryInterface.bulkInsert(
       "tbl_artisans",
       [
-        { id: 1, name: "Иван Иванов", note: "Опитен майстор", number: "123456789", email: "ivan@example.com", company_id: 1, user_id: 1, status: "active" },
-        { id: 2, name: "Петър Петров", note: "Нов в екипа", number: "987654321", email: "petar@example.com", company_id: 2, user_id: 2, status: "inactive" }
+        { id: 1, name: "Иван Иванов", note: "Опитен майстор", number: "123456789", email: "ivan@example.com", companyId: 1, user_id: 1, status: "active" },
+        { id: 2, name: "Петър Петров", note: "Нов в екипа", number: "987654321", email: "petar@example.com", companyId: 2, user_id: 2, status: "inactive" }
       ],
       {}
     );

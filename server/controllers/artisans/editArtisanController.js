@@ -23,7 +23,7 @@ const editArtisan = async (req, res, next) => {
       note,
       number,
       email,
-      company_id: companyRecord.id,
+      companyId: companyRecord.id,
       user_id: userRecord.id,
       status
     });
