@@ -15,7 +15,6 @@ import {
 import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { User } from "@/types/user-types/userTypes";
 import { useFormContext } from "react-hook-form";
-import { PaginatedData } from "../Pagination/Pagination";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 
 const UsersSelector = ({
@@ -25,13 +24,22 @@ const UsersSelector = ({
   defaultVal,
 }: TableFormSelectType) => {
   const { control } = useFormContext();
-  const { data: users } = useFetchDataQuery<PaginatedData<User>>({
+
+  const { data: usersResponse } = useFetchDataQuery<{
+    users: User[];
+    usersCount: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }>({
     URL: "/users",
-    queryKey: ["users"],
+    queryKey: ["users-select"],
     options: {
       staleTime: Infinity,
     },
   });
+
+  console.log("👥 Users response:", usersResponse);
 
   return (
     <FormField
@@ -48,8 +56,9 @@ const UsersSelector = ({
             </FormControl>
             <SelectContent>
               <SelectGroup>
-                {users &&
-                  users.data?.map((user) => (
+                {usersResponse?.users
+                  ?.filter((user) => user.status === "active")
+                  .map((user) => (
                     <SelectItem key={user.id} value={user.full_name}>
                       {user.full_name}
                     </SelectItem>
