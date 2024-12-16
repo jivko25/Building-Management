@@ -6,89 +6,96 @@ import StatusSelector from "@/components/common/FormElements/FormStatusSelector"
 import { Lock, User as UserIcon } from "lucide-react";
 import { useUserFormHooks } from "@/hooks/forms/useUserForm";
 import { UserSchema } from "@/models/user/userSchema";
-import { useCachedData } from "@/hooks/useQueryHook";
-import { User } from "@/types/user-types/userTypes";
-import { findItemById } from "@/utils/helpers/findItemById";
+import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { Separator } from "@/components/ui/separator";
-import useSearchParamsHook from "@/hooks/useSearchParamsHook";
-import { PaginatedDataResponse } from "@/types/query-data-types/paginatedDataTypes";
 
 type EditUserFormProps = {
-  handleSubmit: (userData: UserSchema) => void;
-  userId: string;
-  isPending: boolean;
+    handleSubmit: (userData: UserSchema) => void;
+    userId: string;
+    isPending: boolean;
 };
 
 const EditUserForm = ({
-  handleSubmit,
-  isPending,
-  userId,
+    handleSubmit,
+    isPending,
+    userId,
 }: EditUserFormProps) => {
-  const { itemsLimit, page, searchParam } = useSearchParamsHook();
+    const { data: user } = useFetchDataQuery<{
+        id: string;
+        full_name: string;
+        username: string;
+        role: "user" | "manager" | "admin";
+        status: "active" | "inactive";
+        manager_id: number | null;
+    }>({
+        URL: `/users/${userId}`,
+        queryKey: ["user", userId],
+        options: {
+            staleTime: Infinity,
+        },
+    });
 
-  const user = useCachedData<User>({
-    queryKey: ["users", page, itemsLimit, searchParam],
-    selectFn: (data) =>
-      findItemById<User>(
-        data as PaginatedDataResponse<User>,
-        userId,
-        (measure) => measure.id as string
-      ),
-  });
+    console.log("👤 User data:", user);
 
-  const { useEditUserForm } = useUserFormHooks();
+    const { useEditUserForm } = useUserFormHooks();
 
-  const form = useEditUserForm(user as Partial<User>);
+    const form = useEditUserForm({
+        full_name: user?.full_name || "",
+        username: user?.username || "",
+        password: "",
+        role: (user?.role === "admin" ? "manager" : user?.role) || "user",
+        status: user?.status || "active",
+    });
 
-  return (
-    <FormProvider {...form}>
-      <form id="form-edit" onSubmit={form.handleSubmit(handleSubmit)}>
-        <div className="grid grid-cols-1 gap-2 mb-2">
-          <FormFieldInput
-            type="text"
-            label="Name, Surname"
-            name="full_name"
-            className="pl-10"
-            Icon={UserIcon}
-          />
-          <FormFieldInput
-            type="text"
-            label="Username"
-            name="username"
-            className="pl-10"
-            Icon={UserIcon}
-          />
-          <FormFieldInput
-            type="password"
-            label="Password"
-            name="password"
-            className="pl-10"
-            Icon={Lock}
-          />
-        </div>
-        <Separator className="mt-4 mb-2" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2">
-          <RoleSelector
-            label="Role"
-            name="role"
-            placeholder="Role"
-            defaultVal={user && user.role}
-          />
-          <StatusSelector
-            label="Status"
-            name="status"
-            defaultVal={user && user.status}
-          />
-        </div>
-        <DialogFooter
-          disabled={!form.formState.isDirty || isPending}
-          label="Submit"
-          formName="form-edit"
-          className="mt-6"
-        />
-      </form>
-    </FormProvider>
-  );
+    return (
+        <FormProvider {...form}>
+            <form id="form-edit" onSubmit={form.handleSubmit(handleSubmit)}>
+                <div className="grid grid-cols-1 gap-2 mb-2">
+                    <FormFieldInput
+                        type="text"
+                        label="Name, Surname"
+                        name="full_name"
+                        className="pl-10"
+                        Icon={UserIcon}
+                    />
+                    <FormFieldInput
+                        type="text"
+                        label="Username"
+                        name="username"
+                        className="pl-10"
+                        Icon={UserIcon}
+                    />
+                    <FormFieldInput
+                        type="password"
+                        label="Password"
+                        name="password"
+                        className="pl-10"
+                        Icon={Lock}
+                    />
+                </div>
+                <Separator className="mt-4 mb-2" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2">
+                    <RoleSelector
+                        label="Role"
+                        name="role"
+                        placeholder="Role"
+                        defaultVal={user?.role === "admin" ? "manager" : user?.role}
+                    />
+                    <StatusSelector
+                        label="Status"
+                        name="status"
+                        defaultVal={user?.status}
+                    />
+                </div>
+                <DialogFooter
+                    disabled={!form.formState.isDirty || isPending}
+                    label="Submit"
+                    formName="form-edit"
+                    className="mt-6"
+                />
+            </form>
+        </FormProvider>
+    );
 };
 
 export default EditUserForm;
