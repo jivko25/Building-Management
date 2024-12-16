@@ -1,3 +1,4 @@
+// src/components/tables/MeasuresTable/MeasuresTableBody.tsx
 import { TableCell } from "@/components/ui/table";
 import { Ruler } from "lucide-react";
 
@@ -25,10 +26,10 @@ const MeasuresTableBody = () => {
   const {
     data: measuresResponse,
     isPending,
-    isError,
+    isError
   } = useFetchDataQuery<{ success: boolean; data: Measure[] }>({
     URL: "/measures",
-    queryKey: ["measures"],
+    queryKey: ["measures"]
   });
 
   console.log("📏 Measures data:", measuresResponse);
@@ -51,13 +52,13 @@ const MeasuresTableBody = () => {
         <TableBody>
           <ConditionalRenderer
             data={measuresResponse?.data || []}
-            renderData={(data) => <MeasuresCard measures={data as Measure[]} />}
+            renderData={data => <MeasuresCard measures={data as Measure[]} />}
             noResults={{
               title: "No measures found",
               description: "It looks like you haven't added any measures yet.",
-              Icon: Ruler,
+              Icon: Ruler
             }}
-            wrapper={(content) => (
+            wrapper={content => (
               <TableRow>
                 <TableCell colSpan={2} className="text-center text-3xl">
                   {content}

@@ -1,3 +1,4 @@
+//client\src\types\project-types\projectTypes.ts
 export type Project = {
     id?: string;
     name: string;

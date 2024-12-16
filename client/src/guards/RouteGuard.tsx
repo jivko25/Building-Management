@@ -1,20 +1,21 @@
-import { useAuth } from '@/context/AuthContext'
-import { Navigate, Outlet } from 'react-router-dom'
+//client\src\guards\RouteGuard.tsx
+import { useAuth } from "@/context/AuthContext";
+import { Navigate, Outlet } from "react-router-dom";
 
 const RouteGuard = () => {
-    const { user } = useAuth();
+  const { user } = useAuth();
 
-    if (user && user?.role === 'manager') {
-        return <Outlet />
-    }
+  if (user && user?.role === "manager") {
+    return <Outlet />;
+  }
 
-    if (user && user?.role === 'user') {
-        return <Outlet />
-    }
+  if (user && user?.role === "user") {
+    return <Outlet />;
+  }
 
-    if (!user || user === null) {
-        return <Navigate to='/login' replace={true} />
-    }
-}
+  if (!user || user === null) {
+    return <Navigate to="/login" replace={true} />;
+  }
+};
 
-export default RouteGuard
+export default RouteGuard;

@@ -1,12 +1,13 @@
-import { useState } from 'react';
+//client\src\hooks\useDialogState.ts
+import { useState } from "react";
 
 const useDialogState = () => {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
-    return {
-        isOpen,
-        setIsOpen
-    }
+  return {
+    isOpen,
+    setIsOpen
+  };
 };
 
 export default useDialogState;

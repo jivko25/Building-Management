@@ -1,3 +1,4 @@
+//client\src\components\tables\UsersTable\UsersTableBody.tsx
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import UsersLoader from "@/utils/SkeletonLoader/Users/UsersLoader";
 import { CircleAlert, Users } from "lucide-react";
@@ -17,19 +18,19 @@ const UsersTableBody = () => {
   const { itemsLimit, page, setSearchParams } = useSearchParamsHook();
 
   const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
-    setSearchParams,
+    setSearchParams
   });
 
   const {
     data: usersResponse,
     isPending,
-    isError,
+    isError
   } = useGetPaginatedData<User>({
     URL: "/users",
     queryKey: ["users"],
     limit: itemsLimit,
     page,
-    search: debounceSearchTerm,
+    search: debounceSearchTerm
   });
 
   console.log("👥 Users response:", usersResponse);
@@ -48,11 +49,7 @@ const UsersTableBody = () => {
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar
-          handleSearch={handleSearch}
-          placeholder="Search users..."
-          search={search}
-        />
+        <SearchBar handleSearch={handleSearch} placeholder="Search users..." search={search} />
         <CreateUser />
       </div>
       <Table className="w-full min-w-full">
@@ -60,13 +57,13 @@ const UsersTableBody = () => {
         <TableBody>
           <ConditionalRenderer
             data={users}
-            renderData={(data) => <UsersCard users={data as User[]} />}
+            renderData={data => <UsersCard users={data as User[]} />}
             noResults={{
               title: "No users found",
               description: "It looks like you haven't added any users yet.",
-              Icon: Users,
+              Icon: Users
             }}
-            wrapper={(content) => (
+            wrapper={content => (
               <TableRow>
                 <TableCell colSpan={4} className="text-center text-3xl">
                   {content}
@@ -76,11 +73,7 @@ const UsersTableBody = () => {
           />
         </TableBody>
       </Table>
-      <Pagination
-        setSearchParams={setSearchParams}
-        page={page}
-        totalPages={totalPages}
-      />
+      <Pagination setSearchParams={setSearchParams} page={page} totalPages={totalPages} />
     </div>
   );
 };

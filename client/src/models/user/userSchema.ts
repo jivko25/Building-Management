@@ -1,3 +1,4 @@
+//client\src\models\user\userSchema.ts
 import { User, UserLoginFormData } from "@/types/user-types/userTypes";
 import { z } from "zod";
 
@@ -6,34 +7,34 @@ export const userRoles = ["user"] as const;
 
 export const userSchema = z.object({
   full_name: z.string().min(7, {
-    message: "Name must be at least 7 characters",
+    message: "Name must be at least 7 characters"
   }),
   username: z.string().min(5, {
-    message: "Username must be at least 5 characters",
+    message: "Username must be at least 5 characters"
   }),
   password: z.string().min(5, {
-    message: "Password must be at least 5 characters",
+    message: "Password must be at least 5 characters"
   }),
   role: z.enum(["user", "manager"], {
-    message: "Please select role",
+    message: "Please select role"
   }),
   status: z.enum(["active", "inactive"], {
-    message: "Please select status",
-  }),
+    message: "Please select status"
+  })
 });
 
 export const loginFormSchema = z.object({
   username: z.string().min(5, {
-    message: "Wrong username or password",
+    message: "Wrong username or password"
   }),
   password: z.string().min(5, {
-    message: "Wrong username or password",
-  }),
+    message: "Wrong username or password"
+  })
 });
 
 export const loginDefaultValues: UserLoginFormData = {
   username: "",
-  password: "",
+  password: ""
 };
 
 export const userDefaultValues: User = {
@@ -41,7 +42,7 @@ export const userDefaultValues: User = {
   username: "",
   password: "",
   role: "user",
-  status: "active",
+  status: "active"
 };
 
 export type UserSchema = z.infer<typeof userSchema>;

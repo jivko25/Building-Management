@@ -1,1 +1,2 @@
-declare module 'tailwindcss-motion';
+//client\global.d.ts
+declare module "tailwindcss-motion";

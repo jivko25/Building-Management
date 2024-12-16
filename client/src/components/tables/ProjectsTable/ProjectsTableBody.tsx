@@ -1,3 +1,4 @@
+// src/components/tables/ProjectsTable/ProjectsTableBody.tsx
 import ProjectsSkeletonCard from "@/utils/SkeletonLoader/Projects/ProjectsSkeletonCard";
 import { BrickWall, CircleAlert } from "lucide-react";
 import ErrorMessage from "@/components/common/FormMessages/ErrorMessage";
@@ -11,10 +12,10 @@ const ProjectsTableBody = () => {
   const {
     data: projects,
     isPending,
-    isError,
+    isError
   } = useFetchDataQuery<Project[]>({
     URL: "/projects",
-    queryKey: ["projects"],
+    queryKey: ["projects"]
   });
 
   if (isPending) {
@@ -32,13 +33,11 @@ const ProjectsTableBody = () => {
         <div className="flex flex-wrap sm:w-full gap-4">
           <ConditionalRenderer
             data={projects}
-            renderData={(projects) => (
-              <ProjectsCard projects={projects as Project[]} />
-            )}
+            renderData={projects => <ProjectsCard projects={projects as Project[]} />}
             noResults={{
               title: "No projects found",
               description: "It looks like you haven't added any projects yet",
-              Icon: BrickWall,
+              Icon: BrickWall
             }}
           />
         </div>

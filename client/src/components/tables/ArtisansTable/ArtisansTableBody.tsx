@@ -1,3 +1,4 @@
+//client\src\components\tables\ArtisansTable\ArtisansTableBody.tsx
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { CircleAlert, ContactRound } from "lucide-react";
 import ErrorMessage from "@/components/common/FormMessages/ErrorMessage";
@@ -17,13 +18,13 @@ const ArtisansTableBody = () => {
   const { setSearchParams, itemsLimit, page } = useSearchParamsHook();
 
   const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
-    setSearchParams,
+    setSearchParams
   });
 
   const {
     data: artisansResponse,
     isPending,
-    isError,
+    isError
   } = useGetPaginatedData<{
     artisans: Artisan[];
     artisansCount: number;
@@ -35,7 +36,7 @@ const ArtisansTableBody = () => {
     queryKey: ["artisans"],
     limit: itemsLimit,
     page,
-    search: debounceSearchTerm,
+    search: debounceSearchTerm
   });
 
   console.log("👷 Artisans response:", artisansResponse);
@@ -51,11 +52,7 @@ const ArtisansTableBody = () => {
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar
-          handleSearch={handleSearch}
-          placeholder="Search artisans..."
-          search={search}
-        />
+        <SearchBar handleSearch={handleSearch} placeholder="Search artisans..." search={search} />
         <CreateArtisan />
       </div>
       <Table className="w-full min-w-full">
@@ -63,13 +60,13 @@ const ArtisansTableBody = () => {
         <TableBody>
           <ConditionalRenderer
             data={artisansResponse?.artisans || []}
-            renderData={(data) => <ArtisansCard artisans={data as Artisan[]} />}
+            renderData={data => <ArtisansCard artisans={data as Artisan[]} />}
             noResults={{
               title: "No artisans found",
               description: "It looks like you haven't added any artisans yet.",
-              Icon: ContactRound,
+              Icon: ContactRound
             }}
-            wrapper={(content) => (
+            wrapper={content => (
               <TableRow>
                 <TableCell colSpan={4} className="text-center text-3xl">
                   {content}
@@ -79,11 +76,7 @@ const ArtisansTableBody = () => {
           />
         </TableBody>
       </Table>
-      <Pagination
-        page={page}
-        setSearchParams={setSearchParams}
-        totalPages={artisansResponse?.totalPages}
-      />
+      <Pagination page={page} setSearchParams={setSearchParams} totalPages={artisansResponse?.totalPages} />
     </div>
   );
 };

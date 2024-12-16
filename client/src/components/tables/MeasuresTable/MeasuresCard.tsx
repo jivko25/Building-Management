@@ -13,7 +13,7 @@ const MeasuresCard = ({ measures }: MeasuresCardProps) => {
   return (
     <>
       {Array.isArray(measures) &&
-        measures.map((measure) => (
+        measures.map(measure => (
           <TableRow key={measure.id}>
             <TableCell className="font-semibold">{measure.name}</TableCell>
             <TableCell className="text-end w-[200px]">

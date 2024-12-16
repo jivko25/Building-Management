@@ -1,17 +1,10 @@
+//client\src\components\common\FormElements\FormErrors.tsx
 type FormErrorsProps = {
-    error?: string;
-}
+  error?: string;
+};
 
 const FormErrors = ({ error }: FormErrorsProps) => {
-    return (
-        <>
-            {error && (
-                <div className="text-red-500 font-semibold mt-4 text-center">
-                    {error}
-                </div>
-            )}
-        </>
-    )
-}
+  return <>{error && <div className="text-red-500 font-semibold mt-4 text-center">{error}</div>}</>;
+};
 
-export default FormErrors
+export default FormErrors;

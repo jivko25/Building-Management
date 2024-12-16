@@ -1,27 +1,12 @@
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+//client\src\components\common\FormElements\FormCompanySelector.tsx
+import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Company } from "@/types/company-types/companyTypes";
 import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 
-const CompanySelector = ({
-  label,
-  name,
-  placeholder,
-  defaultVal,
-}: TableFormSelectType) => {
+const CompanySelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
   const { control } = useFormContext();
 
   const { data: companiesResponse } = useFetchDataQuery<{
@@ -34,8 +19,8 @@ const CompanySelector = ({
     URL: "/companies",
     queryKey: ["companies-select"],
     options: {
-      staleTime: Infinity,
-    },
+      staleTime: Infinity
+    }
   });
 
   console.log("🏢 Companies response:", companiesResponse);
@@ -55,12 +40,9 @@ const CompanySelector = ({
             </FormControl>
             <SelectContent>
               {companiesResponse?.companies
-                ?.filter((company) => company.status === "active")
-                .map((company) => (
-                  <SelectItem
-                    key={company.id}
-                    value={company.name}
-                  >
+                ?.filter(company => company.status === "active")
+                .map(company => (
+                  <SelectItem key={company.id} value={company.name}>
                     {company.name}
                   </SelectItem>
                 ))}
