@@ -1,16 +1,17 @@
-const express = require('express');
-const authenticateToken = require('../middlewares/authenticateToken');
-const { createArtisan } = require('../controllers/artisans/createArtisanController');
-const { editArtisan } = require('../controllers/artisans/editArtisanController');
-const { getArtisanById } = require('../controllers/artisans/getArtisanByIdController');
-const { getArtisans, getPaginatedArtisans } = require('../controllers/artisans/getArtisansController');
+//server\routes\artisansRoutes.js
+const express = require("express");
+const authenticateToken = require("../middlewares/authenticateToken");
+const { createArtisan } = require("../controllers/artisans/createArtisanController");
+const { editArtisan } = require("../controllers/artisans/editArtisanController");
+const { getArtisanById } = require("../controllers/artisans/getArtisanByIdController");
+const { getArtisans, getPaginatedArtisans } = require("../controllers/artisans/getArtisansController");
 
 const router = express.Router();
 
-router.get('/artisans', authenticateToken, getPaginatedArtisans);
-router.get('/artisans', authenticateToken, getArtisans);
-router.get('/artisans/:id', authenticateToken, getArtisanById);
-router.post('/artisans/create', authenticateToken, createArtisan);
-router.put('/artisans/:id/edit', authenticateToken, editArtisan);
+router.get("/artisans", authenticateToken, getPaginatedArtisans);
+router.get("/artisans", authenticateToken, getArtisans);
+router.get("/artisans/:id", authenticateToken, getArtisanById);
+router.post("/artisans/create", authenticateToken, createArtisan);
+router.put("/artisans/:id/edit", authenticateToken, editArtisan);
 
 module.exports = router;

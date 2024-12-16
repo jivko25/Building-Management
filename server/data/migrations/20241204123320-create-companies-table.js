@@ -1,8 +1,9 @@
-'use strict';
+//server\data\migrations\20241204123320-create-companies-table.js
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('tbl_companies', {
+    await queryInterface.createTable("tbl_companies", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -33,17 +34,17 @@ module.exports = {
         allowNull: false
       },
       dds: {
-        type: Sequelize.ENUM('yes', 'no'),
-        defaultValue: 'no'
+        type: Sequelize.ENUM("yes", "no"),
+        defaultValue: "no"
       },
       status: {
-        type: Sequelize.ENUM('active', 'inactive'),
-        defaultValue: 'inactive'
+        type: Sequelize.ENUM("active", "inactive"),
+        defaultValue: "inactive"
       }
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('tbl_companies');
+    await queryInterface.dropTable("tbl_companies");
   }
 };

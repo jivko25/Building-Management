@@ -1,3 +1,4 @@
+//server\controllers\companies\editCompanyController.js
 const db = require('../../data/index.js');
 const { Company } = db;
 const ApiError = require('../../utils/apiError');

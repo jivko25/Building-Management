@@ -1,8 +1,9 @@
-'use strict';
+//server\data\migrations\20241204123915-create-projects-table.js
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('tbl_projects', {
+    await queryInterface.createTable("tbl_projects", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -16,11 +17,11 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
-          model: 'tbl_companies',
-          key: 'id'
+          model: "tbl_companies",
+          key: "id"
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL"
       },
       email: {
         type: Sequelize.STRING,
@@ -43,13 +44,13 @@ module.exports = {
         allowNull: true
       },
       status: {
-        type: Sequelize.ENUM('active', 'inactive'),
-        defaultValue: 'inactive'
+        type: Sequelize.ENUM("active", "inactive"),
+        defaultValue: "inactive"
       }
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('tbl_projects');
+    await queryInterface.dropTable("tbl_projects");
   }
 };
