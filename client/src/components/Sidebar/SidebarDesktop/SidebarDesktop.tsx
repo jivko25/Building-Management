@@ -1,13 +1,9 @@
-import SidebarDesktopUser from './SidebarDesktopUser'
-import SidebarLinks from '../SidebarComponents/SidebarLinks'
+//client\src\components\Sidebar\SidebarDesktop\SidebarDesktop.tsx
+import SidebarDesktopUser from "./SidebarDesktopUser";
+import SidebarLinks from "../SidebarComponents/SidebarLinks";
 
 const SidebarDesktop = () => {
+  return <SidebarLinks Component={SidebarDesktopUser} />;
+};
 
-    return (
-        <SidebarLinks
-            Component={SidebarDesktopUser}
-        />
-    )
-}
-
-export default SidebarDesktop
+export default SidebarDesktop;

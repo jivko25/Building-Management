@@ -1,3 +1,4 @@
+//client\src\layouts\Header\LayoutHeader.tsx
 import SidebarUserDropdown from "@/components/Sidebar/SidebarComponents/SidebarUserDropdown";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
@@ -20,19 +21,8 @@ const LayoutHeader = () => {
                 <span className="relative">
                   Ape
                   <span className="inline-flex items-center">
-                    <svg
-                      className="w-6 h-6"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M19 5L5 19M5 5L19 19"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 5L5 19M5 5L19 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </span>
                   Craft
@@ -44,10 +34,7 @@ const LayoutHeader = () => {
             {user && (
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="flex items-center space-x-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  >
+                  <Button variant="ghost" className="flex items-center space-x-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                     <span className="sm:inline-block">{user.full_name}</span>
                     <User className="h-5 w-5" />
                   </Button>

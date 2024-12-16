@@ -1,3 +1,4 @@
+//client\src\types\auth-types\authTypes.ts
 export interface User {
   id?: number;
   username: string;
@@ -25,7 +26,7 @@ export enum AuthActionType {
   LOGIN_SUCCESS = "LOGIN_SUCCESS",
   LOGIN_ERROR = "LOGIN_ERROR",
   LOGOUT = "LOGOUT",
-  SET_LOADING = "SET_LOADING",
+  SET_LOADING = "SET_LOADING"
 }
 export interface AuthAction {
   type: AuthActionType;

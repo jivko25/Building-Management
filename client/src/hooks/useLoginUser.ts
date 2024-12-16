@@ -1,4 +1,4 @@
-// src/hooks/useLoginUser.ts
+//client/src/hooks/useLoginUser.ts
 import { useAuth } from "@/context/AuthContext";
 import { UserLoginFormData } from "@/types/user-types/userTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +15,7 @@ const useLoginUser = () => {
   const form = useForm<UserLoginFormData>({
     resolver: zodResolver(loginFormSchema),
     mode: "onChange",
-    defaultValues: loginDefaultValues,
+    defaultValues: loginDefaultValues
   });
 
   const handleNavigation = (role: string) => {
@@ -38,9 +38,7 @@ const useLoginUser = () => {
     }, 100);
   };
 
-  const onSubmit: SubmitHandler<UserLoginFormData> = async (
-    userData: UserLoginFormData
-  ) => {
+  const onSubmit: SubmitHandler<UserLoginFormData> = async (userData: UserLoginFormData) => {
     console.log("Form submitted with data:", userData);
     const isSuccess = await login(userData.username, userData.password);
     console.log("Login attempt result:", isSuccess);
@@ -65,7 +63,7 @@ const useLoginUser = () => {
     form,
     onSubmit,
     isLoading,
-    error,
+    error
   };
 };
 

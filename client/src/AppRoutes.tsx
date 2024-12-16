@@ -1,3 +1,4 @@
+//client\src\AppRoutes.tsx
 import { Navigate, Route, Routes } from 'react-router-dom';
 import UserLoginForm from './components/Forms/User/UserFormLogin/UserLoginForm';
 import TableLayout from './layouts/Table/TableLayout';

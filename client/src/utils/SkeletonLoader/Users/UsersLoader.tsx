@@ -1,3 +1,4 @@
+//client\src\utils\SkeletonLoader\Users\UsersLoader.tsx
 import { User } from '@/types/user-types/userTypes';
 import { Table, TableBody } from '../../../components/ui/table';
 import UsersSkeleton from './UsersSkeleton';

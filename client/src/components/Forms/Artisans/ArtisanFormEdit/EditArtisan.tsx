@@ -1,37 +1,30 @@
-import { artisanSchema, ArtisanSchema } from '@/models/artisan/artisanSchema';
-import useDialogState from '@/hooks/useDialogState';
-import { useSubmitHandler } from '@/utils/helpers/submitHandler';
-import { useMutationHook } from '@/hooks/useMutationHook';
-import DialogModal from '@/components/common/DialogElements/DialogModal';
-import EditArtisanForm from './EditArtisanForm';
+//client\src\components\Forms\Artisans\ArtisanFormEdit\EditArtisan.tsx
+import { artisanSchema, ArtisanSchema } from "@/models/artisan/artisanSchema";
+import useDialogState from "@/hooks/useDialogState";
+import { useSubmitHandler } from "@/utils/helpers/submitHandler";
+import { useMutationHook } from "@/hooks/useMutationHook";
+import DialogModal from "@/components/common/DialogElements/DialogModal";
+import EditArtisanForm from "./EditArtisanForm";
 
 type ArtisanFormProps = {
-    artisanId: string;
+  artisanId: string;
 };
 
 const EditArtisan = ({ artisanId }: ArtisanFormProps) => {
-    const { isOpen, setIsOpen } = useDialogState();
+  const { isOpen, setIsOpen } = useDialogState();
 
-    const { useEditEntity } = useMutationHook();
+  const { useEditEntity } = useMutationHook();
 
-    const { mutate, isPending } = useEditEntity<ArtisanSchema>({
-        URL: `/artisans/${artisanId}/edit`,
-        queryKey: ['artisans'],
-        successToast: 'Artisan updated successfully!',
-        setIsOpen,
-    });
+  const { mutate, isPending } = useEditEntity<ArtisanSchema>({
+    URL: `/artisans/${artisanId}/edit`,
+    queryKey: ["artisans"],
+    successToast: "Artisan updated successfully!",
+    setIsOpen
+  });
 
-    const handleSubmit = useSubmitHandler(mutate, artisanSchema);
+  const handleSubmit = useSubmitHandler(mutate, artisanSchema);
 
-    return (
-        <DialogModal
-            Component={EditArtisanForm}
-            props={{ artisanId, handleSubmit, isPending }}
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            title='Edit artisan'
-        />
-    );
+  return <DialogModal Component={EditArtisanForm} props={{ artisanId, handleSubmit, isPending }} isOpen={isOpen} setIsOpen={setIsOpen} title="Edit artisan" />;
 };
 
 export default EditArtisan;

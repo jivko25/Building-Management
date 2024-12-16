@@ -1,3 +1,4 @@
+//client\src\components\Forms\User\UserFormLogin\UserLoginForm.tsx
 import { FormProvider } from "react-hook-form";
 import FormFieldInput from "@/components/common/FormElements/FormFieldInput";
 import FormErrors from "../../../common/FormElements/FormErrors";
@@ -17,49 +18,25 @@ const UserLoginForm = () => {
             <div className="grid gap-6 border border-1 rounded-lg p-8">
               <div className="grid gap-2 text-center">
                 <h1 className="text-3xl font-bold">Welcome</h1>
-                <p className="text-muted-foreground">
-                  Enter your details below to login to your account
-                </p>
+                <p className="text-muted-foreground">Enter your details below to login to your account</p>
               </div>
               <form
                 id="login-form"
-                onSubmit={(e) => {
+                onSubmit={e => {
                   console.log("Form submission started");
                   form.handleSubmit(onSubmit)(e);
                 }}
-                className="grid gap-4"
-              >
-                <FormFieldInput
-                  name="username"
-                  label="Username"
-                  type="text"
-                  className="pl-10"
-                  Icon={User}
-                />
-                <FormFieldInput
-                  name="password"
-                  label="Password"
-                  type="password"
-                  className="pl-10"
-                  Icon={Lock}
-                />
-                <DialogFooter
-                  disabled={!form.formState.isDirty || isLoading}
-                  label="Submit"
-                  formName="login-form"
-                  className="mt-6"
-                />
+                className="grid gap-4">
+                <FormFieldInput name="username" label="Username" type="text" className="pl-10" Icon={User} />
+                <FormFieldInput name="password" label="Password" type="password" className="pl-10" Icon={Lock} />
+                <DialogFooter disabled={!form.formState.isDirty || isLoading} label="Submit" formName="login-form" className="mt-6" />
                 <FormErrors error={error} />
               </form>
             </div>
           </div>
         </div>
         <div className="hidden lg:block relative">
-          <img
-            src={login_image}
-            alt="Login"
-            className="absolute inset-0 w-full h-full object-cover dark:brightness-[0.3]"
-          />
+          <img src={login_image} alt="Login" className="absolute inset-0 w-full h-full object-cover dark:brightness-[0.3]" />
         </div>
       </div>
     </FormProvider>
