@@ -7,12 +7,8 @@ import FormTextareaInput from '@/components/common/FormElements/FormTextareaInpu
 import UsersSelector from '@/components/common/FormElements/FormUserSelector';
 import { Mail, Phone, User } from 'lucide-react';
 import { useArtisanFormHooks } from '@/hooks/forms/useArtisanForm';
-import useSearchParamsHook from '@/hooks/useSearchParamsHook';
-import { Artisan } from '@/types/artisan-types/artisanTypes';
-import { useCachedData } from '@/hooks/useQueryHook';
-import { findItemById } from '@/utils/helpers/findItemById';
 import { ArtisanSchema } from '@/models/artisan/artisanSchema';
-import { PaginatedDataResponse } from '@/types/query-data-types/paginatedDataTypes';
+import { useFetchDataQuery } from '@/hooks/useQueryHook';
 import { Separator } from '@/components/ui/separator';
 
 type EditArtisanFormProps = {
@@ -26,20 +22,36 @@ const EditArtisanForm = ({
     handleSubmit,
     isPending,
 }: EditArtisanFormProps) => {
-    const { itemsLimit, page, searchParam } = useSearchParamsHook();
-
-    const artisan = useCachedData<Artisan>({
-        queryKey: ['artisans', page, itemsLimit, searchParam],
-        selectFn: (data) =>
-            findItemById<Artisan>(
-                data as PaginatedDataResponse<Artisan>,
-                artisanId,
-                (artisan) => artisan.id as string
-            ),
+    const { data: artisan } = useFetchDataQuery<{
+        id: string;
+        name: string;
+        note: string;
+        number: string;
+        email: string;
+        status: "active" | "inactive";
+        company: { name: string };
+        user: { full_name: string };
+    }>({
+        URL: `/artisans/${artisanId}`,
+        queryKey: ["artisan", artisanId],
+        options: {
+            staleTime: Infinity,
+        },
     });
+
+    console.log("👷 Artisan data:", artisan);
+
     const { useEditArtisanForm } = useArtisanFormHooks();
 
-    const form = useEditArtisanForm(artisan as Partial<Artisan>);
+    const form = useEditArtisanForm({
+        name: artisan?.name || "",
+        note: artisan?.note || "",
+        number: artisan?.number || "",
+        email: artisan?.email || "",
+        status: artisan?.status || "active",
+        company: artisan?.company?.name || "",
+        artisanName: artisan?.user?.full_name || "",
+    });
 
     return (
         <FormProvider {...form}>
@@ -72,17 +84,17 @@ const EditArtisanForm = ({
                     <StatusSelector
                         label='Status'
                         name='status'
-                        defaultVal={artisan && artisan.status}
+                        defaultVal={artisan?.status}
                     />
                     <UsersSelector
                         label='Select user'
                         name='artisanName'
-                        defaultVal={artisan && artisan.artisanName}
+                        defaultVal={artisan?.user?.full_name}
                     />
                     <CompanySelector
                         label='Select company'
                         name='company'
-                        defaultVal={artisan && artisan.company}
+                        defaultVal={artisan?.company?.name}
                     />
                 </div>
                 <Separator className='mt-4 mb-2' />
