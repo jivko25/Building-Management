@@ -3,6 +3,7 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
+    console.log("Creating projects table...");
     await queryInterface.createTable("tbl_projects", {
       id: {
         type: Sequelize.INTEGER,
@@ -13,7 +14,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      company_id: {
+      companyId: {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
@@ -22,6 +23,10 @@ module.exports = {
         },
         onUpdate: "CASCADE",
         onDelete: "SET NULL"
+      },
+      company_name: {
+        type: Sequelize.STRING,
+        allowNull: true
       },
       email: {
         type: Sequelize.STRING,
@@ -48,9 +53,12 @@ module.exports = {
         defaultValue: "inactive"
       }
     });
+    console.log("Projects table created successfully!");
   },
 
   async down(queryInterface, Sequelize) {
+    console.log("Dropping projects table...");
     await queryInterface.dropTable("tbl_projects");
+    console.log("Projects table dropped successfully!");
   }
 };

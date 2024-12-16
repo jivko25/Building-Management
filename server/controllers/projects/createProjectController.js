@@ -19,7 +19,7 @@ const createProject = async (req, res, next) => {
 
     const newProject = await Project.create({
       name,
-      company_id: company.id,
+      companyId: company.id,
       company_name,
       email,
       address,

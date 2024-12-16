@@ -3,17 +3,43 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
+    console.log("Seeding projects...");
     await queryInterface.bulkInsert(
       "tbl_projects",
       [
-        { id: 1, name: "Проект А", company_id: 1, email: "projecta@example.com", address: "ул. Проектна 1", start_date: new Date(), end_date: null, note: "Важен проект", status: "active" },
-        { id: 2, name: "Проект Б", company_id: 2, email: "projectb@example.com", address: "ул. Проектна 2", start_date: new Date(), end_date: null, note: "Малък проект", status: "inactive" }
+        {
+          id: 1,
+          name: "Проект А",
+          companyId: 1,
+          company_name: "Строителна фирма А",
+          email: "projecta@example.com",
+          address: "ул. Проектна 1",
+          start_date: new Date(),
+          end_date: null,
+          note: "Важен проект",
+          status: "active"
+        },
+        {
+          id: 2,
+          name: "Проект Б",
+          companyId: 2,
+          company_name: "Строителна фирма Б",
+          email: "projectb@example.com",
+          address: "ул. Проектна 2",
+          start_date: new Date(),
+          end_date: null,
+          note: "Малък проект",
+          status: "inactive"
+        }
       ],
       {}
     );
+    console.log("Projects seeded successfully!");
   },
 
   async down(queryInterface, Sequelize) {
+    console.log("Removing seeded projects...");
     await queryInterface.bulkDelete("tbl_projects", null, {});
+    console.log("Seeded projects removed successfully!");
   }
 };
