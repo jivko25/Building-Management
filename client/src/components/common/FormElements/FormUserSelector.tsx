@@ -49,7 +49,7 @@ const UsersSelector = ({
             <SelectContent>
               <SelectGroup>
                 {users &&
-                  users.data.map((user) => (
+                  users.data?.map((user) => (
                     <SelectItem key={user.id} value={user.full_name}>
                       {user.full_name}
                     </SelectItem>
