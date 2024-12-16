@@ -7,24 +7,18 @@ import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import ProjectsCard from "./ProjectsCard";
 import ProjectsBreadcrumb from "@/components/common/Breadcrumbs/ProjectsBreadcrumb";
 
-// src/components/tables/ProjectsTable/ProjectsTableBody.tsx
 const ProjectsTableBody = () => {
   const {
-    data: projectsResponse,
+    data: projects,
     isPending,
     isError,
-  } = useFetchDataQuery<{
-    success: boolean;
-    data: Project[];
-  }>({
+  } = useFetchDataQuery<Project[]>({
     URL: "/projects",
     queryKey: ["projects"],
   });
 
-  console.log("🚀 Projects response:", projectsResponse);
-
   if (isPending) {
-    return <ProjectsSkeletonCard projects={projectsResponse?.data} />;
+    return <ProjectsSkeletonCard projects={projects} />;
   }
 
   if (isError) {
@@ -37,7 +31,7 @@ const ProjectsTableBody = () => {
       <div className="flex flex-col border rounded-lg mt-48 mb-28 mx-8 p-4 backdrop-blur-sm bg-slate-900/20">
         <div className="flex flex-wrap sm:w-full gap-4">
           <ConditionalRenderer
-            data={projectsResponse?.data}
+            data={projects}
             renderData={(projects) => (
               <ProjectsCard projects={projects as Project[]} />
             )}
@@ -52,4 +46,5 @@ const ProjectsTableBody = () => {
     </>
   );
 };
+
 export default ProjectsTableBody;
