@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.token;
+  console.log("Token from cookies:", token);
 
   if (!token) {
     return res.status(401).json({
@@ -13,6 +14,7 @@ const authenticateToken = (req, res, next) => {
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Decoded token:", decodedToken);
 
     if (!decodedToken) {
       return res.status(401).json({
@@ -26,6 +28,8 @@ const authenticateToken = (req, res, next) => {
       role: decodedToken.role,
       username: decodedToken.username
     };
+
+    console.log("Set user in request:", req.user);
 
     next();
   } catch (error) {
