@@ -5,7 +5,7 @@ const ApiError = require("../../utils/apiError");
 
 const editTask = async (req, res, next) => {
   const { taskId } = req.params;
-  const { name, artisan, activity, measure, price_per_measure, total_price, total_work_in_selected_measure, start_date, end_date, note, status } = req.body;
+  const { name, artisans, activity, measure, price_per_measure, total_price, total_work_in_selected_measure, start_date, end_date, note, status } = req.body;
 
   try {
     const task = await Task.findByPk(taskId);
@@ -20,15 +20,14 @@ const editTask = async (req, res, next) => {
       }
     }
 
-    const [artisanRecord, activityRecord, measureRecord] = await Promise.all([Artisan.findOne({ where: { name: artisan } }), Activity.findOne({ where: { name: activity } }), Measure.findOne({ where: { name: measure } })]);
+    const [activityRecord, measureRecord] = await Promise.all([Activity.findOne({ where: { name: activity } }), Measure.findOne({ where: { name: measure } })]);
 
-    if (!artisanRecord) throw new ApiError(404, "Artisan not found!");
     if (!activityRecord) throw new ApiError(404, "Activity not found!");
     if (!measureRecord) throw new ApiError(404, "Measure not found!");
 
+    // Обновяване на основната информация за задачата
     const updatedTask = await task.update({
       name,
-      artisan_id: artisanRecord.id,
       activity_id: activityRecord.id,
       measure_id: measureRecord.id,
       price_per_measure,
@@ -40,9 +39,35 @@ const editTask = async (req, res, next) => {
       status
     });
 
+    // Обновяване на връзките с артисани
+    if (artisans && Array.isArray(artisans)) {
+      const artisanRecords = await Artisan.findAll({
+        where: { name: artisans }
+      });
+
+      if (artisanRecords.length !== artisans.length) {
+        throw new ApiError(404, "Some artisans were not found!");
+      }
+
+      await task.setArtisans(artisanRecords);
+    }
+
+    // Взимане на обновената задача с артисаните
+    const taskWithArtisans = await Task.findByPk(taskId, {
+      include: [
+        {
+          model: Artisan,
+          as: "artisans",
+          through: { attributes: [] }
+        },
+        { model: Activity, as: "activity", attributes: ["name"] },
+        { model: Measure, as: "measure", attributes: ["name"] }
+      ]
+    });
+
     res.json({
       message: "Task updated successfully!",
-      task: updatedTask
+      task: taskWithArtisans
     });
   } catch (error) {
     if (error instanceof ApiError) {

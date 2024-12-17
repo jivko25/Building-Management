@@ -62,8 +62,10 @@ module.exports = (sequelize, DataTypes) => {
       as: "user"
     });
 
-    Artisan.hasMany(models.Task, {
+    Artisan.belongsToMany(models.Task, {
+      through: "tbl_task_artisans",
       foreignKey: "artisan_id",
+      otherKey: "task_id",
       as: "tasks"
     });
   };

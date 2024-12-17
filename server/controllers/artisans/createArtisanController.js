@@ -1,6 +1,6 @@
 //server\controllers\artisans\createArtisanController.js
 const db = require("../../data/index.js");
-const { Artisan, Company, User } = db;
+const { Artisan, Company, User, Task } = db;
 const ApiError = require("../../utils/apiError");
 
 const createArtisan = async (req, res, next) => {

@@ -8,7 +8,11 @@ const getTasks = async (req, res, next) => {
     const tasks = await Task.findAll({
       where: { project_id: req.params.id },
       include: [
-        { model: Artisan, as: "artisan", attributes: ["name"] },
+        {
+          model: Artisan,
+          as: "artisans",
+          through: { attributes: [] }
+        },
         { model: Activity, as: "activity", attributes: ["name"] },
         { model: Measure, as: "measure", attributes: ["name"] }
       ],
