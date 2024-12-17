@@ -15,7 +15,7 @@ module.exports = {
       [
         { id: 1, full_name: "Админ Админов", username: "admin", hashedPassword: hashedAdminPassword, role: "admin", status: "active", manager_id: null, creator_id: 1 },
         { id: 2, full_name: "Мениджър Мениджъров", username: "manager", hashedPassword: hashedManagerPassword, role: "manager", status: "active", manager_id: 1, creator_id: 1 },
-        { id: 3, full_name: "Потребител Потребителов", username: "user", hashedPassword: hashedUserPassword, role: "user", status: "active", manager_id: 2 }
+        { id: 3, full_name: "Потребител Потребителов", username: "user", hashedPassword: hashedUserPassword, role: "user", status: "active", manager_id: 2, creator_id: 1 }
       ],
       {}
     );
