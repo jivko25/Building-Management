@@ -4,20 +4,16 @@ const { Project, Company } = db;
 
 const getProjects = async (req, res, next) => {
   console.log("Fetching all projects...");
+  console.log("User role:", req.user.role);
+  console.log("User ID:", req.user.id);
+
   try {
-    const whereClause = {};
-
-    if (req.user.role === "manager") {
-      whereClause.creator_id = req.user.id;
-    }
-
     const projects = await Project.findAll({
-      where: whereClause,
       attributes: ["id", "name", "companyId", "company_name", "email", "address", "start_date", "end_date", "note", "status", "creator_id"],
       order: [["id", "DESC"]]
     });
 
-    console.log("Projects fetched successfully");
+    console.log("Number of projects found:", projects.length);
     res.json(projects);
   } catch (error) {
     console.error("Error fetching projects:", error);
