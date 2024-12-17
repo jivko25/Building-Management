@@ -44,9 +44,14 @@ function buildWhereClause(role, currentUserId, searchTerm) {
   const whereClause = {};
 
   if (role === "manager") {
-    whereClause.manager_id = currentUserId;
+    whereClause[Op.or] = [
+      { creator_id: currentUserId },
+      { id: currentUserId }
+    ];
     if (searchTerm) {
-      whereClause[Op.or] = [{ full_name: { [Op.like]: searchTerm } }, { username: { [Op.like]: searchTerm } }];
+      whereClause[Op.and] = [
+        { [Op.or]: [{ full_name: { [Op.like]: searchTerm } }, { username: { [Op.like]: searchTerm } }] }
+      ];
     }
   } else if (role === "admin" && searchTerm) {
     whereClause[Op.or] = [{ full_name: { [Op.like]: searchTerm } }, { username: { [Op.like]: searchTerm } }];

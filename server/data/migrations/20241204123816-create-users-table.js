@@ -39,6 +39,16 @@ module.exports = {
         },
         onUpdate: "CASCADE",
         onDelete: "SET NULL"
+      },
+      creator_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_users",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL"
       }
     });
   },
