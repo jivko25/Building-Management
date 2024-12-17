@@ -17,7 +17,8 @@ module.exports = {
           start_date: new Date(),
           end_date: null,
           note: "Важен проект",
-          status: "active"
+          status: "active",
+          creator_id: 1
         },
         {
           id: 2,
@@ -29,7 +30,8 @@ module.exports = {
           start_date: new Date(),
           end_date: null,
           note: "Малък проект",
-          status: "inactive"
+          status: "inactive",
+          creator_id: 1
         }
       ],
       {}
