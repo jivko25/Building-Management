@@ -13,7 +13,13 @@ import useSearchHandler from "@/hooks/useSearchHandler";
 import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import ArtisansCard from "./ArtisansCard";
 import ArtisansHeader from "./ArtisansHeader";
-
+interface ArtisanResponse {
+  artisans: Artisan[];
+  artisansCount: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 const ArtisansTableBody = () => {
   const { setSearchParams, itemsLimit, page } = useSearchParamsHook();
 
@@ -25,7 +31,7 @@ const ArtisansTableBody = () => {
     data: artisansResponse,
     isPending,
     isError
-  } = useGetPaginatedData<Artisan>({
+  } = useGetPaginatedData<ArtisanResponse>({
     URL: "/artisans",
     queryKey: ["artisans"],
     limit: itemsLimit,
@@ -34,7 +40,7 @@ const ArtisansTableBody = () => {
   });
 
   console.log("👷 Artisans response:", artisansResponse);
-
+  const typedArtisansResponse = artisansResponse as ArtisanResponse;
   if (isPending) {
     return <ArtisansLoader artisans={artisansResponse} />;
   }
@@ -53,7 +59,7 @@ const ArtisansTableBody = () => {
         <ArtisansHeader />
         <TableBody>
           <ConditionalRenderer
-            data={artisansResponse?.data || []}
+            data={typedArtisansResponse?.artisans || []}
             renderData={data => <ArtisansCard artisans={data as Artisan[]} />}
             noResults={{
               title: "No artisans found",
