@@ -5,6 +5,7 @@ const User = db.User;
 const ApiError = require("../../utils/apiError");
 
 const createUser = async (req, res, next) => {
+
   console.log("Creating new user with data:", req.body);
   const { full_name, username, password, role, status } = req.body;
 
