@@ -14,6 +14,13 @@ import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import CompaniesHeader from "./CompaniesHeader";
 import CompaniesCard from "./CompaniesCard";
 
+interface CompanyResponse {
+  companies: Company[];
+  companiesCount: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 const CompaniesTableBody = () => {
   const { setSearchParams, itemsLimit, page } = useSearchParamsHook();
 
@@ -25,18 +32,18 @@ const CompaniesTableBody = () => {
     data: companiesResponse,
     isPending,
     isError
-  } = useGetPaginatedData<Company>({
+  } = useGetPaginatedData<CompanyResponse>({
     URL: "/companies",
     queryKey: ["companies"],
     limit: itemsLimit,
     page,
     search: debounceSearchTerm
   });
-
+  const typedCompaniesResponse = companiesResponse as CompanyResponse;
   console.log("🏢 Companies response:", companiesResponse);
 
   if (isPending) {
-    return <CompaniesLoader companies={companiesResponse} />;
+    return <CompaniesLoader companies={typedCompaniesResponse?.companies} />;
   }
 
   if (isError) {
@@ -53,7 +60,7 @@ const CompaniesTableBody = () => {
         <CompaniesHeader />
         <TableBody>
           <ConditionalRenderer
-            data={companiesResponse.data || []}
+            data={typedCompaniesResponse.companies || []}
             renderData={data => <CompaniesCard companies={data as Company[]} />}
             noResults={{
               title: "No companies found",
