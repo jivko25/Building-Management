@@ -25,13 +25,7 @@ const ArtisansTableBody = () => {
     data: artisansResponse,
     isPending,
     isError
-  } = useGetPaginatedData<{
-    artisans: Artisan[];
-    artisansCount: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  }>({
+  } = useGetPaginatedData<Artisan>({
     URL: "/artisans",
     queryKey: ["artisans"],
     limit: itemsLimit,
@@ -59,7 +53,7 @@ const ArtisansTableBody = () => {
         <ArtisansHeader />
         <TableBody>
           <ConditionalRenderer
-            data={artisansResponse?.artisans || []}
+            data={artisansResponse?.data || []}
             renderData={data => <ArtisansCard artisans={data as Artisan[]} />}
             noResults={{
               title: "No artisans found",
