@@ -1,6 +1,6 @@
 //server\controllers\artisans\getArtisanByIdController.js
 const db = require("../../data/index.js");
-const { Artisan, Company, User, Task } = db;
+const { Artisan, Company, User, Task, Activity, Measure } = db;
 const ApiError = require("../../utils/apiError");
 
 const getArtisanById = async (req, res, next) => {
@@ -9,6 +9,8 @@ const getArtisanById = async (req, res, next) => {
       include: [
         { model: Company, as: "company", attributes: ["name"] },
         { model: User, as: "user", attributes: ["full_name"] },
+        { model: Activity, as: "activity", attributes: ["name"] },
+        { model: Measure, as: "measure", attributes: ["name"] },
         {
           model: Task,
           as: "tasks",
