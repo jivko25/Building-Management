@@ -6,21 +6,19 @@ const hashPassword = require("../../utils/hashPassword");
 const ApiError = require("../../utils/apiError");
 
 const editUser = async (req, res, next) => {
+  console.log("Editing user with ID:", req.params.id);
   const userId = req.params.id;
   const { full_name, username, password, role, status } = req.body;
-  const currentUserRole = req.user.role;
 
   try {
     const user = await User.findByPk(userId);
-
-    if (currentUserRole === "user" || (currentUserRole === "manager" && user.manager_id !== req.user.id)) {
-      throw new ApiError(403, "You are not authorized to edit this user.");
-    }
+    console.log("Found user:", user);
 
     if (!user) {
       throw new ApiError(404, "User not found.");
     }
 
+    // Update user fields
     if (full_name) {
       if (full_name.trim() === "") {
         throw new ApiError(400, "Full name cannot be empty.");
@@ -29,28 +27,24 @@ const editUser = async (req, res, next) => {
     }
 
     if (username) {
-      if (username.trim() === "") {
-        throw new ApiError(400, "Username cannot be empty.");
-      }
-      const existingUser = await User.findOne({ where: { username, id: { [Op.ne]: userId } } });
+      const existingUser = await User.findOne({
+        where: {
+          username,
+          id: { [Op.ne]: userId }
+        }
+      });
       if (existingUser) {
-        throw new ApiError(400, "Username is already taken.");
+        throw new ApiError(400, "Username already exists.");
       }
       user.username = username;
     }
 
     if (password) {
-      if (password.trim() !== "") {
-        user.hashedPassword = await hashPassword(password);
-      }
+      user.hashedPassword = await hashPassword(password);
     }
 
     if (role) {
-      if (currentUserRole === "admin" && user.role === "admin" && (role === "manager" || role === "user")) {
-        throw new ApiError(400, "You cannot change the role of this user.");
-      } else if (currentUserRole === "manager" && role === "user") {
-        user.role = role;
-      }
+      user.role = role;
     }
 
     if (status) {
@@ -60,12 +54,27 @@ const editUser = async (req, res, next) => {
     }
 
     await user.save();
-    res.status(200).send("User updated successfully");
-  } catch (err) {
+    console.log("User updated successfully");
+
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      user: {
+        id: user.id,
+        full_name: user.full_name,
+        username: user.username,
+        role: user.role,
+        status: user.status,
+        manager_id: user.manager_id,
+        creator_id: user.creator_id
+      }
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
     if (error instanceof ApiError) {
       next(error);
     } else {
-      next(new ApiError(500, "Internal Server Error", err));
+      next(new ApiError(500, "Internal Server Error", error));
     }
   }
 };

@@ -36,6 +36,14 @@ module.exports = (sequelize, DataTypes) => {
           model: "tbl_users",
           key: "id"
         }
+      },
+      creator_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_users",
+          key: "id"
+        }
       }
     },
     {
@@ -53,6 +61,21 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.User, {
       foreignKey: "manager_id",
       as: "subordinates"
+    });
+
+    User.belongsTo(models.User, {
+      foreignKey: "creator_id",
+      as: "creator"
+    });
+
+    User.hasMany(models.User, {
+      foreignKey: "creator_id",
+      as: "createdUsers"
+    });
+
+    User.hasMany(models.Project, {
+      foreignKey: "creator_id",
+      as: "createdProjects"
     });
   };
 

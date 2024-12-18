@@ -4,30 +4,17 @@ const { Project, Company } = db;
 
 const getProjects = async (req, res, next) => {
   console.log("Fetching all projects...");
+  console.log("User role:", req.user.role);
+  console.log("User ID:", req.user.id);
+
   try {
     const projects = await Project.findAll({
-      attributes: ["id", "name", "companyId", "company_name", "email", "address", "start_date", "end_date", "note", "status"],
+      attributes: ["id", "name", "companyId", "company_name", "email", "address", "start_date", "end_date", "note", "status", "creator_id"],
       order: [["id", "DESC"]]
     });
 
-    console.log("Projects fetched successfully");
-
-    // Форматираме данните според изисквания формат
-    const formattedProjects = projects.map(project => ({
-      id: project.id,
-      name: project.name,
-      companyId: project.companyId,
-      company_name: project.company_name,
-      email: project.email,
-      address: project.address,
-      start_date: project.start_date,
-      end_date: project.end_date,
-      note: project.note,
-      status: project.status
-    }));
-
-    // Връщаме директно масива с проекти
-    res.json(formattedProjects);
+    console.log("Number of projects found:", projects.length);
+    res.json(projects);
   } catch (error) {
     console.error("Error fetching projects:", error);
     next(error);

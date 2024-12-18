@@ -5,17 +5,22 @@ const User = db.User;
 const ApiError = require("../../utils/apiError");
 
 const createUser = async (req, res, next) => {
-  const { full_name, username, password, status, role } = req.body;
-  const loggedUserId = req.user.id;
+
+  console.log("Creating new user with data:", req.body);
+  const { full_name, username, password, role, status } = req.body;
 
   try {
     const existingUser = await User.findOne({ where: { username } });
-
     if (existingUser) {
-      throw new ApiError(404, `${username} already exists!`);
+      throw new ApiError(400, "Username already exists!");
     }
 
     const hashedPassword = await hashPassword(password);
+
+    let manager_id = null;
+    if (role === "user" && req.user?.role === "manager") {
+      manager_id = req.user.id;
+    }
 
     const newUser = await User.create({
       full_name,
@@ -23,24 +28,35 @@ const createUser = async (req, res, next) => {
       hashedPassword,
       role,
       status,
-      manager_id: loggedUserId
+      manager_id,
+      creator_id: req.user?.id
     });
 
-    const userResponse = {
+    console.log("User created successfully:", {
       id: newUser.id,
-      full_name: newUser.full_name,
       username: newUser.username,
       role: newUser.role,
-      status: newUser.status,
-      manager_id: newUser.manager_id
-    };
+      creator_id: newUser.creator_id
+    });
 
-    res.status(201).json({ message: "User created successfully", user: userResponse });
+    res.status(201).json({
+      message: "User created successfully",
+      user: {
+        id: newUser.id,
+        full_name: newUser.full_name,
+        username: newUser.username,
+        role: newUser.role,
+        status: newUser.status,
+        manager_id: newUser.manager_id,
+        creator_id: newUser.creator_id
+      }
+    });
   } catch (error) {
+    console.error("Error creating user:", error);
     if (error instanceof ApiError) {
       next(error);
     } else {
-      next(new ApiError(500, "Error creating user", error));
+      next(new ApiError(500, "Internal Server Error", error));
     }
   }
 };

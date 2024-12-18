@@ -26,7 +26,8 @@ const createProject = async (req, res, next) => {
       start_date,
       end_date,
       note,
-      status
+      status,
+      creator_id: req.user.id
     });
 
     res.status(201).json({

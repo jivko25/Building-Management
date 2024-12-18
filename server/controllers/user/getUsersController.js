@@ -5,6 +5,7 @@ const { Op } = db.Sequelize;
 const ApiError = require("../../utils/apiError");
 
 const getUsers = async (req, res, next) => {
+  console.log("Fetching users with role:", req.user.role);
   const { _page = 1, _limit = 10, q = "" } = req.query;
   const offset = (parseInt(_page) - 1) * parseInt(_limit);
   const searchTerm = q ? `%${q}%` : null;
@@ -12,6 +13,7 @@ const getUsers = async (req, res, next) => {
 
   try {
     const whereClause = buildWhereClause(req.user.role, currentUserId, searchTerm);
+    console.log("Where clause:", whereClause);
 
     const { count: usersCount, rows: users } = await User.findAndCountAll({
       where: whereClause,
@@ -24,6 +26,7 @@ const getUsers = async (req, res, next) => {
       ]
     });
 
+    console.log("Found users count:", usersCount);
     res.status(200).json({
       users,
       usersCount,
@@ -32,11 +35,8 @@ const getUsers = async (req, res, next) => {
       totalPages: Math.ceil(usersCount / parseInt(_limit))
     });
   } catch (error) {
-    if (error instanceof ApiError) {
-      next(error);
-    } else {
-      next(new ApiError(500, "Internal server error", error));
-    }
+    console.error("Error fetching users:", error);
+    next(new ApiError(500, "Internal server error", error));
   }
 };
 
@@ -44,11 +44,10 @@ function buildWhereClause(role, currentUserId, searchTerm) {
   const whereClause = {};
 
   if (role === "manager") {
-    whereClause.manager_id = currentUserId;
-    if (searchTerm) {
-      whereClause[Op.or] = [{ full_name: { [Op.like]: searchTerm } }, { username: { [Op.like]: searchTerm } }];
-    }
-  } else if (role === "admin" && searchTerm) {
+    whereClause[Op.or] = [{ creator_id: currentUserId }, { id: currentUserId }];
+  }
+
+  if (searchTerm) {
     whereClause[Op.or] = [{ full_name: { [Op.like]: searchTerm } }, { username: { [Op.like]: searchTerm } }];
   }
 
