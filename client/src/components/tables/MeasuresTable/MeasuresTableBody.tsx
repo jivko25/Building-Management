@@ -22,15 +22,19 @@ import MeasuresLoader from "@/utils/SkeletonLoader/Measures/MeasuresLoader";
 import MeasuresHeader from "./MeasuresHeader";
 import { CircleAlert } from "lucide-react";
 
+interface MeasureResponse {
+  success: boolean;
+  data: Measure[];
+}
 const MeasuresTableBody = () => {
   const {
     data: measuresResponse,
     isPending,
     isError
-  } = useFetchDataQuery<{ success: boolean; data: Measure[] }>({
+  } = useFetchDataQuery<MeasureResponse>({
     URL: "/measures",
     queryKey: ["measures"]
-  });
+  }) as { data: MeasureResponse; isPending: boolean; isError: boolean };
 
   console.log("📏 Measures data:", measuresResponse);
 
