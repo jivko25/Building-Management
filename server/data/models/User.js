@@ -44,7 +44,12 @@ module.exports = (sequelize, DataTypes) => {
           model: "tbl_users",
           key: "id"
         }
-      }
+      },
+      readonly: {  
+        type: DataTypes.BOOLEAN,
+        allowNull: true, 
+        defaultValue: false 
+      },
     },
     {
       tableName: "tbl_users",
