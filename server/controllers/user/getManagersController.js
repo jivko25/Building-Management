@@ -19,7 +19,7 @@ const getManagers = async (req, res, next) => {
       where: {
         role: "manager"
       },
-      attributes: ["id", "full_name", "username", "role", "status"]
+      attributes: ["id", "full_name", "username", "role", "status", "readonly"]
     });
 
     console.log("Found managers:", managers);
