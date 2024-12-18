@@ -23,16 +23,6 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      artisan_id: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: {
-          model: "tbl_artisans",
-          key: "id"
-        },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL"
-      },
       activity_id: {
         type: Sequelize.INTEGER,
         allowNull: true,

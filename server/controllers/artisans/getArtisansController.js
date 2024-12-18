@@ -1,6 +1,6 @@
 //server\controllers\artisans\getArtisansController.js
 const db = require("../../data/index.js");
-const { Artisan, Company, User, Sequelize } = db;
+const { Artisan, Company, User, Task, Sequelize } = db;
 const ApiError = require("../../utils/apiError");
 const { Op } = Sequelize;
 
@@ -20,15 +20,12 @@ const getPaginatedArtisans = async (req, res, next) => {
     const { count, rows } = await Artisan.findAndCountAll({
       where: whereClause,
       include: [
+        { model: Company, as: "company", attributes: ["name"] },
+        { model: User, as: "user", attributes: ["full_name"] },
         {
-          model: Company,
-          as: "company",
-          attributes: ["name"]
-        },
-        {
-          model: User,
-          as: "user",
-          attributes: ["full_name"]
+          model: Task,
+          as: "tasks",
+          through: { attributes: [] }
         }
       ],
       limit: parseInt(_limit),

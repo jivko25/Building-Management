@@ -43,6 +43,22 @@ module.exports = (sequelize, DataTypes) => {
       status: {
         type: DataTypes.ENUM("active", "inactive"),
         defaultValue: "inactive"
+      },
+      activity_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_activities",
+          key: "id"
+        }
+      },
+      measure_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_measures",
+          key: "id"
+        }
       }
     },
     {
@@ -62,9 +78,21 @@ module.exports = (sequelize, DataTypes) => {
       as: "user"
     });
 
-    Artisan.hasMany(models.Task, {
+    Artisan.belongsToMany(models.Task, {
+      through: "tbl_task_artisans",
       foreignKey: "artisan_id",
+      otherKey: "task_id",
       as: "tasks"
+    });
+
+    Artisan.belongsTo(models.Activity, {
+      foreignKey: "activity_id",
+      as: "activity"
+    });
+
+    Artisan.belongsTo(models.Measure, {
+      foreignKey: "measure_id",
+      as: "measure"
     });
   };
 

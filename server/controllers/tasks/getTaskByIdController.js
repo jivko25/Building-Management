@@ -7,7 +7,11 @@ const getTaskById = async (req, res, next) => {
   try {
     const task = await Task.findByPk(req.params.taskId, {
       include: [
-        { model: Artisan, as: "artisan", attributes: ["name"] },
+        {
+          model: Artisan,
+          as: "artisans",
+          through: { attributes: [] }
+        },
         { model: Activity, as: "activity", attributes: ["name"] },
         { model: Measure, as: "measure", attributes: ["name"] }
       ]

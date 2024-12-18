@@ -1,4 +1,4 @@
-//server\data\models\Task.js
+//server/data/models/Task.js
 module.exports = (sequelize, DataTypes) => {
   const Task = sequelize.define(
     "Task",
@@ -19,14 +19,6 @@ module.exports = (sequelize, DataTypes) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false
-      },
-      artisan_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        references: {
-          model: "tbl_artisans",
-          key: "id"
-        }
       },
       activity_id: {
         type: DataTypes.INTEGER,
@@ -85,9 +77,11 @@ module.exports = (sequelize, DataTypes) => {
       as: "project"
     });
 
-    Task.belongsTo(models.Artisan, {
-      foreignKey: "artisan_id",
-      as: "artisan"
+    Task.belongsToMany(models.Artisan, {
+      through: "tbl_task_artisans",
+      foreignKey: "task_id",
+      otherKey: "artisan_id",
+      as: "artisans"
     });
 
     Task.belongsTo(models.Activity, {
