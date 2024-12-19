@@ -12,6 +12,7 @@ const companyRoutes = require("./routes/companyRoutes");
 const taskRoutes = require("./routes/tasksRoutes");
 const workItemRoutes = require("./routes/workItemRoutes");
 const mailRoutes = require("./routes/emailRoutes.js");
+const imageRoutes = require("./routes/imageRoutes");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const errorHandler = require("./middlewares/errorHandler");
@@ -50,6 +51,7 @@ app.use("/", companyRoutes);
 app.use("/", taskRoutes);
 app.use("/", workItemRoutes);
 app.use("/", mailRoutes);
+app.use("/", imageRoutes);
 
 app.use(errorHandler); //Global error handler
 
