@@ -6,6 +6,12 @@ const ApiError = require("../../utils/apiError");
 const getManagers = async (req, res, next) => {
   console.log("Starting getManagers function");
 
+  const isAdmin = req.user.role === "admin";
+
+  if (!isAdmin) {
+    return next(new ApiError(403, "You are not authorized to access this resource!"));
+  }
+
   try {
     console.log("Executing database query for managers");
 
@@ -13,7 +19,7 @@ const getManagers = async (req, res, next) => {
       where: {
         role: "manager"
       },
-      attributes: ["id", "full_name", "username", "role", "status"]
+      attributes: ["id", "full_name", "username", "role", "status", "readonly"]
     });
 
     console.log("Found managers:", managers);
