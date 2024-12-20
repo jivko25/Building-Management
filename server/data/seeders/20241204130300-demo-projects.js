@@ -3,7 +3,8 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    console.log("Seeding projects...");
+    await queryInterface.bulkDelete("tbl_projects", null, {});
+    
     await queryInterface.bulkInsert(
       "tbl_projects",
       [
