@@ -27,7 +27,7 @@ export type User = {
 };
 
 export interface PasswordResetFormData {
-  token: string;
+  token?: string;
   newPassword: string;
 }
 
