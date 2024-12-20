@@ -21,7 +21,7 @@ export interface AuthContextProps extends AuthState {
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   register: (username: string, password: string, full_name: string, email: string, creator_id?: string) => Promise<boolean>;
-  resetPassword: (token: string | undefined, newPassword: string) => Promise<boolean>;
+  resetPassword: (token: any, newPassword: string) => Promise<boolean>;
   forgotPassword: (email: string) => Promise<boolean>;
 }
 
