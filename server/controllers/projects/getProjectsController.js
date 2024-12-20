@@ -8,10 +8,22 @@ const getProjects = async (req, res, next) => {
   console.log("User ID:", req.user.id);
 
   try {
-    const projects = await Project.findAll({
-      attributes: ["id", "name", "companyId", "company_name", "email", "address", "start_date", "end_date", "note", "status", "creator_id"],
-      order: [["id", "DESC"]]
-    });
+    let projects;
+
+    if (req.user.role === "admin") {
+      projects = await Project.findAll({
+        attributes: ["id", "name", "companyId", "company_name", "email", "address", "start_date", "end_date", "note", "status", "creator_id"],
+        order: [["id", "DESC"]]
+      });
+    } else {
+      projects = await Project.findAll({
+        attributes: ["id", "name", "companyId", "company_name", "email", "address", "start_date", "end_date", "note", "status", "creator_id"],
+        where: {
+          creator_id: req.user.id
+        },
+        order: [["id", "DESC"]]
+      });
+  }
 
     console.log("Number of projects found:", projects.length);
     res.json(projects);
