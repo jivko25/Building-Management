@@ -3,6 +3,8 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
+    await queryInterface.bulkDelete("tbl_activities", null, {});
+
     await queryInterface.bulkInsert(
       "tbl_activities",
       [
