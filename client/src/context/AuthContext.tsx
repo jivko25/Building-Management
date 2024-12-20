@@ -79,6 +79,143 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const register = async (
+    username: string,
+    password: string,
+    full_name: string,
+    email: string,
+    creator_id?: string
+  ): Promise<boolean> => {
+    dispatch({
+      type: AuthActionType.REGISTER_REQUEST,
+    });
+  
+    try {
+      const response = await fetch(`${API_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password,
+          full_name,
+          creator_id,
+          email
+        }),
+        credentials: "include",
+      });
+  
+      const userData: { user: User } = await response.json();
+  
+      if (!response.ok) {
+        throw new Error("Registration failed");
+      }
+  
+      dispatch({
+        type: AuthActionType.REGISTER_SUCCESS,
+        payload: {
+          user: userData.user,
+        },
+      });
+  
+      sessionStorage.setItem("user", JSON.stringify(userData.user));
+  
+      return true;
+    } catch (error: unknown) {
+      if (error instanceof Error)
+        dispatch({
+          type: AuthActionType.REGISTER_ERROR,
+          payload: {
+            error: error.message,
+          },
+        });
+      return false;
+    }
+  };
+
+  const resetPassword = async (
+    token: string,
+    newPassword: string
+  ): Promise<boolean> => {
+    dispatch({
+      type: AuthActionType.RESET_PASSWORD_REQUEST,
+    });
+  
+    try {
+      const response = await fetch(`${API_URL}/auth/reset-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token,
+          newPassword
+        }),
+        credentials: "include",
+      });
+  
+      if (!response.ok) {
+        throw new Error("Password reset failed");
+      }
+  
+      dispatch({
+        type: AuthActionType.RESET_PASSWORD_SUCCESS,
+      });
+  
+      return true;
+    } catch (error: unknown) {
+      if (error instanceof Error)
+        dispatch({
+          type: AuthActionType.RESET_PASSWORD_ERROR,
+          payload: {
+            error: error.message,
+          },
+        });
+      return false;
+    }
+  };
+  
+  const forgotPassword = async (
+    email: string
+  ): Promise<boolean> => {
+    dispatch({
+      type: AuthActionType.FORGOT_PASSWORD_REQUEST,
+    });
+  
+    try {
+      const response = await fetch(`${API_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email
+        }),
+        credentials: "include",
+      });
+  
+      if (!response.ok) {
+        throw new Error("Forgot password request failed");
+      }
+  
+      dispatch({
+        type: AuthActionType.FORGOT_PASSWORD_SUCCESS,
+      });
+  
+      return true;
+    } catch (error: unknown) {
+      if (error instanceof Error)
+        dispatch({
+          type: AuthActionType.FORGOT_PASSWORD_ERROR,
+          payload: {
+            error: error.message,
+          },
+        });
+      return false;
+    }
+  };
+
   const logout = async () => {
     await fetch(`${API_URL}/auth/logout`, {
       method: "POST",
@@ -121,7 +258,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [location.pathname]);
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout }}>
+    <AuthContext.Provider value={{ ...state, login, register, logout, resetPassword, forgotPassword }}>
       {children}
     </AuthContext.Provider>
   );

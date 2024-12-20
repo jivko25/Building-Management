@@ -4,6 +4,14 @@ export type UserLoginFormData = {
   password: string;
 };
 
+export type UserRegisterFormData = {
+  username: string;
+  password: string;
+  full_name: string;
+  creator_id?: string;
+  email: string;
+};
+
 export type User = {
   id?: string;
   name?: string;
@@ -13,6 +21,16 @@ export type User = {
   token?: string;
   artisanName?: string;
   full_name: string;
+  email: string;
   status: "active" | "inactive";
   role: "user" | "manager";
 };
+
+export interface PasswordResetFormData {
+  token: string;
+  newPassword: string;
+}
+
+export interface PasswordForgotFormData {
+  email: string;
+}

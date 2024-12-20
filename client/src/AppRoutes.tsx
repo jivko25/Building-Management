@@ -15,6 +15,9 @@ import ManagerGuard from './guards/ManagerGuard';
 import UserProjectsPage from './pages/UserProjectsPage';
 import UserProjectTaskPage from './pages/UserProjectTaskPage';
 import WorkItemsPage from './pages/WorkItemsPage';
+import UserRegisterForm from './components/Forms/User/userFormRegister/UserRegisterForm';
+import UserForgotPasswordForm from './components/Forms/User/UserForgotPasswordForm/UserForgotPasswordForm';
+import UserResetPasswordForm from './components/Forms/User/UserResetPasswordForm/UserResetPasswordForm';
 
 const AppRoutes = () => {
     return (
@@ -127,6 +130,9 @@ const AppRoutes = () => {
 
             {/* Public routes */}
             <Route path='/login' element={<UserLoginForm />} />
+            <Route path='/register' element={<UserRegisterForm />} />
+            <Route path="/forgot-password" element={<UserForgotPasswordForm />} />
+            <Route path="/reset-password/:token" element={<UserResetPasswordForm />} />
             <Route
                 path='/'
                 element={
