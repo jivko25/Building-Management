@@ -15,7 +15,7 @@ export const userSchema = z.object({
   password: z.string().min(5, {
     message: "Password must be at least 5 characters"
   }),
-  role: z.enum(["user", "manager"], {
+  role: z.enum(["user", "manager", "admin"], {
     message: "Please select role"
   }),
   status: z.enum(["active", "inactive"], {
