@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Edit, Plus } from "lucide-react";
 
+
 type DialogModalProps<T> = {
   Component: React.ComponentType<T>;
   CreateButtonModal?: React.ReactNode;
