@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FilterMatchMode } from "primereact/api";
-import { DataTable, DataTableFilterMeta } from "primereact/datatable";
+import { DataTable, DataTableFilterMeta, DataTableFilterMetaData } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
@@ -43,7 +43,7 @@ const ManagersTableBody = () => {
     const value = e.target.value;
     let _filters = { ...filters };
 
-    _filters["global"].value = value;
+    (_filters["global"] as DataTableFilterMetaData).value = value;
 
     setFilters(_filters);
     setGlobalFilterValue(value);
