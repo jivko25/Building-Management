@@ -4,7 +4,6 @@ import { DataTable, DataTableFilterMeta } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import { Tag } from "primereact/tag";
 import { User } from "@/types/user-types/userTypes";
 import { CircleAlert, User as UserIcon } from "lucide-react";
 import ActivitiesLoader from "@/utils/SkeletonLoader/Activities/ActivitiesLoader";
