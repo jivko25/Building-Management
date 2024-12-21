@@ -52,15 +52,6 @@ export const loginDefaultValues: UserLoginFormData = {
   password: ""
 };
 
-export const registerDefaultValues: User = {
-  full_name: "",
-  username: "",
-  password: "",
-  email: "",
-  role: "user",
-  status: "active",
-};
-
 export const userDefaultValues: User = {
   full_name: "",
   username: "",
@@ -68,6 +59,7 @@ export const userDefaultValues: User = {
   role: "user",
   status: "active",
   email: "",
+  readonly: false
 };
 
 export const resetPasswordSchema = z.object({

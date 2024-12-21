@@ -43,11 +43,13 @@ const useLoginUser = () => {
     const isSuccess = await login(userData.username, userData.password);
     console.log("Login attempt result:", isSuccess);
 
+    const storagedUser = JSON.parse(sessionStorage.getItem("user") || '');
+
     if (isSuccess) {
       console.log("Login successful");
       setIsLoginSuccess(true);
-      if (user?.role) {
-        handleNavigation(user.role);
+      if (user?.role || storagedUser.role) {
+        handleNavigation(user?.role || storagedUser.role);
       }
     }
   };
