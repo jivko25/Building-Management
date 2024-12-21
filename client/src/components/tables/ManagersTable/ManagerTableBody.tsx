@@ -5,7 +5,7 @@ import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { User } from "@/types/user-types/userTypes";
-import { CircleAlert, User as UserIcon } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 import ActivitiesLoader from "@/utils/SkeletonLoader/Activities/ActivitiesLoader";
 import ErrorMessage from "@/components/common/FormMessages/ErrorMessage";
 import useSearchParamsHook from "@/hooks/useSearchParamsHook";
