@@ -18,6 +18,7 @@ import WorkItemsPage from './pages/WorkItemsPage';
 import UserRegisterForm from './components/Forms/User/userFormRegister/UserRegisterForm';
 import UserForgotPasswordForm from './components/Forms/User/UserForgotPasswordForm/UserForgotPasswordForm';
 import UserResetPasswordForm from './components/Forms/User/UserResetPasswordForm/UserResetPasswordForm';
+import ManagerTablePage from './pages/ManagersTablePage';
 
 const AppRoutes = () => {
     return (
@@ -59,6 +60,16 @@ const AppRoutes = () => {
                     element={
                         <TableLayout>
                             <ActivitiesTablePage />
+                        </TableLayout>
+                    }
+                />
+            </Route>
+            <Route element={<ManagerGuard />}>
+                <Route
+                    path='/managers'
+                    element={
+                        <TableLayout>
+                            <ManagerTablePage />
                         </TableLayout>
                     }
                 />

@@ -12,6 +12,9 @@ const SidebarLinks = ({ Component }: SidebarComponent) => {
   const { user } = useAuth();
 
   const guardedLinkRoutes = sidebarItems.links.filter(link => {
+    if (user?.role === "admin" && link.label !== "My projects") {
+      return true;
+    }
     if (user?.role === "manager" && link.label !== "My projects") {
       return true;
     }
@@ -20,6 +23,7 @@ const SidebarLinks = ({ Component }: SidebarComponent) => {
     }
     return false;
   });
+  
 
   return (
     <div className="mt-1 px-2 flex flex-col w-full gap-1">

@@ -23,7 +23,8 @@ export type User = {
   full_name: string;
   email: string;
   status: "active" | "inactive";
-  role: "user" | "manager";
+  role: "user" | "manager" | "admin";
+  readonly: boolean;
 };
 
 export interface PasswordResetFormData {

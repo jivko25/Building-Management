@@ -1,0 +1,49 @@
+table {
+  th {
+    background-color: #2a323d !important;
+    border-color: hsl(var(--border));
+    padding: 10px 15px 5px;
+  }
+  thead {
+    border-radius: 4px !important;
+  }
+  tr {
+    background-color: transparent !important;
+    border-radius: 4px !important;
+  }
+  td {
+    border-bottom: 1px solid hsl(var(--border));
+  }
+}
+
+.search-input {
+  padding: 10px 10px 10px 40px;
+}
+
+.p-datatable-header {
+  background-color: transparent !important;
+}
+
+.p-column-filter {
+  padding: 5px 10px;
+  .p-dropdown-label {
+    padding: 0 !important;
+  }
+}
+
+.p-paginator-bottom {
+  border-radius: 0 0 10px 10px;
+  padding: 0;
+}
+
+.p-datatable {
+  @media (max-width: 786px) {
+    overflow-x: scroll;
+    width: 100vw;
+  }
+}
+
+.p-datatable-table {
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+}

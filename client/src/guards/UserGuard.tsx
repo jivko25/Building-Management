@@ -10,7 +10,7 @@ const UserGuard = () => {
     return <LoadingSpinner message="Verifying access, please wait..." />;
   }
 
-  if (user && user?.role === "user") {
+  if (user && user?.role === "user" ) {
     return <Outlet />;
   } else if (user && user.role !== "user") {
     return <Navigate to="/login" replace={true} />;

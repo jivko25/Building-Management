@@ -8,6 +8,8 @@ const getManagers = async (req, res, next) => {
 
   const isAdmin = req.user.role === "admin";
 
+  console.log(req.user);
+
   if (!isAdmin) {
     return next(new ApiError(403, "You are not authorized to access this resource!"));
   }
@@ -19,7 +21,7 @@ const getManagers = async (req, res, next) => {
       where: {
         role: "manager"
       },
-      attributes: ["id", "full_name", "username", "role", "status", "readonly"]
+      attributes: ["id", "full_name", "username", "role", "status", "readonly", "email"]
     });
 
     console.log("Found managers:", managers);
