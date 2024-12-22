@@ -52,6 +52,13 @@ export const loginDefaultValues: UserLoginFormData = {
   password: ""
 };
 
+export const registerDefaultValues = {
+  full_name: "",
+  username: "",
+  password: "",
+  email: ""
+}
+
 export const userDefaultValues: User = {
   full_name: "",
   username: "",
