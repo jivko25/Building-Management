@@ -1,4 +1,4 @@
-const { PutObjectCommand, S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { PutObjectCommand, S3Client, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -39,7 +39,34 @@ const uploadImageAsync = async (file, fileName) => {
   return { response, imageUrl, httpStatusCode };
 };
 
-module.exports = { uploadImageAsync };
+/**
+ * Deletes an image from the S3 bucket
+ * @param {string} fileName - The name of the file to delete
+ * @returns {Promise<void>} - Resolves if deletion is successful
+ */
+const deleteImageAsync = async (fileName) => {
+  if (!fileName) {
+    throw new Error("File name is required to delete the image!");
+  }
+
+  const params = {
+    Bucket: bucketName,
+    Key: fileName
+  };
+
+  const command = new DeleteObjectCommand(params);
+
+  try {
+    const response = await s3Client.send(command);
+    console.log(`Successfully deleted ${fileName} from bucket ${bucketName}`);
+    return response;
+  } catch (error) {
+    console.error(`Failed to delete ${fileName} from bucket ${bucketName}:`, error);
+    throw error;
+  }
+};
+
+module.exports = { uploadImageAsync, deleteImageAsync };
 
 /**
  * Constructs the image URL
