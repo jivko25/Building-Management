@@ -11,18 +11,18 @@ type SidebarComponent = {
 const SidebarLinks = ({ Component }: SidebarComponent) => {
   const { user } = useAuth();
 
-  const guardedLinkRoutes = sidebarItems.links.filter(link => {
-    if (user?.role === "admin" && link.label !== "My projects") {
-      return true;
-    }
-    if (user?.role === "manager" && link.label !== "My projects") {
-      return true;
-    }
-    if (user?.role === "user" && link.label === "My projects") {
-      return true;
-    }
-    return false;
-  });
+ const guardedLinkRoutes = sidebarItems.links.filter(link => {
+  if (user?.role === "admin" && (link.label === "My projects" || link.label === "Managers")) {
+    return true;
+  }
+  if (user?.role === "manager" && link.label !== "My projects" && link.label !== "Managers") {
+    return true;
+  }
+  if (user?.role === "user" && link.label === "My projects") {
+    return true;
+  }
+  return false;
+});
   
 
   return (
