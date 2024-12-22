@@ -32,6 +32,11 @@ const UserLoginForm = () => {
                 <DialogFooter disabled={!form.formState.isDirty || isLoading} label="Submit" formName="login-form" className="mt-6" />
                 <FormErrors error={error} />
               </form>
+              <div className="text-center mt-4">
+                <a href="/forgot-password" className="text-sm text-blue-500 hover:underline">
+                  Forgot your password?
+                </a>
+              </div>
             </div>
           </div>
         </div>

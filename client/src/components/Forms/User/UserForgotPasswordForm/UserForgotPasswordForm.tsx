@@ -1,4 +1,4 @@
-//client\src\components\Forms\User\UserFormForgotPassword\UserForgotPasswordForm.tsx
+import { useState } from "react";
 import { FormProvider } from "react-hook-form";
 import FormFieldInput from "@/components/common/FormElements/FormFieldInput";
 import DialogFooter from "@/components/common/DialogElements/DialogFooter";
@@ -9,6 +9,13 @@ import FormErrors from "../../../common/FormElements/FormErrors";
 
 const UserForgotPasswordForm = () => {
   const { forgotForm, onForgotSubmit, error, isLoading } = useForgotPassword();
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    await forgotForm.handleSubmit(onForgotSubmit)(e);
+    setIsSubmitted(true);
+  };
 
   return (
     <FormProvider {...forgotForm}>
@@ -22,15 +29,17 @@ const UserForgotPasswordForm = () => {
               </div>
               <form
                 id="forgot-password-form"
-                onSubmit={e => {
-                  console.log("Form submission started");
-                  forgotForm.handleSubmit(onForgotSubmit)(e);
-                }}
+                onSubmit={handleSubmit}
                 className="grid gap-4">
                 <FormFieldInput name="email" label="Email" type="text" className="pl-10" Icon={User} />
                 <DialogFooter disabled={!forgotForm.formState.isDirty || isLoading} label="Submit" formName="forgot-password-form" className="mt-6" />
                 <FormErrors error={error} />
               </form>
+              {isSubmitted && (
+                <div className="text-center mt-4 text-green-500">
+                  Email has been sent successfully!
+                </div>
+              )}
             </div>
           </div>
         </div>
