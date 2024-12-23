@@ -34,6 +34,11 @@ const UserRegisterForm = () => {
                 <DialogFooter disabled={!form.formState.isDirty || isLoading} label="Submit" formName="register-form" className="mt-6" />
                 <FormErrors error={error} />
               </form>
+              <div className="text-center mt-4">
+                <a href="/login" className="text-sm text-blue-500 hover:underline">
+                  Already have an account? Login
+                </a>
+              </div>
             </div>
           </div>
         </div>
