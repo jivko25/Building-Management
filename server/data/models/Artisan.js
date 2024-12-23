@@ -59,6 +59,14 @@ module.exports = (sequelize, DataTypes) => {
           model: "tbl_measures",
           key: "id"
         }
+      },
+      default_pricing_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_default_pricings",
+          key: "id"
+        }
       }
     },
     {
@@ -93,6 +101,11 @@ module.exports = (sequelize, DataTypes) => {
     Artisan.belongsTo(models.Measure, {
       foreignKey: "measure_id",
       as: "measure"
+    });
+
+    Artisan.hasMany(models.DefaultPricing, {
+      foreignKey: "artisan_id",
+      as: "defaultPricing"
     });
   };
 
