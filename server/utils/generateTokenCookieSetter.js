@@ -16,8 +16,8 @@ const generateTokenSetCookie = (res, user) => {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "prod",
-    sameSite: process.env.NODE_ENV === "prod" ? "None" : "Lax",
+    secure: true,
+    sameSite: "None",
     maxAge: 180 * 60 * 60 * 1000
   });
 
