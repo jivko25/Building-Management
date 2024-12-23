@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Edit, Plus } from "lucide-react";
 
-
 type DialogModalProps<T> = {
   Component: React.ComponentType<T>;
   CreateButtonModal?: React.ReactNode;
@@ -15,9 +14,10 @@ type DialogModalProps<T> = {
   className?: string;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  icon?: React.ReactNode;
 };
 
-const DialogModal = <T extends {}>({ Component, props, createButtonTitle, title, className, isOpen, setIsOpen, CreateButtonModal }: DialogModalProps<T>) => {
+const DialogModal = <T extends {}>({ Component, props, createButtonTitle, title, className, isOpen, setIsOpen, CreateButtonModal, icon = <Edit /> }: DialogModalProps<T>) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -28,7 +28,7 @@ const DialogModal = <T extends {}>({ Component, props, createButtonTitle, title,
           </Button>
         ) : (
           <Button variant="ghost" size="icon">
-            <Edit />
+            {icon}
           </Button>
         )}
       </DialogTrigger>
