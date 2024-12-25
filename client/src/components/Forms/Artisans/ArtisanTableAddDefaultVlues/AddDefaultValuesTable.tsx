@@ -1,34 +1,38 @@
 import { Button } from "@/components/ui/button";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
+import { Activity, ActivityResponse } from "@/types/activity-types/activityTypes";
+import { Artisan } from "@/types/artisan-types/artisanTypes";
 import { Measure, MeasureResponse } from "@/types/measure-types/measureTypes";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
-import { useState } from "react";
-const proffesions = ["Electrician", "Plumber", "Carpenter", "Painter", "Mason", "Roofer", "Welder", "Tiler"];
-const data = [
-  { name: "Stefan Stefanov", specialty: "Electrician", price: 100 },
-  { name: "Petar", specialty: "Plumber", price: 100 },
-  { name: "Ivan", specialty: "Carpenter", price: 100 },
-  { name: "Todor", specialty: "Painter", price: 100 }
-];
-const unitsInitialData: string[] = ["lv", "leva", "chas"];
+import { useEffect, useState } from "react";
 
-export default function AddDefaultValuesTable() {
-  const [proffesion, setProffesion] = useState(data[0].specialty);
+export default function AddDefaultValuesTable({ artisanId }: { artisanId: string }) {
   const [price, setPrice] = useState<number>(0);
   const [measure, setMeasure] = useState<Measure>();
+  const [activity, setActivity] = useState<Activity>();
+  const [artisan, setArtisan] = useState<Artisan>();
+  //Fetch Artisan
+  const { data: artisanResponse } = useFetchDataQuery<Artisan>({ URL: `/artisans/${artisanId}`, queryKey: ["artisan"] }) as { data: Artisan; isPending: boolean; isError: boolean };
+
+  //Fetch Measures
   const { data: measures } = useFetchDataQuery<MeasureResponse>({ URL: "/measures", queryKey: ["measures"] }) as { data: MeasureResponse; isPending: boolean; isError: boolean };
-  console.log("🔥 measures:", measures);
-  console.log("🔥 measure:", measure);
+  //Fetch Activities
+  const { data: activitiesResponse } = useFetchDataQuery<ActivityResponse>({
+    URL: "/activities",
+    queryKey: ["activities"]
+  });
+  const activities: Activity[] = activitiesResponse?.data || [];
+  //Proffesions Dropdown
   const proffesionsBodyTemplate = () => {
     return (
       <Dropdown
-        options={proffesions}
-        value={proffesion}
+        options={activities?.map(a => ({ label: a.name, value: a.id }))}
+        value={activity}
         onChange={e => {
-          setProffesion(e.value);
+          setActivity(e.value);
         }}
         panelClassName="z-50 pointer-events-auto"
         scrollHeight="200px"
@@ -36,10 +40,11 @@ export default function AddDefaultValuesTable() {
       />
     );
   };
+  //Measure Dropdown
   const unitsBodyTemplate = () => {
     return <Dropdown options={measures?.data.map(m => ({ label: m.name, value: m }))} value={measure} panelClassName="z-50 pointer-events-auto" scrollHeight="200px" onChange={e => setMeasure(e.value)} className="w-full text-xs" />;
   };
-
+  //Price Input Field
   const priceBodyTemplate = () => {
     return (
       <InputNumber
@@ -51,17 +56,20 @@ export default function AddDefaultValuesTable() {
       />
     );
   };
-
+  useEffect(() => {
+    setArtisan(artisanResponse);
+  }, [artisanResponse]);
   return (
     <div className="flex flex-col justify-center items-center">
       <DataTable
-        value={[data[0]]}
+        value={artisan ? [artisan] : []}
         size="large" // Adjust table size for compact layout
         className="w-[800px]    " // Shrink the table size and font
       >
         <Column
           field="name"
           header="Name"
+          body={() => <p>{artisan?.name}</p>}
           className="text-sm"
           style={{ width: "25%" }} // Allocate 25% width
         />
@@ -91,9 +99,3 @@ export default function AddDefaultValuesTable() {
     </div>
   );
 }
-
-//forma na obekta
-const primernaData: any = {
-  name: "aasdasd",
-  proffesion: { traktorist: { metar: "1lv", decimetar: "5 leva", chas: "3 leva" }, helikoptorist: { metar: "1lv", decimetar: "5 leva", chas: "3 leva" } }
-};
