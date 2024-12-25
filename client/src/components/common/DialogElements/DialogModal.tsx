@@ -15,9 +15,10 @@ type DialogModalProps<T> = {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   icon?: React.ReactNode;
+  maxWidth?: string;
 };
 
-const DialogModal = <T extends {}>({ Component, props, createButtonTitle, title, className, isOpen, setIsOpen, CreateButtonModal, icon = <Edit /> }: DialogModalProps<T>) => {
+const DialogModal = <T extends {}>({ Component, props, createButtonTitle, title, className, isOpen, maxWidth, setIsOpen, CreateButtonModal, icon = <Edit /> }: DialogModalProps<T>) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -32,7 +33,7 @@ const DialogModal = <T extends {}>({ Component, props, createButtonTitle, title,
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-[22rem] sm:max-w-[30rem] rounded-md ">
+      <DialogContent style={{ maxWidth: `${maxWidth}` }} className="max-w-[22rem] sm:max-w-[30rem] rounded-md ">
         <DialogHeader>
           <DialogTitle className={cn("text-center font-semibold text-lg", className)}>{title}</DialogTitle>
         </DialogHeader>
