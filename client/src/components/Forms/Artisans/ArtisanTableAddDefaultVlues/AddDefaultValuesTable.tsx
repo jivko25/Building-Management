@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { Activity, ActivityResponse } from "@/types/activity-types/activityTypes";
 import { Artisan } from "@/types/artisan-types/artisanTypes";
+import { DefaultPricing } from "@/types/defaultPricingType/defaultPricingTypes";
 import { Measure, MeasureResponse } from "@/types/measure-types/measureTypes";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
@@ -14,6 +15,7 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
   const [measure, setMeasure] = useState<Measure>();
   const [activity, setActivity] = useState<Activity>();
   const [artisan, setArtisan] = useState<Artisan>();
+  const [defaultPricing, setDefaultPricing] = useState<DefaultPricing[]>([]);
   //Fetch Artisan
   const { data: artisanResponse } = useFetchDataQuery<Artisan>({ URL: `/artisans/${artisanId}`, queryKey: ["artisan"] }) as { data: Artisan; isPending: boolean; isError: boolean };
 
@@ -52,13 +54,28 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
         value={price}
         inputId="currency-germany"
         currency="EUR"
-        onChange={e => setPrice(e.value ?? 0)}
+        onChange={e => {
+          setPrice(e.value ?? 0);
+          const newDefaultPricing = addDefaultPricing();
+          setDefaultPricing([...defaultPricing, newDefaultPricing]);
+        }}
       />
     );
+  };
+  //Add Default Pricing
+  const addDefaultPricing = () => {
+    const defaultPricing: DefaultPricing = {
+      activity_id: activity!.id!,
+      measure_id: measure!.id!,
+      artisan_id: artisanId,
+      price: price
+    };
+    return defaultPricing;
   };
   useEffect(() => {
     setArtisan(artisanResponse);
   }, [artisanResponse]);
+  console.log(defaultPricing);
   return (
     <div className="flex flex-col justify-center items-center">
       <DataTable
