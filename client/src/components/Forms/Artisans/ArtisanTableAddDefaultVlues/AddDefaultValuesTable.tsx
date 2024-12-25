@@ -74,7 +74,7 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
   const priceBodyTemplate = () => {
     return (
       <InputNumber
-        className="w-[150px] md:w-[200px] text-sm md:text-base"
+        className="w-full text-l" // Ensures input width fits in column
         value={price}
         inputId="currency-germany"
         currency="EUR"
