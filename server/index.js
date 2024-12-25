@@ -14,6 +14,7 @@ const workItemRoutes = require("./routes/workItemRoutes");
 const mailRoutes = require("./routes/emailRoutes.js");
 const imageRoutes = require("./routes/imageRoutes");
 const defaultPricingRoutes = require("./routes/defaultPricingRoutes");
+const invoiceRoutes = require("./routes/invoiceRoutes");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const errorHandler = require("./middlewares/errorHandler");
@@ -54,10 +55,11 @@ app.use("/", workItemRoutes);
 app.use("/", mailRoutes);
 app.use("/", imageRoutes);
 app.use("/", defaultPricingRoutes);
+app.use("/api", invoiceRoutes);
 
-app.use(errorHandler); //Global error handler
+app.use(errorHandler);
 
-// Server can start with "npm start run:dev" and will listen on port 3000
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
+
