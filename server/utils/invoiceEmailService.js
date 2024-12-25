@@ -7,10 +7,15 @@ const sendInvoiceEmail = async (receiverEmail, pdfBuffer, invoiceNumber) => {
   const text = `Уважаеми клиент,\n\nПрикачена е фактура ${invoiceNumber}.\n\nПоздрави,\nВашият екип`;
 
   try {
-    await createEmail(receiverEmail, subject, text, {
-      filename: `invoice-${invoiceNumber}.pdf`,
-      content: pdfBuffer
-    });
+    const attachments = [
+      {
+        filename: `invoice-${invoiceNumber}.pdf`,
+        content: pdfBuffer,
+        contentType: "application/pdf"
+      }
+    ];
+
+    await createEmail(receiverEmail, subject, text, attachments);
     console.log("Invoice email sent successfully");
   } catch (error) {
     console.error("Error sending invoice email:", error);

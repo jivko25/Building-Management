@@ -6,7 +6,7 @@ const { sendInvoiceEmail } = require("../../utils/invoiceEmailService");
 const createInvoice = async (req, res, next) => {
   console.log("Creating new invoice...");
   try {
-    const { company_id, client_company_id, items, due_date_weeks } = req.body;
+    const { company_id, client_company_id, items, due_date_weeks, additional_emails = [] } = req.body;
 
     // Генериране на номер на фактура (year-week-number)
     const date = new Date();
@@ -24,7 +24,7 @@ const createInvoice = async (req, res, next) => {
     const due_date = new Date();
     due_date.setDate(due_date.getDate() + due_date_weeks * 7);
 
-    // Изчисляване н�� обща сума
+    // Изчисляване на обща сума
     const total_amount = items.reduce((sum, item) => sum + item.quantity * item.price_per_unit, 0);
 
     // Създаване на фактурата
@@ -58,11 +58,15 @@ const createInvoice = async (req, res, next) => {
     // Генериране на PDF
     const pdfBuffer = await createInvoicePDF(invoice.id);
 
-    // Изпращане на имейл
+    // Изпращане на имейли
     const clientCompany = await Company.findByPk(client_company_id);
-    if (clientCompany && clientCompany.email) {
-      await sendInvoiceEmail(clientCompany.email, pdfBuffer, invoice_number);
-      console.log("Invoice email sent to:", clientCompany.email);
+    const emailList = [clientCompany.email, ...additional_emails].filter(Boolean);
+
+    console.log("Sending invoice to emails:", emailList);
+
+    for (const email of emailList) {
+      await sendInvoiceEmail(email, pdfBuffer, invoice_number);
+      console.log("Invoice email sent to:", email);
     }
 
     res.status(201).json({
