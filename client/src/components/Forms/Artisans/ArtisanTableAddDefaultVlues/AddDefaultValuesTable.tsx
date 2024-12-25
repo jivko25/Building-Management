@@ -82,6 +82,9 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
           setPrice(e.value ?? 0);
           setIsAdding(true);
         }}
+        panelClassName="z-50 pointer-events-auto"
+        scrollHeight="200px"
+        className="w-full text-xs " // Ensures dropdown fits in column width
       />
     );
   };
@@ -154,3 +157,9 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
     </div>
   );
 }
+
+//forma na obekta
+const primernaData: any = {
+  name: "aasdasd",
+  proffesion: { traktorist: { metar: "1lv", decimetar: "5 leva", chas: "3 leva" }, helikoptorist: { metar: "1lv", decimetar: "5 leva", chas: "3 leva" } }
+};
