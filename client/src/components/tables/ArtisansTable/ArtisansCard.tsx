@@ -15,7 +15,7 @@ const ArtisansCard = ({ artisans }: ArtisansCardProps) => {
         <TableRow key={artisan.id}>
           <TableCell className="font-semibold">{artisan.name}</TableCell>
           <TableCell className="text-end w-[200px]">
-            <ArtisanAddValues />
+            <ArtisanAddValues artisanId={artisan.id!} />
             <EditArtisan artisanId={artisan.id!} />
           </TableCell>
         </TableRow>
