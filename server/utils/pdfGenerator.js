@@ -48,9 +48,17 @@ const createInvoicePDF = async invoiceId => {
 
     console.log("Invoice data loaded successfully");
 
+    // Форматиране на номера на фактурата
+    const invoiceNumberParts = invoice.invoice_number.split("-");
+    const lastPart = invoiceNumberParts[invoiceNumberParts.length - 1];
+    const formattedLastPart = lastPart.padStart(3, "0");
+    const formattedInvoiceNumber = invoice.invoice_number.replace(lastPart, formattedLastPart);
+
+    console.log("Formatted invoice number:", formattedInvoiceNumber);
+
     // Подготовка на данните за шаблона
     const data = {
-      invoiceNumber: invoice.invoice_number,
+      invoiceNumber: formattedInvoiceNumber,
       date: invoice.invoice_date.toLocaleDateString("bg-BG"),
       dueDate: invoice.due_date.toLocaleDateString("bg-BG"),
       companyName: invoice.company.name,
