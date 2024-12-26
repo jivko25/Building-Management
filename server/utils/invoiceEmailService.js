@@ -1,14 +1,22 @@
 const { createEmail } = require("./email");
 
+const formatInvoiceNumber = invoiceNumber => {
+  const parts = invoiceNumber.split("/");
+  if (parts.length !== 2) return invoiceNumber;
+
+  const [firstPart, secondPart] = parts;
+  const [weekPart, numberPart] = secondPart.split("-");
+
+  if (!numberPart) return invoiceNumber;
+
+  const formattedNumber = numberPart.padStart(3, "0");
+  return `${firstPart}/${weekPart}-${formattedNumber}`;
+};
+
 const sendInvoiceEmail = async (receiverEmail, pdfBuffer, invoiceNumber) => {
   console.log("Sending invoice email to:", receiverEmail);
 
-  // Форматиране на номера на фактурата
-  const invoiceNumberParts = invoiceNumber.split("-");
-  const lastPart = invoiceNumberParts[invoiceNumberParts.length - 1];
-  const formattedLastPart = lastPart.padStart(3, "0");
-  const formattedInvoiceNumber = invoiceNumber.replace(lastPart, formattedLastPart);
-
+  const formattedInvoiceNumber = formatInvoiceNumber(invoiceNumber);
   console.log("Formatted invoice number for email:", formattedInvoiceNumber);
 
   const subject = `Фактура ${formattedInvoiceNumber}`;
