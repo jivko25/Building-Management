@@ -252,9 +252,146 @@ const deleteInvoice = async (req, res, next) => {
   }
 };
 
+const updateInvoice = async (req, res, next) => {
+  console.log("Updating invoice with ID:", req.params.id);
+  try {
+    const { client_company_name, client_name, client_company_address, client_company_iban, client_emails, due_date_weeks, items } = req.body;
+
+    // Намираме фактурата
+    const invoice = await Invoice.findByPk(req.params.id, {
+      include: [
+        {
+          model: InvoiceItem,
+          as: "items"
+        },
+        {
+          model: Client,
+          as: "client"
+        }
+      ]
+    });
+
+    if (!invoice) {
+      console.log("Invoice not found");
+      return res.status(404).json({
+        success: false,
+        message: "Invoice not found"
+      });
+    }
+
+    console.log("Found invoice:", invoice.invoice_number);
+
+    // Актуализираме клиента
+    const client = await Client.findByPk(invoice.client_id);
+    await client.update({
+      client_company_name,
+      client_name,
+      client_company_address,
+      client_company_iban,
+      client_emails: Array.isArray(client_emails) ? client_emails : [client_emails]
+    });
+
+    console.log("Client updated successfully");
+
+    // Актуализираме датата на падеж
+    if (due_date_weeks) {
+      const due_date = new Date();
+      due_date.setDate(due_date.getDate() + due_date_weeks * 7);
+      await invoice.update({ due_date });
+    }
+
+    // Изтриваме старите items
+    await Promise.all(
+      invoice.items.map(async item => {
+        console.log("Deleting old invoice item:", item.id);
+        await item.destroy();
+      })
+    );
+
+    console.log("Old invoice items deleted");
+
+    // Създаваме новите items
+    const total_amount = items.reduce((sum, item) => sum + item.quantity * item.price_per_unit, 0);
+
+    const invoiceItems = await Promise.all(
+      items.map(item =>
+        InvoiceItem.create({
+          invoice_id: invoice.id,
+          ...item,
+          total_price: item.quantity * item.price_per_unit
+        })
+      )
+    );
+
+    // Актуализираме общата сума
+    await invoice.update({ total_amount });
+
+    console.log("Invoice updated successfully");
+
+    // Генерираме нов PDF
+    const pdfBuffer = await createInvoicePDF(invoice.id);
+
+    // Изпращаме имейли с актуализираната фактура
+    const emailList = Array.isArray(client_emails) ? client_emails : [client_emails];
+
+    console.log("Sending updated invoice to emails:", emailList);
+
+    for (const email of emailList) {
+      await sendInvoiceEmail(email, pdfBuffer, invoice.invoice_number);
+      console.log("Updated invoice email sent to:", email);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Invoice updated successfully",
+      data: {
+        invoice: await Invoice.findByPk(invoice.id, {
+          include: [
+            {
+              model: Company,
+              as: "company",
+              attributes: ["name", "address", "number", "vat_number", "iban", "logo_url", "phone"]
+            },
+            {
+              model: Client,
+              as: "client",
+              attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails"]
+            },
+            {
+              model: InvoiceItem,
+              as: "items",
+              include: [
+                {
+                  model: Activity,
+                  as: "activity",
+                  attributes: ["id", "name", "status"]
+                },
+                {
+                  model: Measure,
+                  as: "measure",
+                  attributes: ["id", "name"]
+                },
+                {
+                  model: Project,
+                  as: "project",
+                  attributes: ["id", "name", "address"]
+                }
+              ]
+            }
+          ]
+        })
+      }
+    });
+  } catch (error) {
+    console.error("Error updating invoice:", error);
+    next(error);
+  }
+};
+
 module.exports = {
   createInvoice,
   getAllInvoices,
   getInvoiceById,
-  deleteInvoice
+  deleteInvoice,
+  updateInvoice
 };
