@@ -97,12 +97,12 @@ const getAllInvoices = async (req, res, next) => {
         {
           model: Company,
           as: "company",
-          attributes: ["name", "address", "number"]
+          attributes: ["name", "address", "number", "vat_number", "iban", "phone"]
         },
         {
-          model: Company,
-          as: "clientCompany",
-          attributes: ["name", "address", "number"]
+          model: Client,
+          as: "client",
+          attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails"]
         },
         {
           model: InvoiceItem,
@@ -125,7 +125,8 @@ const getAllInvoices = async (req, res, next) => {
             }
           ]
         }
-      ]
+      ],
+      order: [["created_at", "DESC"]]
     });
 
     console.log(`Found ${invoices.length} invoices`);
