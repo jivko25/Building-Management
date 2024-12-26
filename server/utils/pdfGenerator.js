@@ -85,6 +85,7 @@ const createInvoicePDF = async invoiceId => {
       items: invoice.items.map(item => ({
         activity: item.activity.name,
         measure: item.measure.name,
+        project_address: item.project.address,
         quantity: parseFloat(item.quantity),
         price_per_unit: parseFloat(item.price_per_unit),
         total: parseFloat(item.total_price)
@@ -129,6 +130,7 @@ const createInvoicePDF = async invoiceId => {
               width: 100%;
               border-collapse: collapse;
               margin: 20px 0;
+              font-size: 9pt;
             }
             th, td {
               border: 1px solid black;
@@ -186,6 +188,7 @@ const createInvoicePDF = async invoiceId => {
             <thead>
               <tr>
                 <th>Дейност</th>
+                <th>Адрес на обект</th>
                 <th>Мярка</th>
                 <th>Количество</th>
                 <th>Ед. цена</th>
@@ -198,6 +201,7 @@ const createInvoicePDF = async invoiceId => {
                   item => `
                 <tr>
                   <td>${item.activity}</td>
+                  <td>${item.project_address || "Няма"}</td>
                   <td>${item.measure}</td>
                   <td style="text-align: right">${item.quantity.toFixed(2)}</td>
                   <td style="text-align: right">${item.price_per_unit.toFixed(2)} лв.</td>
