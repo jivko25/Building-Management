@@ -148,12 +148,12 @@ const getInvoiceById = async (req, res, next) => {
         {
           model: Company,
           as: "company",
-          attributes: ["name", "address", "number", "iban", "vat_number", "logo_url"]
+          attributes: ["name", "address", "number", "vat_number", "iban", "logo_url", "phone"]
         },
         {
-          model: Company,
-          as: "clientCompany",
-          attributes: ["name", "address", "number", "iban", "email"]
+          model: Client,
+          as: "client",
+          attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails"]
         },
         {
           model: InvoiceItem,
@@ -161,19 +161,23 @@ const getInvoiceById = async (req, res, next) => {
           include: [
             {
               model: Activity,
-              as: "activity"
+              as: "activity",
+              attributes: ["id", "name", "status"]
             },
             {
               model: Measure,
-              as: "measure"
+              as: "measure",
+              attributes: ["id", "name"]
             },
             {
               model: Project,
-              as: "project"
+              as: "project",
+              attributes: ["id", "name", "address"]
             },
             {
               model: Task,
-              as: "task"
+              as: "task",
+              attributes: ["id", "name", "status"]
             }
           ]
         }
