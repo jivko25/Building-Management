@@ -202,8 +202,59 @@ const getInvoiceById = async (req, res, next) => {
   }
 };
 
+const deleteInvoice = async (req, res, next) => {
+  console.log("Deleting invoice with ID:", req.params.id);
+  try {
+    // Първо намираме фактурата, за да проверим дали съществува
+    const invoice = await Invoice.findByPk(req.params.id, {
+      include: [
+        {
+          model: InvoiceItem,
+          as: "items"
+        }
+      ]
+    });
+
+    if (!invoice) {
+      console.log("Invoice not found");
+      return res.status(404).json({
+        success: false,
+        message: "Invoice not found"
+      });
+    }
+
+    console.log("Found invoice:", invoice.invoice_number);
+
+    // Изтриваме всички items на фактурата
+    await Promise.all(
+      invoice.items.map(async item => {
+        console.log("Deleting invoice item:", item.id);
+        await item.destroy();
+      })
+    );
+
+    console.log("All invoice items deleted");
+
+    // Изтриваме самата фактура
+    await invoice.destroy();
+    console.log("Invoice deleted successfully");
+
+    res.status(200).json({
+      success: true,
+      message: "Invoice and related items deleted successfully",
+      data: {
+        invoice_number: invoice.invoice_number
+      }
+    });
+  } catch (error) {
+    console.error("Error deleting invoice:", error);
+    next(error);
+  }
+};
+
 module.exports = {
   createInvoice,
   getAllInvoices,
-  getInvoiceById
+  getInvoiceById,
+  deleteInvoice
 };
