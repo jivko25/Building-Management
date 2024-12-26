@@ -1,15 +1,11 @@
 const puppeteer = require("puppeteer");
-const { TemplateHandler } = require("easy-template-x");
 const db = require("../data/index.js");
-const { Invoice, Company, InvoiceItem, Activity, Measure, Project } = db;
-const fs = require("fs").promises;
-const path = require("path");
+const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client } = db;
 
 const createInvoicePDF = async invoiceId => {
   console.log("Generating PDF for invoice:", invoiceId);
 
   try {
-    // Зареждане на данните за фактурата с модифицирани атрибути
     const invoice = await Invoice.findByPk(invoiceId, {
       include: [
         {
@@ -18,9 +14,9 @@ const createInvoicePDF = async invoiceId => {
           attributes: ["name", "address", "vat_number", "iban", "logo_url"]
         },
         {
-          model: Company,
-          as: "clientCompany",
-          attributes: ["name", "address"]
+          model: Client,
+          as: "client",
+          attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails"]
         },
         {
           model: InvoiceItem,
@@ -61,8 +57,12 @@ const createInvoicePDF = async invoiceId => {
       companyAddress: invoice.company.address,
       companyVAT: invoice.company.vat_number,
       companyIBAN: invoice.company.iban,
-      clientName: invoice.clientCompany.name,
-      clientAddress: invoice.clientCompany.address,
+      companyLogo: invoice.company.logo_url,
+      clientCompanyName: invoice.client.client_company_name,
+      clientName: invoice.client.client_name,
+      clientAddress: invoice.client.client_company_address,
+      clientIBAN: invoice.client.client_company_iban,
+      clientEmails: Array.isArray(invoice.client.client_emails) ? invoice.client.client_emails.join(", ") : invoice.client.client_emails,
       items: invoice.items.map(item => ({
         activity: item.activity.name,
         measure: item.measure.name,
@@ -75,87 +75,128 @@ const createInvoicePDF = async invoiceId => {
 
     console.log("Data prepared for template:", data);
 
-    // Генериране на HTML
     const htmlContent = `
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="UTF-8">
           <style>
+            * {
+              margin: 0;
+              padding: 0;
+              text-indent: 0;
+            }
             body { 
-              font-family: Arial, sans-serif;
+              font-family: Calibri, sans-serif;
               padding: 20px;
             }
-            table { 
+            h1, h2, h3 { 
+              color: black;
+              font-style: normal;
+              font-weight: bold;
+              text-decoration: none;
+            }
+            h1 { font-size: 12pt; }
+            h2 { font-size: 11pt; }
+            h3 { font-size: 10pt; }
+            .p, p { 
+              color: black;
+              font-style: normal;
+              font-weight: normal;
+              font-size: 11pt;
+              margin: 0pt;
+            }
+            table {
               width: 100%;
               border-collapse: collapse;
               margin: 20px 0;
             }
-            th, td { 
+            th, td {
               border: 1px solid black;
               padding: 8px;
               text-align: left;
+              font-size: 10pt;
             }
             .header {
+              display: flex;
+              justify-content: space-between;
               margin-bottom: 30px;
             }
+            .logo {
+              max-width: 226px;
+              max-height: 98px;
+            }
             .company-info {
+              margin-bottom: 20px;
+            }
+            .client-info {
               margin-bottom: 20px;
             }
           </style>
         </head>
         <body>
           <div class="header">
-            <h1>Фактура ${data.invoiceNumber}</h1>
-            <div>Дата: ${data.date}</div>
-            <div>Краен срок: ${data.dueDate}</div>
+            ${data.companyLogo ? `<img class="logo" src="${data.companyLogo}" alt="Company Logo">` : ""}
+            <div>
+              <h1>Фактура ${data.invoiceNumber}</h1>
+              <p>Дата на издаване: ${data.date}</p>
+              <p>Краен срок: ${data.dueDate}</p>
+            </div>
           </div>
           
           <div class="company-info">
-            <h3>От:</h3>
+            <h3>Строителна фирма:</h3>
             <p>${data.companyName}</p>
             <p>${data.companyAddress}</p>
             <p>ДДС №: ${data.companyVAT || "Няма"}</p>
             <p>IBAN: ${data.companyIBAN || "Няма"}</p>
           </div>
 
-          <div class="company-info">
-            <h3>До:</h3>
-            <p>${data.clientName}</p>
-            <p>${data.clientAddress}</p>
+          <div class="client-info">
+            <h3>Клиент:</h3>
+            <p>Фирма: ${data.clientCompanyName || "Няма"}</p>
+            <p>Лице за контакт: ${data.clientName}</p>
+            <p>Адрес: ${data.clientAddress || "Няма"}</p>
+            <p>IBAN: ${data.clientIBAN || "Няма"}</p>
+            <p>Имейли: ${data.clientEmails || "Няма"}</p>
           </div>
 
           <table>
-            <tr>
-              <th>Дейност</th>
-              <th>Мярка</th>
-              <th>Количество</th>
-              <th>Ед. цена</th>
-              <th>Общо</th>
-            </tr>
-            ${data.items
-              .map(
-                item => `
+            <thead>
               <tr>
-                <td>${item.activity}</td>
-                <td>${item.measure}</td>
-                <td>${item.quantity.toFixed(2)}</td>
-                <td>${item.price_per_unit.toFixed(2)} лв.</td>
-                <td>${item.total.toFixed(2)} лв.</td>
+                <th>Дейност</th>
+                <th>Мярка</th>
+                <th>Количество</th>
+                <th>Ед. цена</th>
+                <th>Общо</th>
               </tr>
-            `
-              )
-              .join("")}
+            </thead>
+            <tbody>
+              ${data.items
+                .map(
+                  item => `
+                <tr>
+                  <td>${item.activity}</td>
+                  <td>${item.measure}</td>
+                  <td style="text-align: right">${item.quantity.toFixed(2)}</td>
+                  <td style="text-align: right">${item.price_per_unit.toFixed(2)} лв.</td>
+                  <td style="text-align: right">${item.total.toFixed(2)} лв.</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
           </table>
 
-          <h3>Обща сума: ${data.totalAmount.toFixed(2)} лв.</h3>
+          <div style="text-align: right">
+            <h3>Обща сума: ${data.totalAmount.toFixed(2)} лв.</h3>
+          </div>
         </body>
       </html>
     `;
 
     console.log("HTML content generated");
 
-    // Генериране на PDF
     const browser = await puppeteer.launch({
       headless: "new",
       args: ["--no-sandbox"]

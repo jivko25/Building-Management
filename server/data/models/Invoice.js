@@ -9,8 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       invoice_number: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
+        allowNull: false
       },
       year: {
         type: DataTypes.INTEGER,
@@ -24,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false
       },
-      client_company_id: {
+      client_id: {
         type: DataTypes.INTEGER,
         allowNull: false
       },
@@ -42,11 +41,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       paid: {
         type: DataTypes.BOOLEAN,
+        allowNull: false,
         defaultValue: false
-      },
-      status: {
-        type: DataTypes.ENUM("active", "cancelled"),
-        defaultValue: "active"
       }
     },
     {
@@ -63,9 +59,9 @@ module.exports = (sequelize, DataTypes) => {
       as: "company"
     });
 
-    Invoice.belongsTo(models.Company, {
-      foreignKey: "client_company_id",
-      as: "clientCompany"
+    Invoice.belongsTo(models.Client, {
+      foreignKey: "client_id",
+      as: "client"
     });
 
     Invoice.hasMany(models.InvoiceItem, {

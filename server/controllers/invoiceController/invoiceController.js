@@ -1,39 +1,47 @@
 const db = require("../../data/index.js");
-const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task } = db;
+const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client } = db;
 const { createInvoicePDF } = require("../../utils/pdfGenerator");
 const { sendInvoiceEmail } = require("../../utils/invoiceEmailService");
 
 const createInvoice = async (req, res, next) => {
   console.log("Creating new invoice...");
   try {
-    const { company_id, client_company_id, items, due_date_weeks, additional_emails = [] } = req.body;
+    const { company_id, client_company_name, client_name, client_company_address, client_company_iban, client_emails, due_date_weeks, items } = req.body;
 
-    // Генериране на номер на фактура (year-week-number)
+    // Създаване или намиране на клиент
+    const [client] = await Client.findOrCreate({
+      where: { client_name },
+      defaults: {
+        client_company_name,
+        client_company_address,
+        client_company_iban,
+        client_emails: Array.isArray(client_emails) ? client_emails : [client_emails]
+      }
+    });
+
+    console.log("Client created/found:", client.id);
+
+    // Останалата логика за създаване на фактура
     const date = new Date();
     const year = date.getFullYear();
     const week = Math.ceil((date - new Date(date.getFullYear(), 0, 1)) / 604800000);
 
-    // Вземане на последната фактура за тази седмица
     const lastInvoice = await Invoice.count({
       where: { year, week_number: week }
     });
 
     const invoice_number = `${year}-${week}/52-${lastInvoice + 1}`;
-
-    // Изчисляване на крайна дата за плащане
     const due_date = new Date();
     due_date.setDate(due_date.getDate() + due_date_weeks * 7);
 
-    // Изчисляване на обща сума
     const total_amount = items.reduce((sum, item) => sum + item.quantity * item.price_per_unit, 0);
 
-    // Създаване на фактурата
     const invoice = await Invoice.create({
       invoice_number,
       year,
       week_number: week,
       company_id,
-      client_company_id,
+      client_id: client.id,
       invoice_date: date,
       due_date,
       total_amount,
@@ -59,8 +67,7 @@ const createInvoice = async (req, res, next) => {
     const pdfBuffer = await createInvoicePDF(invoice.id);
 
     // Изпращане на имейли
-    const clientCompany = await Company.findByPk(client_company_id);
-    const emailList = [clientCompany.email, ...additional_emails].filter(Boolean);
+    const emailList = Array.isArray(client_emails) ? client_emails : [client_emails];
 
     console.log("Sending invoice to emails:", emailList);
 
