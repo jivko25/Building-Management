@@ -49,7 +49,10 @@ export const InvoiceDetailsPage = () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/invoices/${id}/pdf`, {
         method: "GET",
-        credentials: "include"
+        credentials: "include",
+        headers: {
+          Accept: "application/pdf"
+        }
       });
 
       if (!response.ok) {
@@ -57,18 +60,24 @@ export const InvoiceDetailsPage = () => {
       }
 
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const pdfBlob = new Blob([blob], { type: "application/pdf" });
+
+      const url = window.URL.createObjectURL(pdfBlob);
+
       const a = document.createElement("a");
       a.href = url;
-      a.download = `invoice-${invoice.invoice_number}.pdf`;
+      a.download = `invoice-${invoice.invoice_number.replace(/\//g, "_")}.pdf`;
+
       document.body.appendChild(a);
       a.click();
+
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
+      console.log("✅ PDF downloaded successfully");
       toast.success("PDF downloaded successfully");
     } catch (error) {
-      console.error("Error downloading PDF:", error);
+      console.error("❌ Error downloading PDF:", error);
       toast.error("Failed to download PDF");
     }
   };
