@@ -41,6 +41,26 @@ table {
     overflow-x: scroll;
     width: 100vw;
   }
+
+  .p-datatable-tbody {
+    > tr {
+      > td {
+        color: #000000 !important;
+      }
+    }
+  }
+}
+
+.dark {
+  .p-datatable {
+    .p-datatable-tbody {
+      > tr {
+        > td {
+          color: #ffffff !important;
+        }
+      }
+    }
+  }
 }
 
 .p-datatable-table {
