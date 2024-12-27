@@ -388,10 +388,30 @@ const updateInvoice = async (req, res, next) => {
   }
 };
 
+const getInvoicePDF = async (req, res, next) => {
+  console.log("Generating PDF for invoice ID:", req.params.id);
+  try {
+    const pdfBuffer = await createInvoicePDF(req.params.id);
+
+    // Set response headers
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
+
+    // Send the PDF buffer
+    res.send(pdfBuffer);
+
+    console.log("PDF sent successfully");
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    next(error);
+  }
+};
+
 module.exports = {
   createInvoice,
   getAllInvoices,
   getInvoiceById,
   deleteInvoice,
-  updateInvoice
+  updateInvoice,
+  getInvoicePDF
 };
