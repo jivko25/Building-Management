@@ -31,5 +31,10 @@ export const invoiceService = {
 
   delete: async (id: number): Promise<void> => {
     await axios.delete(`${API_URL}/invoices/${id}`);
+  },
+
+  updateStatus: async (id: number, paid: boolean): Promise<Invoice> => {
+    const response = await axios.patch(`${API_URL}/invoices/${id}/status`, { paid });
+    return response.data.data;
   }
 };
