@@ -7,9 +7,11 @@ export const invoiceService = {
   getAll: async (): Promise<Invoice[]> => {
     try {
       const response = await axios.get(`${API_URL}/api/invoices`);
-      console.log("🔄 Full API Response:", response);
       console.log("🔄 Response data:", response.data);
-      console.log("🔄 Invoices array:", response.data.data);
+      if (!response.data.data || !Array.isArray(response.data.data)) {
+        console.error("❌ Invalid response format:", response.data);
+        return [];
+      }
       return response.data.data;
     } catch (error) {
       console.error("❌ Error fetching invoices:", error);
