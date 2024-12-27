@@ -39,12 +39,32 @@ type CreateInvoiceForm = z.infer<typeof createInvoiceSchema>;
 
 export const CreateInvoicePage = () => {
   const navigate = useNavigate();
+  console.log("Rendering CreateInvoicePage");
 
-  const { data: companies } = useGetPaginatedData({
-    URL: "/companies",
+  const { data: companiesResponse } = useQuery({
     queryKey: ["companies"],
-    limit: 100,
-    page: 1
+    queryFn: async () => {
+      const response = await fetch("http://localhost:3000/companies", {
+        credentials: "include"
+      });
+      const data = await response.json();
+      console.log("📊 Companies data:", data);
+      return data;
+    }
+  });
+
+  const companies = companiesResponse?.companies || [];
+
+  const { data: projects } = useQuery({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      const response = await fetch("http://localhost:3000/projects", {
+        credentials: "include"
+      });
+      const data = await response.json();
+      console.log("🏗️ Projects data:", data);
+      return data;
+    }
   });
 
   const { data: activities } = useGetPaginatedData({
@@ -57,13 +77,6 @@ export const CreateInvoicePage = () => {
   const { data: measures } = useGetPaginatedData({
     URL: "/measures",
     queryKey: ["measures"],
-    limit: 100,
-    page: 1
-  });
-
-  const { data: projects } = useGetPaginatedData({
-    URL: "/projects",
-    queryKey: ["projects"],
     limit: 100,
     page: 1
   });
@@ -117,7 +130,7 @@ export const CreateInvoicePage = () => {
                       <SelectValue placeholder="Select company" />
                     </SelectTrigger>
                     <SelectContent>
-                      {companies?.data?.map((company: any) => (
+                      {companies?.map((company: any) => (
                         <SelectItem key={company.id} value={company.id.toString()}>
                           {company.name}
                         </SelectItem>
@@ -273,7 +286,7 @@ export const CreateInvoicePage = () => {
                           <SelectValue placeholder="Choose project" />
                         </SelectTrigger>
                         <SelectContent>
-                          {projects?.data?.map((project: any) => (
+                          {projects?.map((project: any) => (
                             <SelectItem key={project.id} value={project.id.toString()}>
                               {project.name} - {project.address}
                             </SelectItem>
