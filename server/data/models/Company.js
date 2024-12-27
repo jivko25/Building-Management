@@ -39,6 +39,18 @@ module.exports = (sequelize, DataTypes) => {
       status: {
         type: DataTypes.ENUM("active", "inactive"),
         defaultValue: "inactive"
+      },
+      iban: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      vat_number: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      logo_url: {
+        type: DataTypes.STRING,
+        allowNull: true
       }
     },
     {
@@ -56,6 +68,11 @@ module.exports = (sequelize, DataTypes) => {
     Company.hasMany(models.Artisan, {
       foreignKey: "companyId",
       as: "artisans"
+    });
+
+    Company.hasMany(models.Invoice, {
+      foreignKey: "company_id",
+      as: "invoices"
     });
   };
 
