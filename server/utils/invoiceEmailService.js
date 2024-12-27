@@ -19,8 +19,8 @@ const sendInvoiceEmail = async (receiverEmail, pdfBuffer, invoiceNumber) => {
   const formattedInvoiceNumber = formatInvoiceNumber(invoiceNumber);
   console.log("Formatted invoice number for email:", formattedInvoiceNumber);
 
-  const subject = `Фактура ${formattedInvoiceNumber}`;
-  const text = `Уважаеми клиент,\n\nПрикачена е фактура ${formattedInvoiceNumber}.\n\nПоздрави,\nВашият екип`;
+  const subject = `Invoice ${formattedInvoiceNumber}`;
+  const text = `Dear client,\n\nAttached is invoice ${formattedInvoiceNumber}.\n\nRegards,\nYour team`;
 
   try {
     const attachments = [

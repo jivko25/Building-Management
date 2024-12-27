@@ -20,21 +20,21 @@ export const InvoiceDetailsPage = () => {
   const deleteMutation = useMutation({
     mutationFn: invoiceService.delete,
     onSuccess: () => {
-      toast.success("Фактурата е изтрита успешно");
+      toast.success("Invoice deleted successfully");
       navigate("/invoices");
     },
     onError: error => {
-      toast.error("Грешка при изтриване на фактурата");
+      toast.error("Error deleting invoice");
       console.error("Error deleting invoice:", error);
     }
   });
 
   if (isLoading) {
-    return <div>Зареждане...</div>;
+    return <div>Loading...</div>;
   }
 
   if (!invoice) {
-    return <div>Фактурата не е намерена</div>;
+    return <div>Invoice not found</div>;
   }
 
   const handleDelete = () => {
@@ -48,52 +48,52 @@ export const InvoiceDetailsPage = () => {
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={() => navigate("/invoices")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Назад
+            Back
           </Button>
-          <h1 className="text-3xl font-bold">Фактура {invoice.invoice_number}</h1>
+          <h1 className="text-3xl font-bold">Invoice {invoice.invoice_number}</h1>
         </div>
         <Button variant="destructive" onClick={handleDelete}>
           <Trash2 className="mr-2 h-4 w-4" />
-          Изтрий
+          Delete
         </Button>
       </div>
 
       <div className="grid grid-cols-2 gap-6 mb-6">
         <Card>
           <CardHeader>
-            <CardTitle>Информация за фактурата</CardTitle>
+            <CardTitle>Invoice information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div>
-              <span className="font-semibold">Дата: </span>
+              <span className="font-semibold">Date: </span>
               {format(new Date(invoice.invoice_date), "dd.MM.yyyy", { locale: bg })}
             </div>
             <div>
-              <span className="font-semibold">Краен срок: </span>
+              <span className="font-semibold">Due date: </span>
               {format(new Date(invoice.due_date), "dd.MM.yyyy", { locale: bg })}
             </div>
             <div>
-              <span className="font-semibold">Статус: </span>
-              {invoice.paid ? "Платена" : "Неплатена"}
+              <span className="font-semibold">Status: </span>
+              {invoice.paid ? "Paid" : "Unpaid"}
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Информация за клиента</CardTitle>
+            <CardTitle>Client information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div>
-              <span className="font-semibold">Фирма: </span>
+              <span className="font-semibold">Company: </span>
               {invoice.client.client_company_name}
             </div>
             <div>
-              <span className="font-semibold">Лице за контакт: </span>
+              <span className="font-semibold">Contact person: </span>
               {invoice.client.client_name}
             </div>
             <div>
-              <span className="font-semibold">Адрес: </span>
+              <span className="font-semibold">Address: </span>
               {invoice.client.client_company_address}
             </div>
             <div>
@@ -101,7 +101,7 @@ export const InvoiceDetailsPage = () => {
               {invoice.client.client_company_iban}
             </div>
             <div>
-              <span className="font-semibold">Имейли: </span>
+              <span className="font-semibold">Emails: </span>
               {Array.isArray(invoice.client.client_emails) ? invoice.client.client_emails.join(", ") : invoice.client.client_emails}
             </div>
           </CardContent>
@@ -110,19 +110,19 @@ export const InvoiceDetailsPage = () => {
 
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Артикули</CardTitle>
+          <CardTitle>Items</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="relative overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead className="text-xs uppercase bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3">Дейност</th>
-                  <th className="px-6 py-3">Адрес на обект</th>
-                  <th className="px-6 py-3">Мярка</th>
-                  <th className="px-6 py-3 text-right">Количество</th>
-                  <th className="px-6 py-3 text-right">Ед. цена</th>
-                  <th className="px-6 py-3 text-right">Общо</th>
+                  <th className="px-6 py-3">Activity</th>
+                  <th className="px-6 py-3">Object address</th>
+                  <th className="px-6 py-3">Measure</th>
+                  <th className="px-6 py-3 text-right">Quantity</th>
+                  <th className="px-6 py-3 text-right">Unit price</th>
+                  <th className="px-6 py-3 text-right">Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -132,15 +132,15 @@ export const InvoiceDetailsPage = () => {
                     <td className="px-6 py-4">{item.project.address}</td>
                     <td className="px-6 py-4">{item.measure.name}</td>
                     <td className="px-6 py-4 text-right">{item.quantity}</td>
-                    <td className="px-6 py-4 text-right">{item.price_per_unit} лв.</td>
-                    <td className="px-6 py-4 text-right">{item.total_price} лв.</td>
+                    <td className="px-6 py-4 text-right">{item.price_per_unit} €</td>
+                    <td className="px-6 py-4 text-right">{item.total_price} €</td>
                   </tr>
                 ))}
                 <tr className="font-bold">
                   <td colSpan={5} className="px-6 py-4 text-right">
-                    Обща сума:
+                    Total amount:
                   </td>
-                  <td className="px-6 py-4 text-right">{invoice.total_amount} лв.</td>
+                  <td className="px-6 py-4 text-right">{invoice.total_amount} €</td>
                 </tr>
               </tbody>
             </table>

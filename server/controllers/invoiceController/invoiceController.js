@@ -8,7 +8,7 @@ const createInvoice = async (req, res, next) => {
   try {
     const { company_id, client_company_name, client_name, client_company_address, client_company_iban, client_emails, due_date_weeks, items } = req.body;
 
-    // Създаване или намиране на клиент
+    // Create or find client
     const [client] = await Client.findOrCreate({
       where: { client_name },
       defaults: {
@@ -21,7 +21,7 @@ const createInvoice = async (req, res, next) => {
 
     console.log("Client created/found:", client.id);
 
-    // Останалата логика за създаване на фактура
+    // Create invoice number
     const date = new Date();
     const year = date.getFullYear();
     const week = Math.ceil((date - new Date(date.getFullYear(), 0, 1)) / 604800000);
@@ -50,7 +50,7 @@ const createInvoice = async (req, res, next) => {
 
     console.log("Invoice created:", invoice.invoice_number);
 
-    // Създаване на елементите на фактурата
+    // Create invoice items
     const invoiceItems = await Promise.all(
       items.map(item =>
         InvoiceItem.create({
@@ -63,10 +63,10 @@ const createInvoice = async (req, res, next) => {
 
     console.log("Invoice items created");
 
-    // Генериране на PDF
+    // Generate PDF
     const pdfBuffer = await createInvoicePDF(invoice.id);
 
-    // Изпращане на имейли
+    // Send emails
     const emailList = Array.isArray(client_emails) ? client_emails : [client_emails];
 
     console.log("Sending invoice to emails:", emailList);
@@ -205,7 +205,7 @@ const getInvoiceById = async (req, res, next) => {
 const deleteInvoice = async (req, res, next) => {
   console.log("Deleting invoice with ID:", req.params.id);
   try {
-    // Първо намираме фактурата, за да проверим дали съществува
+    // Find invoice to check if it exists
     const invoice = await Invoice.findByPk(req.params.id, {
       include: [
         {
@@ -225,7 +225,7 @@ const deleteInvoice = async (req, res, next) => {
 
     console.log("Found invoice:", invoice.invoice_number);
 
-    // Изтриваме всички items на фактурата
+    // Delete all invoice items
     await Promise.all(
       invoice.items.map(async item => {
         console.log("Deleting invoice item:", item.id);
@@ -235,7 +235,7 @@ const deleteInvoice = async (req, res, next) => {
 
     console.log("All invoice items deleted");
 
-    // Изтриваме самата фактура
+    // Delete invoice
     await invoice.destroy();
     console.log("Invoice deleted successfully");
 
@@ -257,7 +257,7 @@ const updateInvoice = async (req, res, next) => {
   try {
     const { client_company_name, client_name, client_company_address, client_company_iban, client_emails, due_date_weeks, items } = req.body;
 
-    // Намираме фактурата
+    // Find invoice
     const invoice = await Invoice.findByPk(req.params.id, {
       include: [
         {
@@ -281,7 +281,7 @@ const updateInvoice = async (req, res, next) => {
 
     console.log("Found invoice:", invoice.invoice_number);
 
-    // Актуализираме клиента
+    // Update client
     const client = await Client.findByPk(invoice.client_id);
     await client.update({
       client_company_name,
@@ -293,14 +293,14 @@ const updateInvoice = async (req, res, next) => {
 
     console.log("Client updated successfully");
 
-    // Актуализираме датата на падеж
+    // Update due date
     if (due_date_weeks) {
       const due_date = new Date();
       due_date.setDate(due_date.getDate() + due_date_weeks * 7);
       await invoice.update({ due_date });
     }
 
-    // Изтриваме старите items
+    // Delete old items
     await Promise.all(
       invoice.items.map(async item => {
         console.log("Deleting old invoice item:", item.id);
@@ -310,7 +310,7 @@ const updateInvoice = async (req, res, next) => {
 
     console.log("Old invoice items deleted");
 
-    // Създаваме новите items
+    // Create new items
     const total_amount = items.reduce((sum, item) => sum + item.quantity * item.price_per_unit, 0);
 
     const invoiceItems = await Promise.all(
@@ -323,15 +323,15 @@ const updateInvoice = async (req, res, next) => {
       )
     );
 
-    // Актуализираме общата сума
+    // Update total amount
     await invoice.update({ total_amount });
 
     console.log("Invoice updated successfully");
 
-    // Генерираме нов PDF
+    // Generate new PDF
     const pdfBuffer = await createInvoicePDF(invoice.id);
 
-    // Изпращаме имейли с актуализираната фактура
+    // Send emails with updated invoice
     const emailList = Array.isArray(client_emails) ? client_emails : [client_emails];
 
     console.log("Sending updated invoice to emails:", emailList);
