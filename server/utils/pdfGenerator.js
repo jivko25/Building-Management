@@ -1,3 +1,4 @@
+//server/utils/pdfGenerator.js
 const puppeteer = require("puppeteer");
 const db = require("../data/index.js");
 const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client } = db;
@@ -48,7 +49,7 @@ const createInvoicePDF = async invoiceId => {
 
     console.log("Invoice data loaded successfully");
 
-    // Форматиране на номера на фактурата
+    // Formatting the invoice number
     const formatInvoiceNumber = invoiceNumber => {
       const parts = invoiceNumber.split("/");
       if (parts.length !== 2) return invoiceNumber;
@@ -65,7 +66,7 @@ const createInvoicePDF = async invoiceId => {
     const formattedInvoiceNumber = formatInvoiceNumber(invoice.invoice_number);
     console.log("Formatted invoice number:", formattedInvoiceNumber);
 
-    // Подготовка на данните за шаблона
+    // Preparing the data for the template
     const data = {
       invoiceNumber: formattedInvoiceNumber,
       date: invoice.invoice_date.toLocaleDateString("bg-BG"),
@@ -159,40 +160,40 @@ const createInvoicePDF = async invoiceId => {
           <div class="header">
             ${data.companyLogo ? `<img class="logo" src="${data.companyLogo}" alt="Company Logo">` : ""}
             <div>
-              <h1>Фактура ${data.invoiceNumber}</h1>
-              <p>Дата на издаване: ${data.date}</p>
-              <p>Краен срок: ${data.dueDate}</p>
+              <h1>Invoice ${data.invoiceNumber}</h1>
+              <p>Date of issue: ${data.date}</p>
+              <p>Due date: ${data.dueDate}</p>
             </div>
           </div>
           
           <div class="company-info">
-            <h3>Строителна фирма:</h3>
+            <h3>Construction company:</h3>
             <p>${data.companyName}</p>
             <p>${data.companyAddress}</p>
-            <p>Рег. номер: ${data.companyRegNumber || "Няма"}</p>
-            <p>ДДС №: ${data.companyVAT || "Няма"}</p>
-            <p>IBAN: ${data.companyIBAN || "Няма"}</p>
-            <p>Телефон: ${data.companyPhone || "Няма"}</p>
+            <p>Reg. number: ${data.companyRegNumber || "No"}</p>
+            <p>VAT number: ${data.companyVAT || "No"}</p>
+            <p>IBAN: ${data.companyIBAN || "No"}</p>
+            <p>Phone: ${data.companyPhone || "No"}</p>
           </div>
 
           <div class="client-info">
-            <h3>Клиент:</h3>
-            <p>Фирма: ${data.clientCompanyName || "Няма"}</p>
-            <p>Лице за контакт: ${data.clientName}</p>
-            <p>Адрес: ${data.clientAddress || "Няма"}</p>
-            <p>IBAN: ${data.clientIBAN || "Няма"}</p>
-            <p>Имейли: ${data.clientEmails || "Няма"}</p>
+            <h3>Client:</h3>
+            <p>Company: ${data.clientCompanyName || "No"}</p>
+            <p>Contact person: ${data.clientName}</p>
+            <p>Address: ${data.clientAddress || "No"}</p>
+            <p>IBAN: ${data.clientIBAN || "No"}</p>
+            <p>Emails: ${data.clientEmails || "No"}</p>
           </div>
 
           <table>
             <thead>
               <tr>
-                <th>Дейност</th>
-                <th>Адрес на обект</th>
-                <th>Мярка</th>
-                <th>Количество</th>
-                <th>Ед. цена</th>
-                <th>Общо</th>
+                <th>Activity</th>
+                <th>Project address</th>
+                <th>Measure</th>
+                <th>Quantity</th>
+                <th>Unit price</th>
+                <th>Total</th>
               </tr>
             </thead>
             <tbody>
@@ -201,11 +202,11 @@ const createInvoicePDF = async invoiceId => {
                   item => `
                 <tr>
                   <td>${item.activity}</td>
-                  <td>${item.project_address || "Няма"}</td>
+                  <td>${item.project_address || "No"}</td>
                   <td>${item.measure}</td>
                   <td style="text-align: right">${item.quantity.toFixed(2)}</td>
-                  <td style="text-align: right">${item.price_per_unit.toFixed(2)} лв.</td>
-                  <td style="text-align: right">${item.total.toFixed(2)} лв.</td>
+                  <td style="text-align: right">${item.price_per_unit.toFixed(2)} €</td>
+                  <td style="text-align: right">${item.total.toFixed(2)} €</td>
                 </tr>
               `
                 )
@@ -214,7 +215,7 @@ const createInvoicePDF = async invoiceId => {
           </table>
 
           <div style="text-align: right">
-            <h3>Обща сума: ${data.totalAmount.toFixed(2)} лв.</h3>
+            <h3>Total amount: ${data.totalAmount.toFixed(2)} €</h3>
           </div>
         </body>
       </html>
