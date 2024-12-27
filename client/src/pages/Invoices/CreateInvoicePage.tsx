@@ -215,6 +215,53 @@ export const CreateInvoicePage = () => {
 
           <div className="space-y-4">
             <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">Client Emails</h2>
+              <Button
+                type="button"
+                onClick={() => {
+                  const emails = form.getValues("client_emails");
+                  form.setValue("client_emails", [...emails, ""]);
+                }}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Email
+              </Button>
+            </div>
+
+            {form.watch("client_emails").map((_, index) => (
+              <div key={index} className="flex gap-4 items-end">
+                <FormField
+                  control={form.control}
+                  name={`client_emails.${index}`}
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Email {index + 1}</FormLabel>
+                      <FormControl>
+                        <Input type="email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => {
+                    const emails = form.getValues("client_emails");
+                    form.setValue(
+                      "client_emails",
+                      emails.filter((_, i) => i !== index)
+                    );
+                  }}
+                  className="mb-2">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Items</h2>
               <Button
                 type="button"
