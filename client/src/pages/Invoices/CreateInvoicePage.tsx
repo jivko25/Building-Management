@@ -25,7 +25,7 @@ const createInvoiceSchema = z.object({
         activity_id: z.number(),
         measure_id: z.number(),
         project_id: z.number(),
-        quantity: z.number().min(0.01, "Quantity must be greater than 0"),
+        quantity: z.number().int().min(1, "Quantity must be a whole number greater than 0"),
         price_per_unit: z.number().min(0.01, "Price per unit must be greater than 0")
       })
     )
@@ -252,7 +252,7 @@ export const CreateInvoicePage = () => {
                     <FormItem>
                       <FormLabel>Quantity</FormLabel>
                       <FormControl>
-                        <Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                        <Input type="number" min="1" step="1" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
