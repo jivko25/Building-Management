@@ -13,7 +13,9 @@ import { Plus, Trash2 } from "lucide-react";
 import { useGetPaginatedData } from "@/hooks/useQueryHook";
 
 const createInvoiceSchema = z.object({
-  company_id: z.number(),
+  company_id: z.number({
+    required_error: "Please select a company"
+  }),
   client_company_name: z.string().min(1, "Company name is required"),
   client_name: z.string().min(1, "Contact person is required"),
   client_company_address: z.string().min(1, "Company address is required"),
@@ -38,13 +40,11 @@ type CreateInvoiceForm = z.infer<typeof createInvoiceSchema>;
 export const CreateInvoicePage = () => {
   const navigate = useNavigate();
 
-  const form = useForm<CreateInvoiceForm>({
-    resolver: zodResolver(createInvoiceSchema),
-    defaultValues: {
-      company_id: 1, // Default company ID
-      client_emails: [""],
-      items: [{ activity_id: 0, measure_id: 0, project_id: 0, quantity: 0, price_per_unit: 0 }]
-    }
+  const { data: companies } = useGetPaginatedData({
+    URL: "/companies",
+    queryKey: ["companies"],
+    limit: 100,
+    page: 1
   });
 
   const { data: activities } = useGetPaginatedData({
@@ -66,6 +66,16 @@ export const CreateInvoicePage = () => {
     queryKey: ["projects"],
     limit: 100,
     page: 1
+  });
+
+  const form = useForm<z.infer<typeof createInvoiceSchema>>({
+    resolver: zodResolver(createInvoiceSchema),
+    defaultValues: {
+      company_id: 0,
+      client_company_name: "",
+      client_emails: [""],
+      items: [{ activity_id: 0, measure_id: 0, project_id: 0, quantity: 0, price_per_unit: 0 }]
+    }
   });
 
   const createInvoiceMutation = useMutation({
@@ -98,10 +108,33 @@ export const CreateInvoicePage = () => {
           <div className="grid grid-cols-2 gap-6">
             <FormField
               control={form.control}
+              name="company_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Building company</FormLabel>
+                  <Select onValueChange={value => field.onChange(parseInt(value))} value={field.value ? field.value.toString() : ""}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select company" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {companies?.data?.map((company: any) => (
+                        <SelectItem key={company.id} value={company.id.toString()}>
+                          {company.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="client_company_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company name</FormLabel>
+                  <FormLabel>Client company name</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -115,7 +148,7 @@ export const CreateInvoicePage = () => {
               name="client_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contact person</FormLabel>
+                  <FormLabel>Client contact person</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -129,7 +162,7 @@ export const CreateInvoicePage = () => {
               name="client_company_address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>Client company address</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -143,7 +176,7 @@ export const CreateInvoicePage = () => {
               name="client_company_iban"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>IBAN</FormLabel>
+                  <FormLabel>Client company IBAN</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -235,14 +268,14 @@ export const CreateInvoicePage = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Project</FormLabel>
-                      <Select onValueChange={value => field.onChange(parseInt(value))} value={field.value.toString()}>
+                      <Select onValueChange={value => field.onChange(parseInt(value))} value={field.value ? field.value.toString() : ""}>
                         <SelectTrigger>
                           <SelectValue placeholder="Choose project" />
                         </SelectTrigger>
                         <SelectContent>
                           {projects?.data?.map((project: any) => (
                             <SelectItem key={project.id} value={project.id.toString()}>
-                              {project.name}
+                              {project.name} - {project.address}
                             </SelectItem>
                           ))}
                         </SelectContent>
