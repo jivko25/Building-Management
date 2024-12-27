@@ -44,7 +44,7 @@ export const CreateInvoicePage = () => {
   const { data: companiesResponse } = useQuery({
     queryKey: ["companies"],
     queryFn: async () => {
-      const response = await fetch("http://localhost:3000/companies", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/companies`, {
         credentials: "include"
       });
       const data = await response.json();
@@ -58,7 +58,7 @@ export const CreateInvoicePage = () => {
   const { data: projects } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
-      const response = await fetch("http://localhost:3000/projects", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/projects`, {
         credentials: "include"
       });
       const data = await response.json();
