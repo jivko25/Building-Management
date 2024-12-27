@@ -48,17 +48,17 @@ export const CreateInvoicePage = () => {
 
   const { data: activities } = useQuery({
     queryKey: ["activities"],
-    queryFn: () => fetch(`${import.meta.env.VITE_API_URL}/api/activities`).then(res => res.json())
+    queryFn: () => fetch(`${import.meta.env.VITE_API_URL}/activities`).then(res => res.json())
   });
 
   const { data: measures } = useQuery({
     queryKey: ["measures"],
-    queryFn: () => fetch(`${import.meta.env.VITE_API_URL}/api/measures`).then(res => res.json())
+    queryFn: () => fetch(`${import.meta.env.VITE_API_URL}/measures`).then(res => res.json())
   });
 
   const { data: projects } = useQuery({
     queryKey: ["projects"],
-    queryFn: () => fetch(`${import.meta.env.VITE_API_URL}/api/projects`).then(res => res.json())
+    queryFn: () => fetch(`${import.meta.env.VITE_API_URL}/projects`).then(res => res.json())
   });
 
   const createInvoiceMutation = useMutation({
