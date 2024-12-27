@@ -1,7 +1,7 @@
 //server\controllers\measures\getMeasureByIdController.js
 const db = require("../../data/index.js");
 const { Measure } = db;
-const ApiError = require("../../utils/apiError");
+const ApiError = require("../../utils/ApiError.js");
 
 const getMeasureById = async (req, res, next) => {
   try {

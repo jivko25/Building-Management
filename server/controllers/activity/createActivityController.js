@@ -1,7 +1,7 @@
 //server\controllers\activity\createActivityController.js
 const db = require("../../data/index.js");
 const { Activity } = db;
-const ApiError = require("../../utils/apiError");
+const ApiError = require("../../utils/ApiError.js");
 
 const createActivity = async (req, res, next) => {
   try {

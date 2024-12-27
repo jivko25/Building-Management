@@ -1,7 +1,7 @@
 //server\controllers\artisans\getArtisanByIdController.js
 const db = require("../../data/index.js");
 const { Artisan, Company, User, Task, Activity, Measure } = db;
-const ApiError = require("../../utils/apiError");
+const ApiError = require("../../utils/ApiError.js");
 
 const getArtisanById = async (req, res, next) => {
   try {

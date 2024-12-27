@@ -1,7 +1,7 @@
 //server\controllers\activity\editActivitiyController.js
 const db = require("../../data/index.js");
 const Activity = db.Activity;
-const ApiError = require("../../utils/apiError");
+const ApiError = require("../../utils/ApiError.js");
 
 const editActivity = async (req, res, next) => {
   const activityId = req.params.id;
