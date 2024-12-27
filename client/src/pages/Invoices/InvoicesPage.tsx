@@ -84,10 +84,10 @@ export const InvoicesPage = () => {
 
   const amountTemplate = (rowData: Invoice) => {
     try {
-      return `${parseFloat(rowData.total_amount).toFixed(2)} лв.`;
+      return `${Math.round(parseFloat(rowData.total_amount))} лв.`;
     } catch (error) {
       console.error("Error formatting amount:", error, rowData);
-      return "0.00 лв.";
+      return "0 лв.";
     }
   };
 
@@ -119,6 +119,15 @@ export const InvoicesPage = () => {
       return Math.round(parseFloat(rowData.quantity));
     } catch (error) {
       console.error("Error formatting quantity:", error, rowData);
+      return "0";
+    }
+  };
+
+  const pricePerUnitTemplate = (rowData: InvoiceItem) => {
+    try {
+      return Math.round(parseFloat(rowData.price_per_unit));
+    } catch (error) {
+      console.error("Error formatting price per unit:", error, rowData);
       return "0";
     }
   };

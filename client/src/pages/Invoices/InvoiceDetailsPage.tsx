@@ -132,8 +132,8 @@ export const InvoiceDetailsPage = () => {
                     <td className="px-6 py-4">{item.project.address}</td>
                     <td className="px-6 py-4">{item.measure.name}</td>
                     <td className="px-6 py-4 text-right">{Math.round(parseFloat(item.quantity))}</td>
-                    <td className="px-6 py-4 text-right">{item.price_per_unit} €</td>
-                    <td className="px-6 py-4 text-right">{item.total_price} €</td>
+                    <td className="px-6 py-4 text-right">{Math.round(parseFloat(item.price_per_unit))} €</td>
+                    <td className="px-6 py-4 text-right">{Math.round(parseFloat(item.total_price))} €</td>
                   </tr>
                 ))}
                 <tr className="font-bold">
