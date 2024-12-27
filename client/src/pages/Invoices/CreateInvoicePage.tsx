@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
+import { useGetPaginatedData } from "@/hooks/useQueryHook";
 
 const createInvoiceSchema = z.object({
   company_id: z.number(),
@@ -46,19 +47,25 @@ export const CreateInvoicePage = () => {
     }
   });
 
-  const { data: activities } = useQuery({
+  const { data: activities } = useGetPaginatedData({
+    URL: "/activities",
     queryKey: ["activities"],
-    queryFn: () => fetch(`${import.meta.env.VITE_API_URL}/activities`).then(res => res.json())
+    limit: 100,
+    page: 1
   });
 
-  const { data: measures } = useQuery({
+  const { data: measures } = useGetPaginatedData({
+    URL: "/measures",
     queryKey: ["measures"],
-    queryFn: () => fetch(`${import.meta.env.VITE_API_URL}/measures`).then(res => res.json())
+    limit: 100,
+    page: 1
   });
 
-  const { data: projects } = useQuery({
+  const { data: projects } = useGetPaginatedData({
+    URL: "/projects",
     queryKey: ["projects"],
-    queryFn: () => fetch(`${import.meta.env.VITE_API_URL}/projects`).then(res => res.json())
+    limit: 100,
+    page: 1
   });
 
   const createInvoiceMutation = useMutation({
