@@ -22,6 +22,7 @@ import ManagerTablePage from "./pages/ManagersTablePage";
 import { InvoicesPage } from "./pages/Invoices/InvoicesPage";
 import { CreateInvoicePage } from "./pages/Invoices/CreateInvoicePage";
 import { InvoiceDetailsPage } from "./pages/Invoices/InvoiceDetailsPage";
+import { UpdateInvoicePage } from "./pages/Invoices/UpdateInvoicePage";
 
 const AppRoutes = () => {
   return (
@@ -143,6 +144,16 @@ const AppRoutes = () => {
           element={
             <TableLayout>
               <InvoiceDetailsPage />
+            </TableLayout>
+          }
+        />
+      </Route>
+      <Route element={<ManagerGuard />}>
+        <Route
+          path="/invoices/:id/edit"
+          element={
+            <TableLayout>
+              <UpdateInvoicePage />
             </TableLayout>
           }
         />

@@ -408,11 +408,52 @@ const getInvoicePDF = async (req, res, next) => {
   }
 };
 
+const updateInvoiceStatus = async (req, res, next) => {
+  console.log("Updating invoice status:", req.params.id);
+  try {
+    const invoice = await Invoice.findByPk(req.params.id);
+
+    if (!invoice) {
+      return res.status(404).json({
+        success: false,
+        message: "Invoice not found"
+      });
+    }
+
+    await invoice.update({ paid: req.body.paid });
+
+    console.log("Invoice status updated successfully");
+
+    res.status(200).json({
+      success: true,
+      message: "Invoice status updated successfully",
+      data: await Invoice.findByPk(invoice.id, {
+        include: [
+          {
+            model: Company,
+            as: "company",
+            attributes: ["name", "address", "number", "vat_number", "iban", "logo_url", "phone"]
+          },
+          {
+            model: Client,
+            as: "client",
+            attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails"]
+          }
+        ]
+      })
+    });
+  } catch (error) {
+    console.error("Error updating invoice status:", error);
+    next(error);
+  }
+};
+
 module.exports = {
   createInvoice,
   getAllInvoices,
   getInvoiceById,
   deleteInvoice,
   updateInvoice,
-  getInvoicePDF
+  getInvoicePDF,
+  updateInvoiceStatus
 };

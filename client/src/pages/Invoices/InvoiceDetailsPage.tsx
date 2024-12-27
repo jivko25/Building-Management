@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { bg } from "date-fns/locale";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Trash2, FileText, X, Download } from "lucide-react";
+import { ArrowLeft, Trash2, FileText, X, Download, Edit } from "lucide-react";
 import { useState } from "react";
 import { ConfirmationModal } from "@/components/ui/ConfirmationModal";
 
@@ -108,6 +108,15 @@ export const InvoiceDetailsPage = () => {
           <Button variant="outline" onClick={handleDownloadPDF}>
             <Download className="mr-2 h-4 w-4" />
             Download PDF
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              console.log("Navigating to edit page for invoice:", id);
+              navigate(`/invoices/${id}/edit`);
+            }}>
+            <Edit className="mr-2 h-4 w-4" />
+            Edit
           </Button>
           <Button variant="destructive" onClick={handleDelete}>
             <Trash2 className="mr-2 h-4 w-4" />
