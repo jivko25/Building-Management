@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { bg } from "date-fns/locale";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Trash2, FileText, X } from "lucide-react";
+import { ArrowLeft, Trash2, FileText, X, Download } from "lucide-react";
 import { useState } from "react";
 
 export const InvoiceDetailsPage = () => {
@@ -44,6 +44,35 @@ export const InvoiceDetailsPage = () => {
     deleteMutation.mutate(Number(id));
   };
 
+  const handleDownloadPDF = async () => {
+    console.log("📥 Downloading PDF for invoice:", id);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/invoices/${id}/pdf`, {
+        method: "GET",
+        credentials: "include"
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to download PDF");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `invoice-${invoice.invoice_number}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success("PDF downloaded successfully");
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      toast.error("Failed to download PDF");
+    }
+  };
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
@@ -58,6 +87,10 @@ export const InvoiceDetailsPage = () => {
           <Button variant="outline" onClick={() => setShowPdfPreview(!showPdfPreview)}>
             <FileText className="mr-2 h-4 w-4" />
             {showPdfPreview ? "Hide PDF" : "Show PDF"}
+          </Button>
+          <Button variant="outline" onClick={handleDownloadPDF}>
+            <Download className="mr-2 h-4 w-4" />
+            Download PDF
           </Button>
           <Button variant="destructive" onClick={handleDelete}>
             <Trash2 className="mr-2 h-4 w-4" />
