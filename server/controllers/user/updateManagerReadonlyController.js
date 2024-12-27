@@ -1,7 +1,6 @@
 const db = require("../../data/index.js");
 const User = db.User;
-const ApiError = require("../../utils/apiError.js");
-
+const ApiError = require("../../utils/apiError");
 const addManagerToReadonly = async (req, res, next) => {
     const managerId = req.params.id;
 

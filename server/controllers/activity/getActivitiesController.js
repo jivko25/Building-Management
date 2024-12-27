@@ -2,7 +2,7 @@
 const db = require("../../data/index.js");
 const Activity = db.Activity;
 const { Op } = db.Sequelize;
-const ApiError = require("../../utils/ApiError.js");
+const ApiError = require("../../utils/apiError");
 
 const getPaginatedActivities = async (req, res, next) => {
   const { _page = 1, _limit = 10, q = "" } = req.query;

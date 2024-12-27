@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const { createInvoice, getAllInvoices, getInvoiceById, deleteInvoice, updateInvoice, getInvoicePDF } = require("../controllers/invoiceController/invoiceController");
 
-router.post("/invoices", createInvoice);
-router.get("/invoices", getAllInvoices);
-router.get("/invoices/:id", getInvoiceById);
-router.delete("/invoices/:id", deleteInvoice);
-router.put("/invoices/:id", updateInvoice);
-router.get("/invoices/:id/pdf", getInvoicePDF);
+router.post("/", createInvoice);
+router.get("/", getAllInvoices);
+router.get("/:id/pdf", getInvoicePDF);
+router.get("/:id", getInvoiceById);
+router.delete("/:id", deleteInvoice);
+router.put("/:id", updateInvoice);
 
 module.exports = router;

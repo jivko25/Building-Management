@@ -1,5 +1,5 @@
 //server\controllers\measures\getMeasuresController.js\
-const ApiError = require("../../utils/ApiError.js");
+const ApiError = require("../../utils/apiError");
 const db = require("../../data/index.js");
 const { Measure } = db;
 

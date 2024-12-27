@@ -55,7 +55,7 @@ app.use("/", workItemRoutes);
 app.use("/", mailRoutes);
 app.use("/", imageRoutes);
 app.use("/", defaultPricingRoutes);
-app.use("/api", invoiceRoutes);
+app.use("/invoices", invoiceRoutes);
 
 app.use(errorHandler);
 
