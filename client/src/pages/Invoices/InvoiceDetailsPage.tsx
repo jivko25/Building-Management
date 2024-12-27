@@ -6,11 +6,13 @@ import { format } from "date-fns";
 import { bg } from "date-fns/locale";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash2, FileText, X } from "lucide-react";
+import { useState } from "react";
 
 export const InvoiceDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [showPdfPreview, setShowPdfPreview] = useState(false);
 
   const { data: invoice, isLoading } = useQuery({
     queryKey: ["invoice", id],
@@ -52,11 +54,86 @@ export const InvoiceDetailsPage = () => {
           </Button>
           <h1 className="text-3xl font-bold">Invoice {invoice.invoice_number}</h1>
         </div>
-        <Button variant="destructive" onClick={handleDelete}>
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowPdfPreview(!showPdfPreview)}>
+            <FileText className="mr-2 h-4 w-4" />
+            {showPdfPreview ? "Hide PDF" : "Show PDF"}
+          </Button>
+          <Button variant="destructive" onClick={handleDelete}>
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </Button>
+        </div>
       </div>
+
+      {showPdfPreview && (
+        <div className="mb-6 bg-white p-6 rounded-lg shadow-lg">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">PDF Preview</h2>
+            <Button variant="ghost" size="icon" onClick={() => setShowPdfPreview(false)}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="border rounded-lg p-8" style={{ fontFamily: "Calibri, sans-serif" }}>
+            <div className="flex justify-between mb-8">
+              {invoice.company?.logo_url && <img src={invoice.company.logo_url} alt="Company Logo" className="max-w-[226px] max-h-[98px]" />}
+              <div>
+                <h1 className="text-xl font-bold">Invoice {invoice.invoice_number}</h1>
+                <p>Date of issue: {format(new Date(invoice.invoice_date), "dd.MM.yyyy", { locale: bg })}</p>
+                <p>Due date: {format(new Date(invoice.due_date), "dd.MM.yyyy", { locale: bg })}</p>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h3 className="font-bold">Construction company:</h3>
+              <p>{invoice.company?.name}</p>
+              <p>{invoice.company?.address}</p>
+              <p>Reg. number: {invoice.company?.number || "No"}</p>
+              <p>VAT number: {invoice.company?.vat_number || "No"}</p>
+              <p>IBAN: {invoice.company?.iban || "No"}</p>
+              <p>Phone: {invoice.company?.phone || "No"}</p>
+            </div>
+
+            <div className="mb-8">
+              <h3 className="font-bold">Client:</h3>
+              <p>Company: {invoice.client?.client_company_name}</p>
+              <p>Contact person: {invoice.client?.client_name}</p>
+              <p>Address: {invoice.client?.client_company_address}</p>
+              <p>IBAN: {invoice.client?.client_company_iban}</p>
+              <p>Emails: {Array.isArray(invoice.client?.client_emails) ? invoice.client.client_emails.join(", ") : invoice.client?.client_emails}</p>
+            </div>
+
+            <table className="w-full mb-8 text-sm">
+              <thead>
+                <tr className="border">
+                  <th className="border p-2 text-left">Activity</th>
+                  <th className="border p-2 text-left">Project address</th>
+                  <th className="border p-2 text-left">Measure</th>
+                  <th className="border p-2 text-right">Quantity</th>
+                  <th className="border p-2 text-right">Unit price</th>
+                  <th className="border p-2 text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoice.items.map(item => (
+                  <tr key={item.id} className="border">
+                    <td className="border p-2">{item.activity.name}</td>
+                    <td className="border p-2">{item.project.address}</td>
+                    <td className="border p-2">{item.measure.name}</td>
+                    <td className="border p-2 text-right">{item.quantity}</td>
+                    <td className="border p-2 text-right">{item.price_per_unit} €</td>
+                    <td className="border p-2 text-right">{item.total_price} €</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="text-right">
+              <h3 className="font-bold">Total amount: {invoice.total_amount} €</h3>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-6 mb-6">
         <Card>

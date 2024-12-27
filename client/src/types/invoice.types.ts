@@ -18,6 +18,7 @@ export interface Invoice {
     vat_number: string;
     iban: string;
     phone: string;
+    logo_url: string;
   };
   client: {
     client_company_name: string;
