@@ -1,7 +1,7 @@
 //server\controllers\activity\getActivityByIdController.js
 const db = require("../../data/index.js");
 const Activity = db.Activity;
-const ApiError = require("../../utils/apiError");
+const ApiError = require("../../utils/ApiError.js");
 
 const getActivityById = async (req, res, next) => {
   const activityId = req.params.id;

@@ -1,7 +1,7 @@
 //server\controllers\measures\createMeasureController.js
 const db = require("../../data/index.js");
 const { Measure } = db;
-const ApiError = require("../../utils/apiError");
+const ApiError = require("../../utils/ApiError.js");
 
 const createMeasure = async (req, res, next) => {
   try {

@@ -1,7 +1,7 @@
 //server\controllers\measures\editMeasureController.js
 const db = require("../../data/index.js");
 const { Measure } = db;
-const ApiError = require("../../utils/apiError");
+const ApiError = require("../../utils/ApiError.js");
 
 const editMeasure = async (req, res, next) => {
   try {
