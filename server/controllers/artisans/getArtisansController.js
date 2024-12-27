@@ -1,7 +1,7 @@
 //server\controllers\artisans\getArtisansController.js
 const db = require("../../data/index.js");
 const { Artisan, Company, User, Task, Sequelize } = db;
-const ApiError = require("../../utils/ApiError.js");
+const ApiError = require("../../utils/apiError");
 const { Op } = Sequelize;
 
 const getPaginatedArtisans = async (req, res, next) => {

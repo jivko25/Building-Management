@@ -1,7 +1,7 @@
 //server\controllers\artisans\editArtisanController.js
 const db = require("../../data/index.js");
 const { Artisan, Company, User, Task } = db;
-const ApiError = require("../../utils/ApiError.js");
+const ApiError = require("../../utils/apiError");
 
 const editArtisan = async (req, res, next) => {
   const artisanId = req.params.id;

@@ -1,7 +1,7 @@
 //server\controllers\artisans\createArtisanController.js
 const db = require("../../data/index.js");
 const { Artisan, Company, User, Activity, Measure } = db;
-const ApiError = require("../../utils/ApiError.js");
+const ApiError = require("../../utils/apiError");
 
 const createArtisan = async (req, res, next) => {
   console.log("Creating new artisan with data:", req.body);

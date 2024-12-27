@@ -1,14 +1,14 @@
 //server\controllers\activity\createActivityController.js
 const db = require("../../data/index.js");
 const { Activity } = db;
-const ApiError = require("../../utils/ApiError.js");
+const ApiError = require("../../utils/apiError");
 
 const createActivity = async (req, res, next) => {
   try {
     const { name, status } = req.body;
 
     const existingActivity = await Activity.findOne({
-      where: { name },
+      where: { name }
     });
 
     if (existingActivity) {
@@ -17,13 +17,13 @@ const createActivity = async (req, res, next) => {
 
     const newActivity = await Activity.create({
       name,
-      status,
+      status
     });
 
     res.status(201).json({
       success: true,
       message: "Activity created successfully!",
-      data: newActivity,
+      data: newActivity
     });
   } catch (error) {
     if (error instanceof ApiError) {
@@ -35,5 +35,5 @@ const createActivity = async (req, res, next) => {
 };
 
 module.exports = {
-  createActivity,
+  createActivity
 };

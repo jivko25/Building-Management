@@ -1,7 +1,7 @@
 //server\controllers\activity\editActivitiyController.js
 const db = require("../../data/index.js");
 const Activity = db.Activity;
-const ApiError = require("../../utils/ApiError.js");
+const ApiError = require("../../utils/apiError");
 
 const editActivity = async (req, res, next) => {
   const activityId = req.params.id;
@@ -25,7 +25,7 @@ const editActivity = async (req, res, next) => {
 
     res.status(200).json({
       message: "Activity updated successfully!",
-      activity: activity.toJSON(),
+      activity: activity.toJSON()
     });
   } catch (error) {
     if (error instanceof ApiError) {
@@ -37,5 +37,5 @@ const editActivity = async (req, res, next) => {
 };
 
 module.exports = {
-  editActivity,
+  editActivity
 };

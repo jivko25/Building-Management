@@ -47,7 +47,7 @@ export const InvoiceDetailsPage = () => {
   const handleDownloadPDF = async () => {
     console.log("📥 Downloading PDF for invoice:", id);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/invoices/${id}/pdf`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/invoices/${id}/pdf`, {
         method: "GET",
         credentials: "include",
         headers: {
