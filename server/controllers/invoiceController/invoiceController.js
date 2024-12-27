@@ -393,12 +393,13 @@ const getInvoicePDF = async (req, res, next) => {
   try {
     const pdfBuffer = await createInvoicePDF(req.params.id);
 
-    // Set response headers
+    // Set correct headers
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="invoice-${req.params.id}.pdf"`);
+    res.setHeader("Content-Length", pdfBuffer.length);
 
-    // Send the PDF buffer
-    res.send(pdfBuffer);
+    // Send buffer directly
+    res.end(pdfBuffer);
 
     console.log("PDF sent successfully");
   } catch (error) {
