@@ -8,11 +8,13 @@ import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Trash2, FileText, X, Download } from "lucide-react";
 import { useState } from "react";
+import { ConfirmationModal } from "@/components/ui/ConfirmationModal";
 
 export const InvoiceDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [showPdfPreview, setShowPdfPreview] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { data: invoice, isLoading } = useQuery({
     queryKey: ["invoice", id],
@@ -40,8 +42,14 @@ export const InvoiceDetailsPage = () => {
   }
 
   const handleDelete = () => {
-    console.log("Deleting invoice:", id);
+    console.log("Opening delete confirmation modal");
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    console.log("Confirming delete for invoice:", id);
     deleteMutation.mutate(Number(id));
+    setShowDeleteModal(false);
   };
 
   const handleDownloadPDF = async () => {
@@ -266,6 +274,15 @@ export const InvoiceDetailsPage = () => {
           </div>
         </CardContent>
       </Card>
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Invoice"
+        description={`Are you sure you want to delete invoice ${invoice.invoice_number}? 
+      This action cannot be undone.`}
+      />
     </div>
   );
 };
