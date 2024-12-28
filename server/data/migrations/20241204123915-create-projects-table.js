@@ -8,11 +8,13 @@ module.exports = {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        comment: "ID of the project"
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        comment: "Name of the project"
       },
       companyId: {
         type: Sequelize.INTEGER,
@@ -26,31 +28,43 @@ module.exports = {
       },
       company_name: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
+        comment: "Name of the company"
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        comment: "Email of the project"
       },
       address: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        comment: "Address of the project"
+      },
+      location: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        comment: "City location of the project"
       },
       start_date: {
         type: Sequelize.DATE,
-        allowNull: true
+        allowNull: true,
+        comment: "Start date of the project"
       },
       end_date: {
         type: Sequelize.DATE,
-        allowNull: true
+        allowNull: true,
+        comment: "End date of the project"
       },
       note: {
         type: Sequelize.TEXT,
-        allowNull: true
+        allowNull: true,
+        comment: "Note of the project"
       },
       status: {
         type: Sequelize.ENUM("active", "inactive"),
-        defaultValue: "inactive"
+        defaultValue: "inactive",
+        comment: "Status of the project"
       },
       creator_id: {
         type: Sequelize.INTEGER,
