@@ -135,31 +135,34 @@ export const InvoiceDetailsPage = () => {
           </div>
           <div className="border rounded-lg p-8" style={{ fontFamily: "Calibri, sans-serif" }}>
             <div className="flex justify-between mb-8">
-              {invoice.company?.logo_url && <img src={invoice.company.logo_url} alt="Company Logo" className="max-w-[226px] max-h-[98px]" />}
               <div>
-                <h1 className="text-xl font-bold">Invoice {invoice.invoice_number}</h1>
+                <h1 className="text-xl font-bold mb-2">Invoice {invoice.invoice_number}</h1>
                 <p>Date of issue: {format(new Date(invoice.invoice_date), "dd.MM.yyyy", { locale: bg })}</p>
                 <p>Due date: {format(new Date(invoice.due_date), "dd.MM.yyyy", { locale: bg })}</p>
               </div>
+              <div className="text-right">{invoice.company?.logo_url && <img src={invoice.company.logo_url} alt="Company Logo" className="max-w-[226px] max-h-[98px]" />}</div>
             </div>
 
-            <div className="mb-8">
-              <h3 className="font-bold">Construction company:</h3>
-              <p>{invoice.company?.name}</p>
-              <p>{invoice.company?.address}</p>
-              <p>Reg. number: {invoice.company?.number || "No"}</p>
-              <p>VAT number: {invoice.company?.vat_number || "No"}</p>
-              <p>IBAN: {invoice.company?.iban || "No"}</p>
-              <p>Phone: {invoice.company?.phone || "No"}</p>
-            </div>
+            <div className="grid grid-cols-2 gap-10 mb-8">
+              <div className="border p-5 rounded">
+                <h3 className="font-bold mb-2">Construction company:</h3>
+                <p>{invoice.company?.name}</p>
+                <p>{invoice.company?.address}</p>
+                <p>Reg. number: {invoice.company?.number || "No"}</p>
+                <p>VAT number: {invoice.company?.vat_number || "No"}</p>
+                <p>IBAN: {invoice.company?.iban || "No"}</p>
+                <p>Phone: {invoice.company?.phone || "No"}</p>
+                <p>For Contact: Счетоводител Счетоводителов</p>
+              </div>
 
-            <div className="mb-8">
-              <h3 className="font-bold">Client:</h3>
-              <p>Company: {invoice.client?.client_company_name}</p>
-              <p>Contact person: {invoice.client?.client_name}</p>
-              <p>Address: {invoice.client?.client_company_address}</p>
-              <p>IBAN: {invoice.client?.client_company_iban}</p>
-              <p>Emails: {Array.isArray(invoice.client?.client_emails) ? invoice.client.client_emails.join(", ") : invoice.client?.client_emails}</p>
+              <div className="border p-5 rounded">
+                <h3 className="font-bold mb-2">Client:</h3>
+                <p>Company: {invoice.client?.client_company_name || "No"}</p>
+                <p>Contact person: {invoice.client?.client_name}</p>
+                <p>Address: {invoice.client?.client_company_address || "No"}</p>
+                <p>IBAN: {invoice.client?.client_company_iban || "No"}</p>
+                <p>Emails: {Array.isArray(invoice.client?.client_emails) ? invoice.client.client_emails.join(", ") : invoice.client?.client_emails || "No"}</p>
+              </div>
             </div>
 
             <table className="w-full mb-8 text-sm">
@@ -178,8 +181,8 @@ export const InvoiceDetailsPage = () => {
                 {invoice.items.map(item => (
                   <tr key={item.id} className="border">
                     <td className="border p-2">{item.activity.name}</td>
-                    <td className="border p-2">{item.project?.location}</td>
-                    <td className="border p-2">{item.project.address}</td>
+                    <td className="border p-2">{item.project?.location || "No"}</td>
+                    <td className="border p-2">{item.project.address || "No"}</td>
                     <td className="border p-2">{item.measure.name}</td>
                     <td className="border p-2 text-right">{item.quantity}</td>
                     <td className="border p-2 text-right">{item.price_per_unit} €</td>
