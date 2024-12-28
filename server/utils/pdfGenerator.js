@@ -127,6 +127,33 @@ const createInvoicePDF = async invoiceId => {
               font-size: 11pt;
               margin: 0pt;
             }
+            .header {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 30px;
+            }
+            .invoice-info {
+              flex: 1;
+            }
+            .company-logo {
+              text-align: right;
+            }
+            .logo {
+              max-width: 226px;
+              max-height: 98px;
+            }
+            .info-container {
+              display: flex;
+              justify-content: space-between;
+              gap: 40px;
+              margin-bottom: 30px;
+            }
+            .company-info, .client-info {
+              flex: 1;
+              padding: 20px;
+              border: 1px solid #eee;
+              border-radius: 4px;
+            }
             table {
               width: 100%;
               border-collapse: collapse;
@@ -139,50 +166,39 @@ const createInvoicePDF = async invoiceId => {
               text-align: left;
               font-size: 10pt;
             }
-            .header {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 30px;
-            }
-            .logo {
-              max-width: 226px;
-              max-height: 98px;
-            }
-            .company-info {
-              margin-bottom: 20px;
-            }
-            .client-info {
-              margin-bottom: 20px;
-            }
           </style>
         </head>
         <body>
           <div class="header">
-            ${data.companyLogo ? `<img class="logo" src="${data.companyLogo}" alt="Company Logo">` : ""}
-            <div>
+            <div class="invoice-info">
               <h1>Invoice ${data.invoiceNumber}</h1>
               <p>Date of issue: ${data.date}</p>
               <p>Due date: ${data.dueDate}</p>
             </div>
+            <div class="company-logo">
+              ${data.companyLogo ? `<img class="logo" src="${data.companyLogo}" alt="Company Logo">` : ""}
+            </div>
           </div>
           
-          <div class="company-info">
-            <h3>Construction company:</h3>
-            <p>${data.companyName}</p>
-            <p>${data.companyAddress}</p>
-            <p>Reg. number: ${data.companyRegNumber || "No"}</p>
-            <p>VAT number: ${data.companyVAT || "No"}</p>
-            <p>IBAN: ${data.companyIBAN || "No"}</p>
-            <p>Phone: ${data.companyPhone || "No"}</p>
-          </div>
+          <div class="info-container">
+            <div class="company-info">
+              <h3>Construction company:</h3>
+              <p>${data.companyName}</p>
+              <p>${data.companyAddress}</p>
+              <p>Reg. number: ${data.companyRegNumber || "No"}</p>
+              <p>VAT number: ${data.companyVAT || "No"}</p>
+              <p>IBAN: ${data.companyIBAN || "No"}</p>
+              <p>Phone: ${data.companyPhone || "No"}</p>
+            </div>
 
-          <div class="client-info">
-            <h3>Client:</h3>
-            <p>Company: ${data.clientCompanyName || "No"}</p>
-            <p>Contact person: ${data.clientName}</p>
-            <p>Address: ${data.clientAddress || "No"}</p>
-            <p>IBAN: ${data.clientIBAN || "No"}</p>
-            <p>Emails: ${data.clientEmails || "No"}</p>
+            <div class="client-info">
+              <h3>Client:</h3>
+              <p>Company: ${data.clientCompanyName || "No"}</p>
+              <p>Contact person: ${data.clientName}</p>
+              <p>Address: ${data.clientAddress || "No"}</p>
+              <p>IBAN: ${data.clientIBAN || "No"}</p>
+              <p>Emails: ${data.clientEmails || "No"}</p>
+            </div>
           </div>
 
           <table>
