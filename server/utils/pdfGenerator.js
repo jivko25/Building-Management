@@ -12,7 +12,7 @@ const createInvoicePDF = async invoiceId => {
         {
           model: Company,
           as: "company",
-          attributes: ["name", "address", "vat_number", "iban", "logo_url", "phone", "number", "email"]
+          attributes: ["name", "address", "vat_number", "iban", "logo_url", "phone", "number", "email", "mol"]
         },
         {
           model: Client,
@@ -76,6 +76,7 @@ const createInvoicePDF = async invoiceId => {
       companyPhone: invoice.company.phone,
       companyRegNumber: invoice.company.number,
       companyEmail: invoice.company.email,
+      companyMol: invoice.company.mol,
       clientCompanyName: invoice.client.client_company_name,
       clientName: invoice.client.client_name,
       clientAddress: invoice.client.client_company_address,
@@ -198,7 +199,7 @@ const createInvoicePDF = async invoiceId => {
               <p>IBAN: ${data.companyIBAN || "No"}</p>
               <p>Phone: ${data.companyPhone || "No"}</p>
               <p>Email: ${data.companyEmail || "No"}</p>
-              <p>For Contact: Счетоводител Счетоводителов</p>
+              <p>For Contact: ${data.companyMol || "No"}</p>
             </div>
           </div>
 
