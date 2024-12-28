@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
 import { useGetPaginatedData } from "@/hooks/useQueryHook";
+import { useEffect } from "react";
 
 const createInvoiceSchema = z.object({
   company_id: z.number({
@@ -55,6 +56,20 @@ export const CreateInvoicePage = () => {
 
   const companies = companiesResponse?.companies || [];
 
+  const form = useForm<z.infer<typeof createInvoiceSchema>>({
+    resolver: zodResolver(createInvoiceSchema),
+    defaultValues: {
+      company_id: 0,
+      client_company_name: "",
+      client_emails: [""],
+      items: [{ activity_id: 0, measure_id: 0, project_id: 0, quantity: 0, price_per_unit: 0 }]
+    }
+  });
+
+  // Watch for changes in items array
+  const items = form.watch("items");
+
+  // Get projects data
   const { data: projects } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
@@ -66,6 +81,22 @@ export const CreateInvoicePage = () => {
       return data;
     }
   });
+
+  // Update first email when project changes
+  useEffect(() => {
+    const firstItem = items[0];
+    if (firstItem && firstItem.project_id) {
+      const selectedProject = projects?.find((p: any) => p.id === firstItem.project_id);
+      if (selectedProject?.email) {
+        const currentEmails = form.getValues("client_emails");
+        // Only update if first email is empty or doesn't exist
+        if (!currentEmails[0]) {
+          console.log("Setting first email to project email:", selectedProject.email);
+          form.setValue("client_emails.0", selectedProject.email);
+        }
+      }
+    }
+  }, [items, projects, form]);
 
   const { data: activities } = useGetPaginatedData({
     URL: "/activities",
@@ -79,16 +110,6 @@ export const CreateInvoicePage = () => {
     queryKey: ["measures"],
     limit: 100,
     page: 1
-  });
-
-  const form = useForm<z.infer<typeof createInvoiceSchema>>({
-    resolver: zodResolver(createInvoiceSchema),
-    defaultValues: {
-      company_id: 0,
-      client_company_name: "",
-      client_emails: [""],
-      items: [{ activity_id: 0, measure_id: 0, project_id: 0, quantity: 0, price_per_unit: 0 }]
-    }
   });
 
   const createInvoiceMutation = useMutation({
@@ -236,7 +257,7 @@ export const CreateInvoicePage = () => {
                     <FormItem className="flex-1">
                       <FormLabel>Email {index + 1}</FormLabel>
                       <FormControl>
-                        <Input type="email" {...field} />
+                        <Input type="email" {...field} placeholder={index === 0 ? "Will auto-fill from project email" : "Enter email"} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -328,14 +349,24 @@ export const CreateInvoicePage = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Project</FormLabel>
-                      <Select onValueChange={value => field.onChange(parseInt(value))} value={field.value ? field.value.toString() : ""}>
+                      <Select
+                        onValueChange={value => {
+                          field.onChange(parseInt(value));
+                          // Автоматично попълване на имейл при избор на проект
+                          const selectedProject = projects?.find((p: any) => p.id === parseInt(value));
+                          if (selectedProject?.email) {
+                            console.log("Setting email from project:", selectedProject.email);
+                            form.setValue("client_emails.0", selectedProject.email);
+                          }
+                        }}
+                        value={field.value ? field.value.toString() : ""}>
                         <SelectTrigger>
                           <SelectValue placeholder="Choose project" />
                         </SelectTrigger>
                         <SelectContent>
                           {projects?.map((project: any) => (
                             <SelectItem key={project.id} value={project.id.toString()}>
-                              {project.name} - {project.address}
+                              {project.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
