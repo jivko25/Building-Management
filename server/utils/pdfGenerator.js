@@ -36,7 +36,7 @@ const createInvoicePDF = async invoiceId => {
             {
               model: Project,
               as: "project",
-              attributes: ["id", "name", "company_name", "email", "address"]
+              attributes: ["id", "name", "company_name", "email", "address", "location"]
             }
           ]
         }
@@ -85,6 +85,7 @@ const createInvoicePDF = async invoiceId => {
         activity: item.activity.name,
         measure: item.measure.name,
         project_address: item.project.address,
+        project_location: item.project.location || "No",
         quantity: parseFloat(item.quantity),
         price_per_unit: parseFloat(item.price_per_unit),
         total: parseFloat(item.total_price)
@@ -204,6 +205,7 @@ const createInvoicePDF = async invoiceId => {
             <thead>
               <tr>
                 <th>Activity</th>
+                <th>Location</th>
                 <th>Project address</th>
                 <th>Measure</th>
                 <th>Quantity</th>
@@ -217,6 +219,7 @@ const createInvoicePDF = async invoiceId => {
                   item => `
                 <tr>
                   <td>${item.activity}</td>
+                  <td>${item.project_location}</td>
                   <td>${item.project_address || "No"}</td>
                   <td>${item.measure}</td>
                   <td style="text-align: right">${item.quantity.toFixed(2)}</td>
