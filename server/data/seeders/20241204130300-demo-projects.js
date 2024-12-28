@@ -4,7 +4,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.bulkDelete("tbl_projects", null, {});
-    
+
     await queryInterface.bulkInsert(
       "tbl_projects",
       [
@@ -15,6 +15,7 @@ module.exports = {
           company_name: "Строителна фирма А",
           email: "projecta@example.com",
           address: "ул. Проектна 1",
+          location: "София",
           start_date: new Date(),
           end_date: null,
           note: "Важен проект",
@@ -28,6 +29,7 @@ module.exports = {
           company_name: "Строителна фирма Б",
           email: "projectb@example.com",
           address: "ул. Проектна 2",
+          location: "Варна",
           start_date: new Date(),
           end_date: null,
           note: "Малък проект",

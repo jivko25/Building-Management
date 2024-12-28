@@ -32,6 +32,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false
       },
+      location: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        comment: "City location of the project"
+      },
       start_date: {
         type: DataTypes.DATE,
         allowNull: true
