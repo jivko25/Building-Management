@@ -54,13 +54,10 @@ const createInvoicePDF = async invoiceId => {
       const parts = invoiceNumber.split("/");
       if (parts.length !== 2) return invoiceNumber;
 
-      const [firstPart, secondPart] = parts;
-      const [weekPart, numberPart] = secondPart.split("-");
+      const [yearWeek, sequencePart] = parts;
+      const [year, week] = yearWeek.split("-");
 
-      if (!numberPart) return invoiceNumber;
-
-      const formattedNumber = numberPart.padStart(3, "0");
-      return `${firstPart}/${weekPart}-${formattedNumber}`;
+      return `${year}-week-${week}/${week}`;
     };
 
     const formattedInvoiceNumber = formatInvoiceNumber(invoice.invoice_number);
