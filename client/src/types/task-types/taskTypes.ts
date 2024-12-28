@@ -38,6 +38,7 @@ export type ProjectTask = {
         project_company_name?: string;
         project_name?: string;
         project_address?: string;
+        project_location?: string;
         project_status?: string;
         project_start_date?: string;
         project_end_date?: string;

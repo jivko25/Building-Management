@@ -4,7 +4,7 @@ const { Project, Company } = db;
 const ApiError = require("../../utils/apiError");
 
 const createProject = async (req, res, next) => {
-  const { name, company_name, email, address, start_date, end_date, note, status } = req.body;
+  const { name, company_name, email, address, location, start_date, end_date, note, status } = req.body;
 
   try {
     const existingProject = await Project.findOne({ where: { name } });
@@ -23,6 +23,7 @@ const createProject = async (req, res, next) => {
       company_name,
       email,
       address,
+      location,
       start_date,
       end_date,
       note,

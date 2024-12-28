@@ -19,6 +19,9 @@ export const projectSchema = z
     address: z.string().min(5, {
       message: "Project address must be at least 5 characters."
     }),
+    location: z.string().min(5, {
+      message: "Project location must be at least 5 characters."
+    }),
     email: z
       .string()
       .min(5, {
@@ -59,6 +62,7 @@ export const projectDefaults: Project = {
   start_date: "",
   end_date: "",
   address: "",
+  location: "",
   note: "",
   status: "active"
 };

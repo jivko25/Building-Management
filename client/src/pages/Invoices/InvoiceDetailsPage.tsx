@@ -166,6 +166,7 @@ export const InvoiceDetailsPage = () => {
               <thead>
                 <tr className="border">
                   <th className="border p-2 text-left">Activity</th>
+                  <th className="border p-2 text-left">Location</th>
                   <th className="border p-2 text-left">Project address</th>
                   <th className="border p-2 text-left">Measure</th>
                   <th className="border p-2 text-right">Quantity</th>
@@ -177,6 +178,7 @@ export const InvoiceDetailsPage = () => {
                 {invoice.items.map(item => (
                   <tr key={item.id} className="border">
                     <td className="border p-2">{item.activity.name}</td>
+                    <td className="border p-2">{item.project?.location}</td>
                     <td className="border p-2">{item.project.address}</td>
                     <td className="border p-2">{item.measure.name}</td>
                     <td className="border p-2 text-right">{item.quantity}</td>
@@ -254,6 +256,7 @@ export const InvoiceDetailsPage = () => {
               <thead className="text-xs uppercase bg-gray-50 dark:bg-gray-700">
                 <tr>
                   <th className="px-6 py-3">Activity</th>
+                  <th className="px-6 py-3">Location</th>
                   <th className="px-6 py-3">Object address</th>
                   <th className="px-6 py-3">Measure</th>
                   <th className="px-6 py-3 text-right">Quantity</th>
@@ -265,6 +268,7 @@ export const InvoiceDetailsPage = () => {
                 {invoice.items.map(item => (
                   <tr key={item.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                     <td className="px-6 py-4">{item.activity.name}</td>
+                    <td className="px-6 py-4">{item.project?.location}</td>
                     <td className="px-6 py-4">{item.project.address}</td>
                     <td className="px-6 py-4">{item.measure.name}</td>
                     <td className="px-6 py-4 text-right">{Math.round(parseFloat(item.quantity))}</td>
@@ -273,7 +277,7 @@ export const InvoiceDetailsPage = () => {
                   </tr>
                 ))}
                 <tr className="font-bold">
-                  <td colSpan={5} className="px-6 py-4 text-right">
+                  <td colSpan={6} className="px-6 py-4 text-right">
                     Total amount:
                   </td>
                   <td className="px-6 py-4 text-right">{invoice.total_amount} €</td>

@@ -37,6 +37,7 @@ const EditProjectForm = ({ handleSubmit, isPending, projectId }: EditProjectForm
         <div className="grid grid-cols-1 gap-2 mb-2">
           <FormFieldInput type="text" label="Project name" name="name" className="pl-10" Icon={ClipboardList} />
           <FormFieldInput type="text" label="Project address" name="address" className="pl-10" Icon={MapPin} />
+          <FormFieldInput type="text" label="Project location" name="location" className="pl-10" Icon={MapPin} />
           <FormFieldInput type="email" label="Project email" name="email" className="pl-10" Icon={Mail} />
         </div>
         <Separator className="mt-4 mb-2" />

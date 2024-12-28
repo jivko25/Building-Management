@@ -83,9 +83,9 @@ const createInvoicePDF = async invoiceId => {
       clientEmails: Array.isArray(invoice.client.client_emails) ? invoice.client.client_emails.join(", ") : invoice.client.client_emails,
       items: invoice.items.map(item => ({
         activity: item.activity.name,
-        measure: item.measure.name,
+        project_location: item.project.location,
         project_address: item.project.address,
-        project_location: item.project.location || "No",
+        measure: item.measure.name,
         quantity: parseFloat(item.quantity),
         price_per_unit: parseFloat(item.price_per_unit),
         total: parseFloat(item.total_price)
