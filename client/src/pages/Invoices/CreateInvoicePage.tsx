@@ -132,28 +132,36 @@ export const CreateInvoicePage = () => {
   const updateEmailsFromProjects = (items: any[]) => {
     console.log("Updating emails from projects");
 
-    // Събиране на уникални имейли от всички избрани проекти
     const uniqueEmails = new Set<string>();
+    const projectEmails = new Map<number, string>();
 
-    items.forEach(item => {
-      if (item.project_id) {
-        const selectedProject = projects?.find((p: any) => p.id === item.project_id);
-        if (selectedProject?.email) {
-          uniqueEmails.add(selectedProject.email);
-        }
+    projects?.forEach((project: any) => {
+      if (project.email) {
+        projectEmails.set(project.id, project.email);
       }
     });
 
-    // Запазване на съществуващите ръчно въведени имейли
+    items.forEach(item => {
+      if (item.project_id && projectEmails.has(item.project_id)) {
+        uniqueEmails.add(projectEmails.get(item.project_id)!);
+      }
+    });
+
     const currentEmails = form.getValues("client_emails");
-    const manualEmails = currentEmails.filter(email => email && !Array.from(uniqueEmails).includes(email));
+    const manualEmails = currentEmails.filter(email => {
+      return email && !Array.from(projectEmails.values()).includes(email);
+    });
 
-    // Комбиниране на уникалните имейли от проекти с ръчно въведените
     const allEmails = [...Array.from(uniqueEmails), ...manualEmails];
-
     console.log("Setting emails:", allEmails);
     form.setValue("client_emails", allEmails);
   };
+
+  // Наблюдаваме промените в items
+  useEffect(() => {
+    console.log("Items changed, updating emails");
+    updateEmailsFromProjects(items);
+  }, [items]);
 
   return (
     <div className="container mx-auto py-10">
@@ -377,12 +385,11 @@ export const CreateInvoicePage = () => {
                       <FormLabel>Project</FormLabel>
                       <Select
                         onValueChange={value => {
-                          field.onChange(parseInt(value));
+                          const projectId = parseInt(value);
+                          field.onChange(projectId);
 
-                          // Обновяване на всички items
-                          const updatedItems = form.getValues("items").map((item, i) => (i === index ? { ...item, project_id: parseInt(value) } : item));
-
-                          // Обновяване на имейлите от всички проекти
+                          // Обновяваме items и имейли веднага
+                          const updatedItems = form.getValues("items").map((item, i) => (i === index ? { ...item, project_id: projectId } : item));
                           updateEmailsFromProjects(updatedItems);
                         }}
                         value={field.value ? field.value.toString() : ""}>
@@ -434,10 +441,10 @@ export const CreateInvoicePage = () => {
                   type="button"
                   variant="destructive"
                   onClick={() => {
-                    const items = form.getValues("items");
+                    const currentItems = form.getValues("items");
                     form.setValue(
                       "items",
-                      items.filter((_, i) => i !== index)
+                      currentItems.filter((_, i) => i !== index)
                     );
                   }}
                   className="mb-2">
