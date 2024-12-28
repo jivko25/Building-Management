@@ -189,6 +189,7 @@ const createInvoicePDF = async invoiceId => {
               <p>IBAN: ${data.companyIBAN || "No"}</p>
               <p>Phone: ${data.companyPhone || "No"}</p>
               <p>Email: ${data.companyEmail || "No"}</p>
+              <p>For Contact: Счетоводител Счетоводителов</p>
             </div>
 
             <div class="client-info">
