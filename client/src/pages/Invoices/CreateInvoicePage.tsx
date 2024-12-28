@@ -128,6 +128,33 @@ export const CreateInvoicePage = () => {
     createInvoiceMutation.mutate(data);
   };
 
+  // Функция за обновяване на имейлите от проектите
+  const updateEmailsFromProjects = (items: any[]) => {
+    console.log("Updating emails from projects");
+
+    // Събиране на уникални имейли от всички избрани проекти
+    const uniqueEmails = new Set<string>();
+
+    items.forEach(item => {
+      if (item.project_id) {
+        const selectedProject = projects?.find((p: any) => p.id === item.project_id);
+        if (selectedProject?.email) {
+          uniqueEmails.add(selectedProject.email);
+        }
+      }
+    });
+
+    // Запазване на съществуващите ръчно въведени имейли
+    const currentEmails = form.getValues("client_emails");
+    const manualEmails = currentEmails.filter(email => email && !Array.from(uniqueEmails).includes(email));
+
+    // Комбиниране на уникалните имейли от проекти с ръчно въведените
+    const allEmails = [...Array.from(uniqueEmails), ...manualEmails];
+
+    console.log("Setting emails:", allEmails);
+    form.setValue("client_emails", allEmails);
+  };
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
@@ -248,7 +275,7 @@ export const CreateInvoicePage = () => {
               </Button>
             </div>
 
-            {form.watch("client_emails").map((_, index) => (
+            {form.watch("client_emails").map((email, index) => (
               <div key={index} className="flex gap-4 items-end">
                 <FormField
                   control={form.control}
@@ -257,13 +284,12 @@ export const CreateInvoicePage = () => {
                     <FormItem className="flex-1">
                       <FormLabel>Email {index + 1}</FormLabel>
                       <FormControl>
-                        <Input type="email" {...field} placeholder={index === 0 ? "Will auto-fill from project email" : "Enter email"} />
+                        <Input type="email" {...field} placeholder="Enter email" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
                 <Button
                   type="button"
                   variant="destructive"
@@ -352,12 +378,12 @@ export const CreateInvoicePage = () => {
                       <Select
                         onValueChange={value => {
                           field.onChange(parseInt(value));
-                          // Автоматично попълване на имейл при избор на проект
-                          const selectedProject = projects?.find((p: any) => p.id === parseInt(value));
-                          if (selectedProject?.email) {
-                            console.log("Setting email from project:", selectedProject.email);
-                            form.setValue("client_emails.0", selectedProject.email);
-                          }
+
+                          // Обновяване на всички items
+                          const updatedItems = form.getValues("items").map((item, i) => (i === index ? { ...item, project_id: parseInt(value) } : item));
+
+                          // Обновяване на имейлите от всички проекти
+                          updateEmailsFromProjects(updatedItems);
                         }}
                         value={field.value ? field.value.toString() : ""}>
                         <SelectTrigger>
