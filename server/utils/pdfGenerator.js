@@ -207,8 +207,6 @@ const createInvoicePDF = async invoiceId => {
               <tr>
                 <th>Activity</th>
                 <th>Location</th>
-                <th>Project address</th>
-                <th>Measure</th>
                 <th>Quantity</th>
                 <th>Unit price</th>
                 <th>Total</th>
@@ -221,8 +219,6 @@ const createInvoicePDF = async invoiceId => {
                 <tr>
                   <td>${item.activity}</td>
                   <td>${item.project_location}</td>
-                  <td>${item.project_address || "No"}</td>
-                  <td>${item.measure}</td>
                   <td style="text-align: right">${item.quantity.toFixed(2)}</td>
                   <td style="text-align: right">${item.price_per_unit.toFixed(2)} €</td>
                   <td style="text-align: right">${item.total.toFixed(2)} €</td>
