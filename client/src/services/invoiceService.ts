@@ -25,8 +25,15 @@ export const invoiceService = {
   },
 
   create: async (data: any): Promise<Invoice> => {
-    const response = await axios.post(`${API_URL}/invoices`, data);
-    return response.data.data;
+    console.log("Creating invoice with data:", JSON.stringify(data, null, 2));
+    try {
+      const response = await axios.post(`${API_URL}/invoices`, data);
+      console.log("Create invoice response:", response.data);
+      return response.data.data;
+    } catch (error: any) {
+      console.error("Error creating invoice:", error.response?.data || error);
+      throw new Error(error.response?.data?.message || "Failed to create invoice");
+    }
   },
 
   delete: async (id: number): Promise<void> => {

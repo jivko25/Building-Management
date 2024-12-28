@@ -4,9 +4,102 @@ const { createInvoicePDF } = require("../../utils/pdfGenerator");
 const { sendInvoiceEmail } = require("../../utils/invoiceEmailService");
 
 const createInvoice = async (req, res, next) => {
-  console.log("Creating new invoice...");
+  console.log("Creating new invoice with data:", JSON.stringify(req.body, null, 2));
   try {
     const { company_id, client_company_name, client_name, client_company_address, client_company_iban, client_emails, due_date_weeks, items } = req.body;
+
+    // Validate required fields
+    if (!company_id || !client_company_name || !client_name || !items || !items.length) {
+      console.error("Missing required fields");
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        details: {
+          company_id: !company_id,
+          client_company_name: !client_company_name,
+          client_name: !client_name,
+          items: !items || !items.length
+        }
+      });
+    }
+
+    // Validate items
+    for (const item of items) {
+      if (!item.activity_id || !item.measure_id || !item.project_id || !item.quantity || !item.price_per_unit) {
+        console.error("Invalid item data:", item);
+        return res.status(400).json({
+          success: false,
+          message: "Invalid item data",
+          details: {
+            item,
+            required: {
+              activity_id: !item.activity_id,
+              measure_id: !item.measure_id,
+              project_id: !item.project_id,
+              quantity: !item.quantity,
+              price_per_unit: !item.price_per_unit
+            }
+          }
+        });
+      }
+    }
+
+    // Get current date info
+    const date = new Date();
+    const year = date.getFullYear();
+    const week = Math.ceil((date - new Date(date.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24 * 7));
+
+    // Function to generate and validate invoice number
+    const generateUniqueInvoiceNumber = async () => {
+      // Get all invoice numbers for current year and week
+      const existingInvoices = await Invoice.findAll({
+        where: { year, week_number: week },
+        attributes: ["invoice_number"],
+        raw: true
+      });
+
+      // Extract sequence numbers from existing invoice numbers
+      const existingNumbers = existingInvoices
+        .map(inv => {
+          const match = inv.invoice_number.match(/(\d+)$/);
+          return match ? parseInt(match[1]) : 0;
+        })
+        .sort((a, b) => a - b);
+
+      // Find first available number
+      let sequenceNumber = 1;
+      for (const existingNumber of existingNumbers) {
+        if (existingNumber !== sequenceNumber) {
+          break;
+        }
+        sequenceNumber++;
+      }
+
+      const proposedNumber = `${year}-${week}/${week}-${sequenceNumber}`;
+      console.log("Generated invoice number:", proposedNumber);
+
+      // Double-check uniqueness
+      const isUnique =
+        (await Invoice.count({
+          where: { invoice_number: proposedNumber }
+        })) === 0;
+
+      if (!isUnique) {
+        console.log("Number collision detected, retrying with next number");
+        return generateUniqueInvoiceNumber();
+      }
+
+      return proposedNumber;
+    };
+
+    // Generate unique invoice number
+    const invoice_number = await generateUniqueInvoiceNumber();
+    console.log("Final invoice number:", invoice_number);
+
+    // Calculate due date and total amount
+    const due_date = new Date(date);
+    due_date.setDate(due_date.getDate() + (due_date_weeks || 4) * 7);
+    const total_amount = items.reduce((sum, item) => sum + item.quantity * item.price_per_unit, 0);
 
     // Create or find client
     const [client] = await Client.findOrCreate({
@@ -21,50 +114,44 @@ const createInvoice = async (req, res, next) => {
 
     console.log("Client created/found:", client.id);
 
-    // Create invoice number
-    const date = new Date();
-    const year = date.getFullYear();
-    const week = Math.ceil((date - new Date(date.getFullYear(), 0, 1)) / 604800000);
+    // Create invoice with transaction to ensure atomicity
+    const result = await db.sequelize.transaction(async t => {
+      const invoice = await Invoice.create(
+        {
+          invoice_number,
+          year,
+          week_number: week,
+          company_id,
+          client_id: client.id,
+          invoice_date: date,
+          due_date,
+          total_amount,
+          paid: false
+        },
+        { transaction: t }
+      );
 
-    const lastInvoice = await Invoice.count({
-      where: { year, week_number: week }
+      // Create invoice items
+      await Promise.all(
+        items.map(item =>
+          InvoiceItem.create(
+            {
+              invoice_id: invoice.id,
+              ...item,
+              total_price: item.quantity * item.price_per_unit
+            },
+            { transaction: t }
+          )
+        )
+      );
+
+      return invoice;
     });
 
-    const invoice_number = `${year}-${week}/52-${lastInvoice + 1}`;
-    const due_date = new Date();
-    due_date.setDate(due_date.getDate() + due_date_weeks * 7);
-
-    const total_amount = items.reduce((sum, item) => sum + item.quantity * item.price_per_unit, 0);
-
-    const invoice = await Invoice.create({
-      invoice_number,
-      year,
-      week_number: week,
-      company_id,
-      client_id: client.id,
-      invoice_date: date,
-      due_date,
-      total_amount,
-      paid: false
-    });
-
-    console.log("Invoice created:", invoice.invoice_number);
-
-    // Create invoice items
-    const invoiceItems = await Promise.all(
-      items.map(item =>
-        InvoiceItem.create({
-          invoice_id: invoice.id,
-          ...item,
-          total_price: item.quantity * item.price_per_unit
-        })
-      )
-    );
-
-    console.log("Invoice items created");
+    console.log("Invoice created successfully:", result.invoice_number);
 
     // Generate PDF
-    const pdfBuffer = await createInvoicePDF(invoice.id);
+    const pdfBuffer = await createInvoicePDF(result.id);
 
     // Send emails
     const emailList = Array.isArray(client_emails) ? client_emails : [client_emails];
@@ -72,15 +159,15 @@ const createInvoice = async (req, res, next) => {
     console.log("Sending invoice to emails:", emailList);
 
     for (const email of emailList) {
-      await sendInvoiceEmail(email, pdfBuffer, invoice_number);
+      await sendInvoiceEmail(email, pdfBuffer, result.invoice_number);
       console.log("Invoice email sent to:", email);
     }
 
     res.status(201).json({
       success: true,
       data: {
-        invoice,
-        items: invoiceItems
+        invoice: result,
+        items: result.items
       }
     });
   } catch (error) {

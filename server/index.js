@@ -32,6 +32,7 @@ const allowedOrigins = [process.env.API_CORS, "http://localhost"];
 app.use(
   cors({
     origin: (origin, callback) => {
+      console.log("Request origin:", origin);
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
