@@ -23,6 +23,7 @@ const getTaskWithProject = async (req, res, next) => {
           attributes: [
             ["name", "project_name"],
             ["address", "project_address"],
+            ["location", "project_location"],
             ["start_date", "project_start_date"],
             ["end_date", "project_end_date"],
             ["status", "project_status"]

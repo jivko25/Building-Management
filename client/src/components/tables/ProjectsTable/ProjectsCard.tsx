@@ -26,6 +26,10 @@ const ProjectsCard = ({ projects }: CardFormProps) => {
               <span>{project.address}</span>
             </CardDescription>
             <CardDescription>
+              <span className="font-semibold pr-1">Location:</span>
+              <span>{project.location}</span>
+            </CardDescription>
+            <CardDescription>
               <span className="font-semibold pr-1">Deadline:</span>
               <span>{new Date(project.end_date!).toLocaleDateString().slice(0, 10)}</span>
             </CardDescription>

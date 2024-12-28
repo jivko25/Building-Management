@@ -208,7 +208,7 @@ const getAllInvoices = async (req, res, next) => {
             {
               model: Project,
               as: "project",
-              attributes: ["id", "name", "address"]
+              attributes: ["id", "name", "address", "location"]
             }
           ]
         }
@@ -259,7 +259,7 @@ const getInvoiceById = async (req, res, next) => {
             {
               model: Project,
               as: "project",
-              attributes: ["id", "name", "address"]
+              attributes: ["id", "name", "address", "location"]
             },
             {
               model: Task,
@@ -461,7 +461,7 @@ const updateInvoice = async (req, res, next) => {
                 {
                   model: Project,
                   as: "project",
-                  attributes: ["id", "name", "address"]
+                  attributes: ["id", "name", "address", "location"]
                 }
               ]
             }

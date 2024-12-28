@@ -27,6 +27,7 @@ const CreateProjectForm = ({ handleSubmit, isPending }: CreateProjectFormProps) 
           <FormFieldInput type="text" label="Project name" name="name" className="pl-10" Icon={ClipboardList} />
           <FormFieldInput type="email" label="Project email" name="email" className="pl-10" Icon={Mail} />
           <FormFieldInput type="text" label="Project address" name="address" className="pl-10" Icon={MapPin} />
+          <FormFieldInput type="text" label="Project location" name="location" className="pl-10" Icon={MapPin} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 ">

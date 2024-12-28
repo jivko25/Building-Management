@@ -6,7 +6,7 @@ const ApiError = require("../../utils/apiError");
 const editProject = async (req, res, next) => {
   console.log("Editing project with data:", req.body);
   const projectId = req.params.id;
-  const { name, company_name, email, address, start_date, end_date, note, status } = req.body;
+  const { name, company_name, email, address, start_date, end_date, note, status, location } = req.body;
 
   try {
     const project = await Project.findByPk(projectId);
@@ -36,7 +36,8 @@ const editProject = async (req, res, next) => {
       start_date,
       end_date,
       note,
-      status
+      status,
+      location
     });
 
     // Форматиране на отговора според изисквания формат
@@ -50,7 +51,8 @@ const editProject = async (req, res, next) => {
       start_date: updatedProject.start_date,
       end_date: updatedProject.end_date,
       note: updatedProject.note,
-      status: updatedProject.status
+      status: updatedProject.status,
+      location: updatedProject.location
     };
 
     res.json({

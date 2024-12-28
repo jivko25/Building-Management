@@ -14,6 +14,7 @@ export interface Invoice {
   company: {
     name: string;
     address: string;
+    location: string;
     number: string;
     vat_number: string;
     iban: string;
@@ -53,6 +54,8 @@ export interface InvoiceItem {
     id: number;
     name: string;
     address: string;
+    location: string;
+    email: string;
   };
 }
 
