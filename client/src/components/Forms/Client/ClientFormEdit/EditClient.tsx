@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useClientFormHooks } from "@/hooks/forms/useClientForm";
 import { useEditEntity, useGetEntityData } from "@/hooks/useQueryHook";
 import { Client } from "@/types/client-types/clientTypes";
@@ -15,13 +15,28 @@ interface EditClientProps {
 const EditClient = ({ clientId }: EditClientProps) => {
   const [open, setOpen] = useState(false);
   const { useEditClientForm } = useClientFormHooks();
-  const form = useEditClientForm({});
   const queryClient = useQueryClient();
 
   const { data: client } = useGetEntityData<Client>({
     URL: `/clients/${clientId}`,
     queryKey: ["clients", clientId.toString()]
   });
+
+  const form = useEditClientForm({});
+
+  useEffect(() => {
+    if (client) {
+      form.reset({
+        client_company_name: client.client_company_name,
+        client_name: client.client_name,
+        client_company_address: client.client_company_address,
+        client_company_iban: client.client_company_iban,
+        client_emails: client.client_emails,
+        status: client.status
+      });
+      console.log("🔄 Form reset with client data:", client);
+    }
+  }, [client, form]);
 
   const { mutate: editClient } = useEditEntity<Client>({
     URL: `/clients/${clientId}`,
@@ -35,7 +50,7 @@ const EditClient = ({ clientId }: EditClientProps) => {
     }
   });
 
-  console.log("Editing client form:", form.formState);
+  console.log("📝 Edit client data:", client);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
