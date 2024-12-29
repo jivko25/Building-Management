@@ -6,11 +6,13 @@ import { useState } from "react";
 import { useClientFormHooks } from "@/hooks/forms/useClientForm";
 import { useCreateEntity } from "@/hooks/useQueryHook";
 import { Client } from "@/types/client-types/clientTypes";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CreateClient = () => {
   const [open, setOpen] = useState(false);
   const { useCreateClientForm } = useClientFormHooks();
   const form = useCreateClientForm();
+  const queryClient = useQueryClient();
 
   const { mutate: createClient } = useCreateEntity<Client>({
     URL: "/clients",
@@ -20,6 +22,7 @@ const CreateClient = () => {
     onSuccess: () => {
       setOpen(false);
       form.reset();
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
     }
   });
 
