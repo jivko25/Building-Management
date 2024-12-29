@@ -6,12 +6,13 @@ import SearchBar from "@/components/common/SearchBar/SearchBar";
 import ConditionalRenderer from "@/components/common/ConditionalRenderer/ConditionalRenderer";
 import useSearchParamsHook from "@/hooks/useSearchParamsHook";
 import useSearchHandler from "@/hooks/useSearchHandler";
-import { useGetPaginatedData } from "@/hooks/useQueryHook";
+import { useQuery } from "@tanstack/react-query";
 import ClientsHeader from "./TableHeader";
 import ClientsCard from "./ClientsCard";
 import { Client } from "@/types/client-types/clientTypes";
 import CreateClient from "@/components/Forms/Client/ClientFormCreate/CreateClient";
 import ClientsLoader from "@/utils/SkeletonLoader/Clients/ClientsLoader";
+import { getEntityData } from "@/api/apiCall";
 
 const ClientsTableBody = () => {
   const { itemsLimit, page, setSearchParams } = useSearchParamsHook();
@@ -24,18 +25,15 @@ const ClientsTableBody = () => {
     data: clientsResponse,
     isPending,
     isError
-  } = useGetPaginatedData<Client>({
-    URL: "/clients",
-    queryKey: ["clients"],
-    limit: itemsLimit,
-    page,
-    search: debounceSearchTerm
+  } = useQuery({
+    queryKey: ["clients", page, itemsLimit, debounceSearchTerm],
+    queryFn: () => getEntityData<Client[]>("/clients")
   });
 
   console.log("👥 Clients response:", clientsResponse);
 
-  const clients = clientsResponse?.data || [];
-  const totalPages = clientsResponse?.totalPages || 1;
+  const clients = clientsResponse || [];
+  const totalPages = Math.ceil(clients.length / itemsLimit);
 
   if (isPending) {
     return <ClientsLoader clients={clients} />;
