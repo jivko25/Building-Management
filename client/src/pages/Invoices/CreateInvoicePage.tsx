@@ -17,23 +17,27 @@ const createInvoiceSchema = z.object({
   company_id: z.number({
     required_error: "Please select a company"
   }),
-  client_company_name: z.string().min(1, "Company name is required"),
-  client_name: z.string().min(1, "Contact person is required"),
-  client_company_address: z.string().min(1, "Company address is required"),
-  client_company_iban: z.string().min(1, "Company IBAN is required"),
-  client_emails: z.array(z.string().email("Invalid email")).min(1, "At least one email is required"),
+  client_company_id: z.number({
+    required_error: "Please select a client company"
+  }),
   due_date_weeks: z.number().min(1, "Due date weeks is required"),
+  client_company_name: z.string().optional(),
+  client_name: z.string().optional(),
+  client_company_address: z.string().optional(),
+  client_company_iban: z.string().optional(),
+  client_emails: z.array(z.string()).optional(),
   items: z
     .array(
       z.object({
         activity_id: z.number(),
         measure_id: z.number(),
         project_id: z.number(),
-        quantity: z.number().int().min(1, "Quantity must be a whole number greater than 0"),
-        price_per_unit: z.number().int().min(1, "Price per unit must be a whole number greater than 0")
+        quantity: z.number(),
+        price_per_unit: z.number()
       })
     )
-    .min(1, "At least one item is required")
+    .optional(),
+  selected_projects: z.array(z.number()).optional()
 });
 
 type CreateInvoiceForm = z.infer<typeof createInvoiceSchema>;
@@ -56,60 +60,50 @@ export const CreateInvoicePage = () => {
 
   const companies = companiesResponse?.companies || [];
 
-  const form = useForm<z.infer<typeof createInvoiceSchema>>({
-    resolver: zodResolver(createInvoiceSchema),
-    defaultValues: {
-      company_id: 0,
-      client_company_name: "",
-      client_emails: [""],
-      items: [{ activity_id: 0, measure_id: 0, project_id: 0, quantity: 0, price_per_unit: 0 }]
-    }
-  });
-
-  // Watch for changes in items array
-  const items = form.watch("items");
-
-  // Get projects data
-  const { data: projects } = useQuery({
-    queryKey: ["projects"],
+  const { data: clientsData } = useQuery({
+    queryKey: ["clients"],
     queryFn: async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/projects`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/clients`, {
         credentials: "include"
       });
       const data = await response.json();
-      console.log("🏗️ Projects data:", data);
+      console.log("👥 Clients data:", data);
       return data;
     }
   });
 
-  // Update first email when project changes
-  useEffect(() => {
-    const firstItem = items[0];
-    if (firstItem && firstItem.project_id) {
-      const selectedProject = projects?.find((p: any) => p.id === firstItem.project_id);
-      if (selectedProject?.email) {
-        const currentEmails = form.getValues("client_emails");
-        // Only update if first email is empty or doesn't exist
-        if (!currentEmails[0]) {
-          console.log("Setting first email to project email:", selectedProject.email);
-          form.setValue("client_emails.0", selectedProject.email);
-        }
-      }
-    }
-  }, [items, projects, form]);
+  const clients = clientsData || [];
 
-  const { data: activities } = useGetPaginatedData({
-    URL: "/activities",
-    queryKey: ["activities"],
-    limit: 100,
-    page: 1
+  const { data: projectsData, refetch: refetchProjects } = useQuery({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      const companyId = form.getValues("company_id");
+      if (!companyId) return [];
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/projects`, {
+        credentials: "include"
+      });
+      const data = await response.json();
+      console.log("🏗️ All projects data:", data);
+
+      const filteredProjects = data.filter((project: any) => project.companyId === companyId);
+      console.log("🏗️ Filtered projects for company:", filteredProjects);
+
+      return filteredProjects;
+    },
+    enabled: false
   });
 
-  const { data: measures } = useGetPaginatedData({
-    URL: "/measures",
-    queryKey: ["measures"],
-    limit: 100,
-    page: 1
+  const projects = projectsData || [];
+
+  const form = useForm<z.infer<typeof createInvoiceSchema>>({
+    resolver: zodResolver(createInvoiceSchema),
+    defaultValues: {
+      company_id: 0,
+      client_company_id: 0,
+      due_date_weeks: 0,
+      selected_projects: []
+    }
   });
 
   const createInvoiceMutation = useMutation({
@@ -128,40 +122,25 @@ export const CreateInvoicePage = () => {
     createInvoiceMutation.mutate(data);
   };
 
-  // Функция за обновяване на имейлите от проектите
-  const updateEmailsFromProjects = (items: any[]) => {
-    console.log("Updating emails from projects");
+  const handleClientCompanyChange = (clientId: number) => {
+    console.log("Selected client ID:", clientId);
+    const selectedClient = clients.find((client: any) => client.id === clientId);
 
-    const uniqueEmails = new Set<string>();
-    const projectEmails = new Map<number, string>();
-
-    projects?.forEach((project: any) => {
-      if (project.email) {
-        projectEmails.set(project.id, project.email);
-      }
-    });
-
-    items.forEach(item => {
-      if (item.project_id && projectEmails.has(item.project_id)) {
-        uniqueEmails.add(projectEmails.get(item.project_id)!);
-      }
-    });
-
-    const currentEmails = form.getValues("client_emails");
-    const manualEmails = currentEmails.filter(email => {
-      return email && !Array.from(projectEmails.values()).includes(email);
-    });
-
-    const allEmails = [...Array.from(uniqueEmails), ...manualEmails];
-    console.log("Setting emails:", allEmails);
-    form.setValue("client_emails", allEmails);
+    if (selectedClient) {
+      console.log("Setting client data:", selectedClient);
+      form.setValue("client_company_name", selectedClient.client_company_name);
+      form.setValue("client_name", selectedClient.client_name);
+      form.setValue("client_company_address", selectedClient.client_company_address);
+      form.setValue("client_company_iban", selectedClient.client_company_iban);
+      form.setValue("client_emails", selectedClient.client_emails || []);
+    }
   };
 
-  // Наблюдаваме промените в items
-  useEffect(() => {
-    console.log("Items changed, updating emails");
-    updateEmailsFromProjects(items);
-  }, [items]);
+  const handleCompanyChange = (companyId: number) => {
+    console.log("Selected company ID:", companyId);
+    form.setValue("company_id", companyId);
+    refetchProjects();
+  };
 
   return (
     <div className="container mx-auto py-10">
@@ -181,7 +160,13 @@ export const CreateInvoicePage = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Building company</FormLabel>
-                  <Select onValueChange={value => field.onChange(parseInt(value))} value={field.value ? field.value.toString() : ""}>
+                  <Select
+                    onValueChange={value => {
+                      const id = parseInt(value);
+                      field.onChange(id);
+                      handleCompanyChange(id);
+                    }}
+                    value={field.value ? field.value.toString() : ""}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select company" />
                     </SelectTrigger>
@@ -200,55 +185,28 @@ export const CreateInvoicePage = () => {
 
             <FormField
               control={form.control}
-              name="client_company_name"
+              name="client_company_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Client company name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="client_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Client contact person</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="client_company_address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Client company address</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="client_company_iban"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Client company IBAN</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
+                  <FormLabel>Client company</FormLabel>
+                  <Select
+                    onValueChange={value => {
+                      const id = parseInt(value);
+                      field.onChange(id);
+                      handleClientCompanyChange(id);
+                    }}
+                    value={field.value ? field.value.toString() : ""}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select client company" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clients?.map((client: any) => (
+                        <SelectItem key={client.id} value={client.id.toString()}>
+                          {client.client_company_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -269,190 +227,40 @@ export const CreateInvoicePage = () => {
             />
           </div>
 
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Client Emails</h2>
-              <Button
-                type="button"
-                onClick={() => {
-                  const emails = form.getValues("client_emails");
-                  form.setValue("client_emails", [...emails, ""]);
-                }}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Email
-              </Button>
-            </div>
-
-            {form.watch("client_emails").map((email, index) => (
-              <div key={index} className="flex gap-4 items-end">
-                <FormField
-                  control={form.control}
-                  name={`client_emails.${index}`}
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Email {index + 1}</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} placeholder="Enter email" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => {
-                    const emails = form.getValues("client_emails");
-                    form.setValue(
-                      "client_emails",
-                      emails.filter((_, i) => i !== index)
-                    );
-                  }}
-                  className="mb-2">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+          {form.watch("company_id") !== 0 && (
+            <div className="mt-6">
+              <h2 className="text-xl font-semibold mb-4">Select Projects</h2>
+              <div className="grid grid-cols-3 gap-4 p-4 border rounded-lg bg-white">
+                {projects.map((project: any) => (
+                  <div key={project.id} className="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      id={`project-${project.id}`}
+                      className="w-4 h-4 cursor-pointer"
+                      checked={form.watch("selected_projects")?.includes(project.id)}
+                      onChange={e => {
+                        const currentSelected = form.watch("selected_projects") || [];
+                        if (e.target.checked) {
+                          console.log("Adding project:", project.id);
+                          form.setValue("selected_projects", [...currentSelected, project.id]);
+                        } else {
+                          console.log("Removing project:", project.id);
+                          form.setValue(
+                            "selected_projects",
+                            currentSelected.filter((id: number) => id !== project.id)
+                          );
+                        }
+                        console.log("Selected projects:", form.watch("selected_projects"));
+                      }}
+                    />
+                    <label htmlFor={`project-${project.id}`} className="text-sm font-medium leading-none cursor-pointer select-none">
+                      {project.name}
+                    </label>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Items</h2>
-              <Button
-                type="button"
-                onClick={() => {
-                  const items = form.getValues("items");
-                  form.setValue("items", [...items, { activity_id: 0, measure_id: 0, project_id: 0, quantity: 0, price_per_unit: 0 }]);
-                }}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add item
-              </Button>
             </div>
-
-            {form.watch("items").map((_, index) => (
-              <div key={index} className="grid grid-cols-6 gap-4 items-end border p-4 rounded-lg">
-                <FormField
-                  control={form.control}
-                  name={`items.${index}.activity_id`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Activity</FormLabel>
-                      <Select onValueChange={value => field.onChange(parseInt(value))} value={field.value.toString()}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose activity" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {activities?.data?.map((activity: any) => (
-                            <SelectItem key={activity.id} value={activity.id.toString()}>
-                              {activity.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name={`items.${index}.measure_id`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Measure</FormLabel>
-                      <Select onValueChange={value => field.onChange(parseInt(value))} value={field.value.toString()}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose measure" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {measures?.data?.map((measure: any) => (
-                            <SelectItem key={measure.id} value={measure.id.toString()}>
-                              {measure.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name={`items.${index}.project_id`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Project</FormLabel>
-                      <Select
-                        onValueChange={value => {
-                          const projectId = parseInt(value);
-                          field.onChange(projectId);
-
-                          // Обновяваме items и имейли веднага
-                          const updatedItems = form.getValues("items").map((item, i) => (i === index ? { ...item, project_id: projectId } : item));
-                          updateEmailsFromProjects(updatedItems);
-                        }}
-                        value={field.value ? field.value.toString() : ""}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose project" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {projects?.map((project: any) => (
-                            <SelectItem key={project.id} value={project.id.toString()}>
-                              {project.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name={`items.${index}.quantity`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Quantity</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="1" step="1" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name={`items.${index}.price_per_unit`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Price per unit</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="1" step="1" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => {
-                    const currentItems = form.getValues("items");
-                    form.setValue(
-                      "items",
-                      currentItems.filter((_, i) => i !== index)
-                    );
-                  }}
-                  className="mb-2">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
+          )}
 
           <div className="flex justify-end gap-4">
             <Button type="submit" disabled={createInvoiceMutation.isPending}>
