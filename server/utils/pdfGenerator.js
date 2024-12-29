@@ -184,7 +184,7 @@ const createInvoicePDF = async invoiceId => {
             <div class="client-info">
               <p>Company: ${data.clientCompanyName || "No"}</p>
               <p>Address: ${data.clientAddress || "No"}</p>
-              <p>DDS Number:"2252562636"}</p>
+              <p>DDS Number: 2252562636</p>
             </div>
 
             <div class="company-info">
@@ -203,7 +203,6 @@ const createInvoicePDF = async invoiceId => {
             <thead>
               <tr>
                 <th>Activity</th>
-                <th>Location</th>
                 <th>Quantity</th>
                 <th>Price</th>
                 <th>Total</th>
@@ -214,8 +213,7 @@ const createInvoicePDF = async invoiceId => {
                 .map(
                   item => `
                 <tr>
-                  <td>${item.activity}</td>
-                  <td>${item.project_location}</td>
+                  <td>Location: ${item.project_location} <br>${item.activity}</td>
                   <td style="text-align: right">${item.quantity.toFixed(2)}</td>
                   <td style="text-align: right">${item.price_per_unit.toFixed(2)} €</td>
                   <td style="text-align: right">${item.total.toFixed(2)} €</td>
