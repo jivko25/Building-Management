@@ -27,12 +27,14 @@ const ClientsTableBody = () => {
     isError
   } = useQuery({
     queryKey: ["clients", page, itemsLimit, debounceSearchTerm],
-    queryFn: () => getEntityData<Client[]>("/clients")
+    queryFn: () => getEntityData<Client[]>(`/clients${debounceSearchTerm ? `?search=${debounceSearchTerm}` : ""}`)
   });
 
   console.log("👥 Clients response:", clientsResponse);
 
-  const clients = clientsResponse || [];
+  const filteredClients = clientsResponse?.filter(client => !debounceSearchTerm || client.client_company_name.toLowerCase().includes(debounceSearchTerm.toLowerCase()) || client.client_name.toLowerCase().includes(debounceSearchTerm.toLowerCase()) || client.client_company_address.toLowerCase().includes(debounceSearchTerm.toLowerCase()) || client.client_company_iban.toLowerCase().includes(debounceSearchTerm.toLowerCase())) || [];
+
+  const clients = filteredClients;
   const totalPages = Math.ceil(clients.length / itemsLimit);
 
   if (isPending) {
