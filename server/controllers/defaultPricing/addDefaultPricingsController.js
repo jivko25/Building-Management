@@ -49,6 +49,9 @@ const addOrUpdateDefaultPricingAsync = async (pricing, artisan_id) => {
       }
     });
     if (existingPricing) {
+      //if the price is the same, do nothing
+      if (existingPricing.price === price) return;
+      //if the price is different, update the pricing
       existingPricing.price = price;
       await existingPricing.save();
     } else {
