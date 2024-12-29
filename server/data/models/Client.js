@@ -27,6 +27,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.JSON,
         allowNull: false,
         defaultValue: []
+      },
+      status: {
+        type: DataTypes.ENUM("active", "inactive"),
+        defaultValue: "active"
+      },
+      creator_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
       }
     },
     {
@@ -36,6 +44,17 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: "updated_at"
     }
   );
+
+  Client.associate = models => {
+    Client.belongsTo(models.User, {
+      foreignKey: "creator_id",
+      as: "creator"
+    });
+    Client.hasMany(models.Invoice, {
+      foreignKey: "client_id",
+      as: "invoices"
+    });
+  };
 
   return Client;
 };
