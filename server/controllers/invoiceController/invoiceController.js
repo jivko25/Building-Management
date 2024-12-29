@@ -1,175 +1,148 @@
 const db = require("../../data/index.js");
-const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client } = db;
+const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem } = db;
 const { createInvoicePDF } = require("../../utils/pdfGenerator");
 const { sendInvoiceEmail } = require("../../utils/invoiceEmailService");
+
+const generateUniqueInvoiceNumber = async (year, week) => {
+  console.log("Generating unique invoice number for year:", year, "week:", week);
+
+  // Намираме последната фактура за тази година и седмица
+  const lastInvoice = await Invoice.findOne({
+    where: {
+      year,
+      week_number: week
+    },
+    order: [["created_at", "DESC"]]
+  });
+
+  // Ако няма фактура за тази седмица, започваме от 1
+  const lastNumber = lastInvoice ? parseInt(lastInvoice.invoice_number.split("-").pop()) : 0;
+  const newNumber = lastNumber + 1;
+
+  // Форматираме номера: YYYY-WW/WW-N
+  // Например: 2024-12/12-1
+  const invoiceNumber = `${year}-${week.toString().padStart(2, "0")}/${week.toString().padStart(2, "0")}-${newNumber}`;
+
+  console.log("Generated invoice number:", invoiceNumber);
+  return invoiceNumber;
+};
 
 const createInvoice = async (req, res, next) => {
   console.log("Creating new invoice with data:", JSON.stringify(req.body, null, 2));
   try {
-    const { company_id, client_company_name, client_name, client_company_address, client_company_iban, client_emails, creator_id, due_date_weeks, items } = req.body;
+    const {
+      company_id, // От избора на компания
+      client_company_id, // От избора на клиентска компания
+      due_date_weeks, // От въведените седмици
+      selected_projects, // От избраните проекти
+      selected_work_items // От избраните работни елементи
+    } = req.body;
 
     // Validate required fields
-    if (!company_id || !client_company_name || !client_name || !creator_id || !items || !items.length) {
+    if (!company_id || !client_company_id || !due_date_weeks || !selected_work_items?.length) {
       console.error("Missing required fields");
       return res.status(400).json({
         success: false,
         message: "Missing required fields",
         details: {
           company_id: !company_id,
-          client_company_name: !client_company_name,
-          client_name: !client_name,
-          creator_id: !creator_id,
-          items: !items || !items.length
+          client_company_id: !client_company_id,
+          due_date_weeks: !due_date_weeks,
+          selected_work_items: !selected_work_items?.length
         }
       });
     }
 
-    // Validate items
-    for (const item of items) {
-      if (!item.activity_id || !item.measure_id || !item.project_id || !item.quantity || !item.price_per_unit) {
-        console.error("Invalid item data:", item);
-        return res.status(400).json({
-          success: false,
-          message: "Invalid item data",
-          details: {
-            item,
-            required: {
-              activity_id: !item.activity_id,
-              measure_id: !item.measure_id,
-              project_id: !item.project_id,
-              quantity: !item.quantity,
-              price_per_unit: !item.price_per_unit
-            }
-          }
-        });
-      }
+    // Get client company details
+    const client = await Client.findByPk(client_company_id);
+    if (!client) {
+      return res.status(404).json({
+        success: false,
+        message: "Client company not found"
+      });
     }
+
+    // Get work items with their tasks to calculate total amount
+    const workItems = await Promise.all(
+      selected_work_items.map(async workItemId => {
+        return WorkItem.findByPk(workItemId, {
+          include: [{ model: Task, as: "task" }]
+        });
+      })
+    );
+
+    // Calculate initial total amount
+    const total_amount = workItems.reduce((sum, workItem) => {
+      if (!workItem || !workItem.task) return sum;
+      return sum + workItem.task.total_work_in_selected_measure * workItem.task.price_per_measure;
+    }, 0);
 
     // Get current date info
     const date = new Date();
     const year = date.getFullYear();
     const week = Math.ceil((date - new Date(date.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24 * 7));
 
-    // Function to generate and validate invoice number
-    const generateUniqueInvoiceNumber = async () => {
-      // Get all invoice numbers for current year and week
-      const existingInvoices = await Invoice.findAll({
-        where: { year, week_number: week },
-        attributes: ["invoice_number"],
-        raw: true
-      });
-
-      // Extract sequence numbers from existing invoice numbers
-      const existingNumbers = existingInvoices
-        .map(inv => {
-          const match = inv.invoice_number.match(/(\d+)$/);
-          return match ? parseInt(match[1]) : 0;
-        })
-        .sort((a, b) => a - b);
-
-      // Find first available number
-      let sequenceNumber = 1;
-      for (const existingNumber of existingNumbers) {
-        if (existingNumber !== sequenceNumber) {
-          break;
-        }
-        sequenceNumber++;
-      }
-
-      const proposedNumber = `${year}-${week}/${week}-${sequenceNumber}`;
-      console.log("Generated invoice number:", proposedNumber);
-
-      // Double-check uniqueness
-      const isUnique =
-        (await Invoice.count({
-          where: { invoice_number: proposedNumber }
-        })) === 0;
-
-      if (!isUnique) {
-        console.log("Number collision detected, retrying with next number");
-        return generateUniqueInvoiceNumber();
-      }
-
-      return proposedNumber;
-    };
-
-    // Generate unique invoice number
-    const invoice_number = await generateUniqueInvoiceNumber();
-    console.log("Final invoice number:", invoice_number);
-
-    // Calculate due date and total amount
+    // Calculate due date
     const due_date = new Date(date);
-    due_date.setDate(due_date.getDate() + (due_date_weeks || 4) * 7);
-    const total_amount = items.reduce((sum, item) => sum + item.quantity * item.price_per_unit, 0);
+    due_date.setDate(due_date.getDate() + due_date_weeks * 7);
 
-    // Create or find client
-    const [client] = await Client.findOrCreate({
-      where: { client_name },
-      defaults: {
-        client_company_name,
-        client_company_address,
-        client_company_iban,
-        client_emails: Array.isArray(client_emails) ? client_emails : [client_emails],
-        creator_id
-      }
+    // Create invoice with total_amount
+    const invoice = await Invoice.create({
+      company_id,
+      client_id: client_company_id,
+      invoice_number: await generateUniqueInvoiceNumber(year, week),
+      year,
+      week_number: week,
+      invoice_date: date,
+      due_date,
+      total_amount,
+      paid: false
     });
 
-    console.log("Client created/found:", client.id);
+    // Create invoice items
+    const items = await Promise.all(
+      workItems.map(async workItem => {
+        if (!workItem || !workItem.task) {
+          throw new Error(`Work item or task not found`);
+        }
 
-    // Create invoice with transaction to ensure atomicity
-    const result = await db.sequelize.transaction(async t => {
-      const invoice = await Invoice.create(
-        {
-          invoice_number,
-          year,
-          week_number: week,
-          company_id,
-          client_id: client.id,
-          invoice_date: date,
-          due_date,
-          total_amount,
-          paid: false
-        },
-        { transaction: t }
-      );
+        const quantity = workItem.task.total_work_in_selected_measure;
+        const price_per_unit = workItem.task.price_per_measure;
+        const total_price = quantity * price_per_unit;
 
-      // Create invoice items
-      await Promise.all(
-        items.map(item =>
-          InvoiceItem.create(
-            {
-              invoice_id: invoice.id,
-              ...item,
-              total_price: item.quantity * item.price_per_unit
-            },
-            { transaction: t }
-          )
-        )
-      );
+        return InvoiceItem.create({
+          invoice_id: invoice.id,
+          activity_id: workItem.task.activity_id,
+          measure_id: workItem.task.measure_id,
+          project_id: workItem.task.project_id,
+          quantity,
+          price_per_unit,
+          total_price
+        });
+      })
+    );
 
-      return invoice;
-    });
-
-    console.log("Invoice created successfully:", result.invoice_number);
-
-    // Generate PDF
-    const pdfBuffer = await createInvoicePDF(result.id);
-
-    // Send emails
-    const emailList = Array.isArray(client_emails) ? client_emails : [client_emails];
-
-    console.log("Sending invoice to emails:", emailList);
-
-    for (const email of emailList) {
-      await sendInvoiceEmail(email, pdfBuffer, result.invoice_number);
-      console.log("Invoice email sent to:", email);
-    }
+    console.log("Invoice created successfully");
 
     res.status(201).json({
       success: true,
       data: {
-        invoice: result,
-        items: result.items
+        invoice: await Invoice.findByPk(invoice.id, {
+          include: [
+            {
+              model: Company,
+              as: "company"
+            },
+            {
+              model: Client,
+              as: "client"
+            },
+            {
+              model: InvoiceItem,
+              as: "items"
+            }
+          ]
+        })
       }
     });
   } catch (error) {
@@ -544,5 +517,6 @@ module.exports = {
   deleteInvoice,
   updateInvoice,
   getInvoicePDF,
-  updateInvoiceStatus
+  updateInvoiceStatus,
+  generateUniqueInvoiceNumber
 };
