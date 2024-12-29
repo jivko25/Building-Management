@@ -9,9 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
-import { useGetPaginatedData } from "@/hooks/useQueryHook";
-import { useEffect } from "react";
 
 const createInvoiceSchema = z.object({
   company_id: z.number({
@@ -234,26 +231,65 @@ export const CreateInvoicePage = () => {
                 {projects.map((project: any) => (
                   <div key={project.id} className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 transition-colors duration-200 group relative">
                     <div className="flex items-center min-w-0">
-                      <input
-                        type="checkbox"
-                        id={`project-${project.id}`}
-                        className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                        checked={form.watch("selected_projects")?.includes(project.id)}
-                        onChange={e => {
-                          const currentSelected = form.watch("selected_projects") || [];
-                          if (e.target.checked) {
-                            console.log("Adding project:", project.id);
-                            form.setValue("selected_projects", [...currentSelected, project.id]);
-                          } else {
-                            console.log("Removing project:", project.id);
-                            form.setValue(
-                              "selected_projects",
-                              currentSelected.filter((id: number) => id !== project.id)
-                            );
-                          }
-                          console.log("Selected projects:", form.watch("selected_projects"));
-                        }}
-                      />
+                      <div className="relative inline-flex items-center">
+                        <input
+                          type="checkbox"
+                          id={`project-${project.id}`}
+                          className="
+                            peer
+                            appearance-none
+                            w-5 
+                            h-5 
+                            border-2 
+                            border-gray-300 
+                            rounded-md 
+                            bg-white
+                            checked:bg-blue-500 
+                            checked:border-blue-500
+                            transition-colors 
+                            duration-200
+                            cursor-pointer
+                            focus:outline-none 
+                            focus:ring-2 
+                            focus:ring-blue-500/30
+                          "
+                          checked={form.watch("selected_projects")?.includes(project.id)}
+                          onChange={e => {
+                            const currentSelected = form.watch("selected_projects") || [];
+                            if (e.target.checked) {
+                              console.log("Adding project:", project.id);
+                              form.setValue("selected_projects", [...currentSelected, project.id]);
+                            } else {
+                              console.log("Removing project:", project.id);
+                              form.setValue(
+                                "selected_projects",
+                                currentSelected.filter((id: number) => id !== project.id)
+                              );
+                            }
+                            console.log("Selected projects:", form.watch("selected_projects"));
+                          }}
+                        />
+                        <svg
+                          className="
+                            absolute 
+                            w-4 
+                            h-4 
+                            text-white 
+                            left-0.5 
+                            top-0.5
+                            pointer-events-none 
+                            opacity-0 
+                            peer-checked:opacity-100 
+                            transition-opacity 
+                            duration-200
+                          "
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="3">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
                       <div className="ml-3 min-w-0">
                         <label htmlFor={`project-${project.id}`} className="text-sm font-medium text-gray-900 cursor-pointer truncate block">
                           {project.name}
