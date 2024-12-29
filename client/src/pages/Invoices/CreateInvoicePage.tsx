@@ -18,22 +18,6 @@ const createInvoiceSchema = z.object({
     required_error: "Please select a client company"
   }),
   due_date_weeks: z.number().min(1, "Due date weeks is required"),
-  client_company_name: z.string().optional(),
-  client_name: z.string().optional(),
-  client_company_address: z.string().optional(),
-  client_company_iban: z.string().optional(),
-  client_emails: z.array(z.string()).optional(),
-  items: z
-    .array(
-      z.object({
-        activity_id: z.number(),
-        measure_id: z.number(),
-        project_id: z.number(),
-        quantity: z.number(),
-        price_per_unit: z.number()
-      })
-    )
-    .optional(),
   selected_projects: z.array(z.number()).optional(),
   selected_work_items: z.array(z.number()).optional()
 });
@@ -168,34 +152,30 @@ export const CreateInvoicePage = () => {
         }
 
         return {
-          activity_id: workItem.task.activity_id,
-          measure_id: workItem.task.measure_id,
-          project_id: workItem.task.project_id,
-          quantity: workItem.task.total_work_in_selected_measure,
-          price_per_unit: workItem.task.price_per_measure
+          activity_id: Number(workItem.task.activity_id),
+          measure_id: Number(workItem.task.measure_id),
+          project_id: Number(workItem.task.project_id),
+          quantity: Number(workItem.task.total_work_in_selected_measure),
+          price_per_unit: Number(workItem.task.price_per_measure)
         };
       });
 
       const invoiceData = {
-        company_id: data.company_id,
-        client_company_id: data.client_company_id,
-        client_company_name: data.client_company_name,
-        client_name: data.client_name,
-        client_company_address: data.client_company_address,
-        client_company_iban: data.client_company_iban,
-        client_emails: data.client_emails,
-        due_date_weeks: data.due_date_weeks,
-        items
+        company_id: Number(data.company_id),
+        client_company_id: Number(data.client_company_id),
+        due_date_weeks: Number(data.due_date_weeks),
+        selected_projects: data.selected_projects?.map(Number) || [],
+        selected_work_items: data.selected_work_items?.map(Number) || []
       };
 
       console.log("Transformed invoice data:", invoiceData);
 
       await createInvoiceMutation.mutateAsync(invoiceData);
-      toast.success("Invoice created successfully");
+      toast.success("Фактурата е създадена успешно");
       navigate("/invoices");
     } catch (error) {
       console.error("Error creating invoice:", error);
-      toast.error("Error creating invoice");
+      toast.error("Грешка при създаване на фактурата");
     }
   };
 
@@ -205,11 +185,7 @@ export const CreateInvoicePage = () => {
 
     if (selectedClient) {
       console.log("Setting client data:", selectedClient);
-      form.setValue("client_company_name", selectedClient.client_company_name);
-      form.setValue("client_name", selectedClient.client_name);
-      form.setValue("client_company_address", selectedClient.client_company_address);
-      form.setValue("client_company_iban", selectedClient.client_company_iban);
-      form.setValue("client_emails", selectedClient.client_emails || []);
+      form.setValue("client_company_id", selectedClient.id);
     }
   };
 
