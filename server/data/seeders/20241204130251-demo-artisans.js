@@ -4,7 +4,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.bulkDelete("tbl_artisans", null, {});
-    
+
     await queryInterface.bulkInsert(
       "tbl_artisans",
       [
@@ -31,6 +31,42 @@ module.exports = {
           status: "inactive",
           activity_id: 72,
           measure_id: 2
+        },
+        {
+          id: 3,
+          name: "Симеон Симеонов",
+          note: "Опитен майстор",
+          number: "123456789",
+          email: "simeon@example.com",
+          companyId: 2,
+          user_id: 1,
+          status: "active",
+          activity_id: 73,
+          measure_id: 1
+        },
+        {
+          id: 4,
+          name: "Георги Георгиев",
+          note: "Нов в екипа",
+          number: "987654321",
+          email: "georgi@example.com",
+          companyId: 2,
+          user_id: 2,
+          status: "inactive",
+          activity_id: 72,
+          measure_id: 2
+        },
+        {
+          id: 5,
+          name: "Иван Иванов",
+          note: "Опитен майстор",
+          number: "123456789",
+          email: "ivan@example.com",
+          companyId: 1,
+          user_id: 2,
+          status: "active",
+          activity_id: 68,
+          measure_id: 1
         }
       ],
       {}
