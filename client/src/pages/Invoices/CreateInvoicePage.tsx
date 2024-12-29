@@ -108,18 +108,33 @@ export const CreateInvoicePage = () => {
   const { data: workItemsData } = useQuery({
     queryKey: ["workItems", form.watch("selected_projects")],
     queryFn: async () => {
-      const selectedProjects = form.watch("selected_projects") || [];
+      const selectedProjects = form.watch("selected_projects") ?? [];
       if (selectedProjects.length === 0) return [];
 
       const workItemsByProject = await Promise.all(
         selectedProjects.map(async projectId => {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/tasks/1/work-items?page&limit`, { credentials: "include" });
-          const data = await response.json();
-          console.log(`🛠️ Work items for project ${projectId}:`, data);
+          // Първо вземаме всички задачи за проекта
+          const tasksResponse = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/tasks`, { credentials: "include" });
+          const tasksData = await tasksResponse.json();
+          console.log(`📋 Tasks for project ${projectId}:`, tasksData);
+
+          // След това вземаме работните елементи за всяка задача
+          const workItems = await Promise.all(
+            tasksData.map(async (task: any) => {
+              const workItemsResponse = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/tasks/${task.id}/work-items?page&limit`, { credentials: "include" });
+              const workItemsData = await workItemsResponse.json();
+              return workItemsData.workItems || [];
+            })
+          );
+
+          // Обединяваме всички работни елементи
+          const allWorkItems = workItems.flat();
+          console.log(`🛠️ All work items for project ${projectId}:`, allWorkItems);
+
           return {
             projectId,
             projectName: projects.find((p: any) => p.id === projectId)?.name,
-            workItems: data.workItems
+            workItems: allWorkItems
           };
         })
       );
