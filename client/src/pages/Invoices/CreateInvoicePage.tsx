@@ -230,34 +230,50 @@ export const CreateInvoicePage = () => {
           {form.watch("company_id") !== 0 && (
             <div className="mt-6">
               <h2 className="text-xl font-semibold mb-4">Select Projects</h2>
-              <div className="grid grid-cols-3 gap-4 p-4 border rounded-lg bg-white">
+              <div className="grid grid-cols-3 gap-4 p-4 border rounded-lg bg-white shadow-sm">
                 {projects.map((project: any) => (
-                  <div key={project.id} className="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50">
-                    <input
-                      type="checkbox"
-                      id={`project-${project.id}`}
-                      className="w-4 h-4 cursor-pointer"
-                      checked={form.watch("selected_projects")?.includes(project.id)}
-                      onChange={e => {
-                        const currentSelected = form.watch("selected_projects") || [];
-                        if (e.target.checked) {
-                          console.log("Adding project:", project.id);
-                          form.setValue("selected_projects", [...currentSelected, project.id]);
-                        } else {
-                          console.log("Removing project:", project.id);
-                          form.setValue(
-                            "selected_projects",
-                            currentSelected.filter((id: number) => id !== project.id)
-                          );
-                        }
-                        console.log("Selected projects:", form.watch("selected_projects"));
-                      }}
-                    />
-                    <label htmlFor={`project-${project.id}`} className="text-sm font-medium leading-none cursor-pointer select-none">
-                      {project.name}
-                    </label>
+                  <div key={project.id} className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 transition-colors duration-200 group relative">
+                    <div className="flex items-center min-w-0">
+                      <input
+                        type="checkbox"
+                        id={`project-${project.id}`}
+                        className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                        checked={form.watch("selected_projects")?.includes(project.id)}
+                        onChange={e => {
+                          const currentSelected = form.watch("selected_projects") || [];
+                          if (e.target.checked) {
+                            console.log("Adding project:", project.id);
+                            form.setValue("selected_projects", [...currentSelected, project.id]);
+                          } else {
+                            console.log("Removing project:", project.id);
+                            form.setValue(
+                              "selected_projects",
+                              currentSelected.filter((id: number) => id !== project.id)
+                            );
+                          }
+                          console.log("Selected projects:", form.watch("selected_projects"));
+                        }}
+                      />
+                      <div className="ml-3 min-w-0">
+                        <label htmlFor={`project-${project.id}`} className="text-sm font-medium text-gray-900 cursor-pointer truncate block">
+                          {project.name}
+                        </label>
+                        <span className="text-xs text-gray-500 truncate block">{project.location}</span>
+                      </div>
+                    </div>
+                    <div className={`absolute top-2 right-2 w-2 h-2 rounded-full ${project.status === "active" ? "bg-green-500" : "bg-gray-300"}`} />
                   </div>
                 ))}
+              </div>
+              <div className="mt-4 text-sm text-gray-500 flex items-center justify-end space-x-2">
+                <span className="flex items-center">
+                  <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+                  Active
+                </span>
+                <span className="flex items-center ml-4">
+                  <span className="w-2 h-2 rounded-full bg-gray-300 mr-2"></span>
+                  Inactive
+                </span>
               </div>
             </div>
           )}
