@@ -1,9 +1,27 @@
 //client\src\hooks\useQueryHook.ts
-import { getEntityData, getInfiniteData, getPaginatedData } from "@/api/apiCall";
+import { createEntity, editEntity, getEntityData, getInfiniteData, getPaginatedData } from "@/api/apiCall";
 import { CachedDataOptions, FetchDataQueryOptions, FetchQueryOptions, PaginatedDataResponse, UseGetPaginatedDataTypes } from "@/types/query-data-types/paginatedDataTypes";
 import { ProjectTask } from "@/types/task-types/taskTypes";
 import { PaginatedWorkItems } from "@/types/work-item-types/workItem";
-import { keepPreviousData, useInfiniteQuery, UseInfiniteQueryResult, useQuery, UseQueryResult } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery, UseInfiniteQueryResult, useMutation, useQuery, UseQueryResult, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+interface QueryConfig {
+  URL: string;
+  queryKey: string[];
+}
+
+interface EditEntityOptions<TData> extends QueryConfig {
+  successMessage?: string;
+  errorMessage?: string;
+  onSuccess?: () => void;
+}
+
+interface CreateEntityOptions<TData> extends QueryConfig {
+  successMessage?: string;
+  errorMessage?: string;
+  onSuccess?: () => void;
+}
 
 export const useGetPaginatedData = <TData>({ URL, queryKey, limit, page, search }: UseGetPaginatedDataTypes): UseQueryResult<PaginatedDataResponse<TData>> => {
   return useQuery({
@@ -51,3 +69,33 @@ export const useCachedData = <TData>({ queryKey, selectFn }: CachedDataOptions<T
   });
   return data;
 };
+
+export const useGetEntityData = <TData>({ URL, queryKey }: QueryConfig) => {
+  console.log("🔄 Fetching entity data from:", URL);
+
+  return useQuery({
+    queryKey: queryKey,
+    queryFn: () => getEntityData<TData>(URL)
+  });
+};
+
+export const useEditEntity = <TData>({ URL, queryKey, successMessage, errorMessage, onSuccess }: EditEntityOptions<TData>) => {
+  return useMutation({
+    mutationFn: (data: TData) => editEntity<TData>(URL, data),
+    onSuccess: () => {
+      toast.success(successMessage);
+      onSuccess?.();
+    }
+  });
+};
+
+export const useCreateEntity = <TData>({ URL, queryKey, successMessage, errorMessage, onSuccess }: CreateEntityOptions<TData>) => {
+  return useMutation({
+    mutationFn: (data: TData) => createEntity<TData>(URL, data),
+    onSuccess: () => {
+      toast.success(successMessage);
+      onSuccess?.();
+    }
+  });
+};
+
