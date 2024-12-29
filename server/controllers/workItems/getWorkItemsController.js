@@ -10,6 +10,8 @@ const getWorkItems = async (req, res, next) => {
   const offset = (_page - 1) * _limit;
 
   try {
+    console.log("Fetching work items for task_id:", task_id);
+
     const workItems = await WorkItem.findAndCountAll({
       where: { task_id },
       include: [
@@ -17,13 +19,21 @@ const getWorkItems = async (req, res, next) => {
           model: Task,
           as: "task",
           attributes: ["name", "price_per_measure", "total_price", "total_work_in_selected_measure", "status"],
-          include: [{ model: Artisan, as: "artisan", attributes: ["name"] }]
+          include: [
+            {
+              model: Artisan,
+              as: "artisans",
+              attributes: ["name"]
+            }
+          ]
         }
       ],
       limit: parseInt(_limit),
       offset: offset,
       order: [["id", "DESC"]]
     });
+
+    console.log("Successfully fetched work items:", workItems.count);
 
     res.json({
       workItems: workItems.rows,
@@ -33,10 +43,11 @@ const getWorkItems = async (req, res, next) => {
       totalPages: Math.ceil(workItems.count / parseInt(_limit))
     });
   } catch (error) {
-    console.log(error);
+    console.log("Error fetching work items:", error);
     next(new ApiError(500, "Internal server Error!"));
   }
 };
+
 module.exports = {
   getWorkItems
 };
