@@ -124,6 +124,24 @@ const createInvoice = async (req, res, next) => {
 
     console.log("Invoice created successfully");
 
+    // Генерираме PDF
+    const pdfBuffer = await createInvoicePDF(invoice.id);
+    console.log("PDF generated successfully");
+
+    // Вземаме имейлите на клиента
+    const clientEmails = client.client_emails;
+    if (clientEmails && clientEmails.length > 0) {
+      console.log("Sending invoice emails to:", clientEmails);
+
+      // Изпращаме имейл до всеки адрес
+      for (const email of clientEmails) {
+        await sendInvoiceEmail(email, pdfBuffer, invoice.invoice_number);
+        console.log("Invoice email sent to:", email);
+      }
+    } else {
+      console.log("No client emails found to send invoice to");
+    }
+
     res.status(201).json({
       success: true,
       data: {
