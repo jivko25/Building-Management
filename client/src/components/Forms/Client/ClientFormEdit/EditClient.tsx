@@ -6,6 +6,7 @@ import { useClientFormHooks } from "@/hooks/forms/useClientForm";
 import { useEditEntity, useGetEntityData } from "@/hooks/useQueryHook";
 import { Client } from "@/types/client-types/clientTypes";
 import ClientForm from "../ClientForm";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface EditClientProps {
   clientId: number;
@@ -15,6 +16,7 @@ const EditClient = ({ clientId }: EditClientProps) => {
   const [open, setOpen] = useState(false);
   const { useEditClientForm } = useClientFormHooks();
   const form = useEditClientForm({});
+  const queryClient = useQueryClient();
 
   const { data: client } = useGetEntityData<Client>({
     URL: `/clients/${clientId}`,
@@ -29,6 +31,7 @@ const EditClient = ({ clientId }: EditClientProps) => {
     onSuccess: () => {
       setOpen(false);
       form.reset();
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
     }
   });
 
