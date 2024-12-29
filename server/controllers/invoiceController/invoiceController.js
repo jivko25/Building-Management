@@ -6,10 +6,10 @@ const { sendInvoiceEmail } = require("../../utils/invoiceEmailService");
 const createInvoice = async (req, res, next) => {
   console.log("Creating new invoice with data:", JSON.stringify(req.body, null, 2));
   try {
-    const { company_id, client_company_name, client_name, client_company_address, client_company_iban, client_emails, due_date_weeks, items } = req.body;
+    const { company_id, client_company_name, client_name, client_company_address, client_company_iban, client_emails, creator_id, due_date_weeks, items } = req.body;
 
     // Validate required fields
-    if (!company_id || !client_company_name || !client_name || !items || !items.length) {
+    if (!company_id || !client_company_name || !client_name || !creator_id || !items || !items.length) {
       console.error("Missing required fields");
       return res.status(400).json({
         success: false,
@@ -18,6 +18,7 @@ const createInvoice = async (req, res, next) => {
           company_id: !company_id,
           client_company_name: !client_company_name,
           client_name: !client_name,
+          creator_id: !creator_id,
           items: !items || !items.length
         }
       });
@@ -108,7 +109,8 @@ const createInvoice = async (req, res, next) => {
         client_company_name,
         client_company_address,
         client_company_iban,
-        client_emails: Array.isArray(client_emails) ? client_emails : [client_emails]
+        client_emails: Array.isArray(client_emails) ? client_emails : [client_emails],
+        creator_id
       }
     });
 

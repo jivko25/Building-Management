@@ -155,8 +155,48 @@ export const CreateInvoicePage = () => {
     }
   });
 
-  const onSubmit = (data: CreateInvoiceForm) => {
-    createInvoiceMutation.mutate(data);
+  const onSubmit = async (data: z.infer<typeof createInvoiceSchema>) => {
+    try {
+      console.log("Form data:", data);
+
+      // Трансформираме избраните работни елементи в правилния формат
+      const items = (data.selected_work_items ?? []).map(workItemId => {
+        const workItem = workItemsData?.flatMap(project => project.workItems).find(wi => wi.id === workItemId);
+
+        if (!workItem || !workItem.task) {
+          throw new Error("Work item not found");
+        }
+
+        return {
+          activity_id: workItem.task.activity_id,
+          measure_id: workItem.task.measure_id,
+          project_id: workItem.task.project_id,
+          quantity: workItem.task.total_work_in_selected_measure,
+          price_per_unit: workItem.task.price_per_measure
+        };
+      });
+
+      const invoiceData = {
+        company_id: data.company_id,
+        client_company_id: data.client_company_id,
+        client_company_name: data.client_company_name,
+        client_name: data.client_name,
+        client_company_address: data.client_company_address,
+        client_company_iban: data.client_company_iban,
+        client_emails: data.client_emails,
+        due_date_weeks: data.due_date_weeks,
+        items
+      };
+
+      console.log("Transformed invoice data:", invoiceData);
+
+      await createInvoiceMutation.mutateAsync(invoiceData);
+      toast.success("Invoice created successfully");
+      navigate("/invoices");
+    } catch (error) {
+      console.error("Error creating invoice:", error);
+      toast.error("Error creating invoice");
+    }
   };
 
   const handleClientCompanyChange = (clientId: number) => {
