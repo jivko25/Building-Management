@@ -23,6 +23,7 @@ import { InvoicesPage } from "./pages/Invoices/InvoicesPage";
 import { CreateInvoicePage } from "./pages/Invoices/CreateInvoicePage";
 import { InvoiceDetailsPage } from "./pages/Invoices/InvoiceDetailsPage";
 import { UpdateInvoicePage } from "./pages/Invoices/UpdateInvoicePage";
+import ClientsTablePage from "./pages/ClientsTablePage";
 
 const AppRoutes = () => {
   return (
@@ -154,6 +155,16 @@ const AppRoutes = () => {
           element={
             <TableLayout>
               <UpdateInvoicePage />
+            </TableLayout>
+          }
+        />
+      </Route>
+      <Route element={<ManagerGuard />}>
+        <Route
+          path="/clients"
+          element={
+            <TableLayout>
+              <ClientsTablePage />
             </TableLayout>
           }
         />

@@ -51,3 +51,15 @@ export const createEntity = async <TData>(URL: string, entityData: TData): Promi
 export const editEntity = async <TData>(URL: string, entityData: TData): Promise<void> => {
   return await apiCall(`${URL}`, "PUT", entityData);
 };
+
+export const putEntityData = async <TData>(url: string, data: TData): Promise<TData> => {
+  console.log("📤 Putting data to:", url, data);
+  const response = await apiCall(`${url}`, "PUT", data);
+  return response;
+};
+
+export const postEntityData = async <TData>(url: string, data: TData): Promise<TData> => {
+  console.log("📤 Posting data to:", url, data);
+  const response = await apiCall(`${url}`, "POST", data);
+  return response;
+};

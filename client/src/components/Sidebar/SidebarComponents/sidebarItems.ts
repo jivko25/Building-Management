@@ -1,6 +1,6 @@
 //client\src\components\Sidebar\SidebarComponents\sidebarItems.ts
 import { SidebarItems } from "@/types/sidebar-types/sidebarItems";
-import { Activity, BrickWall, Building2, ClipboardList, ContactRound, Home, LogOut, Ruler, Users, Receipt } from "lucide-react";
+import { Activity, BrickWall, Building2, ClipboardList, ContactRound, Home, LogOut, Ruler, Users, Receipt, UserRound } from "lucide-react";
 
 export const sidebarItems: SidebarItems = {
   links: [
@@ -13,7 +13,8 @@ export const sidebarItems: SidebarItems = {
     { label: "Companies", href: "/companies", icon: Building2 },
     { label: "Projects", href: "/projects", icon: BrickWall },
     { label: "Invoices", href: "/invoices", icon: Receipt },
-    { label: "My projects", href: "/my-projects", icon: ClipboardList }
+    { label: "My projects", href: "/my-projects", icon: ClipboardList },
+    { label: "Clients", href: "/clients", icon: UserRound }
   ]
 };
 
