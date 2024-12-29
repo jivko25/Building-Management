@@ -188,8 +188,8 @@ const createInvoicePDF = async invoiceId => {
             </div>
 
             <div class="company-info">
-              <p>${data.companyName}</p>
-              <p>${data.companyAddress}</p>
+              <p>Company: ${data.companyName}</p>
+              <p>Address: ${data.companyAddress}</p>
               <p>Reg. number: ${data.companyRegNumber || "No"}</p>
               <p>VAT number: ${data.companyVAT || "No"}</p>
               <p>Phone: ${data.companyPhone || "No"}</p>
