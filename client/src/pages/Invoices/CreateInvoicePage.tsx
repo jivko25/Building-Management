@@ -34,7 +34,8 @@ const createInvoiceSchema = z.object({
       })
     )
     .optional(),
-  selected_projects: z.array(z.number()).optional()
+  selected_projects: z.array(z.number()).optional(),
+  selected_work_items: z.array(z.number()).optional()
 });
 
 type CreateInvoiceForm = z.infer<typeof createInvoiceSchema>;
@@ -99,8 +100,32 @@ export const CreateInvoicePage = () => {
       company_id: 0,
       client_company_id: 0,
       due_date_weeks: 0,
-      selected_projects: []
+      selected_projects: [],
+      selected_work_items: []
     }
+  });
+
+  const { data: workItemsData } = useQuery({
+    queryKey: ["workItems", form.watch("selected_projects")],
+    queryFn: async () => {
+      const selectedProjects = form.watch("selected_projects") || [];
+      if (selectedProjects.length === 0) return [];
+
+      const workItemsByProject = await Promise.all(
+        selectedProjects.map(async projectId => {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/tasks/1/work-items?page&limit`, { credentials: "include" });
+          const data = await response.json();
+          console.log(`🛠️ Work items for project ${projectId}:`, data);
+          return {
+            projectId,
+            projectName: projects.find((p: any) => p.id === projectId)?.name,
+            workItems: data.workItems
+          };
+        })
+      );
+      return workItemsByProject;
+    },
+    enabled: (form.watch("selected_projects") ?? []).length > 0
   });
 
   const createInvoiceMutation = useMutation({
@@ -310,6 +335,93 @@ export const CreateInvoicePage = () => {
                   <span className="w-2 h-2 rounded-full bg-gray-300 mr-2"></span>
                   Inactive
                 </span>
+              </div>
+            </div>
+          )}
+
+          {workItemsData && workItemsData.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-xl font-semibold mb-4">Select Work Items</h2>
+              <div className="space-y-6">
+                {workItemsData.map(({ projectId, projectName, workItems }) => (
+                  <div key={projectId} className="border rounded-lg p-4 bg-white shadow-sm">
+                    <h3 className="text-lg font-medium mb-3 text-gray-900">{projectName}</h3>
+                    <div className="grid gap-3">
+                      {workItems.map((workItem: any) => (
+                        <div key={workItem.id} className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50 transition-colors duration-200">
+                          <div className="flex items-center min-w-0">
+                            <div className="relative inline-flex items-center">
+                              <input
+                                type="checkbox"
+                                id={`workItem-${workItem.id}`}
+                                className="
+                                  peer
+                                  appearance-none
+                                  w-5 
+                                  h-5 
+                                  border-2 
+                                  border-gray-300 
+                                  rounded-md 
+                                  bg-white
+                                  checked:bg-blue-500 
+                                  checked:border-blue-500
+                                  transition-colors 
+                                  duration-200
+                                  cursor-pointer
+                                  focus:outline-none 
+                                  focus:ring-2 
+                                  focus:ring-blue-500/30
+                                "
+                                checked={form.watch("selected_work_items")?.includes(workItem.id)}
+                                onChange={e => {
+                                  const currentSelected = form.watch("selected_work_items") || [];
+                                  if (e.target.checked) {
+                                    console.log("Adding work item:", workItem.id);
+                                    form.setValue("selected_work_items", [...currentSelected, workItem.id]);
+                                  } else {
+                                    console.log("Removing work item:", workItem.id);
+                                    form.setValue(
+                                      "selected_work_items",
+                                      currentSelected.filter((id: number) => id !== workItem.id)
+                                    );
+                                  }
+                                  console.log("Selected work items:", form.watch("selected_work_items"));
+                                }}
+                              />
+                              <svg
+                                className="
+                                  absolute 
+                                  w-4 
+                                  h-4 
+                                  text-white 
+                                  left-0.5 
+                                  top-0.5
+                                  pointer-events-none 
+                                  opacity-0 
+                                  peer-checked:opacity-100 
+                                  transition-opacity 
+                                  duration-200
+                                "
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth="3">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                            <div className="ml-3">
+                              <label htmlFor={`workItem-${workItem.id}`} className="text-sm font-medium text-gray-900 cursor-pointer">
+                                {workItem.name}
+                              </label>
+                              <div className="text-xs text-gray-500">Status: {workItem.status === "done" ? "Done" : "In Progress"}</div>
+                            </div>
+                          </div>
+                          <div className="text-sm text-gray-500">{workItem.task?.price_per_measure && <span>Price: ${workItem.task.price_per_measure}</span>}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
