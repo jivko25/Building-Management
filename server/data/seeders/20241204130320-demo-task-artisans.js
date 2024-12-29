@@ -4,7 +4,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.bulkDelete("tbl_task_artisans", null, {});
-    
+
     await queryInterface.bulkInsert(
       "tbl_task_artisans",
       [
@@ -22,6 +22,18 @@ module.exports = {
         },
         {
           task_id: 2,
+          artisan_id: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        {
+          task_id: 3,
+          artisan_id: 2,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        {
+          task_id: 4,
           artisan_id: 1,
           createdAt: new Date(),
           updatedAt: new Date()

@@ -36,6 +36,48 @@ module.exports = {
           logo_url: "https://i.imgur.com/hOXnDc6.png",
           vat_number: "BG123456789",
           iban: "BG123456789"
+        },
+        {
+          id: 3,
+          name: "Строителна фирма В",
+          number: "BG123456789",
+          address: "ул. Примерна 3",
+          mol: "Иван Иванов",
+          email: "contact@firma-c.com",
+          phone: "0888123456",
+          dds: "yes",
+          status: "active",
+          logo_url: "https://i.imgur.com/rMsgj7l.png",
+          vat_number: "BG123456789",
+          iban: "BG123456789"
+        },
+        {
+          id: 4,
+          name: "Строителна фирма Г",
+          number: "BG123456789",
+          address: "ул. Примерна 4",
+          mol: "Иван Иванов",
+          email: "contact@firma-d.com",
+          phone: "0888123456",
+          dds: "yes",
+          status: "active",
+          logo_url: "https://i.imgur.com/hOXnDc6.png",
+          vat_number: "BG123456789",
+          iban: "BG123456789"
+        },
+        {
+          id: 5,
+          name: "Строителна фирма Д",
+          number: "BG123456789",
+          address: "ул. Примерна 5",
+          mol: "Иван Иванов",
+          email: "contact@firma-d.com",
+          phone: "0888123456",
+          dds: "yes",
+          status: "active",
+          logo_url: "https://i.imgur.com/rMsgj7l.png",
+          vat_number: "BG123456789",
+          iban: "BG123456789"
         }
       ],
       {}
