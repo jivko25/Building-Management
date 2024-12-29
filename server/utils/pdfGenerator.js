@@ -182,23 +182,19 @@ const createInvoicePDF = async invoiceId => {
           
           <div class="info-container">
             <div class="client-info">
-              <h3>Client:</h3>
               <p>Company: ${data.clientCompanyName || "No"}</p>
-              <p>Contact person: ${data.clientName}</p>
               <p>Address: ${data.clientAddress || "No"}</p>
-              <p>IBAN: ${data.clientIBAN || "No"}</p>
-              <p>Emails: ${data.clientEmails || "No"}</p>
+              <p>DDS Number:"2252562636"}</p>
             </div>
 
             <div class="company-info">
-              <h3>Construction company:</h3>
               <p>${data.companyName}</p>
               <p>${data.companyAddress}</p>
               <p>Reg. number: ${data.companyRegNumber || "No"}</p>
               <p>VAT number: ${data.companyVAT || "No"}</p>
-              <p>IBAN: ${data.companyIBAN || "No"}</p>
               <p>Phone: ${data.companyPhone || "No"}</p>
-              <p>Email: ${data.companyEmail || "No"}</p>
+              <p>${data.companyEmail || "No"}</p>
+              <p>IBAN: ${data.companyIBAN || "No"}</p>
               <p>For Contact: ${data.companyMol || "No"}</p>
             </div>
           </div>
@@ -209,7 +205,7 @@ const createInvoicePDF = async invoiceId => {
                 <th>Activity</th>
                 <th>Location</th>
                 <th>Quantity</th>
-                <th>Unit price</th>
+                <th>Price</th>
                 <th>Total</th>
               </tr>
             </thead>
