@@ -15,6 +15,7 @@ module.exports = {
           client_emails: JSON.stringify(["gogata1905@gmail.com", "gogata1905@abv.bg"]),
           status: "active",
           creator_id: 1, // Admin's ID
+          client_company_vat_number: "2252562636",
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -27,6 +28,7 @@ module.exports = {
           client_emails: JSON.stringify(["gogata1905@gmail.com", "gogata1905@abv.bg"]),
           status: "active",
           creator_id: 2, // Manager's ID
+          client_company_vat_number: "2252562636",
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -39,6 +41,7 @@ module.exports = {
           client_emails: JSON.stringify(["gogata1905@gmail.com", "gogata1905@abv.bg"]),
           status: "active",
           creator_id: 2, // Manager's ID
+          client_company_vat_number: "2252562636",
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -51,6 +54,7 @@ module.exports = {
           client_emails: JSON.stringify(["gogata1905@gmail.com", "gogata1905@abv.bg"]),
           status: "active",
           creator_id: 2, // Manager's ID
+          client_company_vat_number: "2252562636",
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -63,6 +67,7 @@ module.exports = {
           client_emails: JSON.stringify(["gogata1905@gmail.com", "gogata1905@abv.bg"]),
           status: "active",
           creator_id: 2, // Manager's ID
+          client_company_vat_number: "2252562636",
           created_at: new Date(),
           updated_at: new Date()
         }

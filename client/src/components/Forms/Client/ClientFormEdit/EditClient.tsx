@@ -32,7 +32,8 @@ const EditClient = ({ clientId }: EditClientProps) => {
         client_company_address: client.client_company_address,
         client_company_iban: client.client_company_iban,
         client_emails: client.client_emails,
-        status: client.status
+        status: client.status,
+        client_company_vat_number: client.client_company_vat_number
       });
       console.log("🔄 Form reset with client data:", client);
     }

@@ -35,6 +35,10 @@ module.exports = (sequelize, DataTypes) => {
       creator_id: {
         type: DataTypes.INTEGER,
         allowNull: false
+      },
+      client_company_vat_number: {
+        type: DataTypes.STRING,
+        allowNull: true
       }
     },
     {
