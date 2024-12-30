@@ -24,6 +24,7 @@ import { CreateInvoicePage } from "./pages/Invoices/CreateInvoicePage";
 import { InvoiceDetailsPage } from "./pages/Invoices/InvoiceDetailsPage";
 import { UpdateInvoicePage } from "./pages/Invoices/UpdateInvoicePage";
 import ClientsTablePage from "./pages/ClientsTablePage";
+import AdminGuard from "./guards/AdminGuard";
 
 const AppRoutes = () => {
   return (
@@ -209,6 +210,18 @@ const AppRoutes = () => {
       />
       <Route path="*" element={<Navigate to="/" />} />
       {/* Public routes */}
+
+      {/* Admin only routes */}
+      <Route element={<AdminGuard />}>
+        <Route
+          path="/managers"
+          element={
+            <TableLayout>
+              <ManagerTablePage />
+            </TableLayout>
+          }
+        />
+      </Route>
     </Routes>
   );
 };

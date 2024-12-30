@@ -10,8 +10,13 @@ type SidebarComponent = {
 
 const SidebarLinks = ({ Component }: SidebarComponent) => {
   const { user } = useAuth();
+  console.log("Current user role:", user?.role);
 
   const guardedLinkRoutes = sidebarItems.links.filter(link => {
+    if (link.label === "Managers" && user?.role !== "admin") {
+      return false;
+    }
+
     if (user?.role === "admin" && link.label !== "My projects") {
       return true;
     }
@@ -23,7 +28,6 @@ const SidebarLinks = ({ Component }: SidebarComponent) => {
     }
     return false;
   });
-  
 
   return (
     <div className="mt-1 px-2 flex flex-col w-full gap-1">
