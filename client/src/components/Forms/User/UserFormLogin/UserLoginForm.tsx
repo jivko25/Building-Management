@@ -27,8 +27,8 @@ const UserLoginForm = () => {
                   form.handleSubmit(onSubmit)(e);
                 }}
                 className="grid gap-4">
-                <FormFieldInput name="username" label="Username" type="text" className="pl-10" Icon={User} />
-                <FormFieldInput name="password" label="Password" type="password" className="pl-10" Icon={Lock} />
+                <FormFieldInput name="username" label="Username" type="text" className="pl-10 text-white" Icon={User} />
+                <FormFieldInput name="password" label="Password" type="password" className="pl-10 text-white" Icon={Lock} />
                 <DialogFooter disabled={!form.formState.isDirty || isLoading} label="Submit" formName="login-form" className="mt-6" />
                 <FormErrors error={error} />
               </form>
