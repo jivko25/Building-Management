@@ -21,6 +21,9 @@ export const clientSchema = z.object({
   ),
   status: z.enum(["active", "inactive"], {
     message: "Please select status"
+  }),
+  client_company_vat_number: z.string().min(5, {
+    message: "VAT number must be at least 5 characters"
   })
 });
 
@@ -30,7 +33,8 @@ export const clientDefaultValues: Client = {
   client_company_address: "",
   client_company_iban: "",
   client_emails: [],
-  status: "active"
+  status: "active",
+  client_company_vat_number: ""
 };
 
 export type ClientSchema = z.infer<typeof clientSchema>;

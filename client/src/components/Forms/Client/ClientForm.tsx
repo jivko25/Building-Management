@@ -26,6 +26,7 @@ const ClientForm = ({ form, onSubmit, defaultValues }: ClientFormProps) => {
         <FormInput control={form.control} name="client_name" label="Client Name" placeholder="Enter client name" />
         <FormInput control={form.control} name="client_company_address" label="Address" placeholder="Enter company address" />
         <FormInput control={form.control} name="client_company_iban" label="IBAN" placeholder="Enter company IBAN" />
+        <FormInput control={form.control} name="client_company_vat_number" label="VAT Number" placeholder="Enter company VAT number" />
         <FormEmailList control={form.control} name="client_emails" label="Email Addresses" placeholder="Add email address" />
         <FormSelect control={form.control} name="status" label="Status" options={statusOptions} />
         <Button type="submit" className="w-full">

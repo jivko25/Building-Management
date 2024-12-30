@@ -7,6 +7,7 @@ export type Client = {
   client_emails: string[];
   status: "active" | "inactive";
   creator_id?: number;
+  client_company_vat_number?: string;
   creator?: {
     username: string;
   };

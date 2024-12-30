@@ -41,6 +41,10 @@ module.exports = {
           key: "id"
         }
       },
+      client_company_vat_number: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
