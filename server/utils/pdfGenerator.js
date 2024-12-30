@@ -17,7 +17,7 @@ const createInvoicePDF = async invoiceId => {
         {
           model: Client,
           as: "client",
-          attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails"]
+          attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails", "client_company_vat_number"]
         },
         {
           model: InvoiceItem,
@@ -80,6 +80,7 @@ const createInvoicePDF = async invoiceId => {
       clientCompanyName: invoice.client.client_company_name,
       clientName: invoice.client.client_name,
       clientAddress: invoice.client.client_company_address,
+      clientCompanyVATNumber: invoice.client.client_company_vat_number,
       clientIBAN: invoice.client.client_company_iban,
       clientEmails: Array.isArray(invoice.client.client_emails) ? invoice.client.client_emails.join(", ") : invoice.client.client_emails,
       items: invoice.items.map(item => ({
@@ -184,7 +185,7 @@ const createInvoicePDF = async invoiceId => {
             <div class="client-info">
               <p>Company: ${data.clientCompanyName || "No"}</p>
               <p>Address: ${data.clientAddress || "No"}</p>
-              <p>DDS Number: 2252562636</p>
+              <p>VAT number: ${data.clientCompanyVATNumber || "No"}</p>
             </div>
 
             <div class="company-info">
