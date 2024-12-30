@@ -26,14 +26,33 @@ const EditCompanyForm = ({ company_id, handleSubmit, isPending }: EditCompanyFor
     }
   });
 
-  console.log("🏢 Company data:", company);
+  console.log("🏢 Fetched company data:", company);
 
   const { useEditCompanyForm } = useCompanyFormHooks();
   const form = useEditCompanyForm(company || {});
 
+  const onSubmit = (data: CompanySchema) => {
+    console.log("✏️ Editing company with data:", {
+      id: company_id,
+      ...data,
+      formState: form.formState,
+      isDirty: form.formState.isDirty,
+      isValid: form.formState.isValid
+    });
+    handleSubmit(data);
+  };
+
+  console.log("🏢 Current form values:", form.watch());
+  console.log("🚦 Form state:", {
+    isDirty: form.formState.isDirty,
+    errors: form.formState.errors,
+    isSubmitting: form.formState.isSubmitting,
+    dirtyFields: form.formState.dirtyFields
+  });
+
   return (
     <FormProvider {...form}>
-      <form id="form-edit" onSubmit={form.handleSubmit(handleSubmit)}>
+      <form id="form-edit" onSubmit={form.handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 gap-2 mb-2">
           <FormFieldInput type="text" label="Company name" name="name" className="pl-10" Icon={ClipboardList} />
           <FormFieldInput type="text" label="Company location" name="location" className="pl-10" Icon={MapPin} />
@@ -43,10 +62,12 @@ const EditCompanyForm = ({ company_id, handleSubmit, isPending }: EditCompanyFor
         <div className="grid grid-cols-1 gap-2 mb-2">
           <FormFieldInput type="text" label="Company MOL" name="mol" className="pl-10" Icon={User} />
           <FormFieldInput type="email" label="Company email" name="email" className="pl-10" Icon={Mail} />
+          <FormFieldInput type="text" label="Company IBAN" name="iban" className="pl-10" Icon={FileDigit} />
+          <FormFieldInput type="text" label="Company VAT number" name="vat_number" className="pl-10" Icon={FileDigit} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 gap-2 mb-2">
-          <FormFieldInput type="text" label="Company number" name="number" className="pl-10" Icon={FileDigit} />
+          <FormFieldInput type="text" label="Company registration number" name="registration_number" className="pl-10" Icon={FileDigit} />
           <FormFieldInput type="text" label="Company phone" name="phone" className="pl-10" Icon={Phone} />
         </div>
         <Separator className="mt-4 mb-2" />
