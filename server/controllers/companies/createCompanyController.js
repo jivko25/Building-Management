@@ -4,7 +4,7 @@ const { Company } = db;
 const ApiError = require("../../utils/apiError");
 
 const createCompany = async (req, res, next) => {
-  const { name, number, address, mol, email, phone, dds, status } = req.body;
+  const { name, number, location, address, mol, email, phone, dds, status } = req.body;
 
   try {
     const existingCompany = await Company.findOne({ where: { name } });
@@ -15,6 +15,7 @@ const createCompany = async (req, res, next) => {
     const newCompany = await Company.create({
       name,
       number,
+      location,
       address,
       mol,
       email,
