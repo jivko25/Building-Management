@@ -15,7 +15,7 @@ export interface Invoice {
     name: string;
     address: string;
     location: string;
-    number: string;
+    registration_number: string;
     vat_number: string;
     iban: string;
     phone: string;
