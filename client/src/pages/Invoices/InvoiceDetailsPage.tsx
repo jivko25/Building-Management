@@ -135,7 +135,7 @@ export const InvoiceDetailsPage = () => {
           </div>
           <div className="border rounded-lg p-8" style={{ fontFamily: "Calibri, sans-serif" }}>
             <div className="flex justify-between mb-8">
-              <div>
+              <div className="invoice-info">
                 <h1 className="text-xl font-bold mb-2">Invoice {invoice.invoice_number}</h1>
                 <p>Date of issue: {format(new Date(invoice.invoice_date), "dd.MM.yyyy", { locale: bg })}</p>
                 <p>Due date: {format(new Date(invoice.due_date), "dd.MM.yyyy", { locale: bg })}</p>
@@ -145,23 +145,20 @@ export const InvoiceDetailsPage = () => {
 
             <div className="grid grid-cols-2 gap-10 mb-8">
               <div className="border p-5 rounded">
-                <h3 className="font-bold mb-2">Construction company:</h3>
-                <p>{invoice.company?.name}</p>
-                <p>{invoice.company?.address}</p>
-                <p>Reg. number: {invoice.company?.registration_number || "No"}</p>
-                <p>VAT number: {invoice.company?.vat_number || "No"}</p>
-                <p>IBAN: {invoice.company?.iban || "No"}</p>
-                <p>Phone: {invoice.company?.phone || "No"}</p>
-                <p>For Contact: Счетоводител Счетоводителов</p>
+                <p>Company: {invoice.client?.client_company_name || "No"}</p>
+                <p>Address: {invoice.client?.client_company_address || "No"}</p>
+                <p>VAT number: {invoice.client?.client_company_vat_number || "No"}</p>
               </div>
 
               <div className="border p-5 rounded">
-                <h3 className="font-bold mb-2">Client:</h3>
-                <p>Company: {invoice.client?.client_company_name || "No"}</p>
-                <p>Contact person: {invoice.client?.client_name}</p>
-                <p>Address: {invoice.client?.client_company_address || "No"}</p>
-                <p>IBAN: {invoice.client?.client_company_iban || "No"}</p>
-                <p>Emails: {Array.isArray(invoice.client?.client_emails) ? invoice.client.client_emails.join(", ") : invoice.client?.client_emails || "No"}</p>
+                <p>Company: {invoice.company?.name}</p>
+                <p>Address: {invoice.company?.address}</p>
+                <p>Reg. number: {invoice.company?.registration_number || "No"}</p>
+                <p>VAT number: {invoice.company?.vat_number || "No"}</p>
+                <p>Phone: {invoice.company?.phone || "No"}</p>
+                <p>{invoice.company?.email || "No"}</p>
+                <p>IBAN: {invoice.company?.iban || "No"}</p>
+                <p>For Contact: {invoice.client?.client_name || "No"}</p>
               </div>
             </div>
 
@@ -169,31 +166,28 @@ export const InvoiceDetailsPage = () => {
               <thead>
                 <tr className="border">
                   <th className="border p-2 text-left">Activity</th>
-                  <th className="border p-2 text-left">Location</th>
-                  <th className="border p-2 text-left">Project address</th>
-                  <th className="border p-2 text-left">Measure</th>
                   <th className="border p-2 text-right">Quantity</th>
-                  <th className="border p-2 text-right">Unit price</th>
+                  <th className="border p-2 text-right">Price</th>
                   <th className="border p-2 text-right">Total</th>
                 </tr>
               </thead>
               <tbody>
                 {invoice.items.map(item => (
                   <tr key={item.id} className="border">
-                    <td className="border p-2">{item.activity.name}</td>
-                    <td className="border p-2">{item.project?.location || "No"}</td>
-                    <td className="border p-2">{item.project.address || "No"}</td>
-                    <td className="border p-2">{item.measure.name}</td>
-                    <td className="border p-2 text-right">{item.quantity}</td>
-                    <td className="border p-2 text-right">{item.price_per_unit} €</td>
-                    <td className="border p-2 text-right">{item.total_price} €</td>
+                    <td className="border p-2">
+                      Location: {item.project?.location} <br />
+                      {item.activity.name}
+                    </td>
+                    <td className="border p-2 text-right">{parseFloat(item.quantity).toFixed(2)}</td>
+                    <td className="border p-2 text-right">{parseFloat(item.price_per_unit).toFixed(2)} €</td>
+                    <td className="border p-2 text-right">{parseFloat(item.total_price).toFixed(2)} €</td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
             <div className="text-right">
-              <h3 className="font-bold">Total amount: {invoice.total_amount} €</h3>
+              <h3 className="font-bold">Total amount: {parseFloat(invoice.total_amount).toFixed(2)} €</h3>
             </div>
           </div>
         </div>
@@ -231,7 +225,7 @@ export const InvoiceDetailsPage = () => {
             </div>
             <div>
               <span className="font-semibold">Contact person: </span>
-              {invoice.client.client_name}
+              {invoice.client.client_company_mol}
             </div>
             <div>
               <span className="font-semibold">Address: </span>

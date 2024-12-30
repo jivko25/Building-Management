@@ -111,7 +111,7 @@ export const UpdateInvoicePage = () => {
             </div>
             <div>
               <Label>Contact Person</Label>
-              <div className="mt-1">{invoice.client.client_name}</div>
+              <div className="mt-1">{invoice.client.client_company_mol}</div>
             </div>
             <div>
               <Label>Address</Label>
