@@ -21,27 +21,18 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
   const [artisan, setArtisan] = useState<Artisan>();
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [responseMessage, setResponseMessage] = useState<ResponseMessageType | null>(null);
-
+  // Fetch all data
   const { data: artisanResponse } = useFetchDataQuery<Artisan>({ URL: `/artisans/${artisanId}`, queryKey: ["artisan"] }) as { data: Artisan; isPending: boolean; isError: boolean };
   const { data: measures } = useFetchDataQuery<MeasureResponse>({ URL: "/measures", queryKey: ["measures"] }) as { data: MeasureResponse; isPending: boolean; isError: boolean };
   const { data: activitiesResponse } = useFetchDataQuery<ActivityResponse>({
     URL: "/activities",
     queryKey: ["activities"]
   });
-  const { data: defaultPricingsResponse, refetch: refetchDefaultPricings } = useFetchDataQuery<DefaultPricingResponse>({ URL: `/default-pricing/${artisanId}`, queryKey: ["defaultPricings"] }) as { data: DefaultPricingResponse; isPending: boolean; isError: boolean; refetch: () => void };
+  const { data: defaultPricingsResponse, refetch: refetchDefaultPricings } = useFetchDataQuery<DefaultPricingResponse>({ URL: `/default-pricing/${artisanId}`, queryKey: ["defaultPricings"] }) as { data: DefaultPricingResponse; refetch: () => void };
 
   const activities: Activity[] = activitiesResponse?.data || [];
 
-  useEffect(() => {
-    const defaultPricings: DefaultPricing[] = defaultPricingsResponse?.defaultPricing || [];
-    if (activity && measure && defaultPricings) {
-      const existingPricing = defaultPricings.find(p => p.activity_id === activity.id && p.measure_id === measure.id);
-      setPrice(existingPricing?.price || 0);
-      setIsAdding(false);
-    }
-  }, [activity, measure, defaultPricingsResponse]);
-
-  const proffesionsBodyTemplate = () => {
+  const activityBodyTemplate = () => {
     return (
       <Dropdown
         options={activities?.map(a => ({ label: a.name, value: a }))}
@@ -86,6 +77,7 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
     );
   };
 
+  //Add default pricing (onSubmit)
   const addDefaultPricing = async () => {
     if (!activity?.id || !measure?.id) {
       setResponseMessage({ type: "error", message: "Please select both activity and measure" });
@@ -109,6 +101,7 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
     }
   };
 
+  //Handle unsaved changes
   const handleUnsavedChanges = (callback: () => void) => {
     if (isAdding) {
       confirmDialog({
@@ -132,15 +125,25 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
     }
   };
 
+  //Set the artisan
   useEffect(() => {
     setArtisan(artisanResponse);
   }, [artisanResponse]);
 
+  //Set the price to the existing price if it exists
+  useEffect(() => {
+    const defaultPricings: DefaultPricing[] = defaultPricingsResponse?.defaultPricing || [];
+    if (activity && measure && defaultPricings) {
+      const existingPricing = defaultPricings.find(p => p.activity_id === activity.id && p.measure_id === measure.id);
+      setPrice(existingPricing?.price || 0);
+      setIsAdding(false);
+    }
+  }, [activity, measure, defaultPricingsResponse]);
   return (
     <div className="w-full flex flex-col justify-center items-center ">
       <DataTable value={artisan ? [artisan] : []} responsiveLayout="stack" breakpoint="960px" className="text-sm md:text-base max-w-full !overflow-x-hidden " style={{ width: "100%" }}>
         <Column field="name" header="Name" className="text-sm md:text-base" />
-        <Column field="activity" header="Activity" body={proffesionsBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
+        <Column field="activity" header="Activity" body={activityBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
         <Column field="measure" header="Measure" body={measuresBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
         <Column field="price" header="Price" body={priceBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
       </DataTable>
