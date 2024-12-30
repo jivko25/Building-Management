@@ -13,14 +13,14 @@ import { Separator } from "@/components/ui/separator";
 
 type EditCompanyFormProps = {
   handleSubmit: (companyData: CompanySchema) => void;
-  companyId: string;
+  company_id: string;
   isPending: boolean;
 };
 
-const EditCompanyForm = ({ companyId, handleSubmit, isPending }: EditCompanyFormProps) => {
+const EditCompanyForm = ({ company_id, handleSubmit, isPending }: EditCompanyFormProps) => {
   const { data: company } = useFetchDataQuery<Company>({
-    URL: `/companies/${companyId}`,
-    queryKey: ["company", companyId],
+    URL: `/companies/${company_id}`,
+    queryKey: ["company", company_id],
     options: {
       staleTime: Infinity
     }

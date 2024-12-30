@@ -16,7 +16,7 @@ module.exports = {
         allowNull: false,
         comment: "Name of the project"
       },
-      companyId: {
+      company_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {

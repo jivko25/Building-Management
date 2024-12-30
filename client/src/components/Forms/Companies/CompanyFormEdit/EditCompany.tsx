@@ -7,15 +7,15 @@ import DialogModal from "@/components/common/DialogElements/DialogModal";
 import EditCompanyForm from "./EditCompanyForm";
 
 type CompanyFormProps = {
-  companyId: string;
+  company_id: string;
 };
 
-const EditCompany = ({ companyId }: CompanyFormProps) => {
+const EditCompany = ({ company_id }: CompanyFormProps) => {
   const { isOpen, setIsOpen } = useDialogState();
 
   const { useEditEntity } = useMutationHook();
   const { mutate, isPending } = useEditEntity<CompanySchema>({
-    URL: `/companies/${companyId}/edit`,
+    URL: `/companies/${company_id}/edit`,
     queryKey: ["companies"],
     successToast: "Company updated successfully!",
     setIsOpen
@@ -23,7 +23,7 @@ const EditCompany = ({ companyId }: CompanyFormProps) => {
 
   const handleSubmit = useSubmitHandler(mutate, companySchema);
 
-  return <DialogModal Component={EditCompanyForm} props={{ companyId, handleSubmit, isPending }} isOpen={isOpen} setIsOpen={setIsOpen} title="Edit company" />;
+  return <DialogModal Component={EditCompanyForm} props={{ company_id, handleSubmit, isPending }} isOpen={isOpen} setIsOpen={setIsOpen} title="Edit company" />;
 };
 
 export default EditCompany;

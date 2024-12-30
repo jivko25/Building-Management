@@ -29,7 +29,7 @@ const editProject = async (req, res, next) => {
 
     const updatedProject = await project.update({
       name,
-      companyId: company.id,
+      company_id: company.id,
       company_name,
       email,
       address,
@@ -44,7 +44,7 @@ const editProject = async (req, res, next) => {
     const formattedProject = {
       id: updatedProject.id.toString(),
       name: updatedProject.name,
-      companyId: updatedProject.companyId,
+      company_id: updatedProject.company_id,
       company_name: updatedProject.company_name,
       email: updatedProject.email,
       address: updatedProject.address,
