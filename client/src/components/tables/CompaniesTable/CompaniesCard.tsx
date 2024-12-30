@@ -14,7 +14,7 @@ const CompaniesCard = ({ companies }: CompaniesCardProps) => {
         companies.map(company => (
           <TableRow key={company.id}>
             <TableCell className="font-semibold">{company.name}</TableCell>
-            <TableCell className="text-center font-semibold">{company.number}</TableCell>
+            <TableCell className="text-center font-semibold">{company.registration_number}</TableCell>
             <TableCell className="text-center font-semibold">{company.mol}</TableCell>
             <TableCell className="text-end w-[200px]">
               <EditCompany company_id={company.id!} />
