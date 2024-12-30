@@ -12,7 +12,7 @@ module.exports = {
         {
           id: 1,
           name: "Строителна фирма А",
-          number: "BG123456789",
+          registration_number: "BG123456789",
           location: "София",
           address: "ул. Примерна 1",
           mol: "Георги Георгиев",
@@ -27,7 +27,7 @@ module.exports = {
         {
           id: 2,
           name: "Строителна фирма Б",
-          number: "BG987654321",
+          registration_number: "BG987654321",
           location: "Благоевград",
           address: "ул. Примерна 2",
           mol: "Мария Маринова",
@@ -42,7 +42,7 @@ module.exports = {
         {
           id: 3,
           name: "Строителна фирма В",
-          number: "BG123456789",
+          registration_number: "BG123456789",
           location: "Пловдив",
           address: "ул. Примерна 3",
           mol: "Иван Иванов",
@@ -57,7 +57,7 @@ module.exports = {
         {
           id: 4,
           name: "Строителна фирма Г",
-          number: "BG123456789",
+          registration_number: "BG123456789",
           location: "Бургас",
           address: "ул. Примерна 4",
           mol: "Иван Иванов",
@@ -72,7 +72,7 @@ module.exports = {
         {
           id: 5,
           name: "Строителна фирма Д",
-          number: "BG123456789",
+          registration_number: "BG123456789",
           location: "Варна",
           address: "ул. Примерна 5",
           mol: "Иван Иванов",

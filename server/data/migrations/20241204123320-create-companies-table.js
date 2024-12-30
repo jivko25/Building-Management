@@ -13,7 +13,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      number: {
+      registration_number: {
         type: Sequelize.STRING,
         allowNull: false
       },
@@ -44,6 +44,18 @@ module.exports = {
       status: {
         type: Sequelize.ENUM("active", "inactive"),
         defaultValue: "inactive"
+      },
+      iban: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      vat_number: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      logo_url: {
+        type: Sequelize.STRING,
+        allowNull: true
       }
     });
   },
