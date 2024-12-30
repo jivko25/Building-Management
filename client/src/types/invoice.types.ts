@@ -20,13 +20,17 @@ export interface Invoice {
     iban: string;
     phone: string;
     logo_url: string;
+    mol: string;
+    email: string;
   };
   client: {
     client_company_name: string;
-    client_name: string;
     client_company_address: string;
-    client_company_iban: string;
+    client_company_vat_number: string;
     client_emails: string[];
+    client_company_iban: string;
+    client_name: string;
+    client_company_mol: string;
   };
   items: InvoiceItem[];
 }
