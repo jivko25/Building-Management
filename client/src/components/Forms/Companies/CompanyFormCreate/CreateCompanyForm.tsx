@@ -24,6 +24,7 @@ const CreateCompanyForm = ({ handleSubmit, isPending }: CreateCompanyFormProps) 
       <form id="company-form" onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="grid grid-cols-1 gap-2 mb-2">
           <FormFieldInput type="text" label="Company name" name="name" className="pl-10" Icon={ClipboardList} />
+          <FormFieldInput type="text" label="Company location" name="location" className="pl-10" Icon={MapPin} />
           <FormFieldInput type="text" label="Company address" name="address" className="pl-10" Icon={MapPin} />
         </div>
         <Separator className="mt-4 mb-2" />
