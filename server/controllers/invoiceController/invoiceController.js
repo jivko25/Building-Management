@@ -177,7 +177,7 @@ const getAllInvoices = async (req, res, next) => {
         {
           model: Company,
           as: "company",
-          attributes: ["name", "address", "number", "vat_number", "iban", "phone"]
+          attributes: ["name", "address", "registration_number", "vat_number", "iban", "phone"]
         },
         {
           model: Client,
@@ -228,7 +228,7 @@ const getInvoiceById = async (req, res, next) => {
         {
           model: Company,
           as: "company",
-          attributes: ["name", "address", "number", "vat_number", "iban", "logo_url", "phone"]
+          attributes: ["name", "address", "registration_number", "vat_number", "iban", "logo_url", "phone"]
         },
         {
           model: Client,
@@ -430,7 +430,7 @@ const updateInvoice = async (req, res, next) => {
             {
               model: Company,
               as: "company",
-              attributes: ["name", "address", "number", "vat_number", "iban", "logo_url", "phone"]
+              attributes: ["name", "address", "registration_number", "vat_number", "iban", "logo_url", "phone"]
             },
             {
               model: Client,
@@ -512,7 +512,7 @@ const updateInvoiceStatus = async (req, res, next) => {
           {
             model: Company,
             as: "company",
-            attributes: ["name", "address", "number", "vat_number", "iban", "logo_url", "phone"]
+            attributes: ["name", "address", "registration_number", "vat_number", "iban", "logo_url", "phone"]
           },
           {
             model: Client,

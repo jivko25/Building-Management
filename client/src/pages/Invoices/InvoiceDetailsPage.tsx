@@ -148,7 +148,7 @@ export const InvoiceDetailsPage = () => {
                 <h3 className="font-bold mb-2">Construction company:</h3>
                 <p>{invoice.company?.name}</p>
                 <p>{invoice.company?.address}</p>
-                <p>Reg. number: {invoice.company?.number || "No"}</p>
+                <p>Reg. number: {invoice.company?.registration_number || "No"}</p>
                 <p>VAT number: {invoice.company?.vat_number || "No"}</p>
                 <p>IBAN: {invoice.company?.iban || "No"}</p>
                 <p>Phone: {invoice.company?.phone || "No"}</p>
