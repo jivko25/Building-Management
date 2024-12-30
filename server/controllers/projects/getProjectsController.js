@@ -12,12 +12,12 @@ const getProjects = async (req, res, next) => {
 
     if (req.user.role === "admin") {
       projects = await Project.findAll({
-        attributes: ["id", "name", "companyId", "company_name", "email", "address", "location", "start_date", "end_date", "note", "status", "creator_id"],
+        attributes: ["id", "name", "company_id", "company_name", "email", "address", "location", "start_date", "end_date", "note", "status", "creator_id"],
         order: [["id", "DESC"]]
       });
     } else {
       projects = await Project.findAll({
-        attributes: ["id", "name", "companyId", "company_name", "email", "address", "location", "start_date", "end_date", "note", "status", "creator_id"],
+        attributes: ["id", "name", "company_id", "company_name", "email", "address", "location", "start_date", "end_date", "note", "status", "creator_id"],
         where: {
           creator_id: req.user.id
         },

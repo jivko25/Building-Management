@@ -59,8 +59,8 @@ export const CreateInvoicePage = () => {
   const { data: projectsData, refetch: refetchProjects } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
-      const companyId = form.getValues("company_id");
-      if (!companyId) return [];
+      const company_id = form.getValues("company_id");
+      if (!company_id) return [];
 
       const response = await fetch(`${import.meta.env.VITE_API_URL}/projects`, {
         credentials: "include"
@@ -68,7 +68,7 @@ export const CreateInvoicePage = () => {
       const data = await response.json();
       console.log("🏗️ All projects data:", data);
 
-      const filteredProjects = data.filter((project: any) => project.companyId === companyId);
+      const filteredProjects = data.filter((project: any) => project.company_id === company_id);
       console.log("🏗️ Filtered projects for company:", filteredProjects);
 
       return filteredProjects;
@@ -189,9 +189,9 @@ export const CreateInvoicePage = () => {
     }
   };
 
-  const handleCompanyChange = (companyId: number) => {
-    console.log("Selected company ID:", companyId);
-    form.setValue("company_id", companyId);
+  const handleCompanyChange = (company_id: number) => {
+    console.log("Selected company ID:", company_id);
+    form.setValue("company_id", company_id);
     refetchProjects();
   };
 

@@ -25,7 +25,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
-      companyId: {
+      company_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
