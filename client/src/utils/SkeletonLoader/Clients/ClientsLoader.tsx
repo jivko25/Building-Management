@@ -1,8 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { Client } from "@/types/client-types/clientTypes";
 
-const ClientsLoader = ({ clients }: { clients: Client[] }) => {
+const ClientsLoader = () => {
   return (
     <>
       {[1, 2, 3, 4, 5].map(index => (
