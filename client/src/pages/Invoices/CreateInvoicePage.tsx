@@ -22,8 +22,6 @@ const createInvoiceSchema = z.object({
   selected_work_items: z.array(z.number()).optional()
 });
 
-type CreateInvoiceForm = z.infer<typeof createInvoiceSchema>;
-
 export const CreateInvoicePage = () => {
   const navigate = useNavigate();
   console.log("Rendering CreateInvoicePage");
@@ -165,7 +163,8 @@ export const CreateInvoicePage = () => {
         client_company_id: Number(data.client_company_id),
         due_date_weeks: Number(data.due_date_weeks),
         selected_projects: data.selected_projects?.map(Number) || [],
-        selected_work_items: data.selected_work_items?.map(Number) || []
+        selected_work_items: data.selected_work_items?.map(Number) || [],
+        items
       };
 
       console.log("Transformed invoice data:", invoiceData);
