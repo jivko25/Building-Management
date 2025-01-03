@@ -3,7 +3,7 @@ import { createEntity, editEntity, getEntityData, getInfiniteData, getPaginatedD
 import { CachedDataOptions, FetchDataQueryOptions, FetchQueryOptions, PaginatedDataResponse, UseGetPaginatedDataTypes } from "@/types/query-data-types/paginatedDataTypes";
 import { ProjectTask } from "@/types/task-types/taskTypes";
 import { PaginatedWorkItems } from "@/types/work-item-types/workItem";
-import { keepPreviousData, useInfiniteQuery, UseInfiniteQueryResult, useMutation, useQuery, UseQueryResult, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery, UseInfiniteQueryResult, useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 interface QueryConfig {
@@ -98,4 +98,3 @@ export const useCreateEntity = <TData>({ URL, queryKey, successMessage, errorMes
     }
   });
 };
-
