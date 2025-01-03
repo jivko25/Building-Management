@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Edit, Plus } from "lucide-react";
 
-
 type DialogModalProps<T> = {
   Component: React.ComponentType<T>;
   CreateButtonModal?: React.ReactNode;
@@ -15,9 +14,11 @@ type DialogModalProps<T> = {
   className?: string;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  icon?: React.ReactNode;
+  maxWidth?: string;
 };
 
-const DialogModal = <T extends {}>({ Component, props, createButtonTitle, title, className, isOpen, setIsOpen, CreateButtonModal }: DialogModalProps<T>) => {
+const DialogModal = <T extends {}>({ Component, props, createButtonTitle, title, className, isOpen, maxWidth, setIsOpen, CreateButtonModal, icon = <Edit /> }: DialogModalProps<T>) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -28,11 +29,11 @@ const DialogModal = <T extends {}>({ Component, props, createButtonTitle, title,
           </Button>
         ) : (
           <Button variant="ghost" size="icon">
-            <Edit />
+            {icon}
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-[22rem] sm:max-w-[30rem] rounded-md ">
+      <DialogContent style={{ maxWidth: `${maxWidth}` }} className="max-w-[22rem] sm:max-w-[30rem] rounded-md ">
         <DialogHeader>
           <DialogTitle className={cn("text-center font-semibold text-lg", className)}>{title}</DialogTitle>
         </DialogHeader>
