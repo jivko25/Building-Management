@@ -38,7 +38,7 @@ const ClientsTableBody = () => {
   const totalPages = Math.ceil(clients.length / itemsLimit);
 
   if (isPending) {
-    return <ClientsLoader clients={clients} />;
+    return <ClientsLoader />;
   }
 
   if (isError) {
