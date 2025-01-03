@@ -7,7 +7,7 @@ import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { bg } from "date-fns/locale";
-import { Invoice, InvoiceItem } from "@/types/invoice.types";
+import { Invoice } from "@/types/invoice.types";
 import { useEffect, useState } from "react";
 import { FilterMatchMode } from "primereact/api";
 import { InputIcon } from "primereact/inputicon";
