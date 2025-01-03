@@ -13,7 +13,9 @@ interface QueryConfig {
 
 interface EntityOptions {
   URL: string;
+  queryKey?: string[];
   successMessage?: string;
+  errorMessage?: string;
   onSuccess?: () => void;
 }
 
