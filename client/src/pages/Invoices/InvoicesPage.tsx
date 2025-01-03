@@ -114,24 +114,6 @@ export const InvoicesPage = () => {
     );
   };
 
-  const quantityTemplate = (rowData: InvoiceItem) => {
-    try {
-      return Math.round(parseFloat(rowData.quantity));
-    } catch (error) {
-      console.error("Error formatting quantity:", error, rowData);
-      return "0";
-    }
-  };
-
-  const pricePerUnitTemplate = (rowData: InvoiceItem) => {
-    try {
-      return Math.round(parseFloat(rowData.price_per_unit));
-    } catch (error) {
-      console.error("Error formatting price per unit:", error, rowData);
-      return "0";
-    }
-  };
-
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-6">Invoices</h1>
