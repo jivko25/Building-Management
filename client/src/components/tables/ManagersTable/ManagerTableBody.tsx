@@ -13,10 +13,12 @@ import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import apiClient from "@/api/axiosConfig";
+import { useTheme } from "@/context/ThemeContext";
 
 const ManagersTableBody = () => {
   const { itemsLimit, page } = useSearchParamsHook();
   const [readonlyValue, setReadonlyValue] = useState<any>(null);
+  const { theme } = useTheme();
 
   const {
     data: managers,
@@ -69,13 +71,13 @@ const ManagersTableBody = () => {
         console.error("Error updating permissions:", error);
       });
   };
-  
+
   const readonlyBodyTemplate = (rowData: User) => {
     const options = [
       { label: "On", value: true },
       { label: "Off", value: false }
     ];
-  
+
     return (
       <Dropdown
         value={rowData.readonly}
@@ -119,12 +121,12 @@ const ManagersTableBody = () => {
   return (
     <div className="mx-auto mt-2">
       <DataTable value={managers?.data} paginator rows={itemsLimit} totalRecords={managers?.totalCount} dataKey="id" filters={filters} globalFilterFields={["full_name", "email", "role", "status"]} header={header} filterDisplay="row" loading={isPending} emptyMessage="No managers found.">
-        <Column field="full_name" header="Full Name" filter sortable filterPlaceholder="Search by name" style={{ minWidth: "12rem" }} />
-        <Column field="email" header="Email" filter sortable filterPlaceholder="Search by email" style={{ minWidth: "12rem" }} />
-        <Column field="role" header="Role" filter sortable filterPlaceholder="Search by role" style={{ minWidth: "12rem" }} />
-        <Column field="readonly" header="Readonly" body={readonlyBodyTemplate} filter sortable filterElement={statusFilterTemplate} style={{ minWidth: "12rem" }} />
+        <Column field="full_name" header="Full Name" filter sortable filterPlaceholder="Search by name" style={{ minWidth: "12rem", color: theme === 'dark' ? "white" : "black", fontWeight: "600", fontSize: '14px' }} />
+        <Column field="email" header="Email" filter sortable filterPlaceholder="Search by email" style={{ minWidth: "12rem", color: theme === 'dark' ? "white" : "black", fontWeight: "600", fontSize: '14px' }} />
+        <Column field="role" header="Role" filter sortable filterPlaceholder="Search by role" style={{ minWidth: "12rem", color: theme === 'dark' ? "white" : "black", fontWeight: "600", fontSize: '14px' }} />
+        <Column field="readonly" header="Readonly" body={readonlyBodyTemplate} filter sortable filterElement={statusFilterTemplate} style={{ minWidth: "12rem", color: theme === 'dark' ? "white" : "black", fontWeight: "600", fontSize: '14px' }} />
       </DataTable>
-    </div>
+    </div >
   );
 };
 
