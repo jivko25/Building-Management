@@ -14,11 +14,13 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import apiClient from "@/api/axiosConfig";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@/context/ThemeContext";
 
 const ManagersTableBody = () => {
   const { t } = useTranslation();
   const { itemsLimit, page } = useSearchParamsHook();
   const [readonlyValue, setReadonlyValue] = useState<any>(null);
+  const { theme } = useTheme();
 
   const {
     data: managers,
