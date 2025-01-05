@@ -7,15 +7,25 @@ import ConditionalRenderer from "@/components/common/ConditionalRenderer/Conditi
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import ProjectsCard from "./ProjectsCard";
 import ProjectsBreadcrumb from "@/components/common/Breadcrumbs/ProjectsBreadcrumb";
+import SearchBar from "@/components/common/SearchBar/SearchBar";
+import useSearchHandler from "@/hooks/useSearchHandler";
+import useSearchParamsHook from "@/hooks/useSearchParamsHook";
+import CreateProject from "@/components/Forms/Projects/ProjectFormCreate/CreateProject";
 
 const ProjectsTableBody = () => {
+  const { setSearchParams } = useSearchParamsHook();
+
+  const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
+    setSearchParams
+  });
+
   const {
     data: projects,
     isPending,
     isError
   } = useFetchDataQuery<Project[]>({
-    URL: "/projects",
-    queryKey: ["projects"]
+    URL: `/projects${debounceSearchTerm ? `?search=${debounceSearchTerm}` : ""}`,
+    queryKey: ["projects", debounceSearchTerm]
   });
 
   if (isPending) {
@@ -30,13 +40,19 @@ const ProjectsTableBody = () => {
     <>
       <ProjectsBreadcrumb />
       <div className="flex flex-col border rounded-lg mt-48 mb-28 mx-8 p-4 backdrop-blur-sm bg-slate-900/20">
+        <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 justify-between">
+          <SearchBar handleSearch={handleSearch} placeholder="Търсене на проекти..." search={search} />
+          <div className="flex justify-end">
+            <CreateProject />
+          </div>
+        </div>
         <div className="flex flex-wrap sm:w-full gap-4">
           <ConditionalRenderer
             data={projects}
             renderData={projects => <ProjectsCard projects={projects as Project[]} />}
             noResults={{
-              title: "No projects found",
-              description: "It looks like you haven't added any projects yet",
+              title: "Няма намерени проекти",
+              description: "Изглежда все още не сте добавили проекти",
               Icon: BrickWall
             }}
           />

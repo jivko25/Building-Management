@@ -1,6 +1,5 @@
 //client\src\components\common\Breadcrumbs\ProjectsBreadcrumb.tsx
 import Breadcrumb from "./Breadcrumb";
-import CreateProject from "@/components/Forms/Projects/ProjectFormCreate/CreateProject";
 
 const ProjectsBreadcrumb = () => {
   return (
@@ -14,9 +13,6 @@ const ProjectsBreadcrumb = () => {
             }
           ]}
         />
-      </div>
-      <div className="flex flex-col border rounded-lg mx-8 space-y-4 p-4 backdrop-blur-sm bg-slate-900/20">
-        <CreateProject />
       </div>
     </div>
   );
