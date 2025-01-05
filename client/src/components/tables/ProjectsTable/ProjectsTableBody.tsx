@@ -39,14 +39,14 @@ const ProjectsTableBody = () => {
   return (
     <>
       <ProjectsBreadcrumb />
-      <div className="flex flex-col border rounded-lg mt-48 mb-28 mx-8 p-4 backdrop-blur-sm bg-slate-900/20">
-        <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 justify-between">
-          <SearchBar handleSearch={handleSearch} placeholder="Търсене на проекти..." search={search} />
-          <div className="flex justify-end">
-            <CreateProject />
+      <div className="flex flex-col border rounded-lg mt-8 mb-8 mx-8 p-4 backdrop-blur-sm bg-slate-900/20">
+        <div className="flex flex-col-reverse md:flex-row gap-4 w-full mb-4 justify-between items-center">
+          <div className="w-full md:w-1/3">
+            <SearchBar handleSearch={handleSearch} placeholder="Търсене на проекти..." search={search} />
           </div>
+          <CreateProject />
         </div>
-        <div className="flex flex-wrap sm:w-full gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <ConditionalRenderer
             data={projects}
             renderData={projects => <ProjectsCard projects={projects as Project[]} />}
