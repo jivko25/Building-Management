@@ -1,5 +1,5 @@
 //client\src\AppRoutes.tsx
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import UserLoginForm from "./components/Forms/User/UserFormLogin/UserLoginForm";
 import TableLayout from "./layouts/Table/TableLayout";
 import UsersTablePage from "./pages/UsersTablePage";
@@ -29,6 +29,24 @@ import AdminGuard from "./guards/AdminGuard";
 const AppRoutes = () => {
   return (
     <Routes>
+      {/* Public routes */}
+      <Route path="/login" element={<UserLoginForm />} />
+      <Route path="/register" element={<UserRegisterForm />} />
+      <Route path="/forgot-password" element={<UserForgotPasswordForm />} />
+      <Route path="/reset-password/:token" element={<UserResetPasswordForm />} />
+
+      {/* Protected routes */}
+      <Route element={<UserGuard />}>
+        <Route
+          path="/"
+          element={
+            <TableLayout>
+              <Homepage />
+            </TableLayout>
+          }
+        />
+      </Route>
+
       {/*Manager/admin only routes */}
       <Route element={<ManagerGuard />}>
         <Route
@@ -194,22 +212,6 @@ const AppRoutes = () => {
         />
       </Route>
       {/* User only routes */}
-
-      {/* Public routes */}
-      <Route path="/login" element={<UserLoginForm />} />
-      <Route path="/register" element={<UserRegisterForm />} />
-      <Route path="/forgot-password" element={<UserForgotPasswordForm />} />
-      <Route path="/reset-password/:token" element={<UserResetPasswordForm />} />
-      <Route
-        path="/"
-        element={
-          <TableLayout>
-            <Homepage />
-          </TableLayout>
-        }
-      />
-      <Route path="*" element={<Navigate to="/" />} />
-      {/* Public routes */}
 
       {/* Admin only routes */}
       <Route element={<AdminGuard />}>

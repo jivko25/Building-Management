@@ -5,22 +5,19 @@ import LoadingSpinner from "../utils/LoadingSpinner/LoadingSpinner";
 
 const UserGuard = () => {
   const { user, loading } = useAuth();
+  console.log("UserGuard checking authentication:", { user, loading });
 
   if (loading) {
     return <LoadingSpinner message="Verifying access, please wait..." />;
   }
 
-  if (user && user?.role === "user" ) {
+  if (user) {
+    console.log("User is authenticated, allowing access");
     return <Outlet />;
-  } else if (user && user.role !== "user") {
-    return <Navigate to="/login" replace={true} />;
   }
 
-  if (!user || user === null) {
-    return <Navigate to="/login" replace={true} />;
-  }
-
-  return null;
+  console.log("User is not authenticated, redirecting to login");
+  return <Navigate to="/login" replace={true} />;
 };
 
 export default UserGuard;
