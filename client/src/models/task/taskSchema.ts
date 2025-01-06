@@ -21,12 +21,12 @@ export const taskSchema = z
     total_work_in_selected_measure: z.coerce.number().gte(1, {
       message: "Please enter a valid price."
     }),
-    artisan: z
+    artisans: z
       .string()
+      .array()
       .min(1, {
-        message: "Please select artisan."
-      })
-      .optional(),
+        message: "Please select artisan"
+      }),
     activity: z
       .string()
       .min(1, {
@@ -117,7 +117,7 @@ export const taskDefaults = {
   price_per_measure: 0,
   total_price: 0,
   total_work_in_selected_measure: 0,
-  artisan: "",
+  artisan: [],
   activity: "",
   measure: "",
   start_date: "",

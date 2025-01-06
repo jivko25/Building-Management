@@ -32,10 +32,13 @@ const CreateTaskForm = ({ handleSubmit, isPending }: CreateTaskFormProps) => {
           <FormFieldInput type="text" label="Total price" name="total_price" className="pl-10" Icon={DollarSign} />
         </div>
         <Separator className="mt-4 mb-2" />
-        <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2 mb-4">
-          <ArtisanSelector name="artisan" label="Select artisan" />
+        <div className="grid grid-cols-1 sm:grid-cols-1 content-around gap-2 mb-2">
+          <ArtisanSelector label="Select artisans" name="artisans" placeholder="Choose artisans" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-1 content-around gap-2 mb-4">
           <ActivitySelector name="activity" label="Select activity" />
         </div>
+
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2 mb-4">
           <StatusSelector label="Status" name="status" />
@@ -56,3 +59,5 @@ const CreateTaskForm = ({ handleSubmit, isPending }: CreateTaskFormProps) => {
 };
 
 export default CreateTaskForm;
+
+
