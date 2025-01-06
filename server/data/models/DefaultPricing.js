@@ -32,6 +32,22 @@ module.exports = (sequelize, DataTypes) => {
           key: "id"
         }
       },
+      manager_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_users",
+          key: "id"
+        }
+      },
+      project_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_projects",
+          key: "id"
+        }
+      },
       price: {
         type: DataTypes.FLOAT,
         allowNull: false
@@ -55,6 +71,14 @@ module.exports = (sequelize, DataTypes) => {
     DefaultPricing.belongsTo(models.Artisan, {
       foreignKey: "artisan_id",
       as: "artisan"
+    });
+    DefaultPricing.belongsTo(models.User, {
+      foreignKey: "manager_id",
+      as: "manager"
+    });
+    DefaultPricing.belongsTo(models.Project, {
+      foreignKey: "project_id",
+      as: "project"
     });
   };
 
