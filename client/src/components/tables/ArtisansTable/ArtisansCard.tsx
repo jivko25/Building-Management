@@ -1,6 +1,7 @@
 //client\src\components\tables\ArtisansTable\ArtisansCard.tsx
 import EditArtisan from "@/components/Forms/Artisans/ArtisanFormEdit/EditArtisan";
 import ArtisanAddValues from "@/components/Forms/Artisans/ArtisanTableAddDefaultVlues/ArtisanAddValues";
+import ArtisanAllDefaultValues from "@/components/Forms/Artisans/ArtisanTableAddDefaultVlues/ArtisanAllDefaultValues";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Artisan } from "@/types/artisan-types/artisanTypes";
 
@@ -15,6 +16,7 @@ const ArtisansCard = ({ artisans }: ArtisansCardProps) => {
         <TableRow key={artisan.id}>
           <TableCell className="font-semibold">{artisan.name}</TableCell>
           <TableCell className="text-end w-[200px]">
+            <ArtisanAllDefaultValues artisanId={artisan.id!} artisanName={artisan.name} />
             <ArtisanAddValues artisanId={artisan.id!} />
             <EditArtisan artisanId={artisan.id!} />
           </TableCell>
