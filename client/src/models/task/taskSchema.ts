@@ -24,9 +24,7 @@ export const taskSchema = z
     artisans: z
       .string()
       .array()
-      .min(1, {
-        message: "Please select artisan"
-      }),
+      .optional(),
     activity: z
       .string()
       .min(1, {
@@ -117,7 +115,7 @@ export const taskDefaults = {
   price_per_measure: 0,
   total_price: 0,
   total_work_in_selected_measure: 0,
-  artisan: [],
+  artisans: [],
   activity: "",
   measure: "",
   start_date: "",

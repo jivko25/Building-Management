@@ -33,6 +33,8 @@ const EditTaskForm = ({ id, taskId, isPending, handleSubmit }: EditTaskFormProps
 
   const form = useEditTaskForm(task as Task);
 
+  const taskTransformed = task as any;
+
   return (
     <FormProvider {...form}>
       <form id="task-edit" onSubmit={form.handleSubmit(handleSubmit)}>
@@ -43,15 +45,18 @@ const EditTaskForm = ({ id, taskId, isPending, handleSubmit }: EditTaskFormProps
           <FormFieldInput type="text" label="Total price" name="total_price" className="pl-10" Icon={DollarSign} />
         </div>
         <Separator className="mt-4 mb-2" />
-        <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2 mb-4">
-          <ArtisanSelector name="artisan" label="Select artisan" defaultVal={task && task.artisan} />
-          <ActivitySelector name="activity" label="Select activity" defaultVal={task && task.activity} />
+        <div className="grid grid-cols-1 sm:grid-cols-1 content-around gap-2 pt-1.5">
+          <ArtisanSelector name="artisan" label="Select artisans" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-1 content-around gap-2 pt-1.5">
+          <ActivitySelector name="activity" label="Select activity" defaultVal={task && taskTransformed?.activity?.name} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2 mb-4">
           <StatusSelector label="Status" name="status" defaultVal={task && task.status} />
-          <MeasureSelector name="measure" label="Select measure" defaultVal={task && task.measure} />
+          <MeasureSelector name="measure" label="Select measure" defaultVal={task && taskTransformed?.measure?.name} />
         </div>
+
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2 pt-1.5">
           <FormDatePicker name="start_date" label="Select new start date" selected={new Date(`${task && task.start_date}`).toLocaleDateString().slice(0, 10)} />
