@@ -214,7 +214,7 @@ export const CreateInvoicePage = () => {
                   <FormLabel>Building company</FormLabel>
                   <Select
                     onValueChange={value => {
-                      const id = parseInt(value);
+                      const id = parseInt(value.toString());
                       field.onChange(id);
                       handleCompanyChange(id);
                     }}
@@ -243,7 +243,7 @@ export const CreateInvoicePage = () => {
                   <FormLabel>Client company</FormLabel>
                   <Select
                     onValueChange={value => {
-                      const id = parseInt(value);
+                      const id = parseInt(value.toString());
                       field.onChange(id);
                       handleClientCompanyChange(id);
                     }}
