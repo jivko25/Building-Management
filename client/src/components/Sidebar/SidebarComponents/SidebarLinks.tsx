@@ -1,8 +1,11 @@
 //client\src\components\Sidebar\SidebarComponents\SidebarLinks.tsx
-import { sidebarItems } from "../SidebarComponents/sidebarItems";
+import { sidebarItems } from "./sidebarItems";
 import { Link } from "react-router-dom";
-import SidebarButton from "../SidebarComponents/SidebarButton";
+import SidebarButton from "./SidebarButton";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
+import { SidebarLink } from "@/types/sidebar-types/sidebarItems";
 
 type SidebarComponent = {
   Component: React.ComponentType;
@@ -10,9 +13,25 @@ type SidebarComponent = {
 
 const SidebarLinks = ({ Component }: SidebarComponent) => {
   const { user } = useAuth();
-  console.log("Current user role:", user?.role);
+  const { translate } = useLanguage();
+  const [translatedLinks, setTranslatedLinks] = useState<SidebarLink[]>([]);
 
-  const guardedLinkRoutes = sidebarItems.links.filter(link => {
+  useEffect(() => {
+    const translateLinks = async () => {
+      console.log("Translating sidebar links");
+      const translatedItems = await Promise.all(
+        sidebarItems.links.map(async link => ({
+          ...link,
+          translatedLabel: await translate(link.label)
+        }))
+      );
+      setTranslatedLinks(translatedItems);
+    };
+
+    translateLinks();
+  }, [translate]);
+
+  const guardedLinkRoutes = translatedLinks.filter(link => {
     if (link.label === "Managers" && user?.role !== "admin") {
       return false;
     }
@@ -37,7 +56,7 @@ const SidebarLinks = ({ Component }: SidebarComponent) => {
         return (
           <Link to={link.href} key={i} className="pb-1">
             <SidebarButton variant={isActive ? "secondary" : "ghost"} icon={link.icon} className="w-full">
-              {link.label}
+              {link.translatedLabel || link.label}
             </SidebarButton>
           </Link>
         );
