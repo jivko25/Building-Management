@@ -13,14 +13,14 @@ import useSearchHandler from "@/hooks/useSearchHandler";
 import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import ActivitiesHeader from "./ActivitiesHeader";
 import ActivitiesCard from "./ActivitiesCard";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
 
 const ActivitiesTableBody = () => {
   const { itemsLimit, page, setSearchParams } = useSearchParamsHook();
-
   const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
     setSearchParams
   });
-
   const {
     data: activities,
     isPending,
@@ -32,8 +32,24 @@ const ActivitiesTableBody = () => {
     page,
     search: debounceSearchTerm
   });
-
   const totalPages: number | undefined = activities?.totalPages;
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    searchPlaceholder: "Search activities...",
+    noActivitiesTitle: "No activities found",
+    noActivitiesDesc: "It looks like you haven't added any activities yet."
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        searchPlaceholder: await translate("Search activities..."),
+        noActivitiesTitle: await translate("No activities found"),
+        noActivitiesDesc: await translate("It looks like you haven't added any activities yet.")
+      });
+    };
+    loadTranslations();
+  }, [translate]);
 
   if (isPending) {
     return <ActivitiesLoader activity={activities} />;
@@ -46,7 +62,7 @@ const ActivitiesTableBody = () => {
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar handleSearch={handleSearch} placeholder="Search activities..." search={search} />
+        <SearchBar handleSearch={handleSearch} placeholder={translations.searchPlaceholder} search={search} />
         <CreateActivity />
       </div>
       <Table className="w-full min-w-full">
@@ -56,8 +72,8 @@ const ActivitiesTableBody = () => {
             data={activities.data}
             renderData={activities => <ActivitiesCard activities={activities as Activity[]} />}
             noResults={{
-              title: "No activities found",
-              description: "It looks like you haven't added any activities yet.",
+              title: translations.noActivitiesTitle,
+              description: translations.noActivitiesDesc,
               Icon: ActivityIcon
             }}
             wrapper={content => (
