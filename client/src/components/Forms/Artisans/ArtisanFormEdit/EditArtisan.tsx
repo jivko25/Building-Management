@@ -5,6 +5,8 @@ import { useSubmitHandler } from "@/utils/helpers/submitHandler";
 import { useMutationHook } from "@/hooks/useMutationHook";
 import DialogModal from "@/components/common/DialogElements/DialogModal";
 import EditArtisanForm from "./EditArtisanForm";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useState, useEffect } from "react";
 
 type ArtisanFormProps = {
   artisanId: string;
@@ -12,19 +14,34 @@ type ArtisanFormProps = {
 
 const EditArtisan = ({ artisanId }: ArtisanFormProps) => {
   const { isOpen, setIsOpen } = useDialogState();
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    title: "Edit artisan",
+    success: "Artisan updated successfully!"
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        title: await translate("Edit artisan"),
+        success: await translate("Artisan updated successfully!")
+      });
+    };
+    loadTranslations();
+  }, [translate]);
 
   const { useEditEntity } = useMutationHook();
 
   const { mutate, isPending } = useEditEntity<ArtisanSchema>({
     URL: `/artisans/${artisanId}/edit`,
     queryKey: ["artisans"],
-    successToast: "Artisan updated successfully!",
+    successToast: translations.success,
     setIsOpen
   });
 
   const handleSubmit = useSubmitHandler(mutate, artisanSchema);
 
-  return <DialogModal Component={EditArtisanForm} props={{ artisanId, handleSubmit, isPending }} isOpen={isOpen} setIsOpen={setIsOpen} title="Edit artisan" />;
+  return <DialogModal Component={EditArtisanForm} props={{ artisanId, handleSubmit, isPending }} isOpen={isOpen} setIsOpen={setIsOpen} title={translations.title} />;
 };
 
 export default EditArtisan;

@@ -13,6 +13,9 @@ import useSearchHandler from "@/hooks/useSearchHandler";
 import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import ArtisansCard from "./ArtisansCard";
 import ArtisansHeader from "./ArtisansHeader";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
+
 interface ArtisanResponse {
   artisans: Artisan[];
   artisansCount: number;
@@ -20,12 +23,32 @@ interface ArtisanResponse {
   limit: number;
   totalPages: number;
 }
-const ArtisansTableBody = () => {
-  const { setSearchParams, itemsLimit, page } = useSearchParamsHook();
 
-  const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
-    setSearchParams
+const ArtisansTableBody = () => {
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    searchPlaceholder: "Search artisans...",
+    noResults: {
+      title: "No artisans found",
+      description: "It looks like you haven't added any artisans yet."
+    }
   });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        searchPlaceholder: await translate("Search artisans..."),
+        noResults: {
+          title: await translate("No artisans found"),
+          description: await translate("It looks like you haven't added any artisans yet.")
+        }
+      });
+    };
+    loadTranslations();
+  }, [translate]);
+
+  const { setSearchParams, itemsLimit, page } = useSearchParamsHook();
+  const { search, handleSearch, debounceSearchTerm } = useSearchHandler({ setSearchParams });
 
   const {
     data: artisansResponse,
@@ -40,7 +63,7 @@ const ArtisansTableBody = () => {
   });
 
   console.log("👷 Artisans response:", artisansResponse);
-  const typedArtisansResponse = artisansResponse as ArtisanResponse;
+
   if (isPending) {
     return <ArtisansLoader artisans={artisansResponse} />;
   }
@@ -52,18 +75,18 @@ const ArtisansTableBody = () => {
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar handleSearch={handleSearch} placeholder="Search artisans..." search={search} />
+        <SearchBar handleSearch={handleSearch} placeholder={translations.searchPlaceholder} search={search} />
         <CreateArtisan />
       </div>
       <Table className="w-full min-w-full">
         <ArtisansHeader />
         <TableBody>
           <ConditionalRenderer
-            data={typedArtisansResponse?.artisans || []}
+            data={artisansResponse?.artisans || []}
             renderData={data => <ArtisansCard artisans={data as Artisan[]} />}
             noResults={{
-              title: "No artisans found",
-              description: "It looks like you haven't added any artisans yet.",
+              title: translations.noResults.title,
+              description: translations.noResults.description,
               Icon: ContactRound
             }}
             wrapper={content => (

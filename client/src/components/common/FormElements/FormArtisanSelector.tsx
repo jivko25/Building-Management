@@ -6,9 +6,24 @@ import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
 import { PaginatedData } from "../Pagination/Pagination";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
 
 const ArtisanSelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
   const { control } = useFormContext();
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    selectArtisan: "Select artisan"
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        selectArtisan: await translate("Select artisan")
+      });
+    };
+    loadTranslations();
+  }, [translate]);
 
   const { data: artisans } = useFetchDataQuery<PaginatedData<Artisan>>({
     URL: "/artisans",
@@ -28,7 +43,7 @@ const ArtisanSelector = ({ label, name, placeholder, defaultVal }: TableFormSele
           <Select onValueChange={field.onChange} defaultValue={defaultVal}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={placeholder} />
+                <SelectValue placeholder={placeholder || translations.selectArtisan} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
