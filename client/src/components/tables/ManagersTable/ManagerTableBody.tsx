@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FilterMatchMode } from "primereact/api";
 import { DataTable, DataTableFilterMeta, DataTableFilterMetaData } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -13,10 +13,13 @@ import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import apiClient from "@/api/axiosConfig";
+import { useLanguage } from "@/contexts/LanguageContext";
+import ManagersHeader from "./ManagerHeader";
 
 const ManagersTableBody = () => {
   const { itemsLimit, page } = useSearchParamsHook();
   const [readonlyValue, setReadonlyValue] = useState<any>(null);
+  const { translate } = useLanguage();
 
   const {
     data: managers,
@@ -38,6 +41,49 @@ const ManagersTableBody = () => {
   });
 
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
+
+  const [translations, setTranslations] = useState({
+    fullName: "Full Name",
+    email: "Email",
+    role: "Role",
+    readonly: "Readonly",
+    noManagers: "No managers found.",
+    searchByName: "Search by name",
+    searchByEmail: "Search by email",
+    searchByRole: "Search by role"
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      const [fullName, email, role, readonly, noManagers, searchByName, searchByEmail, searchByRole] = await Promise.all([translate("Full Name"), translate("Email"), translate("Role"), translate("Readonly"), translate("No managers found."), translate("Search by name"), translate("Search by email"), translate("Search by role")]);
+
+      setTranslations({
+        fullName,
+        email,
+        role,
+        readonly,
+        noManagers,
+        searchByName,
+        searchByEmail,
+        searchByRole
+      });
+    };
+
+    loadTranslations();
+  }, [translate]);
+
+  useEffect(() => {
+    const translateComponents = async () => {
+      setGlobalFilterValue("");
+      const translatedPlaceholder = await translate("Keyword Search");
+      const searchInput = document.querySelector(".search-input") as HTMLInputElement;
+      if (searchInput) {
+        searchInput.placeholder = translatedPlaceholder;
+      }
+    };
+
+    translateComponents();
+  }, [translate]);
 
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -61,7 +107,8 @@ const ManagersTableBody = () => {
   };
 
   const changePermissionsToReadOnly = (manager: User) => {
-    apiClient.patch(`/users/managers/update-readonly/${manager && manager?.id}`)
+    apiClient
+      .patch(`/users/managers/update-readonly/${manager && manager?.id}`)
       .then(response => {
         console.log("Permissions updated:", response.data);
       })
@@ -69,13 +116,13 @@ const ManagersTableBody = () => {
         console.error("Error updating permissions:", error);
       });
   };
-  
+
   const readonlyBodyTemplate = (rowData: User) => {
     const options = [
       { label: "On", value: true },
       { label: "Off", value: false }
     ];
-  
+
     return (
       <Dropdown
         value={rowData.readonly}
@@ -90,20 +137,24 @@ const ManagersTableBody = () => {
     );
   };
   const statusFilterTemplate = (options: any) => {
-    return (
-      <Dropdown
-        value={readonlyValue || options.value}
-        options={[
-          { label: "On", value: true },
+    const [translatedOptions, setTranslatedOptions] = useState([
+      { label: "On", value: true },
+      { label: "Off", value: false }
+    ]);
+    const [placeholderText, setPlaceholderText] = useState("Select readonly");
+
+    useEffect(() => {
+      const translateFilter = async () => {
+        setTranslatedOptions([
+          { label: await translate("On"), value: true },
           { label: "Off", value: false }
-        ]}
-        onChange={e => options.filterApplyCallback(e.value)}
-        placeholder="Select readonly"
-        className="p-column-filter"
-        showClear
-        style={{ minWidth: "12rem" }}
-      />
-    );
+        ]);
+        setPlaceholderText(await translate("Select readonly"));
+      };
+      translateFilter();
+    }, [translate]);
+
+    return <Dropdown value={readonlyValue || options.value} options={translatedOptions} onChange={e => options.filterApplyCallback(e.value)} placeholder={placeholderText} className="p-column-filter" showClear style={{ minWidth: "12rem" }} />;
   };
 
   if (isPending) {
@@ -114,15 +165,13 @@ const ManagersTableBody = () => {
     return <ErrorMessage title="Oops..." Icon={CircleAlert} />;
   }
 
-  const header = renderHeader();
-
   return (
     <div className="mx-auto mt-2">
-      <DataTable value={managers?.data} paginator rows={itemsLimit} totalRecords={managers?.totalCount} dataKey="id" filters={filters} globalFilterFields={["full_name", "email", "role", "status"]} header={header} filterDisplay="row" loading={isPending} emptyMessage="No managers found.">
-        <Column field="full_name" header="Full Name" filter sortable filterPlaceholder="Search by name" style={{ minWidth: "12rem" }} />
-        <Column field="email" header="Email" filter sortable filterPlaceholder="Search by email" style={{ minWidth: "12rem" }} />
-        <Column field="role" header="Role" filter sortable filterPlaceholder="Search by role" style={{ minWidth: "12rem" }} />
-        <Column field="readonly" header="Readonly" body={readonlyBodyTemplate} filter sortable filterElement={statusFilterTemplate} style={{ minWidth: "12rem" }} />
+      <DataTable value={managers?.data} paginator rows={itemsLimit} totalRecords={managers?.totalCount} dataKey="id" filters={filters} globalFilterFields={["full_name", "email", "role", "status"]} header={<ManagersHeader />} filterDisplay="row" loading={isPending} emptyMessage={translations.noManagers}>
+        <Column field="full_name" header={translations.fullName} filter sortable filterPlaceholder={translations.searchByName} style={{ minWidth: "12rem" }} />
+        <Column field="email" header={translations.email} filter sortable filterPlaceholder={translations.searchByEmail} style={{ minWidth: "12rem" }} />
+        <Column field="role" header={translations.role} filter sortable filterPlaceholder={translations.searchByRole} style={{ minWidth: "12rem" }} />
+        <Column field="readonly" header={translations.readonly} body={readonlyBodyTemplate} filter sortable filterElement={statusFilterTemplate} style={{ minWidth: "12rem" }} />
       </DataTable>
     </div>
   );
