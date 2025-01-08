@@ -29,6 +29,8 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
   const [translations, setTranslations] = useState<Record<string, string>>({});
 
   const translate = async (text: string): Promise<string> => {
+    console.log("Translating text:", text);
+
     if (!text) return text;
 
     const cacheKey = `${text}_${appLanguage}`;
@@ -36,23 +38,42 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
       return translations[cacheKey];
     }
 
+    setIsLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/translate`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/translate`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           text,
           targetLanguage: appLanguage
-        }),
-        credentials: "include"
+        })
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Translation API error:", errorData);
+        throw new Error(errorData.message || "Грешка при превода");
+      }
+
       const data = await response.json();
-      setTranslations(prev => ({ ...prev, [cacheKey]: data.translatedText }));
-      return data.translatedText;
+      console.log("Translation response:", data);
+
+      if (data.success && data.translatedText) {
+        setTranslations(prev => ({
+          ...prev,
+          [cacheKey]: data.translatedText
+        }));
+        return data.translatedText;
+      }
+
+      throw new Error("Невалиден отговор от API");
     } catch (error) {
       console.error("Translation error:", error);
-      return text;
+      return text; // връщаме оригиналния текст при грешка
+    } finally {
+      setIsLoading(false);
     }
   };
 

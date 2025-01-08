@@ -3,6 +3,7 @@ import { Button, ButtonProps } from "@/components/ui/button";
 import { SheetClose } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@radix-ui/react-dialog";
 
 interface SidebarButtonProps extends ButtonProps {
   icon?: LucideIcon;
@@ -19,10 +20,17 @@ const SidebarButton = ({ icon: Icon, className, children, ...props }: SidebarBut
 
 export default SidebarButton;
 
-export function SidebarButtonClose(props: SidebarButtonProps) {
+export const SidebarButtonClose = () => {
   return (
-    <SheetClose asChild>
-      <SidebarButton {...props} />
-    </SheetClose>
+    <Dialog>
+      <DialogTrigger asChild>
+        <div className="cursor-pointer">{/* Your button content */}</div>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogClose asChild>
+          <div className="cursor-pointer">{/* Your close button content */}</div>
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
   );
-}
+};
