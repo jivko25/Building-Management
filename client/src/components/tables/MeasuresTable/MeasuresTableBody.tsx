@@ -21,12 +21,30 @@ import { Measure } from "@/types/measure-types/measureTypes";
 import MeasuresLoader from "@/utils/SkeletonLoader/Measures/MeasuresLoader";
 import MeasuresHeader from "./MeasuresHeader";
 import { CircleAlert } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
 
 interface MeasureResponse {
   success: boolean;
   data: Measure[];
 }
 const MeasuresTableBody = () => {
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    noMeasuresTitle: "No measures found",
+    noMeasuresDesc: "It looks like you haven't added any measures yet."
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        noMeasuresTitle: await translate("No measures found"),
+        noMeasuresDesc: await translate("It looks like you haven't added any measures yet.")
+      });
+    };
+    loadTranslations();
+  }, [translate]);
+
   const {
     data: measuresResponse,
     isPending,
@@ -58,8 +76,8 @@ const MeasuresTableBody = () => {
             data={measuresResponse?.data || []}
             renderData={data => <MeasuresCard measures={data as Measure[]} />}
             noResults={{
-              title: "No measures found",
-              description: "It looks like you haven't added any measures yet.",
+              title: translations.noMeasuresTitle,
+              description: translations.noMeasuresDesc,
               Icon: Ruler
             }}
             wrapper={content => (
