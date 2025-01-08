@@ -40,7 +40,7 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/translate`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/translate/translate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
