@@ -11,9 +11,10 @@ import { Toaster } from "./components/ui/toaster";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { PrimeReactProvider } from "primereact/api";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-import 'primereact/resources/themes/bootstrap4-dark-blue/theme.css';
+import "primereact/resources/themes/bootstrap4-dark-blue/theme.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,11 +31,13 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
           <PrimeReactProvider>
-            <AuthProvider>
-              <AppRoutes />
-              <Toaster />
-              <ReactQueryDevtools />
-            </AuthProvider>
+            <LanguageProvider>
+              <AuthProvider>
+                <AppRoutes />
+                <Toaster />
+                <ReactQueryDevtools />
+              </AuthProvider>
+            </LanguageProvider>
           </PrimeReactProvider>
         </ThemeProvider>
       </QueryClientProvider>

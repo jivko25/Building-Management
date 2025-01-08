@@ -1,6 +1,6 @@
 //client\src\components\Sidebar\SidebarComponents\SidebarUserDropdown.tsx
 import { PopoverContent } from "@/components/ui/popover";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SidebarButton from "./SidebarButton";
 import { sidebarUserItems } from "./sidebarItems";
 import { Separator } from "@/components/ui/separator";
@@ -15,6 +15,7 @@ const SidebarUserDropdown = () => {
   const { theme, setTheme } = useTheme();
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogoutClick = async () => {
     await logout();
@@ -25,6 +26,14 @@ const SidebarUserDropdown = () => {
       setTheme("light");
     } else {
       setTheme("dark");
+    }
+  };
+
+  const handleItemClick = (label: string, href: string) => {
+    if (label === "Sign out") {
+      handleLogoutClick();
+    } else if (label === "Settings") {
+      navigate(href);
     }
   };
 
@@ -40,11 +49,13 @@ const SidebarUserDropdown = () => {
         </div>
         <Separator />
         {sidebarUserItems.links.map((link, index) => (
-          <Link to={link.href} key={index}>
-            <SidebarButton className="w-full p-1.5 text-sm" size="sm" icon={link.icon} onClick={link.label === "Sign out" ? handleLogoutClick : undefined}>
-              {link.label}
-            </SidebarButton>
-          </Link>
+          <PopoverClose key={index} asChild>
+            <Link to={link.href}>
+              <SidebarButton className="w-full p-1.5 text-sm" size="sm" icon={link.icon} onClick={() => handleItemClick(link.label, link.href)}>
+                {link.label}
+              </SidebarButton>
+            </Link>
+          </PopoverClose>
         ))}
       </>
     </PopoverContent>
