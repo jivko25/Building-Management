@@ -11,10 +11,10 @@ import { Toaster } from "./components/ui/toaster";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { PrimeReactProvider } from "primereact/api";
-import { LanguageProvider } from "./contexts/LanguageContext";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "primereact/resources/themes/bootstrap4-dark-blue/theme.css";
+import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {

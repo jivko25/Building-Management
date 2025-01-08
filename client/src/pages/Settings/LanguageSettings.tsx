@@ -6,7 +6,11 @@ import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 
 export const LanguageSettings = () => {
+  console.log("LanguageSettings rendering");
+
   const { appLanguage, invoiceLanguage, setAppLanguage, setInvoiceLanguage, translate } = useLanguage();
+  console.log("Language context values:", { appLanguage, invoiceLanguage });
+
   const [translations, setTranslations] = useState({
     settings: "",
     languageSettings: "",
@@ -16,14 +20,28 @@ export const LanguageSettings = () => {
 
   useEffect(() => {
     const loadTranslations = async () => {
-      const [settings, langSettings, appLang, invLang] = await Promise.all([translate("Settings"), translate("Language Settings"), translate("App Language"), translate("Invoice Language")]);
+      try {
+        console.log("Loading translations...");
+        const [settings, langSettings, appLang, invLang] = await Promise.all([translate("Settings"), translate("Language Settings"), translate("App Language"), translate("Invoice Language")]);
 
-      setTranslations({
-        settings,
-        languageSettings: langSettings,
-        appLanguage: appLang,
-        invoiceLanguage: invLang
-      });
+        console.log("Translations loaded:", { settings, langSettings, appLang, invLang });
+
+        setTranslations({
+          settings,
+          languageSettings: langSettings,
+          appLanguage: appLang,
+          invoiceLanguage: invLang
+        });
+      } catch (error) {
+        console.error("Error loading translations:", error);
+        // Use fallback values
+        setTranslations({
+          settings: "Settings",
+          languageSettings: "Language Settings",
+          appLanguage: "App Language",
+          invoiceLanguage: "Invoice Language"
+        });
+      }
     };
 
     loadTranslations();

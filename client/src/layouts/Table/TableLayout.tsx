@@ -1,16 +1,15 @@
 //client\src\layouts\Table\TableLayout.tsx
-import LayoutHeader from "../Header/LayoutHeader";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import { SidebarButtonClose } from "@/components/Sidebar/SidebarComponents/SidebarButton";
+const TableLayout = ({ children }: { children: React.ReactNode }) => {
+  console.log("TableLayout rendering");
 
-type TableLayoutProps = {
-  children: React.ReactNode;
-};
-
-const TableLayout = ({ children }: TableLayoutProps) => {
   return (
-    <div className="flex flex-col min-h-screen">
-      <LayoutHeader />
-
-      <div className="flex-1 overflow-hidden pt-16">{children}</div>
+    <div className="min-h-screen">
+      <div className="flex">
+        <SidebarButtonClose />
+        <div className="flex-1">{children}</div>
+      </div>
     </div>
   );
 };

@@ -5,7 +5,7 @@ const translate = new Translate({
 });
 
 const translateText = async (req, res) => {
-  console.log("Translating text:", req.body);
+  console.log("Translation request received:", req.body);
 
   try {
     const { text, targetLanguage } = req.body;
@@ -13,12 +13,19 @@ const translateText = async (req, res) => {
     if (!text || !targetLanguage) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields"
+        message: "Липсват задължителни полета"
+      });
+    }
+
+    if (!process.env.GOOGLE_TRANSLATE_API_KEY) {
+      console.error("Google Translate API key is missing");
+      return res.status(500).json({
+        success: false,
+        message: "Конфигурационна грешка: Липсва API ключ"
       });
     }
 
     const [translation] = await translate.translate(text, targetLanguage);
-
     console.log("Translation successful:", translation);
 
     res.json({
@@ -29,7 +36,7 @@ const translateText = async (req, res) => {
     console.error("Translation error:", error);
     res.status(500).json({
       success: false,
-      message: "Translation failed",
+      message: "Грешка при превода",
       error: error.message
     });
   }
