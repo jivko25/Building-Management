@@ -2,13 +2,25 @@
 import { useAuth } from "@/context/AuthContext";
 import { Navigate, Outlet } from "react-router-dom";
 import LoadingSpinner from "../utils/LoadingSpinner/LoadingSpinner";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useState, useEffect } from "react";
 
 const UserGuard = () => {
+  const { translate } = useLanguage();
+  const [loadingMessage, setLoadingMessage] = useState("Verifying access, please wait...");
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setLoadingMessage(await translate("Verifying access, please wait..."));
+    };
+    loadTranslations();
+  }, [translate]);
+
   const { user, loading } = useAuth();
   console.log("UserGuard checking authentication:", { user, loading });
 
   if (loading) {
-    return <LoadingSpinner message="Verifying access, please wait..." />;
+    return <LoadingSpinner message={loadingMessage} />;
   }
 
   if (user) {

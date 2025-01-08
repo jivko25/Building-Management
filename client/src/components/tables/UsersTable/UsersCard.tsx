@@ -8,6 +8,8 @@ type UsersCardProps = {
 };
 
 const UsersCard = ({ users }: UsersCardProps) => {
+  console.log("👥 UsersCard received users:", users);
+
   return (
     <>
       {users.map(user => (

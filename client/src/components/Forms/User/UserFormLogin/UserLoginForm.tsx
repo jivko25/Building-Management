@@ -6,9 +6,36 @@ import DialogFooter from "@/components/common/DialogElements/DialogFooter";
 import useLoginUser from "@/hooks/useLoginUser";
 import login_image from "@/assets/login_image.jpg";
 import { Lock, User } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
 
 const UserLoginForm = () => {
+  const { translate } = useLanguage();
   const { form, onSubmit, error, isLoading } = useLoginUser();
+  const [translations, setTranslations] = useState({
+    welcome: "Welcome",
+    enterDetails: "Enter your details below to login to your account",
+    username: "Username",
+    password: "Password",
+    submit: "Submit",
+    forgotPassword: "Forgot your password?",
+    noAccount: "Don't have an account? Register"
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        welcome: await translate("Welcome"),
+        enterDetails: await translate("Enter your details below to login to your account"),
+        username: await translate("Username"),
+        password: await translate("Password"),
+        submit: await translate("Submit"),
+        forgotPassword: await translate("Forgot your password?"),
+        noAccount: await translate("Don't have an account? Register")
+      });
+    };
+    loadTranslations();
+  }, [translate]);
 
   return (
     <FormProvider {...form}>
@@ -17,29 +44,23 @@ const UserLoginForm = () => {
           <div className="mx-auto w-full max-w-md">
             <div className="grid gap-6 border border-1 rounded-lg p-8">
               <div className="grid gap-2 text-center">
-                <h1 className="text-3xl font-bold">Welcome</h1>
-                <p className="text-muted-foreground">Enter your details below to login to your account</p>
+                <h1 className="text-3xl font-bold">{translations.welcome}</h1>
+                <p className="text-muted-foreground">{translations.enterDetails}</p>
               </div>
-              <form
-                id="login-form"
-                onSubmit={e => {
-                  console.log("Form submission started");
-                  form.handleSubmit(onSubmit)(e);
-                }}
-                className="grid gap-4">
-                <FormFieldInput name="username" label="Username" type="text" className="pl-10 text-white" Icon={User} />
-                <FormFieldInput name="password" label="Password" type="password" className="pl-10 text-white" Icon={Lock} />
-                <DialogFooter disabled={!form.formState.isDirty || isLoading} label="Submit" formName="login-form" className="mt-6" />
+              <form id="login-form" onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+                <FormFieldInput name="username" label={translations.username} type="text" className="pl-10 text-white" Icon={User} />
+                <FormFieldInput name="password" label={translations.password} type="password" className="pl-10 text-white" Icon={Lock} />
+                <DialogFooter disabled={!form.formState.isDirty || isLoading} label={translations.submit} formName="login-form" className="mt-6" />
                 <FormErrors error={error} />
               </form>
               <div className="text-center mt-4">
                 <a href="/forgot-password" className="text-sm text-blue-500 hover:underline">
-                  Forgot your password?
+                  {translations.forgotPassword}
                 </a>
               </div>
               <div className="text-center mt-4">
                 <a href="/register" className="text-sm text-blue-500 hover:underline">
-                  Don't have an account? Register
+                  {translations.noAccount}
                 </a>
               </div>
             </div>

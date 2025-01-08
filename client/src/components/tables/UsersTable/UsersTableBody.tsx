@@ -13,8 +13,28 @@ import useSearchHandler from "@/hooks/useSearchHandler";
 import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import UsersHeader from "./TableHeader";
 import UsersCard from "@/components/tables/UsersTable/UsersCard";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
 
 const UsersTableBody = () => {
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    searchPlaceholder: "Search users...",
+    noUsersTitle: "No users found",
+    noUsersDesc: "It looks like you haven't added any users yet."
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        searchPlaceholder: await translate("Search users..."),
+        noUsersTitle: await translate("No users found"),
+        noUsersDesc: await translate("It looks like you haven't added any users yet.")
+      });
+    };
+    loadTranslations();
+  }, [translate]);
+
   const { itemsLimit, page, setSearchParams } = useSearchParamsHook();
 
   const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
@@ -49,7 +69,7 @@ const UsersTableBody = () => {
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar handleSearch={handleSearch} placeholder="Search users..." search={search} />
+        <SearchBar handleSearch={handleSearch} placeholder={translations.searchPlaceholder} search={search} />
         <CreateUser />
       </div>
       <Table className="w-full min-w-full">
@@ -59,8 +79,8 @@ const UsersTableBody = () => {
             data={users}
             renderData={data => <UsersCard users={data as User[]} />}
             noResults={{
-              title: "No users found",
-              description: "It looks like you haven't added any users yet.",
+              title: translations.noUsersTitle,
+              description: translations.noUsersDesc,
               Icon: Users
             }}
             wrapper={content => (

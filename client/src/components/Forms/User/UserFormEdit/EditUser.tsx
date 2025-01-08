@@ -5,6 +5,8 @@ import { useSubmitHandler } from "@/utils/helpers/submitHandler";
 import { useMutationHook } from "@/hooks/useMutationHook";
 import DialogModal from "@/components/common/DialogElements/DialogModal";
 import EditUserForm from "./EditUserForm";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useState, useEffect } from "react";
 
 type UserFormProps = {
   userId: string;
@@ -12,6 +14,21 @@ type UserFormProps = {
 
 const EditUser = ({ userId }: UserFormProps) => {
   const { isOpen, setIsOpen } = useDialogState();
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    title: "Edit user",
+    success: "User updated successfully!"
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        title: await translate("Edit user"),
+        success: await translate("User updated successfully!")
+      });
+    };
+    loadTranslations();
+  }, [translate]);
 
   const { useEditEntity } = useMutationHook();
 
@@ -24,7 +41,7 @@ const EditUser = ({ userId }: UserFormProps) => {
 
   const handleSubmit = useSubmitHandler(mutate, userSchema);
 
-  return <DialogModal Component={EditUserForm} props={{ handleSubmit, isPending, userId }} isOpen={isOpen} setIsOpen={setIsOpen} title="Edit user" />;
+  return <DialogModal Component={EditUserForm} props={{ handleSubmit, isPending, userId }} isOpen={isOpen} setIsOpen={setIsOpen} title={translations.title} />;
 };
 
 export default EditUser;
