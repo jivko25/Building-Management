@@ -50,12 +50,14 @@ const ManagersTableBody = () => {
     noManagers: "No managers found.",
     searchByName: "Search by name",
     searchByEmail: "Search by email",
-    searchByRole: "Search by role"
+    searchByRole: "Search by role",
+    managers: "Managers",
+    keywordSearch: "Keyword Search"
   });
 
   useEffect(() => {
     const loadTranslations = async () => {
-      const [fullName, email, role, readonly, noManagers, searchByName, searchByEmail, searchByRole] = await Promise.all([translate("Full Name"), translate("Email"), translate("Role"), translate("Readonly"), translate("No managers found."), translate("Search by name"), translate("Search by email"), translate("Search by role")]);
+      const [fullName, email, role, readonly, noManagers, searchByName, searchByEmail, searchByRole, managers, keywordSearch] = await Promise.all([translate("Full Name"), translate("Email"), translate("Role"), translate("Readonly"), translate("No managers found."), translate("Search by name"), translate("Search by email"), translate("Search by role"), translate("Managers"), translate("Keyword Search")]);
 
       setTranslations({
         fullName,
@@ -65,7 +67,9 @@ const ManagersTableBody = () => {
         noManagers,
         searchByName,
         searchByEmail,
-        searchByRole
+        searchByRole,
+        managers,
+        keywordSearch
       });
     };
 
@@ -97,11 +101,12 @@ const ManagersTableBody = () => {
 
   const renderHeader = () => {
     return (
-      <div className="flex justify-content-end">
-        <IconField iconPosition="left">
-          <InputIcon className="pi pi-search" />
-          <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" className="search-input" />
-        </IconField>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold">{translations.managers}</h2>
+        <span className="p-input-icon-left">
+          <i className="pi pi-search" />
+          <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={translations.keywordSearch} className="p-inputtext-sm" />
+        </span>
       </div>
     );
   };
@@ -167,7 +172,7 @@ const ManagersTableBody = () => {
 
   return (
     <div className="mx-auto mt-2">
-      <DataTable value={managers?.data} paginator rows={itemsLimit} totalRecords={managers?.totalCount} dataKey="id" filters={filters} globalFilterFields={["full_name", "email", "role", "status"]} header={<ManagersHeader />} filterDisplay="row" loading={isPending} emptyMessage={translations.noManagers}>
+      <DataTable value={managers?.data} paginator rows={itemsLimit} totalRecords={managers?.totalCount} dataKey="id" filters={filters} globalFilterFields={["full_name", "email", "role", "status"]} header={renderHeader()} filterDisplay="row" loading={isPending} emptyMessage={translations.noManagers}>
         <Column field="full_name" header={translations.fullName} filter sortable filterPlaceholder={translations.searchByName} style={{ minWidth: "12rem" }} />
         <Column field="email" header={translations.email} filter sortable filterPlaceholder={translations.searchByEmail} style={{ minWidth: "12rem" }} />
         <Column field="role" header={translations.role} filter sortable filterPlaceholder={translations.searchByRole} style={{ minWidth: "12rem" }} />
