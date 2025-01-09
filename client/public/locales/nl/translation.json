@@ -15,5 +15,22 @@
   "activities": "Activiteiten",
   "measures": "Maatregelen",
   "invoices": "Facturen",
-  "clients": "Klanten"
+  "clients": "Klanten",
+  "myProjects": "Mijn Projecten",
+  "managers": "Managers",
+  "artisans": "Ambachtslieden",
+  "workItems": "Werkitems",
+  "defaultPricing": "Standaard Prijzen",
+  "createInvoice": "Factuur Maken",
+  "Home": "Start",
+  "Managers": "Managers",
+  "Activities": "Activiteiten",
+  "Measures": "Maatregelen",
+  "Users": "Gebruikers",
+  "Artisans": "Ambachtslieden",
+  "Companies": "Bedrijven",
+  "Projects": "Projecten",
+  "Invoices": "Facturen",
+  "My projects": "Mijn Projecten",
+  "Clients": "Klanten"
 }

@@ -15,5 +15,22 @@
   "activities": "Działania",
   "measures": "Miary",
   "invoices": "Faktury",
-  "clients": "Klienci"
+  "clients": "Klienci",
+  "myProjects": "Moje Projekty",
+  "managers": "Menedżerowie",
+  "artisans": "Rzemieślnicy",
+  "workItems": "Elementy Pracy",
+  "defaultPricing": "Domyślne Ceny",
+  "createInvoice": "Utwórz Fakturę",
+  "Home": "Strona Główna",
+  "Managers": "Menedżerowie",
+  "Activities": "Działania",
+  "Measures": "Miary",
+  "Users": "Użytkownicy",
+  "Artisans": "Rzemieślnicy",
+  "Companies": "Firmy",
+  "Projects": "Projekty",
+  "Invoices": "Faktury",
+  "My projects": "Moje Projekty",
+  "Clients": "Klienci"
 }

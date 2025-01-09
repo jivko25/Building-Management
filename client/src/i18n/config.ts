@@ -24,6 +24,11 @@ i18n
     react: {
       useSuspense: false
     }
+  })
+  .then(() => {
+    console.log("i18n initialized successfully");
+    console.log("Current language:", i18n.language);
+    console.log("Available languages:", i18n.languages);
   });
 
 export default i18n;
