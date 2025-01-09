@@ -8,6 +8,7 @@ const ClientsHeader = () => {
     { key: "name", label: t("Client Name"), width: "w-15rem", align: "left" },
     { key: "address", label: t("Address"), width: "w-20rem", align: "left" },
     { key: "iban", label: t("IBAN"), width: "w-15rem", align: "left" },
+    { key: "language", label: t("Invoice Language"), width: "w-10rem", align: "left" },
     { key: "status", label: t("Status"), width: "w-10rem", align: "center" },
     { key: "options", label: t("Options"), width: "w-12.5rem", align: "right" }
   ];
