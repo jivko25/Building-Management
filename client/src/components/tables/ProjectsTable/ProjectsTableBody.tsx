@@ -10,9 +10,32 @@ import SearchBar from "@/components/common/SearchBar/SearchBar";
 import useSearchHandler from "@/hooks/useSearchHandler";
 import useSearchParamsHook from "@/hooks/useSearchParamsHook";
 import CreateProject from "@/components/Forms/Projects/ProjectFormCreate/CreateProject";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
 
 const ProjectsTableBody = () => {
   const { setSearchParams } = useSearchParamsHook();
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    searchPlaceholder: "Search projects...",
+    noResults: {
+      title: "No projects found",
+      description: "It seems you haven't added any projects yet"
+    }
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        searchPlaceholder: await translate("Search projects..."),
+        noResults: {
+          title: await translate("No projects found"),
+          description: await translate("It seems you haven't added any projects yet")
+        }
+      });
+    };
+    loadTranslations();
+  }, [translate]);
 
   const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
     setSearchParams
@@ -39,7 +62,7 @@ const ProjectsTableBody = () => {
     <div className="flex flex-col border rounded-lg mt-4 mx-8 p-4 backdrop-blur-sm bg-slate-900/20">
       <div className="flex flex-col-reverse md:flex-row gap-4 w-full mb-4 justify-between items-center">
         <div className="w-full md:w-1/3">
-          <SearchBar handleSearch={handleSearch} placeholder="Search projects..." search={search} />
+          <SearchBar handleSearch={handleSearch} placeholder={translations.searchPlaceholder} search={search} />
         </div>
         <CreateProject />
       </div>
@@ -48,8 +71,8 @@ const ProjectsTableBody = () => {
           data={projects}
           renderData={projects => <ProjectsCard projects={projects as Project[]} />}
           noResults={{
-            title: "No projects found",
-            description: "It seems you haven't added any projects yet",
+            title: translations.noResults.title,
+            description: translations.noResults.description,
             Icon: BrickWall
           }}
         />
