@@ -2,10 +2,13 @@
 const puppeteer = require("puppeteer");
 const db = require("../data/index.js");
 const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client } = db;
+const translations = require("./translations/invoiceTranslations");
 
-const createInvoicePDF = async invoiceId => {
+const createInvoicePDF = async (invoiceId, languageId) => {
   console.log("Generating PDF for invoice:", invoiceId);
+  console.log("Using language ID:", languageId);
 
+  let browser;
   try {
     const invoice = await Invoice.findByPk(invoiceId, {
       include: [
@@ -49,6 +52,11 @@ const createInvoicePDF = async invoiceId => {
 
     console.log("Invoice data loaded successfully");
 
+    // Определяме езика преди да го използваме
+    const languageCode = languageId === 2 ? "bg" : "en";
+    const t = translations[languageCode];
+
+    console.log("Using language:", languageCode);
     // Formatting the invoice number
     const formatInvoiceNumber = invoiceNumber => {
       const parts = invoiceNumber.split("/");
@@ -66,8 +74,8 @@ const createInvoicePDF = async invoiceId => {
     // Preparing the data for the template
     const data = {
       invoiceNumber: formattedInvoiceNumber,
-      date: invoice.invoice_date.toLocaleDateString("bg-BG"),
-      dueDate: invoice.due_date.toLocaleDateString("bg-BG"),
+      date: invoice.invoice_date.toLocaleDateString(languageCode === "bg" ? "bg-BG" : "en-US"),
+      dueDate: invoice.due_date.toLocaleDateString(languageCode === "bg" ? "bg-BG" : "en-US"),
       companyName: invoice.company.name,
       companyAddress: invoice.company.address,
       companyVAT: invoice.company.vat_number,
@@ -80,9 +88,7 @@ const createInvoicePDF = async invoiceId => {
       clientCompanyName: invoice.client.client_company_name,
       clientName: invoice.client.client_name,
       clientAddress: invoice.client.client_company_address,
-      clientCompanyVATNumber: invoice.client.client_company_vat_number,
-      clientIBAN: invoice.client.client_company_iban,
-      clientEmails: Array.isArray(invoice.client.client_emails) ? invoice.client.client_emails.join(", ") : invoice.client.client_emails,
+      clientVATNumber: invoice.client.client_company_vat_number,
       items: invoice.items.map(item => ({
         activity: item.activity.name,
         project_location: item.project.location,
@@ -95,170 +101,185 @@ const createInvoicePDF = async invoiceId => {
       totalAmount: parseFloat(invoice.total_amount)
     };
 
-    console.log("Data prepared for template:", data);
-
     const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <style>
-            * {
-              margin: 0;
-              padding: 0;
-              text-indent: 0;
-            }
-            body { 
-              font-family: Calibri, sans-serif;
-              padding: 20px;
-            }
-            h1, h2, h3 { 
-              color: black;
-              font-style: normal;
-              font-weight: bold;
-              text-decoration: none;
-            }
-            h1 { font-size: 12pt; }
-            h2 { font-size: 11pt; }
-            h3 { font-size: 10pt; }
-            .p, p { 
-              color: black;
-              font-style: normal;
-              font-weight: normal;
-              font-size: 11pt;
-              margin: 0pt;
-            }
-            .header {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 30px;
-            }
-            .invoice-info {
-              flex: 1;
-            }
-            .company-logo {
-              text-align: right;
-            }
-            .logo {
-              max-width: 226px;
-              max-height: 98px;
-            }
-            .info-container {
-              display: flex;
-              justify-content: space-between;
-              gap: 40px;
-              margin-bottom: 30px;
-            }
-            .company-info, .client-info {
-              flex: 1;
-              padding: 20px;
-              border: 1px solid #eee;
-              border-radius: 4px;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin: 20px 0;
-              font-size: 9pt;
-            }
-            th, td {
-              border: 1px solid black;
-              padding: 8px;
-              text-align: left;
-              font-size: 10pt;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <div class="invoice-info">
-              <h1>Invoice ${data.invoiceNumber}</h1>
-              <p>Date of issue: ${data.date}</p>
-              <p>Due date: ${data.dueDate}</p>
-            </div>
-            <div class="company-logo">
-              ${data.companyLogo ? `<img class="logo" src="${data.companyLogo}" alt="Company Logo">` : ""}
-            </div>
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+            text-indent: 0;
+          }
+          body { 
+            font-family: Calibri, sans-serif;
+            padding: 20px;
+          }
+          h1, h2, h3 { 
+            color: black;
+            font-style: normal;
+            font-weight: bold;
+            text-decoration: none;
+          }
+          h1 { font-size: 12pt; }
+          h2 { font-size: 11pt; }
+          h3 { font-size: 10pt; }
+          .p, p { 
+            color: black;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 11pt;
+            margin: 0pt;
+          }
+          .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+          }
+          .invoice-info {
+            flex: 1;
+          }
+          .company-logo {
+            text-align: right;
+          }
+          .logo {
+            max-width: 226px;
+            max-height: 98px;
+          }
+          .info-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+            margin-bottom: 30px;
+          }
+          .company-info, .client-info {
+            flex: 1;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 9pt;
+          }
+          th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+            font-size: 10pt;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="invoice-info">
+            <h1>${t.invoice} ${data.invoiceNumber}</h1>
+            <p>${t.dateOfIssue}: ${data.date}</p>
+            <p>${t.dueDate}: ${data.dueDate}</p>
           </div>
-          
-          <div class="info-container">
-            <div class="client-info">
-              <p>Company: ${data.clientCompanyName || "No"}</p>
-              <p>Address: ${data.clientAddress || "No"}</p>
-              <p>VAT number: ${data.clientCompanyVATNumber || "No"}</p>
-            </div>
-
-            <div class="company-info">
-              <p>Company: ${data.companyName}</p>
-              <p>Address: ${data.companyAddress}</p>
-              <p>Reg. number: ${data.companyRegNumber || "No"}</p>
-              <p>VAT number: ${data.companyVAT || "No"}</p>
-              <p>Phone: ${data.companyPhone || "No"}</p>
-              <p>${data.companyEmail || "No"}</p>
-              <p>IBAN: ${data.companyIBAN || "No"}</p>
-              <p>For Contact: ${data.companyMol || "No"}</p>
-            </div>
+          <div class="company-logo">
+            ${data.companyLogo ? `<img class="logo" src="${data.companyLogo}" alt="Company Logo">` : ""}
+          </div>
+        </div>
+        
+        <div class="info-container">
+          <div class="client-info">
+            <p>${t.clientCompany}: ${data.clientCompanyName || "No"}</p>
+            <p>${t.address}: ${data.clientAddress || "No"}</p>
+            <p>${t.vatNumber}: ${data.clientVATNumber || "No"}</p>
           </div>
 
-          <table>
-            <thead>
+          <div class="company-info">
+            <p>${t.company}: ${data.companyName}</p>
+            <p>${t.address}: ${data.companyAddress}</p>
+            <p>${t.regNumber}: ${data.companyRegNumber || "No"}</p>
+            <p>${t.vatNumber}: ${data.companyVAT || "No"}</p>
+            <p>${t.phone}: ${data.companyPhone || "No"}</p>
+            <p>${t.email}: ${data.companyEmail || "No"}</p>
+            <p>${t.iban}: ${data.companyIBAN || "No"}</p>
+            <p>${t.forContact}: ${data.companyMol || "No"}</p>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>${t.activity}</th>
+              <th>${t.quantity}</th>
+              <th>${t.pricePerUnit}</th>
+              <th>${t.total}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.items
+              .map(
+                item => `
               <tr>
-                <th>Activity</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Total</th>
+                <td>${t.location}: ${item.project_location} <br>${item.activity}</td>
+                <td style="text-align: right">${item.quantity.toFixed(2)}</td>
+                <td style="text-align: right">${item.price_per_unit.toFixed(2)} €</td>
+                <td style="text-align: right">${item.total.toFixed(2)} €</td>
               </tr>
-            </thead>
-            <tbody>
-              ${data.items
-                .map(
-                  item => `
-                <tr>
-                  <td>Location: ${item.project_location} <br>${item.activity}</td>
-                  <td style="text-align: right">${item.quantity.toFixed(2)}</td>
-                  <td style="text-align: right">${item.price_per_unit.toFixed(2)} €</td>
-                  <td style="text-align: right">${item.total.toFixed(2)} €</td>
-                </tr>
-              `
-                )
-                .join("")}
-            </tbody>
-          </table>
+            `
+              )
+              .join("")}
+          </tbody>
+        </table>
 
-          <div style="text-align: right">
-            <h3>Total amount: ${data.totalAmount.toFixed(2)} €</h3>
-          </div>
-        </body>
-      </html>
-    `;
+        <div style="text-align: right">
+          <h3>${t.totalAmount}: ${data.totalAmount.toFixed(2)} €</h3>
+        </div>
+      </body>
+    </html>
+  `;
 
-    console.log("HTML content generated");
-
-    const browser = await puppeteer.launch({
+    // Подобрени настройки за Puppeteer
+    browser = await puppeteer.launch({
       headless: "new",
-      args: ["--no-sandbox"]
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-accelerated-2d-canvas", "--disable-gpu", "--window-size=1920x1080"],
+      timeout: 60000 // увеличаваме timeout-а до 60 секунди
     });
 
     const page = await browser.newPage();
-    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+    await page.setDefaultNavigationTimeout(60000); // увеличаваме navigation timeout-а
 
-    const pdf = await page.pdf({
+    // Задаваме viewport
+    await page.setViewport({
+      width: 1920,
+      height: 1080
+    });
+
+    console.log("Setting page content...");
+    await page.setContent(htmlContent, {
+      waitUntil: "networkidle0",
+      timeout: 60000
+    });
+
+    console.log("Generating PDF...");
+    const pdfBuffer = await page.pdf({
       format: "A4",
+      printBackground: true,
       margin: {
-        top: "20mm",
-        right: "20mm",
-        bottom: "20mm",
-        left: "20mm"
+        top: "20px",
+        right: "20px",
+        bottom: "20px",
+        left: "20px"
       }
     });
 
-    await browser.close();
-
     console.log("PDF generated successfully");
-    return pdf;
+    return pdfBuffer;
   } catch (error) {
     console.error("Error generating PDF:", error);
     throw error;
+  } finally {
+    if (browser) {
+      console.log("Closing browser...");
+      await browser.close();
+    }
   }
 };
 
