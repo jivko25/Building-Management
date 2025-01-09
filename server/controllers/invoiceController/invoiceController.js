@@ -130,7 +130,7 @@ const createInvoice = async (req, res, next) => {
     console.log("Invoice created successfully");
 
     // Генерираме PDF с правилния език
-    const pdfBuffer = await createInvoicePDF(invoice.id);
+    const pdfBuffer = await createInvoicePDF(invoice.id, client.invoice_language_id);
     console.log("PDF generated successfully");
 
     // Вземаме имейлите на клиента
@@ -144,7 +144,7 @@ const createInvoice = async (req, res, next) => {
           email,
           pdfBuffer,
           invoice.invoice_number,
-          client_company_id // Добавяме client_company_id за да вземем езика
+          client.invoice_language_id
         );
         console.log("Invoice email sent to:", email);
       }
@@ -489,7 +489,19 @@ const updateInvoice = async (req, res, next) => {
 const getInvoicePDF = async (req, res, next) => {
   console.log("Generating PDF for invoice ID:", req.params.id);
   try {
-    const pdfBuffer = await createInvoicePDF(req.params.id);
+    const invoice = await Invoice.findByPk(req.params.id, {
+      include: [{
+        model: Client,
+        as: "client",
+        attributes: ["invoice_language_id"]
+      }]
+    });
+
+    if (!invoice) {
+      throw new Error("Invoice not found");
+    }
+
+    const pdfBuffer = await createInvoicePDF(req.params.id, invoice.client.invoice_language_id);
 
     // Set correct headers
     res.setHeader("Content-Type", "application/pdf");

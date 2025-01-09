@@ -1,4 +1,5 @@
 const { createEmail } = require("./email");
+const translations = require("./translations/invoiceTranslations");
 
 const formatInvoiceNumber = invoiceNumber => {
   const parts = invoiceNumber.split("/");
@@ -13,16 +14,20 @@ const formatInvoiceNumber = invoiceNumber => {
   return `${firstPart}/${weekPart}-${formattedNumber}`;
 };
 
-const sendInvoiceEmail = async (receiverEmail, pdfBuffer, invoiceNumber) => {
+const sendInvoiceEmail = async (receiverEmail, pdfBuffer, invoiceNumber, languageId) => {
   console.log("Sending invoice email to:", receiverEmail);
-
-  const formattedInvoiceNumber = formatInvoiceNumber(invoiceNumber);
-  console.log("Formatted invoice number for email:", formattedInvoiceNumber);
-
-  const subject = `Invoice ${formattedInvoiceNumber}`;
-  const text = `Dear client,\n\nAttached is invoice ${formattedInvoiceNumber}.\n\nRegards,\nYour team`;
+  console.log("Using language ID:", languageId);
 
   try {
+    const languageCode = languageId === 2 ? "bg" : "en";
+    const t = translations[languageCode];
+
+    const formattedInvoiceNumber = formatInvoiceNumber(invoiceNumber);
+    console.log("Formatted invoice number for email:", formattedInvoiceNumber);
+
+    const subject = `${t.emailSubject} ${formattedInvoiceNumber}`;
+    const text = t.emailBody.replace("{invoiceNumber}", formattedInvoiceNumber);
+
     const attachments = [
       {
         filename: `invoice-${formattedInvoiceNumber}.pdf`,
