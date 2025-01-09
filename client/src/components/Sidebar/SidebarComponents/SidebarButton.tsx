@@ -1,6 +1,5 @@
 //client\src\components\Sidebar\SidebarComponents\SidebarButton.tsx
 import { Button, ButtonProps } from "@/components/ui/button";
-import { SheetClose } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@radix-ui/react-dialog";

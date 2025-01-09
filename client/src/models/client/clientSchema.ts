@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { Client } from "@/types/client-types/clientTypes";
-import { useTranslation } from "react-i18next";
 
 export const clientSchema = z.object({
   client_company_name: z.string().min(2, {
