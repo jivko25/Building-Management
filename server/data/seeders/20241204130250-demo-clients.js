@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Първо намираме admin потребителя (знаем че ID е 1 от users сийдъра)
+    console.log("Seeding clients...");
     await queryInterface.bulkInsert(
       "tbl_clients",
       [
@@ -14,8 +14,9 @@ module.exports = {
           client_company_iban: "BG98RZBB91550123456789",
           client_emails: JSON.stringify(["gogata1905@gmail.com", "gogata1905@abv.bg"]),
           status: "active",
-          creator_id: 1, // Admin's ID
+          creator_id: 1,
           client_company_vat_number: "2252562636",
+          invoice_language_id: 1, // English by default
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -29,6 +30,7 @@ module.exports = {
           status: "active",
           creator_id: 2, // Manager's ID
           client_company_vat_number: "2252562636",
+          invoice_language_id: 2, // Bulgarian by default
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -42,6 +44,7 @@ module.exports = {
           status: "active",
           creator_id: 2, // Manager's ID
           client_company_vat_number: "2252562636",
+          invoice_language_id: 3, // Romanian by default
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -55,6 +58,7 @@ module.exports = {
           status: "active",
           creator_id: 2, // Manager's ID
           client_company_vat_number: "2252562636",
+          invoice_language_id: 4, // Russian by default
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -68,12 +72,14 @@ module.exports = {
           status: "active",
           creator_id: 2, // Manager's ID
           client_company_vat_number: "2252562636",
+          invoice_language_id: 5, // Turkish by default
           created_at: new Date(),
           updated_at: new Date()
         }
       ],
       {}
     );
+    console.log("Clients seeded successfully!");
   },
 
   down: async (queryInterface, Sequelize) => {
