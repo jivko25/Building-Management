@@ -308,5 +308,6 @@
   "Total Amount": "общая сумма",
   "Client Information": "информация о клиенте",
   "Invoice Number": "номер фактуры",
-  "Contact Person": "контактное лицо"
+  "Contact Person": "контактное лицо",
+  "Registration Number": "регистрационный номер"
 }

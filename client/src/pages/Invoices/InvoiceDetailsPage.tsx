@@ -260,21 +260,33 @@ export const InvoiceDetailsPage = () => {
               {invoice.client.client_company_name}
             </div>
             <div>
-              <span className="font-semibold">{t("Contact person")} : </span>
-              {invoice.client.client_company_mol}
+              <span className="font-semibold">{t("Address")} : </span>
+              {invoice.company?.address || "No"}
             </div>
             <div>
-              <span className="font-semibold">{t("Address")} : </span>
-              {invoice.client.client_company_address}
+              <span className="font-semibold">{t("Registration Number")} : </span>
+              {invoice.company?.registration_number || "No"}
             </div>
-            
+            <div>
+              <span className="font-semibold">{t("VAT Number")} : </span>
+              {invoice.company?.vat_number || "No"}
+            </div>
+            <div>
+              <span className="font-semibold">{t("Phone")} : </span>
+              {invoice.company?.phone || "No"}
+            </div>
             <div>
               <span className="font-semibold">{t("IBAN")} : </span>
-              {invoice.client.client_company_iban}
+              {invoice.client.client_company_iban || "No"}
             </div>
             <div>
+              <span className="font-semibold">{t("For Contact")} : </span>
+              {invoice.company?.mol || "No"}
+            </div>
+            <div>
+              {/* add before my current emails the companyMol email */}
               <span className="font-semibold">{t("Emails")} : </span>
-              {Array.isArray(invoice.client.client_emails) ? invoice.client.client_emails.join(", ") : invoice.client.client_emails}
+              {invoice.company?.email || "No"}, {Array.isArray(invoice.client.client_emails) ? invoice.client.client_emails.join(", ") : invoice.client.client_emails || "No"}
             </div>
           </CardContent>
         </Card>
