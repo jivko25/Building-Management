@@ -15,5 +15,22 @@
   "activities": "Aktiviteler",
   "measures": "Ölçümler",
   "invoices": "Faturalar",
-  "clients": "Müşteriler"
+  "clients": "Müşteriler",
+  "myProjects": "Projelerim",
+  "managers": "Yöneticiler",
+  "artisans": "Zanaatkarlar",
+  "workItems": "İş Öğeleri",
+  "defaultPricing": "Varsayılan Fiyatlandırma",
+  "createInvoice": "Fatura Oluştur",
+  "Home": "Anasayfa",
+  "Managers": "Yöneticiler",
+  "Activities": "Aktiviteler",
+  "Measures": "Ölçümler",
+  "Users": "Kullanıcılar",
+  "Artisans": "Zanaatkarlar",
+  "Companies": "Şirketler",
+  "Projects": "Projeler",
+  "Invoices": "Faturalar",
+  "My projects": "Projelerim",
+  "Clients": "Müşteriler"
 }

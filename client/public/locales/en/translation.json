@@ -15,5 +15,22 @@
   "activities": "Activities",
   "measures": "Measures",
   "invoices": "Invoices",
-  "clients": "Clients"
+  "clients": "Clients",
+  "myProjects": "My Projects",
+  "managers": "Managers",
+  "artisans": "Artisans",
+  "workItems": "Work Items",
+  "defaultPricing": "Default Pricing",
+  "createInvoice": "Create Invoice",
+  "Home": "Home",
+  "Managers": "Managers",
+  "Activities": "Activities",
+  "Measures": "Measures",
+  "Users": "Users",
+  "Artisans": "Artisans",
+  "Companies": "Companies",
+  "Projects": "Projects",
+  "Invoices": "Invoices",
+  "My projects": "My Projects",
+  "Clients": "Clients"
 }

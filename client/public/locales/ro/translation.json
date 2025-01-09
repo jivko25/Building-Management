@@ -15,5 +15,22 @@
   "activities": "Activități",
   "measures": "Măsuri",
   "invoices": "Facturi",
-  "clients": "Clienți"
+  "clients": "Clienți",
+  "myProjects": "Proiectele Mele",
+  "managers": "Manageri",
+  "artisans": "Artizani",
+  "workItems": "Elemente de Lucru",
+  "defaultPricing": "Prețuri Implicite",
+  "createInvoice": "Creare Factură",
+  "Home": "Acasă",
+  "Managers": "Manageri",
+  "Activities": "Activități",
+  "Measures": "Măsuri",
+  "Users": "Utilizatori",
+  "Artisans": "Artizani",
+  "Companies": "Companii",
+  "Projects": "Proiecte",
+  "Invoices": "Facturi",
+  "My projects": "Proiectele Mele",
+  "Clients": "Clienți"
 }
