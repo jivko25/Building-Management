@@ -240,6 +240,10 @@ export const InvoiceDetailsPage = () => {
               {format(new Date(invoice.due_date), "dd.MM.yyyy", { locale: bg })}
             </div>
             <div>
+              <span className="font-semibold">{t("VAT number")} : </span>
+              {invoice.company?.vat_number || "No"}
+            </div>
+            <div>
               <span className="font-semibold">{t("Status")} : </span>
               {invoice.paid ? "Paid" : "Unpaid"}
             </div>
@@ -263,6 +267,7 @@ export const InvoiceDetailsPage = () => {
               <span className="font-semibold">{t("Address")} : </span>
               {invoice.client.client_company_address}
             </div>
+            
             <div>
               <span className="font-semibold">{t("IBAN")} : </span>
               {invoice.client.client_company_iban}
