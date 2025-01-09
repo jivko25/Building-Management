@@ -14,6 +14,7 @@ import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 import { IconField } from "primereact/iconfield";
 import Sidebar from "@/components/Sidebar/Sidebar";
+import { useTranslation } from "react-i18next";
 
 export const InvoicesPage = () => {
   const navigate = useNavigate();
@@ -50,12 +51,12 @@ export const InvoicesPage = () => {
         <div>
           <IconField iconPosition="left">
             <InputIcon className="pi pi-search" />
-            <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="search..." className="search-input" />
+            <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={t("search...")} className="search-input" />
           </IconField>
         </div>
         <Button onClick={() => navigate("/invoices/create")}>
           <Plus className="mr-2 h-4 w-4" />
-          New Invoice
+          {t("New Invoice")}
         </Button>
       </div>
     );
@@ -109,11 +110,13 @@ export const InvoicesPage = () => {
     return (
       <div className="flex gap-2">
         <Button variant="outline" size="sm" onClick={() => navigate(`/invoices/${rowData.id}`)}>
-          Details
+          {t("Details")}
         </Button>
       </div>
     );
   };
+
+  const { t } = useTranslation();
 
   return (
     <div className="flex md:gap-60 min-h-screen">
@@ -121,15 +124,15 @@ export const InvoicesPage = () => {
 
       <div className="flex-1">
         <div className="container mx-auto py-10">
-          <h1 className="text-3xl font-bold mb-6">Invoices</h1>
+          <h1 className="text-3xl font-bold mb-6">{t("invoices")}</h1>
 
           <DataTable value={invoices} paginator rows={10} rowsPerPageOptions={[10, 20, 50]} filters={filters} globalFilterFields={["invoice_number", "client.client_name", "total_amount"]} header={renderHeader} emptyMessage="No invoices found" loading={isLoading} stripedRows showGridlines dataKey="id" sortMode="single" removableSort tableStyle={{ minWidth: "50rem" }} scrollable>
-            <Column field="invoice_number" header="Number" sortable filter filterPlaceholder="Search by number" style={{ width: "15%" }} />
-            <Column field="invoice_date" header="Date" body={dateTemplate} sortable style={{ width: "15%" }} />
-            <Column field="due_date" header="Due date" body={dueDateTemplate} sortable style={{ width: "15%" }} />
-            <Column field="client.client_name" header="Client" body={clientTemplate} sortable filter filterPlaceholder="Search by client" style={{ width: "20%" }} />
-            <Column field="total_amount" header="Amount" body={amountTemplate} sortable filter filterPlaceholder="Search by amount" style={{ width: "15%" }} />
-            <Column field="paid" header="Paid" body={paidTemplate} sortable style={{ width: "10%" }} />
+            <Column field="invoice_number" header={t("Number")} sortable filter filterPlaceholder={t("Search by number")} style={{ width: "15%" }} />
+            <Column field="invoice_date" header={t("Date")} body={dateTemplate} sortable style={{ width: "15%" }} />
+            <Column field="due_date" header={t("Due date")} body={dueDateTemplate} sortable style={{ width: "15%" }} />
+            <Column field="client.client_name" header={t("Client")} body={clientTemplate} sortable filter filterPlaceholder={t("Search by client")} style={{ width: "20%" }} />
+            <Column field="total_amount" header={t("Amount")} body={amountTemplate} sortable filter filterPlaceholder={t("Search by amount")} style={{ width: "15%" }} />
+            <Column field="paid" header={t("Paid")} body={paidTemplate} sortable style={{ width: "10%" }} />
             <Column body={actionTemplate} style={{ width: "10%" }} />
           </DataTable>
         </div>

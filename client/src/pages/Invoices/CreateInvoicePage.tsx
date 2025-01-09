@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-
+import { useTranslation } from "react-i18next";
 const createInvoiceSchema = z.object({
   company_id: z.number({
     required_error: "Please select a company"
@@ -39,6 +39,8 @@ export const CreateInvoicePage = () => {
   });
 
   const companies = companiesResponse?.companies || [];
+
+  const { t } = useTranslation();
 
   const { data: clientsData } = useQuery({
     queryKey: ["clients"],
@@ -197,9 +199,9 @@ export const CreateInvoicePage = () => {
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">New invoice</h1>
+        <h1 className="text-3xl font-bold">{t("New invoice")}</h1>
         <Button variant="outline" onClick={() => navigate("/invoices")}>
-          Back
+          {t("Back")}
         </Button>
       </div>
 
@@ -211,7 +213,7 @@ export const CreateInvoicePage = () => {
               name="company_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Building company</FormLabel>
+                  <FormLabel>{t("Building company")}</FormLabel>
                   <Select
                     onValueChange={value => {
                       const id = parseInt(value);
@@ -220,7 +222,7 @@ export const CreateInvoicePage = () => {
                     }}
                     value={field.value ? field.value.toString() : ""}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select company" />
+                      <SelectValue placeholder={t("Select company")} />
                     </SelectTrigger>
                     <SelectContent>
                       {companies?.map((company: any) => (
@@ -240,7 +242,7 @@ export const CreateInvoicePage = () => {
               name="client_company_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Client company</FormLabel>
+                  <FormLabel>{t("Client company")}</FormLabel>
                   <Select
                     onValueChange={value => {
                       const id = parseInt(value);
@@ -249,7 +251,7 @@ export const CreateInvoicePage = () => {
                     }}
                     value={field.value ? field.value.toString() : ""}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select client company" />
+                      <SelectValue placeholder={t("Select client company")} />
                     </SelectTrigger>
                     <SelectContent>
                       {clients?.map((client: any) => (
@@ -269,7 +271,7 @@ export const CreateInvoicePage = () => {
               name="due_date_weeks"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Due date (weeks)</FormLabel>
+                  <FormLabel>{t("Due date (weeks)")}</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
                   </FormControl>
@@ -281,7 +283,7 @@ export const CreateInvoicePage = () => {
 
           {form.watch("company_id") !== 0 && (
             <div className="mt-6">
-              <h2 className="text-xl font-semibold mb-4">Select Projects</h2>
+              <h2 className="text-xl font-semibold mb-4">{t("Select Projects")}</h2>
               <div className="grid grid-cols-3 gap-4 p-4 border rounded-lg bg-white shadow-sm">
                 {projects.map((project: any) => (
                   <div key={project.id} className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 transition-colors duration-200 group relative">
@@ -359,11 +361,11 @@ export const CreateInvoicePage = () => {
               <div className="mt-4 text-sm text-gray-500 flex items-center justify-end space-x-2">
                 <span className="flex items-center">
                   <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                  Active
+                  {t("Active")}
                 </span>
                 <span className="flex items-center ml-4">
                   <span className="w-2 h-2 rounded-full bg-gray-300 mr-2"></span>
-                  Inactive
+                  {t("Inactive")}
                 </span>
               </div>
             </div>
@@ -371,7 +373,7 @@ export const CreateInvoicePage = () => {
 
           {workItemsData && workItemsData.length > 0 && (
             <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">Select Work Items</h2>
+              <h2 className="text-xl font-semibold mb-4">{t("Select Work Items")}</h2>
               <div className="space-y-6">
                 {workItemsData.map(({ projectId, projectName, workItems }) => (
                   <div key={projectId} className="border rounded-lg p-4 bg-white shadow-sm">
@@ -446,7 +448,13 @@ export const CreateInvoicePage = () => {
                               <div className="text-xs text-gray-500">Status: {workItem.status === "done" ? "Done" : "In Progress"}</div>
                             </div>
                           </div>
-                          <div className="text-sm text-gray-500">{workItem.task?.price_per_measure && <span>Price: ${workItem.task.price_per_measure}</span>}</div>
+                          <div className="text-sm text-gray-500">
+                            {workItem.task?.price_per_measure && (
+                              <span>
+                                {t("Price")}: ${workItem.task.price_per_measure}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
