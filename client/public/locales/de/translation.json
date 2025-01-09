@@ -75,5 +75,16 @@
   "Status": "Status",
   "Activity name": "Aktivitätsname",
   "Edit activity": "Aktivität bearbeiten",
-  "Submit changes": "Änderungen speichern"
+  "Submit changes": "Änderungen speichern",
+  "Measure": "Maßnahme",
+  "Measure type": "Maßnahmentyp",
+  "Type of measure": "Art der Maßnahme",
+  "Add new measure": "Neue Maßnahme hinzufügen",
+  "New measure": "Neue Maßnahme",
+  "Edit measure": "Maßnahme bearbeiten",
+  "No measures found": "Keine Maßnahmen gefunden",
+  "It looks like you haven't added any measures yet.": "Es sieht so aus, als hätten Sie noch keine Maßnahmen hinzugefügt.",
+  "Measure created successfully!": "Maßnahme erfolgreich erstellt!",
+  "Measure updated successfully!": "Maßnahme erfolgreich aktualisiert!",
+  "Submit": "Absenden"
 }
