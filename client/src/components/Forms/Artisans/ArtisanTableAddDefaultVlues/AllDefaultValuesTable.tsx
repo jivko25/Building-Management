@@ -4,7 +4,6 @@ import { DefaultPricing, DefaultPricingResponse } from "@/types/defaultPricingTy
 import { MeasureResponse } from "@/types/measure-types/measureTypes";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
 import { useState } from "react";
 import ArtisanAction from "./ArtisanAction";
