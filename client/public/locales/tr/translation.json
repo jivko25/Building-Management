@@ -1,0 +1,19 @@
+{
+  "settings": "Ayarlar",
+  "languageSettings": "Dil Ayarları",
+  "appLanguage": "Uygulama Dili",
+  "invoiceLanguage": "Fatura Dili",
+  "darkMode": "Karanlık Mod",
+  "lightMode": "Aydınlık Mod",
+  "signOut": "Çıkış Yap",
+  "profile": "Profil",
+  "dashboard": "Kontrol Paneli",
+  "projects": "Projeler",
+  "tasks": "Görevler",
+  "users": "Kullanıcılar",
+  "companies": "Şirketler",
+  "activities": "Aktiviteler",
+  "measures": "Ölçümler",
+  "invoices": "Faturalar",
+  "clients": "Müşteriler"
+}
