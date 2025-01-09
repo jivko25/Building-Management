@@ -7,8 +7,9 @@ import { Separator } from "@/components/ui/separator";
 import { useCompanyFormHooks } from "@/hooks/forms/useCompanyForm";
 import { CompanySchema } from "@/models/company/companySchema";
 import { ClipboardList, FileDigit, Mail, MapPin, Phone, User } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider } from "react-hook-form";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type CreateCompanyFormProps = {
   handleSubmit: (companyData: CompanySchema) => void;
@@ -16,8 +17,43 @@ type CreateCompanyFormProps = {
 };
 
 const CreateCompanyForm = ({ handleSubmit, isPending }: CreateCompanyFormProps) => {
-  const { useCreateCompanyForm } = useCompanyFormHooks();
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    companyName: "Company name",
+    companyLocation: "Company location",
+    companyAddress: "Company address",
+    companyMol: "Company MOL",
+    companyEmail: "Company email",
+    companyIban: "Company IBAN",
+    companyVat: "Company VAT number",
+    companyRegNumber: "Company registration number",
+    companyPhone: "Company phone",
+    status: "Status",
+    dds: "DDS",
+    submit: "Submit"
+  });
 
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        companyName: await translate("Company name"),
+        companyLocation: await translate("Company location"),
+        companyAddress: await translate("Company address"),
+        companyMol: await translate("Company MOL"),
+        companyEmail: await translate("Company email"),
+        companyIban: await translate("Company IBAN"),
+        companyVat: await translate("Company VAT number"),
+        companyRegNumber: await translate("Company registration number"),
+        companyPhone: await translate("Company phone"),
+        status: await translate("Status"),
+        dds: await translate("DDS"),
+        submit: await translate("Submit")
+      });
+    };
+    loadTranslations();
+  }, [translate]);
+
+  const { useCreateCompanyForm } = useCompanyFormHooks();
   const form = useCreateCompanyForm();
 
   const onSubmit = (data: CompanySchema) => {
@@ -58,28 +94,28 @@ const CreateCompanyForm = ({ handleSubmit, isPending }: CreateCompanyFormProps) 
           form.handleSubmit(onSubmit)(e);
         }}>
         <div className="grid grid-cols-1 gap-2 mb-2">
-          <FormFieldInput type="text" label="Company name" name="name" className="pl-10" Icon={ClipboardList} />
-          <FormFieldInput type="text" label="Company location" name="location" className="pl-10" Icon={MapPin} />
-          <FormFieldInput type="text" label="Company address" name="address" className="pl-10" Icon={MapPin} />
+          <FormFieldInput type="text" label={translations.companyName} name="name" className="pl-10" Icon={ClipboardList} />
+          <FormFieldInput type="text" label={translations.companyLocation} name="location" className="pl-10" Icon={MapPin} />
+          <FormFieldInput type="text" label={translations.companyAddress} name="address" className="pl-10" Icon={MapPin} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 gap-2 mb-2">
-          <FormFieldInput type="text" label="Company MOL" name="mol" className="pl-10" Icon={User} />
-          <FormFieldInput type="email" label="Company email" name="email" className="pl-10" Icon={Mail} />
-          <FormFieldInput type="text" label="Company IBAN" name="iban" className="pl-10" Icon={FileDigit} />
-          <FormFieldInput type="text" label="Company VAT number" name="vat_number" className="pl-10" Icon={FileDigit} />
+          <FormFieldInput type="text" label={translations.companyMol} name="mol" className="pl-10" Icon={User} />
+          <FormFieldInput type="email" label={translations.companyEmail} name="email" className="pl-10" Icon={Mail} />
+          <FormFieldInput type="text" label={translations.companyIban} name="iban" className="pl-10" Icon={FileDigit} />
+          <FormFieldInput type="text" label={translations.companyVat} name="vat_number" className="pl-10" Icon={FileDigit} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 gap-2 mb-2">
-          <FormFieldInput type="text" label="Company registration number" name="registration_number" className="pl-10" Icon={FileDigit} />
-          <FormFieldInput type="text" label="Company phone" name="phone" className="pl-10" Icon={Phone} />
+          <FormFieldInput type="text" label={translations.companyRegNumber} name="registration_number" className="pl-10" Icon={FileDigit} />
+          <FormFieldInput type="text" label={translations.companyPhone} name="phone" className="pl-10" Icon={Phone} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2">
-          <StatusSelector label="Status" name="status" placeholder="active" />
-          <VatSelector label="DDS" name="dds" placeholder="no" />
+          <StatusSelector label={translations.status} name="status" placeholder="active" />
+          <VatSelector label={translations.dds} name="dds" placeholder="no" />
         </div>
-        <DialogFooter disabled={!form.formState.isDirty || isPending} label="Submit" formName="company-form" className="mt-6" />
+        <DialogFooter disabled={!form.formState.isDirty || isPending} label={translations.submit} formName="company-form" className="mt-6" />
       </form>
     </FormProvider>
   );

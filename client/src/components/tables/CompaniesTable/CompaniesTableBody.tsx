@@ -13,6 +13,8 @@ import useSearchHandler from "@/hooks/useSearchHandler";
 import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import CompaniesHeader from "./CompaniesHeader";
 import CompaniesCard from "./CompaniesCard";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
 
 interface CompanyResponse {
   companies: Company[];
@@ -23,6 +25,27 @@ interface CompanyResponse {
 }
 const CompaniesTableBody = () => {
   const { setSearchParams, itemsLimit, page } = useSearchParamsHook();
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    searchPlaceholder: "Search companies...",
+    noResults: {
+      title: "No companies found",
+      description: "It looks like you haven't added any companies yet."
+    }
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        searchPlaceholder: await translate("Search companies..."),
+        noResults: {
+          title: await translate("No companies found"),
+          description: await translate("It looks like you haven't added any companies yet.")
+        }
+      });
+    };
+    loadTranslations();
+  }, [translate]);
 
   const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
     setSearchParams
@@ -53,7 +76,7 @@ const CompaniesTableBody = () => {
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar handleSearch={handleSearch} placeholder="Search companies..." search={search} />
+        <SearchBar handleSearch={handleSearch} placeholder={translations.searchPlaceholder} search={search} />
         <CreateCompany />
       </div>
       <Table className="w-full min-w-full">
@@ -63,8 +86,8 @@ const CompaniesTableBody = () => {
             data={typedCompaniesResponse.companies || []}
             renderData={data => <CompaniesCard companies={data as Company[]} />}
             noResults={{
-              title: "No companies found",
-              description: "It looks like you haven't added any companies yet.",
+              title: translations.noResults.title,
+              description: translations.noResults.description,
               Icon: Building2
             }}
             wrapper={content => (
