@@ -12,6 +12,7 @@ import useSearchParamsHook from "@/hooks/useSearchParamsHook";
 import { findItemById } from "@/utils/helpers/findItemById";
 import { PaginatedDataResponse } from "@/types/query-data-types/paginatedDataTypes";
 import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "react-i18next";
 
 type EditActivityFormProps = {
   handleSubmit: (activityData: ActivitySchema) => void;
@@ -20,6 +21,7 @@ type EditActivityFormProps = {
 };
 
 const EditActivityForm = ({ activityId, handleSubmit, isPending }: EditActivityFormProps) => {
+  const { t } = useTranslation();
   const { itemsLimit, page, searchParam } = useSearchParamsHook();
 
   const activity = useCachedData<Activity>({
@@ -28,20 +30,19 @@ const EditActivityForm = ({ activityId, handleSubmit, isPending }: EditActivityF
   });
 
   const { useEditActivityForm } = useActivityFormHooks();
-
   const form = useEditActivityForm(activity as Partial<Activity>);
 
   return (
     <FormProvider {...form}>
       <form id="form-edit" onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="grid grid-cols-1 gap-2 mb-2">
-          <FormFieldInput type="text" label="Activity name" name="name" className="pl-10" Icon={ActivityIcon} />
+          <FormFieldInput type="text" label={t("Activity name")} name="name" className="pl-10" Icon={ActivityIcon} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2">
-          <StatusSelector label="Status" name="status" placeholder="active" defaultVal={activity && activity.status} />
+          <StatusSelector label={t("Status")} name="status" placeholder={t("active")} defaultVal={activity && activity.status} />
         </div>
-        <DialogFooter disabled={!form.formState.isDirty || isPending} label="Submit changes" formName="form-edit" className="mt-6" />
+        <DialogFooter disabled={!form.formState.isDirty || isPending} label={t("Submit changes")} formName="form-edit" className="mt-6" />
       </form>
     </FormProvider>
   );

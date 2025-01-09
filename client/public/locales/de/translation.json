@@ -58,5 +58,22 @@
   "On": "Ein",
   "Off": "Aus",
   "Remove": "Entfernen",
-  "Add": "Hinzufügen"
+  "Add": "Hinzufügen",
+  "Activity": "Aktivität",
+  "Add new activity": "Neue Aktivität hinzufügen",
+  "New activity": "Neue Aktivität",
+  "Search activities": "Aktivitäten suchen",
+  "Oops...": "Hoppla...",
+  "No activities found": "Keine Aktivitäten gefunden",
+  "It looks like you haven't added any activities yet.": "Es sieht so aus, als hätten Sie noch keine Aktivitäten hinzugefügt.",
+  "Search activities...": "Aktivitäten suchen...",
+  "Activity name must be at least 3 characters.": "Der Aktivitätsname muss mindestens 3 Zeichen lang sein.",
+  "Activity name cannot exceed 50 characters.": "Der Aktivitätsname darf 50 Zeichen nicht überschreiten.",
+  "Please select status.": "Bitte wählen Sie einen Status aus.",
+  "active": "aktiv",
+  "inactive": "inaktiv",
+  "Status": "Status",
+  "Activity name": "Aktivitätsname",
+  "Edit activity": "Aktivität bearbeiten",
+  "Submit changes": "Änderungen speichern"
 }
