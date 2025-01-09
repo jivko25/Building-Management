@@ -15,17 +15,17 @@ const SidebarLinks = ({ Component }: SidebarComponent) => {
   console.log("Current user role:", user?.role);
 
   const guardedLinkRoutes = sidebarItems.links.filter(link => {
-    if (link.label === "managers" && user?.role !== "admin") {
+    if (link.label === "Managers" && user?.role !== "admin") {
       return false;
     }
 
-    if (user?.role === "admin" && link.label !== "myProjects") {
+    if (user?.role === "admin" && link.label !== "My projects") {
       return true;
     }
-    if (user?.role === "manager" && link.label !== "myProjects") {
+    if (user?.role === "manager" && link.label !== "My projects") {
       return true;
     }
-    if (user?.role === "user" && link.label === "myProjects") {
+    if (user?.role === "user" && link.label === "My projects") {
       return true;
     }
     return false;

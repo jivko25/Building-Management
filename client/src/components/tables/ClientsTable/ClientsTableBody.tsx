@@ -7,14 +7,16 @@ import ConditionalRenderer from "@/components/common/ConditionalRenderer/Conditi
 import useSearchParamsHook from "@/hooks/useSearchParamsHook";
 import useSearchHandler from "@/hooks/useSearchHandler";
 import { useQuery } from "@tanstack/react-query";
-import ClientsHeader from "./TableHeader";
+import ClientsHeader from "./ClientsTableHeader";
 import ClientsCard from "./ClientsCard";
 import { Client } from "@/types/client-types/clientTypes";
 import CreateClient from "@/components/Forms/Client/ClientFormCreate/CreateClient";
 import ClientsLoader from "@/utils/SkeletonLoader/Clients/ClientsLoader";
 import { getEntityData } from "@/api/apiCall";
+import { useTranslation } from "react-i18next";
 
 const ClientsTableBody = () => {
+  const { t } = useTranslation();
   const { itemsLimit, page, setSearchParams } = useSearchParamsHook();
 
   const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
@@ -48,7 +50,7 @@ const ClientsTableBody = () => {
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar handleSearch={handleSearch} placeholder="Search clients..." search={search} />
+        <SearchBar handleSearch={handleSearch} placeholder={t("Search clients...")} search={search} />
         <CreateClient />
       </div>
       <Table className="w-full min-w-full">
@@ -58,8 +60,8 @@ const ClientsTableBody = () => {
             data={clients}
             renderData={data => <ClientsCard clients={data as Client[]} />}
             noResults={{
-              title: "No clients found",
-              description: "It looks like you haven't added any clients yet.",
+              title: t("No clients found"),
+              description: t("It looks like you haven't added any clients yet."),
               Icon: Users
             }}
             wrapper={content => (

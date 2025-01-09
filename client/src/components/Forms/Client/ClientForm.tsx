@@ -31,7 +31,7 @@ const ClientForm = ({ form, onSubmit, defaultValues }: ClientFormProps) => {
         <FormEmailList control={form.control} name="client_emails" label={t("Email Addresses")} placeholder={t("Add email address")} />
         <FormSelect control={form.control} name="status" label={t("Status")} options={statusOptions} />
         <Button type="submit" className="w-full">
-          {defaultValues ? t("Update") : t("Create")} {t("Client")}
+          {defaultValues ? t("Update Client") : t("Create Client")}
         </Button>
       </form>
     </Form>
