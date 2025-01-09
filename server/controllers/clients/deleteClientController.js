@@ -12,6 +12,7 @@ const deleteClient = async (req, res, next) => {
     }
 
     await client.destroy();
+    console.log("Client deleted successfully");
 
     res.json({
       message: "Client deleted successfully!"
