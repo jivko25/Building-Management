@@ -7,6 +7,7 @@ import { useEditEntity, useGetEntityData } from "@/hooks/useQueryHook";
 import { Client } from "@/types/client-types/clientTypes";
 import ClientForm from "../ClientForm";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface EditClientProps {
   clientId: number;
@@ -16,6 +17,27 @@ const EditClient = ({ clientId }: EditClientProps) => {
   const [open, setOpen] = useState(false);
   const { useEditClientForm } = useClientFormHooks();
   const queryClient = useQueryClient();
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    title: "Edit Client",
+    messages: {
+      success: "Client updated successfully!",
+      error: "Error updating client"
+    }
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        title: await translate("Edit Client"),
+        messages: {
+          success: await translate("Client updated successfully!"),
+          error: await translate("Error updating client")
+        }
+      });
+    };
+    loadTranslations();
+  }, [translate]);
 
   const { data: client } = useGetEntityData<Client>({
     URL: `/clients/${clientId}`,
@@ -42,8 +64,8 @@ const EditClient = ({ clientId }: EditClientProps) => {
   const { mutate: editClient } = useEditEntity<Client>({
     URL: `/clients/${clientId}`,
     queryKey: ["clients"],
-    successMessage: "Client updated successfully!",
-    errorMessage: "Error updating client",
+    successMessage: translations.messages.success,
+    errorMessage: translations.messages.error,
     onSuccess: () => {
       setOpen(false);
       form.reset();
@@ -62,7 +84,7 @@ const EditClient = ({ clientId }: EditClientProps) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit Client</DialogTitle>
+          <DialogTitle>{translations.title}</DialogTitle>
         </DialogHeader>
         <ClientForm form={form} onSubmit={editClient} defaultValues={client} />
       </DialogContent>

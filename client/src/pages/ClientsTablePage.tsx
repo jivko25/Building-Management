@@ -1,7 +1,23 @@
 import ClientsTableBody from "@/components/tables/ClientsTable/ClientsTableBody";
 import Sidebar from "@/components/Sidebar/Sidebar";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
 
 const ClientsTablePage = () => {
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    title: "Clients"
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        title: await translate("Clients")
+      });
+    };
+    loadTranslations();
+  }, [translate]);
+
   return (
     <div className="flex md:gap-60 min-h-screen">
       <Sidebar />

@@ -7,19 +7,54 @@ import ConditionalRenderer from "@/components/common/ConditionalRenderer/Conditi
 import useSearchParamsHook from "@/hooks/useSearchParamsHook";
 import useSearchHandler from "@/hooks/useSearchHandler";
 import { useQuery } from "@tanstack/react-query";
-import ClientsHeader from "./TableHeader";
+import ClientsHeader from "./ClientsTableHeader";
 import ClientsCard from "./ClientsCard";
 import { Client } from "@/types/client-types/clientTypes";
 import CreateClient from "@/components/Forms/Client/ClientFormCreate/CreateClient";
 import ClientsLoader from "@/utils/SkeletonLoader/Clients/ClientsLoader";
 import { getEntityData } from "@/api/apiCall";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
 
 const ClientsTableBody = () => {
-  const { itemsLimit, page, setSearchParams } = useSearchParamsHook();
-
-  const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
-    setSearchParams
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    loading: "Loading...",
+    error: {
+      title: "Oops...",
+      description: "Something went wrong"
+    },
+    search: {
+      placeholder: "Search clients..."
+    },
+    noResults: {
+      title: "No clients found",
+      description: "It looks like you haven't added any clients yet."
+    }
   });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        loading: await translate("Loading..."),
+        error: {
+          title: await translate("Oops..."),
+          description: await translate("Something went wrong")
+        },
+        search: {
+          placeholder: await translate("Search clients...")
+        },
+        noResults: {
+          title: await translate("No clients found"),
+          description: await translate("It looks like you haven't added any clients yet.")
+        }
+      });
+    };
+    loadTranslations();
+  }, [translate]);
+
+  const { itemsLimit, page, setSearchParams } = useSearchParamsHook();
+  const { search, handleSearch, debounceSearchTerm } = useSearchHandler({ setSearchParams });
 
   const {
     data: clientsResponse,
@@ -42,13 +77,13 @@ const ClientsTableBody = () => {
   }
 
   if (isError) {
-    return <ErrorMessage title="Oops..." Icon={CircleAlert} />;
+    return <ErrorMessage title={translations.error.title} Icon={CircleAlert} />;
   }
 
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar handleSearch={handleSearch} placeholder="Search clients..." search={search} />
+        <SearchBar handleSearch={handleSearch} placeholder={translations.search.placeholder} search={search} />
         <CreateClient />
       </div>
       <Table className="w-full min-w-full">
@@ -58,8 +93,8 @@ const ClientsTableBody = () => {
             data={clients}
             renderData={data => <ClientsCard clients={data as Client[]} />}
             noResults={{
-              title: "No clients found",
-              description: "It looks like you haven't added any clients yet.",
+              title: translations.noResults.title,
+              description: translations.noResults.description,
               Icon: Users
             }}
             wrapper={content => (
