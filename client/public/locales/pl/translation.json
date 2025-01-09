@@ -1,0 +1,19 @@
+{
+  "settings": "Ustawienia",
+  "languageSettings": "Ustawienia języka",
+  "appLanguage": "Język aplikacji",
+  "invoiceLanguage": "Język faktury",
+  "darkMode": "Tryb ciemny",
+  "lightMode": "Tryb jasny",
+  "signOut": "Wyloguj się",
+  "profile": "Profil",
+  "dashboard": "Panel",
+  "projects": "Projekty",
+  "tasks": "Zadania",
+  "users": "Użytkownicy",
+  "companies": "Firmy",
+  "activities": "Działania",
+  "measures": "Miary",
+  "invoices": "Faktury",
+  "clients": "Klienci"
+}

@@ -1,0 +1,19 @@
+{
+  "settings": "Настройки",
+  "languageSettings": "Языковые настройки",
+  "appLanguage": "Язык приложения",
+  "invoiceLanguage": "Язык счета",
+  "darkMode": "Темный режим",
+  "lightMode": "Светлый режим",
+  "signOut": "Выйти",
+  "profile": "Профиль",
+  "dashboard": "Панель управления",
+  "projects": "Проекты",
+  "tasks": "Задачи",
+  "users": "Пользователи",
+  "companies": "Компании",
+  "activities": "Действия",
+  "measures": "Меры",
+  "invoices": "Счета",
+  "clients": "Клиенты"
+}

@@ -16,7 +16,6 @@ const imageRoutes = require("./routes/imageRoutes");
 const defaultPricingRoutes = require("./routes/defaultPricingRoutes");
 const invoiceRoutes = require("./routes/invoiceRoutes");
 const clientRoutes = require("./routes/clientRoutes");
-const translateRoutes = require("./routes/translateRoutes");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const errorHandler = require("./middlewares/errorHandler");
@@ -60,7 +59,6 @@ app.use("/", imageRoutes);
 app.use("/", defaultPricingRoutes);
 app.use("/invoices", invoiceRoutes);
 app.use("/clients", clientRoutes);
-app.use("/translate", translateRoutes);
 
 app.use(errorHandler);
 

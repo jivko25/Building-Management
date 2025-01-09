@@ -1,0 +1,19 @@
+{
+  "settings": "Einstellungen",
+  "languageSettings": "Spracheinstellungen",
+  "appLanguage": "Anwendungssprache",
+  "invoiceLanguage": "Rechnungssprache",
+  "darkMode": "Dunkelmodus",
+  "lightMode": "Hellmodus",
+  "signOut": "Abmelden",
+  "profile": "Profil",
+  "dashboard": "Übersicht",
+  "projects": "Projekte",
+  "tasks": "Aufgaben",
+  "users": "Benutzer",
+  "companies": "Unternehmen",
+  "activities": "Aktivitäten",
+  "measures": "Maßnahmen",
+  "invoices": "Rechnungen",
+  "clients": "Kunden"
+}

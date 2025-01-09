@@ -1,0 +1,19 @@
+{
+  "settings": "Setări",
+  "languageSettings": "Setări de limbă",
+  "appLanguage": "Limba aplicației",
+  "invoiceLanguage": "Limba facturii",
+  "darkMode": "Mod întunecat",
+  "lightMode": "Mod luminos",
+  "signOut": "Deconectare",
+  "profile": "Profil",
+  "dashboard": "Panou de control",
+  "projects": "Proiecte",
+  "tasks": "Sarcini",
+  "users": "Utilizatori",
+  "companies": "Companii",
+  "activities": "Activități",
+  "measures": "Măsuri",
+  "invoices": "Facturi",
+  "clients": "Clienți"
+}

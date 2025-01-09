@@ -1,0 +1,19 @@
+{
+  "settings": "Instellingen",
+  "languageSettings": "Taalinstellingen",
+  "appLanguage": "Applicatietaal",
+  "invoiceLanguage": "Factuurtaal",
+  "darkMode": "Donkere modus",
+  "lightMode": "Lichte modus",
+  "signOut": "Uitloggen",
+  "profile": "Profiel",
+  "dashboard": "Dashboard",
+  "projects": "Projecten",
+  "tasks": "Taken",
+  "users": "Gebruikers",
+  "companies": "Bedrijven",
+  "activities": "Activiteiten",
+  "measures": "Maatregelen",
+  "invoices": "Facturen",
+  "clients": "Klanten"
+}
