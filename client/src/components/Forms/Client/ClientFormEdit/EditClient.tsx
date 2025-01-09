@@ -28,13 +28,8 @@ const EditClient = ({ clientId }: EditClientProps) => {
   useEffect(() => {
     if (client) {
       form.reset({
-        client_company_name: client.client_company_name,
-        client_name: client.client_name,
-        client_company_address: client.client_company_address,
-        client_company_iban: client.client_company_iban,
-        client_emails: client.client_emails,
-        status: client.status,
-        client_company_vat_number: client.client_company_vat_number
+        ...client,
+        invoice_language_id: Number(client.invoice_language_id)
       });
       console.log("🔄 Form reset with client data:", client);
     }

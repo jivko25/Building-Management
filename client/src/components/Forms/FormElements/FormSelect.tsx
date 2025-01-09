@@ -12,6 +12,7 @@ interface FormSelectProps {
   name: string;
   label: string;
   options: Option[];
+  onChange?: (value: string) => void;
 }
 
 const FormSelect = ({ control, name, label, options }: FormSelectProps) => {
@@ -22,7 +23,7 @@ const FormSelect = ({ control, name, label, options }: FormSelectProps) => {
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select onValueChange={field.onChange} value={field.value?.toString()}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select an option" />
@@ -30,7 +31,7 @@ const FormSelect = ({ control, name, label, options }: FormSelectProps) => {
             </FormControl>
             <SelectContent>
               {options.map(option => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem key={option.value} value={option.value.toString()}>
                   {option.label}
                 </SelectItem>
               ))}
