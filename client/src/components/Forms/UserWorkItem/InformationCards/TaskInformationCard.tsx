@@ -6,21 +6,57 @@ import { Separator } from "@/components/ui/separator";
 import { ProjectTask } from "@/types/task-types/taskTypes";
 import { format } from "date-fns";
 import { Calendar, DollarSign, Hammer } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
 
 const TaskInformationCard = ({ project }: { project: ProjectTask }) => {
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    title: {
+      task: "Task name"
+    },
+    labels: {
+      measurePrice: "Measure price",
+      totalWork: "Total work",
+      startDate: "Start date",
+      endDate: "End date",
+      totalPrice: "Total price",
+      taskStatus: "Task status"
+    }
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        title: {
+          task: await translate("Task name")
+        },
+        labels: {
+          measurePrice: await translate("Measure price"),
+          totalWork: await translate("Total work"),
+          startDate: await translate("Start date"),
+          endDate: await translate("End date"),
+          totalPrice: await translate("Total price"),
+          taskStatus: await translate("Task status")
+        }
+      });
+    };
+    loadTranslations();
+  }, [translate]);
+
   return (
     <>
       {project && (
         <div className="flex flex-col mt-10 border rounded-lg mx-8 space-y-4 p-4 backdrop-blur-sm bg-slate-900/20">
           <h1 className="text-2xl font-bold mb-2 text-foreground text-center motion-preset-shrink motion-duration-1000">
-            Task name <br />
+            {translations.title.task} <br />
             {project.taskProjectData.name}
           </h1>
           <Separator />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="relative">
               <Label htmlFor="text" className="font-bold text-md">
-                Measure price
+                {translations.labels.measurePrice}
               </Label>
               <div className="relative">
                 <DollarSign size={15} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500" />
@@ -30,7 +66,7 @@ const TaskInformationCard = ({ project }: { project: ProjectTask }) => {
             </div>
             <div className="relative">
               <Label htmlFor="text" className="font-bold text-md">
-                Total work
+                {translations.labels.totalWork}
               </Label>
               <div className="relative">
                 <Hammer size={15} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500" />
@@ -40,7 +76,7 @@ const TaskInformationCard = ({ project }: { project: ProjectTask }) => {
             </div>
             <div className="relative">
               <Label htmlFor="text" className="font-bold text-md">
-                Start date
+                {translations.labels.startDate}
               </Label>
               <div className="relative">
                 <Calendar size={15} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500" />
@@ -50,7 +86,7 @@ const TaskInformationCard = ({ project }: { project: ProjectTask }) => {
             </div>
             <div className="relative">
               <Label htmlFor="text" className="font-bold text-md">
-                End date
+                {translations.labels.endDate}
               </Label>
               <div className="relative">
                 <Calendar size={15} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500" />
@@ -60,7 +96,7 @@ const TaskInformationCard = ({ project }: { project: ProjectTask }) => {
             </div>
             <div className="relative">
               <Label htmlFor="text" className="font-bold text-md">
-                Total price
+                {translations.labels.totalPrice}
               </Label>
               <div className="relative">
                 <DollarSign size={15} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500" />
@@ -70,7 +106,7 @@ const TaskInformationCard = ({ project }: { project: ProjectTask }) => {
             </div>
             <div className="flex flex-col gap-2 items-center text-center justify-center">
               <Label htmlFor="text" className="font-bold text-md">
-                Task status
+                {translations.labels.taskStatus}
               </Label>
               <Badge
                 className={`px-4 text-sm rounded-full 

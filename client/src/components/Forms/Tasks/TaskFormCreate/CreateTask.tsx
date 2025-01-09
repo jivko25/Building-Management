@@ -6,24 +6,44 @@ import useDialogState from "@/hooks/useDialogState";
 import { useSubmitHandler } from "@/utils/helpers/submitHandler";
 import { useMutationHook } from "@/hooks/useMutationHook";
 import DialogModal from "@/components/common/DialogElements/DialogModal";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
 
 const CreateTask = () => {
   const { id } = useParams();
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    title: "New task",
+    buttonTitle: "Add new task",
+    success: "Task created successfully!"
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        title: await translate("New task"),
+        buttonTitle: await translate("Add new task"),
+        success: await translate("Task created successfully!")
+      });
+    };
+    loadTranslations();
+  }, [translate]);
 
   const { isOpen, setIsOpen } = useDialogState();
-
   const { useCreateNewEntity } = useMutationHook();
 
   const { mutate, isPending } = useCreateNewEntity<TaskSchema>({
     URL: `/projects/${id}/create-task`,
     queryKey: ["projects", id, "tasks"],
-    successToast: "Task created successfully!",
+    successToast: translations.success,
     setIsOpen
   });
 
   const handleSubmit = useSubmitHandler(mutate, taskSchema);
 
-  return <DialogModal Component={CreateTaskForm} CreateButtonModal props={{ handleSubmit, isPending }} isOpen={isOpen} setIsOpen={setIsOpen} createButtonTitle="Add new task" title="New task" />;
+  console.log("📝 Create task component loaded with translations");
+
+  return <DialogModal Component={CreateTaskForm} CreateButtonModal props={{ handleSubmit, isPending }} isOpen={isOpen} setIsOpen={setIsOpen} createButtonTitle={translations.buttonTitle} title={translations.title} />;
 };
 
 export default CreateTask;
