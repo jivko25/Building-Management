@@ -46,9 +46,17 @@
   "Role": "Rolle",
   "Readonly": "Nur-Lese",
   "Search": "Suche",
-  "Add": "Hinzufügen",
   "Edit": "Bearbeiten",
   "Delete": "Löschen",
   "Cancel": "Abbrechen",
-  "Save": "Speichern"
+  "Save": "Speichern",
+  "Name": "Name",
+  "Options": "Optionen",
+  "No managers found": "Keine Manager gefunden",
+  "Select a status": "Status auswählen",
+  "Select readonly": "Nur-Lese auswählen",
+  "On": "Ein",
+  "Off": "Aus",
+  "Remove": "Entfernen",
+  "Add": "Hinzufügen"
 }
