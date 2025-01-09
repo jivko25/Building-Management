@@ -10,6 +10,7 @@ import { useProjectFormHook } from "@/hooks/forms/useProjectForm";
 import { ProjectSchema } from "@/models/project/projectSchema";
 import { ClipboardList, Mail, MapPin } from "lucide-react";
 import { FormProvider } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 type CreateProjectFormProps = {
   handleSubmit: (projectData: ProjectSchema) => void;
@@ -17,6 +18,7 @@ type CreateProjectFormProps = {
 };
 
 const CreateProjectForm = ({ handleSubmit, isPending }: CreateProjectFormProps) => {
+  const { t } = useTranslation();
   const { useCreateProjectForm } = useProjectFormHook();
   const form = useCreateProjectForm();
 
@@ -24,24 +26,24 @@ const CreateProjectForm = ({ handleSubmit, isPending }: CreateProjectFormProps) 
     <FormProvider {...form}>
       <form id="project-form" onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="grid grid-cols-1 gap-2 mb-2">
-          <FormFieldInput type="text" label="Project name" name="name" className="pl-10" Icon={ClipboardList} />
-          <FormFieldInput type="email" label="Project email" name="email" className="pl-10" Icon={Mail} />
-          <FormFieldInput type="text" label="Project address" name="address" className="pl-10" Icon={MapPin} />
-          <FormFieldInput type="text" label="Project location" name="location" className="pl-10" Icon={MapPin} />
+          <FormFieldInput type="text" label={t("Project name")} name="name" className="pl-10" Icon={ClipboardList} />
+          <FormFieldInput type="email" label={t("Project email")} name="email" className="pl-10" Icon={Mail} />
+          <FormFieldInput type="text" label={t("Project address")} name="address" className="pl-10" Icon={MapPin} />
+          <FormFieldInput type="text" label={t("Project location")} name="location" className="pl-10" Icon={MapPin} />
         </div>
         <Separator className="mt-4 mb-2" />
-        <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 ">
-          <StatusSelector label="Status" name="status" defaultVal="active" />
-          <CompanySelector label="Select company" name="company_name" />
+        <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
+          <StatusSelector label={t("Status")} name="status" defaultVal="active" />
+          <CompanySelector label={t("Select company")} name="company_name" />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2">
-          <FormDatePicker name="start_date" label="Select a start date" />
-          <FormDatePicker name="end_date" label="Select an end date" />
+          <FormDatePicker name="start_date" label={t("Select a start date")} />
+          <FormDatePicker name="end_date" label={t("Select an end date")} />
         </div>
         <Separator className="mt-2 mb-2" />
-        <FormTextareaInput name="note" label="Project note" placeholder="Project notes..." type="text" />
-        <DialogFooter disabled={!form.formState.isDirty || isPending} label="Submit" formName="project-form" className="mt-6" />
+        <FormTextareaInput name="note" label={t("Project note")} placeholder={t("Project notes...")} type="text" />
+        <DialogFooter disabled={!form.formState.isDirty || isPending} label={t("Submit")} formName="project-form" className="mt-6" />
       </form>
     </FormProvider>
   );
