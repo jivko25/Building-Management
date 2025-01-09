@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 
 export const LanguageSettings = () => {
   const { t } = useTranslation();
-  const { appLanguage, invoiceLanguage, setAppLanguage, setInvoiceLanguage } = useLanguage();
+  const { appLanguage, setAppLanguage } = useLanguage();
 
   return (
     <div className="container mx-auto py-10">
@@ -22,22 +22,6 @@ export const LanguageSettings = () => {
             <div className="space-y-2">
               <Label>{t("appLanguage")}</Label>
               <Select value={appLanguage} onValueChange={value => setAppLanguage(value as any)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SUPPORTED_LANGUAGES.map(lang => (
-                    <SelectItem key={lang.code} value={lang.code}>
-                      {lang.nativeName} ({lang.name})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t("invoiceLanguage")}</Label>
-              <Select value={invoiceLanguage} onValueChange={value => setInvoiceLanguage(value as any)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
