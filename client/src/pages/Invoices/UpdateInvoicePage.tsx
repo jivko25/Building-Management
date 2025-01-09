@@ -9,10 +9,71 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { bg } from "date-fns/locale";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useState, useEffect } from "react";
 
 export const UpdateInvoicePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    loading: "Loading...",
+    notFound: "Invoice not found",
+    title: "Edit Invoice",
+    buttons: {
+      back: "Back to Invoice"
+    },
+    sections: {
+      details: "Invoice Details",
+      client: "Client Information"
+    },
+    fields: {
+      number: "Invoice Number",
+      date: "Issue Date",
+      dueDate: "Due Date",
+      amount: "Total Amount",
+      companyName: "Company Name",
+      contactPerson: "Contact Person",
+      address: "Address",
+      iban: "IBAN"
+    },
+    toast: {
+      success: "Invoice status updated successfully",
+      error: "Failed to update invoice status"
+    }
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        loading: await translate("Loading..."),
+        notFound: await translate("Invoice not found"),
+        title: await translate("Edit Invoice"),
+        buttons: {
+          back: await translate("Back to Invoice")
+        },
+        sections: {
+          details: await translate("Invoice Details"),
+          client: await translate("Client Information")
+        },
+        fields: {
+          number: await translate("Invoice Number"),
+          date: await translate("Issue Date"),
+          dueDate: await translate("Due Date"),
+          amount: await translate("Total Amount"),
+          companyName: await translate("Company Name"),
+          contactPerson: await translate("Contact Person"),
+          address: await translate("Address"),
+          iban: await translate("IBAN")
+        },
+        toast: {
+          success: await translate("Invoice status updated successfully"),
+          error: await translate("Failed to update invoice status")
+        }
+      });
+    };
+    loadTranslations();
+  }, [translate]);
 
   console.log("🔄 UpdateInvoicePage mounted with id:", id);
 
@@ -25,23 +86,23 @@ export const UpdateInvoicePage = () => {
     mutationFn: (data: { id: number; paid: boolean }) => invoiceService.updateStatus(data.id, data.paid),
     onSuccess: () => {
       console.log("✅ Invoice status updated successfully");
-      toast.success("Invoice status updated successfully");
+      toast.success(translations.toast.success);
       navigate(`/invoices/${id}`);
     },
     onError: error => {
       console.error("❌ Error updating invoice status:", error);
-      toast.error("Failed to update invoice status");
+      toast.error(translations.toast.error);
     }
   });
 
   if (isLoading) {
     console.log("⏳ Loading invoice data...");
-    return <div>Loading...</div>;
+    return <div>{translations.loading}</div>;
   }
 
   if (!invoice) {
     console.log("❌ Invoice not found");
-    return <div>Invoice not found</div>;
+    return <div>{translations.notFound}</div>;
   }
 
   const handleStatusChange = (checked: boolean) => {
@@ -52,73 +113,57 @@ export const UpdateInvoicePage = () => {
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => navigate(`/invoices/${id}`)}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <h1 className="text-3xl font-bold">Edit Invoice {invoice.invoice_number}</h1>
-        </div>
+        <Button variant="outline" onClick={() => navigate(`/invoices/${id}`)}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          {translations.buttons.back}
+        </Button>
+        <h1 className="text-3xl font-bold">{translations.title}</h1>
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Payment Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center space-x-2">
-              <Switch id="paid-status" checked={invoice.paid} onCheckedChange={handleStatusChange} />
-              <Label htmlFor="paid-status">{invoice.paid ? "Paid" : "Unpaid"}</Label>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Read-only information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Invoice Details</CardTitle>
+            <CardTitle>{translations.sections.details}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>Invoice Number</Label>
+              <Label>{translations.fields.number}</Label>
               <div className="mt-1">{invoice.invoice_number}</div>
             </div>
             <div>
-              <Label>Issue Date</Label>
+              <Label>{translations.fields.date}</Label>
               <div className="mt-1">{format(new Date(invoice.invoice_date), "dd.MM.yyyy", { locale: bg })}</div>
             </div>
             <div>
-              <Label>Due Date</Label>
+              <Label>{translations.fields.dueDate}</Label>
               <div className="mt-1">{format(new Date(invoice.due_date), "dd.MM.yyyy", { locale: bg })}</div>
             </div>
             <div>
-              <Label>Total Amount</Label>
-              <div className="mt-1">{invoice.total_amount} €</div>
+              <Label>{translations.fields.amount}</Label>
+              <div className="mt-1">{invoice.total_amount} лв.</div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Client Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Client Information</CardTitle>
+            <CardTitle>{translations.sections.client}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>Company Name</Label>
+              <Label>{translations.fields.companyName}</Label>
               <div className="mt-1">{invoice.client.client_company_name}</div>
             </div>
             <div>
-              <Label>Contact Person</Label>
+              <Label>{translations.fields.contactPerson}</Label>
               <div className="mt-1">{invoice.client.client_company_mol}</div>
             </div>
             <div>
-              <Label>Address</Label>
+              <Label>{translations.fields.address}</Label>
               <div className="mt-1">{invoice.client.client_company_address}</div>
             </div>
             <div>
-              <Label>IBAN</Label>
+              <Label>{translations.fields.iban}</Label>
               <div className="mt-1">{invoice.client.client_company_iban}</div>
             </div>
           </CardContent>

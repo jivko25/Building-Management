@@ -14,9 +14,62 @@ import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 import { IconField } from "primereact/iconfield";
 import Sidebar from "@/components/Sidebar/Sidebar";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const InvoicesPage = () => {
   const navigate = useNavigate();
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    title: "Invoices",
+    searchPlaceholder: "search...",
+    newInvoice: "New Invoice",
+    noInvoices: "No invoices found",
+    columns: {
+      number: "Number",
+      date: "Date",
+      dueDate: "Due date",
+      client: "Client",
+      amount: "Amount",
+      paid: "Paid",
+      details: "Details"
+    },
+    filters: {
+      searchByNumber: "Search by number",
+      searchByClient: "Search by client",
+      searchByAmount: "Search by amount"
+    },
+    yes: "Yes",
+    no: "No"
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        title: await translate("Invoices"),
+        searchPlaceholder: await translate("search..."),
+        newInvoice: await translate("New Invoice"),
+        noInvoices: await translate("No invoices found"),
+        columns: {
+          number: await translate("Number"),
+          date: await translate("Date"),
+          dueDate: await translate("Due date"),
+          client: await translate("Client"),
+          amount: await translate("Amount"),
+          paid: await translate("Paid"),
+          details: await translate("Details")
+        },
+        filters: {
+          searchByNumber: await translate("Search by number"),
+          searchByClient: await translate("Search by client"),
+          searchByAmount: await translate("Search by amount")
+        },
+        yes: await translate("Yes"),
+        no: await translate("No")
+      });
+    };
+    loadTranslations();
+  }, [translate]);
+
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     invoice_number: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -55,7 +108,7 @@ export const InvoicesPage = () => {
         </div>
         <Button onClick={() => navigate("/invoices/create")}>
           <Plus className="mr-2 h-4 w-4" />
-          New Invoice
+          {translations.newInvoice}
         </Button>
       </div>
     );
@@ -102,14 +155,14 @@ export const InvoicesPage = () => {
   };
 
   const paidTemplate = (rowData: Invoice) => {
-    return rowData.paid ? "Yes" : "No";
+    return rowData.paid ? translations.yes : translations.no;
   };
 
   const actionTemplate = (rowData: Invoice) => {
     return (
       <div className="flex gap-2">
         <Button variant="outline" size="sm" onClick={() => navigate(`/invoices/${rowData.id}`)}>
-          Details
+          {translations.columns.details}
         </Button>
       </div>
     );
@@ -121,15 +174,15 @@ export const InvoicesPage = () => {
 
       <div className="flex-1">
         <div className="container mx-auto py-10">
-          <h1 className="text-3xl font-bold mb-6">Invoices</h1>
+          <h1 className="text-3xl font-bold mb-6">{translations.title}</h1>
 
-          <DataTable value={invoices} paginator rows={10} rowsPerPageOptions={[10, 20, 50]} filters={filters} globalFilterFields={["invoice_number", "client.client_name", "total_amount"]} header={renderHeader} emptyMessage="No invoices found" loading={isLoading} stripedRows showGridlines dataKey="id" sortMode="single" removableSort tableStyle={{ minWidth: "50rem" }} scrollable>
-            <Column field="invoice_number" header="Number" sortable filter filterPlaceholder="Search by number" style={{ width: "15%" }} />
-            <Column field="invoice_date" header="Date" body={dateTemplate} sortable style={{ width: "15%" }} />
-            <Column field="due_date" header="Due date" body={dueDateTemplate} sortable style={{ width: "15%" }} />
-            <Column field="client.client_name" header="Client" body={clientTemplate} sortable filter filterPlaceholder="Search by client" style={{ width: "20%" }} />
-            <Column field="total_amount" header="Amount" body={amountTemplate} sortable filter filterPlaceholder="Search by amount" style={{ width: "15%" }} />
-            <Column field="paid" header="Paid" body={paidTemplate} sortable style={{ width: "10%" }} />
+          <DataTable value={invoices} paginator rows={10} rowsPerPageOptions={[10, 20, 50]} filters={filters} globalFilterFields={["invoice_number", "client.client_name", "total_amount"]} header={renderHeader} emptyMessage={translations.noInvoices} loading={isLoading} stripedRows showGridlines dataKey="id" sortMode="single" removableSort tableStyle={{ minWidth: "50rem" }} scrollable>
+            <Column field="invoice_number" header={translations.columns.number} sortable filter filterPlaceholder={translations.filters.searchByNumber} style={{ width: "15%" }} />
+            <Column field="invoice_date" header={translations.columns.date} body={dateTemplate} sortable style={{ width: "15%" }} />
+            <Column field="due_date" header={translations.columns.dueDate} body={dueDateTemplate} sortable style={{ width: "15%" }} />
+            <Column field="client.client_name" header={translations.columns.client} body={clientTemplate} sortable filter filterPlaceholder={translations.filters.searchByClient} style={{ width: "20%" }} />
+            <Column field="total_amount" header={translations.columns.amount} body={amountTemplate} sortable filter filterPlaceholder={translations.filters.searchByAmount} style={{ width: "15%" }} />
+            <Column field="paid" header={translations.columns.paid} body={paidTemplate} sortable style={{ width: "10%" }} />
             <Column body={actionTemplate} style={{ width: "10%" }} />
           </DataTable>
         </div>

@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
 
 const createInvoiceSchema = z.object({
   company_id: z.number({
@@ -24,7 +26,57 @@ const createInvoiceSchema = z.object({
 
 export const CreateInvoicePage = () => {
   const navigate = useNavigate();
-  console.log("Rendering CreateInvoicePage");
+  const { translate } = useLanguage();
+  const [translations, setTranslations] = useState({
+    title: "Create Invoice",
+    companyLabel: "Company",
+    selectCompany: "Select company",
+    clientCompanyLabel: "Client company",
+    selectClientCompany: "Select client company",
+    dueDateLabel: "Due date (weeks)",
+    projectsTitle: "Select Projects",
+    workItemsTitle: "Select Work Items",
+    status: {
+      active: "Active",
+      inactive: "Inactive"
+    },
+    buttons: {
+      creating: "Creating...",
+      create: "Create invoice"
+    },
+    toast: {
+      success: "Invoice created successfully",
+      error: "Error creating invoice"
+    }
+  });
+
+  useEffect(() => {
+    const loadTranslations = async () => {
+      setTranslations({
+        title: await translate("Create Invoice"),
+        companyLabel: await translate("Company"),
+        selectCompany: await translate("Select company"),
+        clientCompanyLabel: await translate("Client company"),
+        selectClientCompany: await translate("Select client company"),
+        dueDateLabel: await translate("Due date (weeks)"),
+        projectsTitle: await translate("Select Projects"),
+        workItemsTitle: await translate("Select Work Items"),
+        status: {
+          active: await translate("Active"),
+          inactive: await translate("Inactive")
+        },
+        buttons: {
+          creating: await translate("Creating..."),
+          create: await translate("Create invoice")
+        },
+        toast: {
+          success: await translate("Invoice created successfully"),
+          error: await translate("Error creating invoice")
+        }
+      });
+    };
+    loadTranslations();
+  }, [translate]);
 
   const { data: companiesResponse } = useQuery({
     queryKey: ["companies"],
@@ -197,7 +249,7 @@ export const CreateInvoicePage = () => {
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">New invoice</h1>
+        <h1 className="text-3xl font-bold">{translations.title}</h1>
         <Button variant="outline" onClick={() => navigate("/invoices")}>
           Back
         </Button>
@@ -211,7 +263,7 @@ export const CreateInvoicePage = () => {
               name="company_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Building company</FormLabel>
+                  <FormLabel>{translations.companyLabel}</FormLabel>
                   <Select
                     onValueChange={value => {
                       const id = parseInt(value);
@@ -220,7 +272,7 @@ export const CreateInvoicePage = () => {
                     }}
                     value={field.value ? field.value.toString() : ""}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select company" />
+                      <SelectValue placeholder={translations.selectCompany} />
                     </SelectTrigger>
                     <SelectContent>
                       {companies?.map((company: any) => (
@@ -240,7 +292,7 @@ export const CreateInvoicePage = () => {
               name="client_company_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Client company</FormLabel>
+                  <FormLabel>{translations.clientCompanyLabel}</FormLabel>
                   <Select
                     onValueChange={value => {
                       const id = parseInt(value);
@@ -249,7 +301,7 @@ export const CreateInvoicePage = () => {
                     }}
                     value={field.value ? field.value.toString() : ""}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select client company" />
+                      <SelectValue placeholder={translations.selectClientCompany} />
                     </SelectTrigger>
                     <SelectContent>
                       {clients?.map((client: any) => (
@@ -269,7 +321,7 @@ export const CreateInvoicePage = () => {
               name="due_date_weeks"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Due date (weeks)</FormLabel>
+                  <FormLabel>{translations.dueDateLabel}</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
                   </FormControl>
@@ -281,7 +333,7 @@ export const CreateInvoicePage = () => {
 
           {form.watch("company_id") !== 0 && (
             <div className="mt-6">
-              <h2 className="text-xl font-semibold mb-4">Select Projects</h2>
+              <h2 className="text-xl font-semibold mb-4">{translations.projectsTitle}</h2>
               <div className="grid grid-cols-3 gap-4 p-4 border rounded-lg bg-white shadow-sm">
                 {projects.map((project: any) => (
                   <div key={project.id} className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 transition-colors duration-200 group relative">
@@ -359,11 +411,11 @@ export const CreateInvoicePage = () => {
               <div className="mt-4 text-sm text-gray-500 flex items-center justify-end space-x-2">
                 <span className="flex items-center">
                   <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                  Active
+                  {translations.status.active}
                 </span>
                 <span className="flex items-center ml-4">
                   <span className="w-2 h-2 rounded-full bg-gray-300 mr-2"></span>
-                  Inactive
+                  {translations.status.inactive}
                 </span>
               </div>
             </div>
@@ -371,7 +423,7 @@ export const CreateInvoicePage = () => {
 
           {workItemsData && workItemsData.length > 0 && (
             <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">Select Work Items</h2>
+              <h2 className="text-xl font-semibold mb-4">{translations.workItemsTitle}</h2>
               <div className="space-y-6">
                 {workItemsData.map(({ projectId, projectName, workItems }) => (
                   <div key={projectId} className="border rounded-lg p-4 bg-white shadow-sm">
@@ -458,7 +510,7 @@ export const CreateInvoicePage = () => {
 
           <div className="flex justify-end gap-4">
             <Button type="submit" disabled={createInvoiceMutation.isPending}>
-              {createInvoiceMutation.isPending ? "Creating..." : "Create invoice"}
+              {createInvoiceMutation.isPending ? translations.buttons.creating : translations.buttons.create}
             </Button>
           </div>
         </form>
