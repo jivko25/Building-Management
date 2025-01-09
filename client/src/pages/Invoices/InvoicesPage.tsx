@@ -24,6 +24,7 @@ export const InvoicesPage = () => {
     searchPlaceholder: "search...",
     newInvoice: "New Invoice",
     noInvoices: "No invoices found",
+    back: "Back",
     columns: {
       number: "Number",
       date: "Date",
@@ -49,6 +50,7 @@ export const InvoicesPage = () => {
         searchPlaceholder: await translate("search..."),
         newInvoice: await translate("New Invoice"),
         noInvoices: await translate("No invoices found"),
+        back: await translate("Back"),
         columns: {
           number: await translate("Number"),
           date: await translate("Date"),
@@ -103,7 +105,7 @@ export const InvoicesPage = () => {
         <div>
           <IconField iconPosition="left">
             <InputIcon className="pi pi-search" />
-            <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="search..." className="search-input" />
+            <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={translations.searchPlaceholder} className="search-input" />
           </IconField>
         </div>
         <Button onClick={() => navigate("/invoices/create")}>
