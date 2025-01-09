@@ -4,6 +4,22 @@ const db = require("../data/index.js");
 const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client } = db;
 const translations = require("./translations/invoiceTranslations");
 
+const getLanguageCode = languageId => {
+  const languageMap = {
+    1: "en", // English
+    2: "bg", // Bulgarian
+    3: "ro", // Romanian
+    4: "ru", // Russian
+    5: "tr", // Turkish
+    6: "pl", // Polish
+    7: "nl", // Dutch
+    8: "de" // German
+  };
+
+  console.log("Getting language code for ID:", languageId);
+  return languageMap[languageId] || "en"; // default to English if invalid ID
+};
+
 const createInvoicePDF = async (invoiceId, languageId) => {
   console.log("Generating PDF for invoice:", invoiceId);
   console.log("Using language ID:", languageId);
@@ -52,11 +68,24 @@ const createInvoicePDF = async (invoiceId, languageId) => {
 
     console.log("Invoice data loaded successfully");
 
-    // Определяме езика преди да го използваме
-    const languageCode = languageId === 2 ? "bg" : "en";
+    // Използваме новата функция за определяне на езика
+    const languageCode = getLanguageCode(languageId);
     const t = translations[languageCode];
 
     console.log("Using language:", languageCode);
+
+    // Форматираме датите според локала
+    const dateLocaleMap = {
+      bg: "bg-BG",
+      en: "en-US",
+      ro: "ro-RO",
+      ru: "ru-RU",
+      tr: "tr-TR",
+      pl: "pl-PL",
+      nl: "nl-NL",
+      de: "de-DE"
+    };
+
     // Formatting the invoice number
     const formatInvoiceNumber = invoiceNumber => {
       const parts = invoiceNumber.split("/");
@@ -74,8 +103,8 @@ const createInvoicePDF = async (invoiceId, languageId) => {
     // Preparing the data for the template
     const data = {
       invoiceNumber: formattedInvoiceNumber,
-      date: invoice.invoice_date.toLocaleDateString(languageCode === "bg" ? "bg-BG" : "en-US"),
-      dueDate: invoice.due_date.toLocaleDateString(languageCode === "bg" ? "bg-BG" : "en-US"),
+      date: invoice.invoice_date.toLocaleDateString(dateLocaleMap[languageCode]),
+      dueDate: invoice.due_date.toLocaleDateString(dateLocaleMap[languageCode]),
       companyName: invoice.company.name,
       companyAddress: invoice.company.address,
       companyVAT: invoice.company.vat_number,

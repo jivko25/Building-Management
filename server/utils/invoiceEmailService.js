@@ -14,12 +14,28 @@ const formatInvoiceNumber = invoiceNumber => {
   return `${firstPart}/${weekPart}-${formattedNumber}`;
 };
 
+const getLanguageCode = languageId => {
+  const languageMap = {
+    1: "en",
+    2: "bg",
+    3: "ro",
+    4: "ru",
+    5: "tr",
+    6: "pl",
+    7: "nl",
+    8: "de"
+  };
+
+  console.log("Getting language code for ID:", languageId);
+  return languageMap[languageId] || "en";
+};
+
 const sendInvoiceEmail = async (receiverEmail, pdfBuffer, invoiceNumber, languageId) => {
   console.log("Sending invoice email to:", receiverEmail);
   console.log("Using language ID:", languageId);
 
   try {
-    const languageCode = languageId === 2 ? "bg" : "en";
+    const languageCode = getLanguageCode(languageId);
     const t = translations[languageCode];
 
     const formattedInvoiceNumber = formatInvoiceNumber(invoiceNumber);
