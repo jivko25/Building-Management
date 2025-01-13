@@ -7,6 +7,7 @@ import { useActivityFormHooks } from "@/hooks/forms/useActivityForm";
 import { ActivitySchema } from "@/models/activity/activitySchema";
 import { Activity } from "lucide-react";
 import { FormProvider } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 type CreateActivityFormProps = {
   handleSubmit: (activityData: ActivitySchema) => void;
@@ -14,6 +15,7 @@ type CreateActivityFormProps = {
 };
 
 const CreateActivityForm = ({ handleSubmit, isPending }: CreateActivityFormProps) => {
+  const { t } = useTranslation();
   const { useCreateActivityForm } = useActivityFormHooks();
   const form = useCreateActivityForm();
 
@@ -21,13 +23,13 @@ const CreateActivityForm = ({ handleSubmit, isPending }: CreateActivityFormProps
     <FormProvider {...form}>
       <form id="activity-form" onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="grid grid-cols-1 gap-2 mb-2">
-          <FormFieldInput type="text" label="Activity name" name="name" className="pl-10" Icon={Activity} />
+          <FormFieldInput type="text" label={t("Activity name")} name="name" className="pl-10" Icon={Activity} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2">
-          <StatusSelector label="Status" name="status" placeholder="active" />
+          <StatusSelector label={t("Status")} name="status" placeholder={t("active")} />
         </div>
-        <DialogFooter disabled={!form.formState.isDirty || isPending} label="Submit" formName="activity-form" className="mt-6" />
+        <DialogFooter disabled={!form.formState.isDirty || isPending} label={t("Submit")} formName="activity-form" className="mt-6" />
       </form>
     </FormProvider>
   );

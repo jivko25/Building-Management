@@ -1,5 +1,5 @@
 const db = require("../../data/index.js");
-const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem } = db;
+const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem, InvoiceLanguage } = db;
 const { createInvoicePDF } = require("../../utils/pdfGenerator");
 const { sendInvoiceEmail } = require("../../utils/invoiceEmailService");
 
@@ -30,13 +30,7 @@ const generateUniqueInvoiceNumber = async (year, week) => {
 const createInvoice = async (req, res, next) => {
   console.log("Creating new invoice with data:", JSON.stringify(req.body, null, 2));
   try {
-    const {
-      company_id, // От избора на компания
-      client_company_id, // От избора на клиентска компания
-      due_date_weeks, // От въведените седмици
-      selected_projects, // От избраните проекти
-      selected_work_items // От избраните работни елементи
-    } = req.body;
+    const { company_id, client_company_id, due_date_weeks, selected_projects, selected_work_items } = req.body;
 
     // Validate required fields
     if (!company_id || !client_company_id || !due_date_weeks || !selected_work_items?.length) {
@@ -53,14 +47,25 @@ const createInvoice = async (req, res, next) => {
       });
     }
 
-    // Get client company details
-    const client = await Client.findByPk(client_company_id);
+    // Get client company details with invoice language
+    const client = await Client.findByPk(client_company_id, {
+      include: [
+        {
+          model: InvoiceLanguage,
+          as: "invoiceLanguage",
+          attributes: ["code", "name"]
+        }
+      ]
+    });
+
     if (!client) {
       return res.status(404).json({
         success: false,
         message: "Client company not found"
       });
     }
+
+    console.log("Client invoice language:", client.invoiceLanguage?.code || "en");
 
     // Get work items with their tasks to calculate total amount
     const workItems = await Promise.all(
@@ -124,8 +129,8 @@ const createInvoice = async (req, res, next) => {
 
     console.log("Invoice created successfully");
 
-    // Генерираме PDF
-    const pdfBuffer = await createInvoicePDF(invoice.id);
+    // Генерираме PDF с правилния език
+    const pdfBuffer = await createInvoicePDF(invoice.id, client.invoice_language_id);
     console.log("PDF generated successfully");
 
     // Вземаме имейлите на клиента
@@ -133,9 +138,14 @@ const createInvoice = async (req, res, next) => {
     if (clientEmails && clientEmails.length > 0) {
       console.log("Sending invoice emails to:", clientEmails);
 
-      // Изпращаме имейл до всеки адрес
+      // Изпращаме имейл до всеки адрес с правилния език
       for (const email of clientEmails) {
-        await sendInvoiceEmail(email, pdfBuffer, invoice.invoice_number);
+        await sendInvoiceEmail(
+          email,
+          pdfBuffer,
+          invoice.invoice_number,
+          client.invoice_language_id
+        );
         console.log("Invoice email sent to:", email);
       }
     } else {
@@ -153,7 +163,13 @@ const createInvoice = async (req, res, next) => {
             },
             {
               model: Client,
-              as: "client"
+              as: "client",
+              include: [
+                {
+                  model: InvoiceLanguage,
+                  as: "invoiceLanguage"
+                }
+              ]
             },
             {
               model: InvoiceItem,
@@ -233,6 +249,13 @@ const getInvoiceById = async (req, res, next) => {
         {
           model: Client,
           as: "client",
+          include: [
+            {
+              model: InvoiceLanguage,
+              as: "invoiceLanguage",
+              attributes: ["code", "name"]
+            }
+          ],
           attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails", "client_company_vat_number"]
         },
         {
@@ -466,7 +489,19 @@ const updateInvoice = async (req, res, next) => {
 const getInvoicePDF = async (req, res, next) => {
   console.log("Generating PDF for invoice ID:", req.params.id);
   try {
-    const pdfBuffer = await createInvoicePDF(req.params.id);
+    const invoice = await Invoice.findByPk(req.params.id, {
+      include: [{
+        model: Client,
+        as: "client",
+        attributes: ["invoice_language_id"]
+      }]
+    });
+
+    if (!invoice) {
+      throw new Error("Invoice not found");
+    }
+
+    const pdfBuffer = await createInvoicePDF(req.params.id, invoice.client.invoice_language_id);
 
     // Set correct headers
     res.setHeader("Content-Type", "application/pdf");

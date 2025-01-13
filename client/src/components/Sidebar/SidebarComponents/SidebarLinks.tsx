@@ -3,6 +3,7 @@ import { sidebarItems } from "../SidebarComponents/sidebarItems";
 import { Link } from "react-router-dom";
 import SidebarButton from "../SidebarComponents/SidebarButton";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 type SidebarComponent = {
   Component: React.ComponentType;
@@ -10,6 +11,7 @@ type SidebarComponent = {
 
 const SidebarLinks = ({ Component }: SidebarComponent) => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   console.log("Current user role:", user?.role);
 
   const guardedLinkRoutes = sidebarItems.links.filter(link => {
@@ -37,7 +39,7 @@ const SidebarLinks = ({ Component }: SidebarComponent) => {
         return (
           <Link to={link.href} key={i} className="pb-1">
             <SidebarButton variant={isActive ? "secondary" : "ghost"} icon={link.icon} className="w-full">
-              {link.label}
+              {t(link.label.toLowerCase())}
             </SidebarButton>
           </Link>
         );

@@ -11,10 +11,12 @@ import ConditionalRenderer from "@/components/common/ConditionalRenderer/Conditi
 import useSearchParamsHook from "@/hooks/useSearchParamsHook";
 import useSearchHandler from "@/hooks/useSearchHandler";
 import { useGetPaginatedData } from "@/hooks/useQueryHook";
-import UsersHeader from "./TableHeader";
+import UsersHeader from "./UsersHeader";
 import UsersCard from "@/components/tables/UsersTable/UsersCard";
+import { useTranslation } from "react-i18next";
 
 const UsersTableBody = () => {
+  const { t } = useTranslation();
   const { itemsLimit, page, setSearchParams } = useSearchParamsHook();
 
   const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
@@ -49,7 +51,7 @@ const UsersTableBody = () => {
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar handleSearch={handleSearch} placeholder="Search users..." search={search} />
+        <SearchBar handleSearch={handleSearch} placeholder={t("Search users...")} search={search} />
         <CreateUser />
       </div>
       <Table className="w-full min-w-full">
@@ -59,8 +61,8 @@ const UsersTableBody = () => {
             data={users}
             renderData={data => <UsersCard users={data as User[]} />}
             noResults={{
-              title: "No users found",
-              description: "It looks like you haven't added any users yet.",
+              title: t("No users found"),
+              description: t("It looks like you haven't added any users yet."),
               Icon: Users
             }}
             wrapper={content => (

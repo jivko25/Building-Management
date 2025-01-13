@@ -14,5 +14,4 @@ const TableLayout = ({ children }: TableLayoutProps) => {
     </div>
   );
 };
-
 export default TableLayout;

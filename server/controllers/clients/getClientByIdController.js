@@ -1,8 +1,9 @@
 const db = require("../../data/index.js");
-const { Client, User } = db;
+const { Client, User, InvoiceLanguage } = db;
 const ApiError = require("../../utils/apiError");
 
 const getClientById = async (req, res, next) => {
+  console.log("Fetching client by ID:", req.params.id);
   try {
     const client = await Client.findByPk(req.params.id, {
       include: [
@@ -10,6 +11,11 @@ const getClientById = async (req, res, next) => {
           model: User,
           as: "creator",
           attributes: ["username"]
+        },
+        {
+          model: InvoiceLanguage,
+          as: "invoiceLanguage",
+          attributes: ["code", "name"]
         }
       ]
     });
@@ -18,8 +24,10 @@ const getClientById = async (req, res, next) => {
       throw new ApiError(404, "Client not found!");
     }
 
+    console.log("Client found:", client.id);
     res.json(client);
   } catch (error) {
+    console.error("Error fetching client:", error);
     if (error instanceof ApiError) {
       next(error);
     } else {

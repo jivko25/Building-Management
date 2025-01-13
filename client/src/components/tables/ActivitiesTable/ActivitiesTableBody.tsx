@@ -13,8 +13,10 @@ import useSearchHandler from "@/hooks/useSearchHandler";
 import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import ActivitiesHeader from "./ActivitiesHeader";
 import ActivitiesCard from "./ActivitiesCard";
+import { useTranslation } from "react-i18next";
 
 const ActivitiesTableBody = () => {
+  const { t } = useTranslation();
   const { itemsLimit, page, setSearchParams } = useSearchParamsHook();
 
   const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
@@ -40,13 +42,13 @@ const ActivitiesTableBody = () => {
   }
 
   if (isError) {
-    return <ErrorMessage title="Oops..." Icon={CircleAlert} />;
+    return <ErrorMessage title={t("Oops...")} Icon={CircleAlert} />;
   }
 
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar handleSearch={handleSearch} placeholder="Search activities..." search={search} />
+        <SearchBar handleSearch={handleSearch} placeholder={t("Search activities...")} search={search} />
         <CreateActivity />
       </div>
       <Table className="w-full min-w-full">
@@ -56,8 +58,8 @@ const ActivitiesTableBody = () => {
             data={activities.data}
             renderData={activities => <ActivitiesCard activities={activities as Activity[]} />}
             noResults={{
-              title: "No activities found",
-              description: "It looks like you haven't added any activities yet.",
+              title: t("No activities found"),
+              description: t("It looks like you haven't added any activities yet."),
               Icon: ActivityIcon
             }}
             wrapper={content => (
