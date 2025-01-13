@@ -16,7 +16,7 @@ const TasksCard = ({ tasks, id }: TasksCardProps) => {
         <Card className="w-full sm:w-full md:w-full lg:max-w-[21rem] shadow-md shadow-slate-700/20 transition duration-300 ease-in-out hover:shadow-md dark:hover:shadow-slate-700/40" key={task.id}>
           <CardHeader className="bg-header rounded-t-lg p-5">
             <CardTitle>
-              <Link to={`/projects/${id}/tasks/${task.id}/work-items`} className="transition duration-300 ease-in-out hover:text-slate-400">
+              <Link to={`/projects/${id}/tasks/${task.id}/work-items`} state={{ task }} className="transition duration-300 ease-in-out hover:text-slate-400">
                 {task.name}
               </Link>
             </CardTitle>
