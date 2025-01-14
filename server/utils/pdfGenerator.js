@@ -1,7 +1,7 @@
 //server/utils/pdfGenerator.js
 const puppeteer = require("puppeteer");
 const db = require("../data/index.js");
-const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client } = db;
+const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client, Task } = db;
 const translations = require("./translations/invoiceTranslations");
 
 const getLanguageCode = languageId => {
@@ -56,6 +56,11 @@ const createInvoicePDF = async (invoiceId, languageId) => {
               model: Project,
               as: "project",
               attributes: ["id", "name", "company_name", "email", "address", "location"]
+            },
+            {
+              model: Task,
+              as: "task",
+              attributes: ["id"]
             }
           ]
         }
@@ -125,7 +130,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
         measure: item.measure.name,
         quantity: parseFloat(item.quantity),
         price_per_unit: parseFloat(item.price_per_unit),
-        total: parseFloat(item.total_price)
+        total: parseFloat(item.quantity) * parseFloat(item.price_per_unit)
       })),
       totalAmount: parseFloat(invoice.total_amount)
     };

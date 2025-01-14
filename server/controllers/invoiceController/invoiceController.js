@@ -2,6 +2,7 @@ const db = require("../../data/index.js");
 const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem, InvoiceLanguage } = db;
 const { createInvoicePDF } = require("../../utils/pdfGenerator");
 const { sendInvoiceEmail } = require("../../utils/invoiceEmailService");
+const { sequelize } = require("../../data/index.js");
 
 const generateUniqueInvoiceNumber = async (year, week) => {
   console.log("Generating unique invoice number for year:", year, "week:", week);
@@ -28,7 +29,9 @@ const generateUniqueInvoiceNumber = async (year, week) => {
 };
 
 const createInvoice = async (req, res, next) => {
-  console.log("Creating new invoice with data:", JSON.stringify(req.body, null, 2));
+  console.log("Creating invoice with data:", req.body);
+  const t = await sequelize.transaction();
+
   try {
     const { company_id, client_company_id, due_date_weeks, selected_projects, selected_work_items } = req.body;
 
@@ -67,20 +70,59 @@ const createInvoice = async (req, res, next) => {
 
     console.log("Client invoice language:", client.invoiceLanguage?.code || "en");
 
-    // Get work items with their tasks to calculate total amount
-    const workItems = await Promise.all(
-      selected_work_items.map(async workItemId => {
-        return WorkItem.findByPk(workItemId, {
-          include: [{ model: Task, as: "task" }]
-        });
-      })
-    );
+    const workItems = await WorkItem.findAll({
+      where: {
+        id: selected_work_items,
+        isInvoiced: false
+      },
+      include: [
+        {
+          model: Task,
+          as: "task",
+          include: [
+            {
+              model: Project,
+              as: "project",
+              where: {
+                id: selected_projects
+              }
+            }
+          ]
+        },
+        {
+          model: Activity,
+          as: "activity"
+        },
+        {
+          model: Measure,
+          as: "measure"
+        }
+      ]
+    });
 
-    // Calculate initial total amount
-    const total_amount = workItems.reduce((sum, workItem) => {
-      if (!workItem || !workItem.task) return sum;
-      return sum + workItem.task.total_work_in_selected_measure * workItem.task.price_per_measure;
-    }, 0);
+    // Групиране на работните елементи по дейност, мярка и проект
+    const groupedItems = {};
+    let totalAmount = 0;
+
+    workItems.forEach(item => {
+      const key = `${item.activity_id}-${item.measure_id}-${item.task.project.id}`;
+
+      if (!groupedItems[key]) {
+        groupedItems[key] = {
+          activity_id: item.activity_id,
+          measure_id: item.measure_id,
+          project_id: item.task.project.id,
+          task_id: item.task_id,
+          quantity: 0,
+          // Използваме manager_price от workitem вместо price_per_measure от task
+          price_per_unit: parseFloat(item.manager_price)
+        };
+      }
+
+      groupedItems[key].quantity += parseFloat(item.quantity);
+      // Изчисляваме общата сума използвайки manager_price
+      totalAmount += parseFloat(item.quantity) * parseFloat(item.manager_price);
+    });
 
     // Get current date info
     const date = new Date();
@@ -100,29 +142,24 @@ const createInvoice = async (req, res, next) => {
       week_number: week,
       invoice_date: date,
       due_date,
-      total_amount,
+      total_amount: totalAmount,
       paid: false
     });
 
     // Create invoice items
     const items = await Promise.all(
-      workItems.map(async workItem => {
-        if (!workItem || !workItem.task) {
-          throw new Error(`Work item or task not found`);
-        }
-
-        const quantity = workItem.task.total_work_in_selected_measure;
-        const price_per_unit = workItem.task.price_per_measure;
-        const total_price = quantity * price_per_unit;
-
+      Object.values(groupedItems).map(async item => {
+        console.log("Creating invoice item with data:", item);
+        
         return InvoiceItem.create({
           invoice_id: invoice.id,
-          activity_id: workItem.task.activity_id,
-          measure_id: workItem.task.measure_id,
-          project_id: workItem.task.project_id,
-          quantity,
-          price_per_unit,
-          total_price
+          activity_id: item.activity_id,
+          measure_id: item.measure_id,
+          project_id: item.project_id,
+          task_id: item.task_id,
+          quantity: item.quantity,
+          price_per_unit: item.price_per_unit,
+          total_price: item.quantity * item.price_per_unit
         });
       })
     );
@@ -140,46 +177,21 @@ const createInvoice = async (req, res, next) => {
 
       // Изпращаме имейл до всеки адрес с правилния език
       for (const email of clientEmails) {
-        await sendInvoiceEmail(
-          email,
-          pdfBuffer,
-          invoice.invoice_number,
-          client.invoice_language_id
-        );
+        await sendInvoiceEmail(email, pdfBuffer, invoice.invoice_number, client.invoice_language_id);
         console.log("Invoice email sent to:", email);
       }
     } else {
       console.log("No client emails found to send invoice to");
     }
 
+    await t.commit();
     res.status(201).json({
       success: true,
-      data: {
-        invoice: await Invoice.findByPk(invoice.id, {
-          include: [
-            {
-              model: Company,
-              as: "company"
-            },
-            {
-              model: Client,
-              as: "client",
-              include: [
-                {
-                  model: InvoiceLanguage,
-                  as: "invoiceLanguage"
-                }
-              ]
-            },
-            {
-              model: InvoiceItem,
-              as: "items"
-            }
-          ]
-        })
-      }
+      message: "Invoice created successfully",
+      data: invoice
     });
   } catch (error) {
+    await t.rollback();
     console.error("Error creating invoice:", error);
     next(error);
   }
@@ -490,11 +502,13 @@ const getInvoicePDF = async (req, res, next) => {
   console.log("Generating PDF for invoice ID:", req.params.id);
   try {
     const invoice = await Invoice.findByPk(req.params.id, {
-      include: [{
-        model: Client,
-        as: "client",
-        attributes: ["invoice_language_id"]
-      }]
+      include: [
+        {
+          model: Client,
+          as: "client",
+          attributes: ["invoice_language_id"]
+        }
+      ]
     });
 
     if (!invoice) {
