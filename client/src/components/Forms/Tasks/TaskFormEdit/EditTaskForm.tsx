@@ -34,6 +34,13 @@ const EditTaskForm = ({ id, taskId, isPending, handleSubmit }: EditTaskFormProps
   const form = useEditTaskForm(task as Task);
 
   const taskTransformed = task as any;
+  const artisanPlaceholder = taskTransformed.artisans.map((artisan: any) => artisan.name).join(", ")
+
+  if (task) {
+    task.activity = taskTransformed.activity.name
+    task.measure = taskTransformed.measure.name;
+    task.artisans = [];
+  }
 
   return (
     <FormProvider {...form}>
@@ -46,15 +53,15 @@ const EditTaskForm = ({ id, taskId, isPending, handleSubmit }: EditTaskFormProps
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-1 content-around gap-2 pt-1.5">
-          <ArtisanSelector name="artisan" label="Select artisans" />
+          <ArtisanSelector name="artisans" label="Select artisans" placeholder={artisanPlaceholder} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-1 content-around gap-2 pt-1.5">
-          <ActivitySelector name="activity" label="Select activity" defaultVal={task && taskTransformed?.activity?.name} />
+          <ActivitySelector name="activity" label="Select activity" defaultVal={task && task.activity} placeholder={task?.activity} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2 mb-4">
           <StatusSelector label="Status" name="status" defaultVal={task && task.status} />
-          <MeasureSelector name="measure" label="Select measure" defaultVal={task && taskTransformed?.measure?.name} />
+          <MeasureSelector name="measure" label="Select measure" defaultVal={task && task.measure} placeholder={task?.measure} />
         </div>
 
         <Separator className="mt-4 mb-2" />
