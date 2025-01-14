@@ -46,6 +46,58 @@ module.exports = {
       isInvoiced: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
+      },
+      activity_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_activities",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+      },
+      measure_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_measures",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+      },
+      artisan_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_artisans",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+      },
+      quantity: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false
+      },
+      manager_price: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true
+      },
+      artisan_price: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
     });
   },

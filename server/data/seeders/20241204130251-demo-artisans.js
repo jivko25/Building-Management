@@ -17,7 +17,7 @@ module.exports = {
           company_id: 1,
           user_id: 1,
           status: "active",
-          activity_id: 68,
+          activity_id: 1,
           measure_id: 1
         },
         {
@@ -29,7 +29,7 @@ module.exports = {
           company_id: 2,
           user_id: 2,
           status: "inactive",
-          activity_id: 72,
+          activity_id: 2,
           measure_id: 2
         },
         {
@@ -41,7 +41,7 @@ module.exports = {
           company_id: 2,
           user_id: 1,
           status: "active",
-          activity_id: 73,
+          activity_id: 3,
           measure_id: 1
         },
         {
@@ -53,7 +53,7 @@ module.exports = {
           company_id: 2,
           user_id: 2,
           status: "inactive",
-          activity_id: 72,
+          activity_id: 3,
           measure_id: 2
         },
         {
@@ -65,7 +65,7 @@ module.exports = {
           company_id: 1,
           user_id: 2,
           status: "active",
-          activity_id: 68,
+          activity_id: 1,
           measure_id: 1
         }
       ],

@@ -43,11 +43,49 @@ module.exports = (sequelize, DataTypes) => {
       isInvoiced: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
+      },
+      activity_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_activities",
+          key: "id"
+        }
+      },
+      measure_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_measures",
+          key: "id"
+        }
+      },
+      artisan_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_artisans",
+          key: "id"
+        }
+      },
+      quantity: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false
+      },
+      manager_price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true
+      },
+      artisan_price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true
       }
     },
     {
       tableName: "tbl_workitems",
-      timestamps: false
+      timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at"
     }
   );
 
@@ -55,6 +93,21 @@ module.exports = (sequelize, DataTypes) => {
     WorkItem.belongsTo(models.Task, {
       foreignKey: "task_id",
       as: "task"
+    });
+
+    WorkItem.belongsTo(models.Activity, {
+      foreignKey: "activity_id",
+      as: "activity"
+    });
+
+    WorkItem.belongsTo(models.Measure, {
+      foreignKey: "measure_id",
+      as: "measure"
+    });
+
+    WorkItem.belongsTo(models.Artisan, {
+      foreignKey: "artisan_id",
+      as: "artisan"
     });
   };
 

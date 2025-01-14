@@ -6,7 +6,7 @@ module.exports = {
       [
         {
           id: 1,
-          activity_id: 68,
+          activity_id: 1,
           measure_id: 1,
           artisan_id: 1,
           manager_id: 1,
@@ -15,7 +15,7 @@ module.exports = {
         },
         {
           id: 2,
-          activity_id: 72,
+          activity_id: 2,
           measure_id: 2,
           artisan_id: 2,
           manager_id: 2,
