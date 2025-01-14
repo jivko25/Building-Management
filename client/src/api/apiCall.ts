@@ -63,7 +63,3 @@ export const postEntityData = async <TData>(url: string, data: TData): Promise<T
   const response = await apiCall(`${url}`, "POST", data);
   return response;
 };
-
-export const deleteEntity = async <TData>(URL: string, entityData: TData): Promise<void> => {
-  return await apiCall(`${URL}`, "DELETE", entityData);
-};
