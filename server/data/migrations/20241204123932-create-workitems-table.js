@@ -42,6 +42,10 @@ module.exports = {
       status: {
         type: Sequelize.ENUM("done", "in_progress"),
         defaultValue: "in_progress"
+      },
+      isInvoiced: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       }
     });
   },

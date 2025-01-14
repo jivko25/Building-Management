@@ -39,6 +39,10 @@ module.exports = (sequelize, DataTypes) => {
       status: {
         type: DataTypes.ENUM("done", "in_progress"),
         defaultValue: "in_progress"
+      },
+      isInvoiced: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
       }
     },
     {
