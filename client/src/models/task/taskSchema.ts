@@ -80,7 +80,7 @@ export const editTaskSchema = z
     total_work_in_selected_measure: z.coerce.number().gte(1, {
       message: "Please enter a valid price."
     }),
-    artisan: z.string().optional(),
+    artisans: z.string().array().optional(),
     activity: z
       .string()
 
