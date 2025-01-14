@@ -28,7 +28,7 @@ const getProjects = async (req, res, next) => {
     console.log("Where clause:", JSON.stringify(whereClause, null, 2));
 
     const projects = await Project.findAll({
-      attributes: ["id", "name", "company_id", "company_name", "email", "address", "location", "start_date", "end_date", "note", "status", "creator_id"],
+      attributes: ["id", "name", "company_id", "company_name", "email", "address", "location", "start_date", "end_date", "note", "status", "creator_id", "client_id"],
       where: whereClause,
       order: [["id", "DESC"]]
     });
