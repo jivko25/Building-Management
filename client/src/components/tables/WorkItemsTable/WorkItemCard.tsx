@@ -44,9 +44,9 @@ const WorkItemCard = ({ workItems }: WorkItemCardProps) => {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button className="gap-2" variant="ghost" size="icon">
+                      {/* <Button className="gap-2" variant="ghost" size="icon">
                         <Archive className="h-6 w-6" />
-                      </Button>
+                      </Button> */}
                     </TooltipTrigger>
                     <TooltipContent>
                       <span>Archive</span>
