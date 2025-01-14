@@ -148,6 +148,7 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
         <Column field="name" header="Name" className="text-sm md:text-base" />
         <Column field="activity" header="Activity" body={activityBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
         <Column field="measure" header="Measure" body={measuresBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
+        <Column field="measure" header="Measure" body={measuresBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
         <Column field="price" header="Price" body={priceBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
       </DataTable>
       <ConfirmDialog />

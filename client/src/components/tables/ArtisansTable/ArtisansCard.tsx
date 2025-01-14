@@ -3,6 +3,7 @@ import EditArtisan from "@/components/Forms/Artisans/ArtisanFormEdit/EditArtisan
 import ArtisanAction from "@/components/Forms/Artisans/ArtisanTableAddDefaultVlues/ArtisanAction";
 import ArtisanAllDefaultValues from "@/components/Forms/Artisans/ArtisanTableAddDefaultVlues/ArtisanAllDefaultValues";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { useAuth } from "@/context/AuthContext";
 import { Artisan } from "@/types/artisan-types/artisanTypes";
 
 type ArtisansCardProps = {
@@ -10,6 +11,8 @@ type ArtisansCardProps = {
 };
 
 const ArtisansCard = ({ artisans }: ArtisansCardProps) => {
+  const { role } = useAuth();
+  const defaultValuesGuard = role === "manager" || role === "admin";
   return (
     <>
       {artisans.map(artisan => (
@@ -17,8 +20,7 @@ const ArtisansCard = ({ artisans }: ArtisansCardProps) => {
           <TableCell className="font-semibold">{artisan.name}</TableCell>
           <TableCell className="text-end w-[200px]">
             <ArtisanAllDefaultValues artisanId={artisan.id!} artisanName={artisan.name} />
-            <ArtisanAction artisanId={artisan.id!} />
-            <EditArtisan artisanId={artisan.id!} />
+            {defaultValuesGuard && <ArtisanAction artisanId={artisan.id!} />}
           </TableCell>
         </TableRow>
       ))}
