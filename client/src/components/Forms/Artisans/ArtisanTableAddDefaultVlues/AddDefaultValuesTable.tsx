@@ -61,11 +61,11 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
       />
     );
   };
-  //Price Input Field
+
   const priceBodyTemplate = () => {
     return (
       <InputNumber
-        className="w-full text-l" // Ensures input width fits in column
+        className="w-[150px] md:w-[200px] text-sm md:text-base"
         value={price}
         inputId="currency-germany"
         currency="EUR"
@@ -73,9 +73,6 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
           setPrice(e.value ?? 0);
           setIsAdding(true);
         }}
-        panelClassName="z-50 pointer-events-auto"
-        scrollHeight="200px"
-        className="w-full text-xs " // Ensures dropdown fits in column width
       />
     );
   };

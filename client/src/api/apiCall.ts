@@ -52,6 +52,10 @@ export const editEntity = async <TData>(URL: string, entityData: TData): Promise
   return await apiCall(`${URL}`, "PUT", entityData);
 };
 
+export const deleteEntity = async <TData>(URL: string, entityData: TData): Promise<void> => {
+  return await apiCall(`${URL}`, "DELETE", entityData);
+};
+
 export const putEntityData = async <TData>(url: string, data: TData): Promise<TData> => {
   console.log("📤 Putting data to:", url, data);
   const response = await apiCall(`${url}`, "PUT", data);
