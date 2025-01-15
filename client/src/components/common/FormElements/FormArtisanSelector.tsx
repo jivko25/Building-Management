@@ -4,19 +4,20 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Artisan } from "@/types/artisan-types/artisanTypes";
 import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
-import { PaginatedData } from "../Pagination/Pagination";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 
 const ArtisanSelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
   const { control } = useFormContext();
 
-  const { data: artisans } = useFetchDataQuery<PaginatedData<Artisan>>({
+  const { data: artisansArray } = useFetchDataQuery<any>({
     URL: "/artisans",
     queryKey: ["artisans"],
     options: {
       staleTime: Infinity
     }
   });
+
+  const artisans: Artisan[] = artisansArray?.artisans;
 
   return (
     <FormField
@@ -34,7 +35,7 @@ const ArtisanSelector = ({ label, name, placeholder, defaultVal }: TableFormSele
             <SelectContent>
               <SelectGroup>
                 {artisans &&
-                  artisans.data
+                  artisans
                     .filter(artisan => artisan.status === "active")
                     .map(artisan => (
                       <SelectItem key={artisan.id} value={artisan.name}>
