@@ -40,7 +40,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM("done", "in_progress"),
         defaultValue: "in_progress"
       },
-      isInvoiced: {
+      is_client_invoiced: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+      },
+      is_artisan_invoiced: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
       },

@@ -6,7 +6,7 @@ const ApiError = require("../../utils/apiError");
 const editWorkItem = async (req, res, next) => {
   const workItemId = req.params.id;
   const taskId = req.params.task_id;
-  const { name, start_date, end_date, note, finished_work, status, isInvoiced } = req.body;
+  const { name, start_date, end_date, note, finished_work, status, is_client_invoiced } = req.body;
 
   try {
     const workItem = await WorkItem.findByPk(workItemId);
@@ -29,7 +29,7 @@ const editWorkItem = async (req, res, next) => {
       note,
       finished_work,
       status,
-      isInvoiced
+      is_client_invoiced
     });
 
     res.json({

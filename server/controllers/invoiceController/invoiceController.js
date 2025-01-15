@@ -87,7 +87,7 @@ const createInvoice = async (req, res, next) => {
     const workItems = await WorkItem.findAll({
       where: {
         id: selected_work_items,
-        isInvoiced: false
+        is_client_invoiced: false
       },
       include: [
         {
@@ -113,6 +113,47 @@ const createInvoice = async (req, res, next) => {
         }
       ]
     });
+
+    // Check if any work items are already invoiced
+    const clientWorkItems = await WorkItem.findAll({
+      where: {
+        id: selected_work_items
+      }
+    });
+
+    // Проверяваме дали има поне един работен елемент, който вече е фактуриран
+    const alreadyInvoicedItems = clientWorkItems.filter(item => item.is_client_invoiced === true);
+
+    if (alreadyInvoicedItems.length > 0) {
+      console.error(
+        "Some work items are already invoiced:",
+        alreadyInvoicedItems.map(item => item.id)
+      );
+      await t.rollback();
+      return res.status(400).json({
+        success: false,
+        message: "Cannot create invoice. Some work items are already invoiced.",
+        details: {
+          invoiced_items: alreadyInvoicedItems.map(item => item.id),
+          total_selected: clientWorkItems.length,
+          already_invoiced: alreadyInvoicedItems.length
+        }
+      });
+    }
+
+    // Проверяваме дали всички избрани работни елементи са намерени
+    if (clientWorkItems.length !== selected_work_items.length) {
+      console.error("Not all selected work items were found");
+      await t.rollback();
+      return res.status(400).json({
+        success: false,
+        message: "Some selected work items were not found",
+        details: {
+          selected: selected_work_items,
+          found: clientWorkItems.map(item => item.id)
+        }
+      });
+    }
 
     // Групиране на работните елементи по дейност, мярка и проект
     const groupedItems = {};
@@ -197,6 +238,9 @@ const createInvoice = async (req, res, next) => {
     } else {
       console.log("No client emails found to send invoice to");
     }
+
+    // Mark work items as invoiced
+    await Promise.all(workItems.map(item => item.update({ is_client_invoiced: true }, { transaction: t })));
 
     await t.commit();
     res.status(201).json({
@@ -327,9 +371,9 @@ const getInvoiceById = async (req, res, next) => {
 };
 
 const deleteInvoice = async (req, res, next) => {
-  console.log("Deleting invoice with ID:", req.params.id);
+  const t = await sequelize.transaction();
+
   try {
-    // Find invoice to check if it exists
     const invoice = await Invoice.findByPk(req.params.id, {
       include: [
         {
@@ -340,38 +384,50 @@ const deleteInvoice = async (req, res, next) => {
     });
 
     if (!invoice) {
-      console.log("Invoice not found");
+      await t.rollback();
       return res.status(404).json({
         success: false,
         message: "Invoice not found"
       });
     }
 
-    console.log("Found invoice:", invoice.invoice_number);
+    // Get all work items related to this invoice
+    const workItemIds = invoice.items.map(item => item.work_item_id);
 
-    // Delete all invoice items
-    await Promise.all(
-      invoice.items.map(async item => {
-        console.log("Deleting invoice item:", item.id);
-        await item.destroy();
-      })
-    );
+    // Reset invoice flags based on invoice type
+    if (invoice.is_artisan_invoice) {
+      await WorkItem.update(
+        { is_artisan_invoiced: false },
+        {
+          where: { id: workItemIds },
+          transaction: t
+        }
+      );
+    } else {
+      await WorkItem.update(
+        { is_client_invoiced: false },
+        {
+          where: { id: workItemIds },
+          transaction: t
+        }
+      );
+    }
 
-    console.log("All invoice items deleted");
+    // Delete invoice items and invoice
+    await InvoiceItem.destroy({
+      where: { invoice_id: invoice.id },
+      transaction: t
+    });
 
-    // Delete invoice
-    await invoice.destroy();
-    console.log("Invoice deleted successfully");
+    await invoice.destroy({ transaction: t });
+    await t.commit();
 
     res.status(200).json({
       success: true,
-      message: "Invoice and related items deleted successfully",
-      data: {
-        invoice_number: invoice.invoice_number
-      }
+      message: "Invoice deleted successfully"
     });
   } catch (error) {
-    console.error("Error deleting invoice:", error);
+    await t.rollback();
     next(error);
   }
 };
@@ -593,6 +649,25 @@ const createArtisanInvoice = async (req, res, next) => {
   try {
     const { company_id, artisan_id, due_date_weeks, selected_work_items } = req.body;
 
+    // Check if any work items are already invoiced for artisan
+    const artisanWorkItems = await WorkItem.findAll({
+      where: {
+        id: selected_work_items,
+        artisan_id: artisan_id
+      }
+    });
+
+    const alreadyInvoicedItems = artisanWorkItems.filter(item => item.is_artisan_invoiced);
+
+    if (alreadyInvoicedItems.length > 0) {
+      await t.rollback();
+      return res.status(400).json({
+        success: false,
+        message: "Some work items are already invoiced for this artisan",
+        details: alreadyInvoicedItems.map(item => item.id)
+      });
+    }
+
     // Get artisan details first
     const artisan = await Artisan.findByPk(artisan_id, {
       include: [
@@ -643,7 +718,7 @@ const createArtisanInvoice = async (req, res, next) => {
         id: selected_work_items,
         artisan_id,
         status: "in_progress",
-        isInvoiced: false
+        is_client_invoiced: false
       },
       include: [
         {
@@ -674,7 +749,7 @@ const createArtisanInvoice = async (req, res, next) => {
         id: item.id,
         artisan_id: item.artisan_id,
         status: item.status,
-        isInvoiced: item.isInvoiced
+        is_client_invoiced: item.is_client_invoiced
       }))
     });
 
@@ -729,11 +804,14 @@ const createArtisanInvoice = async (req, res, next) => {
         );
 
         // Mark work item as invoiced
-        await workItem.update({ isInvoiced: true }, { transaction: t });
+        await workItem.update({ is_client_invoiced: true }, { transaction: t });
 
         return invoiceItem;
       })
     );
+
+    // Mark work items as artisan invoiced
+    await Promise.all(workItems.map(item => item.update({ is_artisan_invoiced: true }, { transaction: t })));
 
     await t.commit();
 
