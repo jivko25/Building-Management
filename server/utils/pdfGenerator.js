@@ -318,7 +318,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
 };
 
 const createArtisanInvoicePDF = async invoiceId => {
-  console.log("Generating PDF for artisan invoice:", invoiceId);
+  console.log("Generating artisan PDF for invoice:", invoiceId);
   let browser;
 
   try {
@@ -340,18 +340,19 @@ const createArtisanInvoicePDF = async invoiceId => {
           include: [
             {
               model: Activity,
-              as: "activity",
-              attributes: ["name"]
+              as: "activity"
             },
             {
               model: Measure,
-              as: "measure",
-              attributes: ["name"]
+              as: "measure"
             },
             {
               model: Project,
-              as: "project",
-              attributes: ["name", "location", "address"]
+              as: "project"
+            },
+            {
+              model: Task,
+              as: "task"
             }
           ]
         }
@@ -359,56 +360,121 @@ const createArtisanInvoicePDF = async invoiceId => {
     });
 
     if (!invoice) {
-      throw new Error("Artisan invoice not found");
+      throw new Error("Invoice not found");
     }
 
-    // HTML шаблон за фактурата на майстора
+    console.log("Processing invoice items:", invoice.items);
+
+    const formatPrice = price => {
+      const numPrice = typeof price === "string" ? parseFloat(price) : price;
+      return numPrice ? numPrice.toFixed(2) : "0.00";
+    };
+
     const htmlContent = `
       <!DOCTYPE html>
       <html>
         <head>
+          <meta charset="utf-8">
           <style>
-            /* Add your CSS styles here */
+            body {
+              font-family: Arial, sans-serif;
+              margin: 20px;
+              color: #333;
+            }
+            .header {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 30px;
+            }
+            .logo {
+              max-width: 200px;
+              max-height: 100px;
+            }
+            .invoice-details {
+              margin-bottom: 30px;
+            }
+            .company-details, .artisan-details {
+              margin-bottom: 20px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 30px;
+            }
+            th, td {
+              border: 1px solid #ddd;
+              padding: 8px;
+              text-align: left;
+            }
+            th {
+              background-color: #f5f5f5;
+            }
+            .total {
+              text-align: right;
+              font-weight: bold;
+              margin-top: 20px;
+            }
+            .footer {
+              margin-top: 50px;
+              font-size: 12px;
+            }
           </style>
         </head>
         <body>
-          <h1>Artisan Invoice ${invoice.invoice_number}</h1>
-          <div class="company-info">
-            <h2>${invoice.company.name}</h2>
-            <p>Address: ${invoice.company.address}</p>
-            <p>VAT: ${invoice.company.vat_number}</p>
+          <div class="header">
+            ${invoice.company.logo_url ? `<img src="${invoice.company.logo_url}" class="logo" />` : ""}
+            <div class="invoice-details">
+              <h2>Фактура № ${invoice.invoice_number}</h2>
+              <p>Дата: ${new Date(invoice.invoice_date).toLocaleDateString("bg-BG")}</p>
+              <p>Краен срок: ${new Date(invoice.due_date).toLocaleDateString("bg-BG")}</p>
+            </div>
           </div>
-          
-          <div class="artisan-info">
-            <h2>Artisan: ${invoice.artisan.name}</h2>
-            <p>Contact: ${invoice.artisan.number}</p>
-            <p>Email: ${invoice.artisan.email}</p>
+
+          <div class="company-details">
+            <h3>Издател:</h3>
+            <p>${invoice.company.name}</p>
+            <p>Адрес: ${invoice.company.address}</p>
+            <p>ЕИК: ${invoice.company.registration_number}</p>
+            <p>ДДС номер: ${invoice.company.vat_number}</p>
+            <p>МОЛ: ${invoice.company.mol}</p>
+            <p>IBAN: ${invoice.company.iban}</p>
+            <p>Телефон: ${invoice.company.phone}</p>
+            <p>Имейл: ${invoice.company.email}</p>
+          </div>
+
+          <div class="artisan-details">
+            <h3>Получател:</h3>
+            <p>Име: ${invoice.artisan.name}</p>
+            <p>Номер: ${invoice.artisan.number || "N/A"}</p>
+            <p>Имейл: ${invoice.artisan.email}</p>
           </div>
 
           <table>
             <thead>
               <tr>
-                <th>Activity</th>
-                <th>Location</th>
-                <th>Address</th>
-                <th>Measure</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Total</th>
+                <th>№</th>
+                <th>Проект</th>
+                <th>Задача</th>
+                <th>Дейност</th>
+                <th>Мярка</th>
+                <th>Количество</th>
+                <th>Ед. цена</th>
+                <th>Общо</th>
               </tr>
             </thead>
             <tbody>
               ${invoice.items
                 .map(
-                  item => `
+                  (item, index) => `
                 <tr>
-                  <td>${item.activity.name}</td>
-                  <td>${item.project.location}</td>
-                  <td>${item.project.address}</td>
-                  <td>${item.measure.name}</td>
+                  <td>${index + 1}</td>
+                  <td>${item.project?.name || "N/A"}</td>
+                  <td>${item.task?.name || "N/A"}</td>
+                  <td>${item.activity?.name || "N/A"}</td>
+                  <td>${item.measure?.name || "N/A"}</td>
                   <td>${item.quantity}</td>
-                  <td>${item.price_per_unit} €</td>
-                  <td>${item.total_price} €</td>
+                  <td>${formatPrice(item.price_per_unit)} лв.</td>
+                  <td>${formatPrice(item.total_price)} лв.</td>
                 </tr>
               `
                 )
@@ -416,11 +482,15 @@ const createArtisanInvoicePDF = async invoiceId => {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="6" style="text-align: right;"><strong>Total:</strong></td>
-                <td><strong>${invoice.total_amount} €</strong></td>
+                <td colspan="7" style="text-align: right;"><strong>Обща сума:</strong></td>
+                <td><strong>${formatPrice(invoice.total_amount)} лв.</strong></td>
               </tr>
             </tfoot>
           </table>
+
+          <div class="footer">
+            <p>Забележка: Това е фактура за извършена работа от подизпълнител.</p>
+          </div>
         </body>
       </html>
     `;
