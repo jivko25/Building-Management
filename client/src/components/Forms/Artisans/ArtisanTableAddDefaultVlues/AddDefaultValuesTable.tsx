@@ -70,8 +70,8 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
       />
     );
   };
-  //Price Input Field
-  const priceBodyTemplate = () => {
+
+  const priceBodyTemplate = ({ set, price }: PriceBodyTemplateProps) => {
     return (
       <InputNumber
         className=" "
@@ -82,9 +82,22 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
           set(e.value ?? 0);
           setIsAdding(true);
         }}
+        size={3}
+        style={{ height: "36px" }}
+      />
+    );
+  };
+  const projectBodyTemplate = () => {
+    return (
+      <Dropdown
+        options={projects?.map(m => ({ label: m.name, value: m }))}
+        value={project}
         panelClassName="z-50 pointer-events-auto"
         scrollHeight="200px"
-        className="w-full text-xs " // Ensures dropdown fits in column width
+        onChange={e => {
+          handleUnsavedChanges(() => setProject(e.value));
+        }}
+        className="w-[180px] text-xs md:text-sm "
       />
     );
   };

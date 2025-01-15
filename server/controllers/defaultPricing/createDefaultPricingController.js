@@ -5,7 +5,20 @@ const ApiError = require("../../utils/apiError");
 const createDefaultPricing = async (req, res, next) => {
   try {
     const artisan_id = req.params.id;
+  try {
+    const artisan_id = req.params.id;
 
+    const isArtisan = await Artisan.findOne({
+      where: {
+        id: artisan_id
+      },
+      attributes: {
+        exclude: ["artisan_id"]
+      }
+    });
+    if (!isArtisan) {
+      throw new ApiError(404, "Artisan not found!");
+    }
     const isArtisan = await Artisan.findOne({
       where: {
         id: artisan_id
@@ -24,6 +37,17 @@ const createDefaultPricing = async (req, res, next) => {
       throw new ApiError(400, "Activity id, measure id, manager price, artisan price, artisan id and project id are required!");
     }
 
+    const isActivity = await Activity.findOne({
+      where: {
+        id: activity_id
+      },
+      attributes: {
+        exclude: ["activity_id"]
+      }
+    });
+    if (!isActivity) {
+      throw new ApiError(404, "Activity not found!");
+    }
     const isActivity = await Activity.findOne({
       where: {
         id: activity_id
@@ -95,8 +119,20 @@ const createDefaultPricing = async (req, res, next) => {
       next(new ApiError(500, "Internal server Error!"));
     }
   }
+    res.status(201).json({
+      message: "Default pricing created successfully!",
+      defaultPricing
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      next(error);
+    } else {
+      next(new ApiError(500, "Internal server Error!"));
+    }
+  }
 };
 
 module.exports = {
+  createDefaultPricing
   createDefaultPricing
 };
