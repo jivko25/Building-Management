@@ -75,14 +75,6 @@ module.exports = (sequelize, DataTypes) => {
       quantity: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
-      },
-      manager_price: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: true
-      },
-      artisan_price: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: true
       }
     },
     {

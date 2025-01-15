@@ -96,6 +96,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "client_id",
       as: "client"
     });
+
+    Project.hasMany(models.DefaultPricing, {
+      foreignKey: "project_id",
+      as: "defaultPricing"
+    });
   };
 
   return Project;

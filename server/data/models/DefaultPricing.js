@@ -33,11 +33,11 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       manager_price: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false
       },
       artisan_price: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false
       }
     },
@@ -47,6 +47,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
   DefaultPricing.associate = models => {
+    DefaultPricing.belongsTo(models.Project, {
+      foreignKey: "project_id",
+      as: "project"
+    });
     DefaultPricing.belongsTo(models.Activity, {
       foreignKey: "activity_id",
       as: "activity"
@@ -54,18 +58,6 @@ module.exports = (sequelize, DataTypes) => {
     DefaultPricing.belongsTo(models.Measure, {
       foreignKey: "measure_id",
       as: "measure"
-    });
-    DefaultPricing.belongsTo(models.Artisan, {
-      foreignKey: "artisan_id",
-      as: "artisan"
-    });
-    DefaultPricing.belongsTo(models.User, {
-      foreignKey: "manager_id",
-      as: "manager"
-    });
-    DefaultPricing.belongsTo(models.Project, {
-      foreignKey: "project_id",
-      as: "project"
     });
   };
 

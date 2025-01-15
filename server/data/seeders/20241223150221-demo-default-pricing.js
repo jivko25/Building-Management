@@ -19,6 +19,14 @@ module.exports = {
           project_id: 2,
           manager_price: 150.0,
           artisan_price: 75.0
+        },
+        {
+          id: 3,
+          activity_id: 3,
+          measure_id: 1,
+          project_id: 2,
+          manager_price: 200.0,
+          artisan_price: 100.0
         }
       ],
       {}

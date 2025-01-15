@@ -1,7 +1,7 @@
 //server/utils/pdfGenerator.js
 const puppeteer = require("puppeteer");
 const db = require("../data/index.js");
-const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client, Task, Artisan } = db;
+const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client, Task, Artisan, DefaultPricing } = db;
 const translations = require("./translations/invoiceTranslations");
 
 const getLanguageCode = languageId => {
@@ -44,23 +44,22 @@ const createInvoicePDF = async (invoiceId, languageId) => {
           include: [
             {
               model: Activity,
-              as: "activity",
-              attributes: ["id", "name", "status"]
+              as: "activity"
             },
             {
               model: Measure,
-              as: "measure",
-              attributes: ["id", "name"]
+              as: "measure"
             },
             {
               model: Project,
               as: "project",
-              attributes: ["id", "name", "company_name", "email", "address", "location"]
-            },
-            {
-              model: Task,
-              as: "task",
-              attributes: ["id"]
+              include: [
+                {
+                  model: DefaultPricing,
+                  as: "defaultPricing",
+                  attributes: ["manager_price", "artisan_price"]
+                }
+              ]
             }
           ]
         }
@@ -129,8 +128,8 @@ const createInvoicePDF = async (invoiceId, languageId) => {
         project_address: item.project.address,
         measure: item.measure.name,
         quantity: parseFloat(item.quantity),
-        price_per_unit: parseFloat(item.price_per_unit),
-        total: parseFloat(item.quantity) * parseFloat(item.price_per_unit)
+        price_per_unit: item.price_per_unit,
+        total: parseFloat(item.total_price)
       })),
       totalAmount: parseFloat(invoice.total_amount)
     };
@@ -317,7 +316,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
   }
 };
 
-const createArtisanInvoicePDF = async invoiceId => {
+const createArtisanInvoicePDF = async (invoiceId) => {
   console.log("Generating artisan PDF for invoice:", invoiceId);
   let browser;
 
@@ -348,11 +347,14 @@ const createArtisanInvoicePDF = async invoiceId => {
             },
             {
               model: Project,
-              as: "project"
-            },
-            {
-              model: Task,
-              as: "task"
+              as: "project",
+              include: [
+                {
+                  model: DefaultPricing,
+                  as: "defaultPricing",
+                  attributes: ["manager_price", "artisan_price"]
+                }
+              ]
             }
           ]
         }
@@ -369,6 +371,15 @@ const createArtisanInvoicePDF = async invoiceId => {
       const numPrice = typeof price === "string" ? parseFloat(price) : price;
       return numPrice ? numPrice.toFixed(2) : "0.00";
     };
+
+    const items = invoice.items.map(item => ({
+      activity: item.activity.name,
+      project_name: item.project.name,
+      measure: item.measure.name,
+      quantity: parseFloat(item.quantity),
+      price_per_unit: item.price_per_unit,
+      total: parseFloat(item.total_price)
+    }));
 
     const htmlContent = `
       <!DOCTYPE html>

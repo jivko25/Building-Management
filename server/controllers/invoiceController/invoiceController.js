@@ -1,5 +1,5 @@
 const db = require("../../data/index.js");
-const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem, InvoiceLanguage, Artisan } = db;
+const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem, InvoiceLanguage, Artisan, DefaultPricing } = db;
 const { createInvoicePDF } = require("../../utils/pdfGenerator");
 const { sendInvoiceEmail } = require("../../utils/invoiceEmailService");
 const { sequelize } = require("../../data/index.js");
@@ -43,47 +43,37 @@ const generateUniqueInvoiceNumber = async (year, week) => {
 };
 
 const createInvoice = async (req, res, next) => {
-  console.log("Creating invoice with data:", req.body);
   const t = await sequelize.transaction();
 
   try {
+    console.log("Creating invoice with data:", req.body);
     const { company_id, client_company_id, due_date_weeks, selected_projects, selected_work_items } = req.body;
 
-    // Validate required fields
-    if (!company_id || !client_company_id || !due_date_weeks || !selected_work_items?.length) {
-      console.error("Missing required fields");
-      return res.status(400).json({
-        success: false,
-        message: "Missing required fields",
-        details: {
-          company_id: !company_id,
-          client_company_id: !client_company_id,
-          due_date_weeks: !due_date_weeks,
-          selected_work_items: !selected_work_items?.length
-        }
-      });
-    }
+    // Първо генерираме номера на фактурата
+    const currentDate = new Date();
+    const { week, year } = getWeekNumber(currentDate);
+    console.log("Current week and year:", { week, year });
 
-    // Get client company details with invoice language
-    const client = await Client.findByPk(client_company_id, {
-      include: [
-        {
-          model: InvoiceLanguage,
-          as: "invoiceLanguage",
-          attributes: ["code", "name"]
-        }
-      ]
-    });
+    const invoiceNumber = await generateUniqueInvoiceNumber(year, week);
+    console.log("Generated invoice number:", invoiceNumber);
 
-    if (!client) {
-      return res.status(404).json({
-        success: false,
-        message: "Client company not found"
-      });
-    }
+    // Създаваме фактурата с генерирания номер
+    const invoice = await Invoice.create(
+      {
+        invoice_number: invoiceNumber,
+        year: year,
+        week_number: week,
+        company_id,
+        client_company_id,
+        invoice_date: currentDate,
+        due_date: new Date(currentDate.setDate(currentDate.getDate() + due_date_weeks * 7)),
+        status: "pending",
+        total_amount: 0 // Ще обновим тази стойност по-късно
+      },
+      { transaction: t }
+    );
 
-    console.log("Client invoice language:", client.invoiceLanguage?.code || "en");
-
+    // Намираме всички работни елементи
     const workItems = await WorkItem.findAll({
       where: {
         id: selected_work_items,
@@ -114,144 +104,90 @@ const createInvoice = async (req, res, next) => {
       ]
     });
 
-    // Check if any work items are already invoiced
-    const clientWorkItems = await WorkItem.findAll({
-      where: {
-        id: selected_work_items
-      }
-    });
-
-    // Проверяваме дали има поне един работен елемент, който вече е фактуриран
-    const alreadyInvoicedItems = clientWorkItems.filter(item => item.is_client_invoiced === true);
-
-    if (alreadyInvoicedItems.length > 0) {
-      console.error(
-        "Some work items are already invoiced:",
-        alreadyInvoicedItems.map(item => item.id)
-      );
-      await t.rollback();
+    if (!workItems.length) {
+      console.error("No valid work items found");
       return res.status(400).json({
         success: false,
-        message: "Cannot create invoice. Some work items are already invoiced.",
-        details: {
-          invoiced_items: alreadyInvoicedItems.map(item => item.id),
-          total_selected: clientWorkItems.length,
-          already_invoiced: alreadyInvoicedItems.length
-        }
+        message: "No valid work items found"
       });
     }
 
-    // Проверяваме дали всички избрани работни елементи са намерени
-    if (clientWorkItems.length !== selected_work_items.length) {
-      console.error("Not all selected work items were found");
-      await t.rollback();
-      return res.status(400).json({
-        success: false,
-        message: "Some selected work items were not found",
-        details: {
-          selected: selected_work_items,
-          found: clientWorkItems.map(item => item.id)
-        }
-      });
-    }
-
-    // Групиране на работните елементи по дейност, мярка и проект
-    const groupedItems = {};
-    let totalAmount = 0;
-
-    workItems.forEach(item => {
-      const key = `${item.activity_id}-${item.measure_id}-${item.task.project.id}`;
-
-      if (!groupedItems[key]) {
-        groupedItems[key] = {
-          activity_id: item.activity_id,
-          measure_id: item.measure_id,
-          project_id: item.task.project.id,
-          task_id: item.task_id,
-          quantity: 0,
-          // Използваме manager_price от workitem вместо price_per_measure от task
-          price_per_unit: parseFloat(item.manager_price)
-        };
-      }
-
-      groupedItems[key].quantity += parseFloat(item.quantity);
-      // Изчисляваме общата сума използвайки manager_price
-      totalAmount += parseFloat(item.quantity) * parseFloat(item.manager_price);
-    });
-
-    // Get current date info
-    const date = new Date();
-    const year = date.getFullYear();
-    const week = Math.ceil((date - new Date(date.getFullYear(), 0, 1)) / (1000 * 60 * 60 * 24 * 7));
-
-    // Calculate due date
-    const due_date = new Date(date);
-    due_date.setDate(due_date.getDate() + due_date_weeks * 7);
-
-    // Create invoice with total_amount
-    const invoice = await Invoice.create({
-      company_id,
-      client_id: client_company_id,
-      invoice_number: await generateUniqueInvoiceNumber(year, week),
-      year,
-      week_number: week,
-      invoice_date: date,
-      due_date,
-      total_amount: totalAmount,
-      paid: false
-    });
-
-    // Create invoice items
-    const items = await Promise.all(
-      Object.values(groupedItems).map(async item => {
-        console.log("Creating invoice item with data:", item);
-
-        return InvoiceItem.create({
-          invoice_id: invoice.id,
-          activity_id: item.activity_id,
-          measure_id: item.measure_id,
-          project_id: item.project_id,
-          task_id: item.task_id,
-          quantity: item.quantity,
-          price_per_unit: item.price_per_unit,
-          total_price: item.quantity * item.price_per_unit
+    // За всеки work item намираме съответната цена от DefaultPricing
+    const workItemsWithPricing = await Promise.all(
+      workItems.map(async workItem => {
+        console.log("Finding default pricing for work item:", {
+          project_id: workItem.task.project.id,
+          activity_id: workItem.activity_id,
+          measure_id: workItem.measure_id
         });
+
+        const defaultPricing = await DefaultPricing.findOne({
+          where: {
+            project_id: workItem.task.project.id,
+            activity_id: workItem.activity_id,
+            measure_id: workItem.measure_id
+          },
+          attributes: ["manager_price", "artisan_price"] // Изрично указваме кои колони да вземе
+        });
+
+        if (!defaultPricing) {
+          throw new Error(`No default pricing found for work item ${workItem.id}`);
+        }
+
+        return {
+          ...workItem.toJSON(),
+          manager_price: defaultPricing.manager_price
+        };
       })
     );
 
-    console.log("Invoice created successfully");
+    // Изчисляваме общата сума
+    const total_amount = workItemsWithPricing.reduce((sum, item) => sum + parseFloat(item.manager_price) * parseFloat(item.quantity), 0);
 
-    // Генерираме PDF с правилния език
-    const pdfBuffer = await createInvoicePDF(invoice.id, client.invoice_language_id);
-    console.log("PDF generated successfully");
+    console.log("Calculated total amount:", total_amount);
 
-    // Вземаме имейлите на клиента
-    const clientEmails = client.client_emails;
-    if (clientEmails && clientEmails.length > 0) {
-      console.log("Sending invoice emails to:", clientEmails);
+    // Създаваме invoice items
+    await Promise.all(
+      workItemsWithPricing.map(workItem =>
+        InvoiceItem.create(
+          {
+            invoice_id: invoice.id,
+            work_item_id: workItem.id,
+            project_id: workItem.task.project.id,
+            activity_id: workItem.activity_id,
+            measure_id: workItem.measure_id,
+            quantity: workItem.quantity,
+            price_per_unit: workItem.manager_price,
+            total_price: parseFloat(workItem.manager_price) * parseFloat(workItem.quantity)
+          },
+          { transaction: t }
+        )
+      )
+    );
 
-      // Изпращаме имейл до всеки адрес с правилния език
-      for (const email of clientEmails) {
-        await sendInvoiceEmail(email, pdfBuffer, invoice.invoice_number, client.invoice_language_id);
-        console.log("Invoice email sent to:", email);
-      }
-    } else {
-      console.log("No client emails found to send invoice to");
-    }
-
-    // Mark work items as invoiced
-    await Promise.all(workItems.map(item => item.update({ is_client_invoiced: true }, { transaction: t })));
+    // Маркираме работните елементи като фактурирани
+    await Promise.all(workItems.map(workItem => workItem.update({ is_client_invoiced: true }, { transaction: t })));
 
     await t.commit();
+
+    console.log("Invoice created successfully:", invoice.id);
+
     res.status(201).json({
       success: true,
       message: "Invoice created successfully",
-      data: invoice
+      data: {
+        invoice_id: invoice.id,
+        invoice_number: invoiceNumber
+      }
     });
   } catch (error) {
     await t.rollback();
     console.error("Error creating invoice:", error);
-    next(error);
+    res.status(400).json({
+      success: false,
+      status: "error",
+      message: error.message
+    });
   }
 };
 
@@ -717,19 +653,13 @@ const createArtisanInvoice = async (req, res, next) => {
       where: {
         id: selected_work_items,
         artisan_id,
-        status: "in_progress",
-        is_client_invoiced: false
+        is_artisan_invoiced: false
       },
       include: [
         {
           model: Task,
           as: "task",
-          include: [
-            {
-              model: Project,
-              as: "project"
-            }
-          ]
+          include: [{ model: Project, as: "project" }]
         },
         {
           model: Activity,
@@ -739,8 +669,7 @@ const createArtisanInvoice = async (req, res, next) => {
           model: Measure,
           as: "measure"
         }
-      ],
-      transaction: t
+      ]
     });
 
     console.log("Found work items:", {
@@ -761,8 +690,21 @@ const createArtisanInvoice = async (req, res, next) => {
       });
     }
 
-    // Calculate total amount
-    const total_amount = workItems.reduce((sum, item) => sum + item.artisan_price * item.quantity, 0);
+    // Вземаме цените от DefaultPricing
+    const defaultPricing = await DefaultPricing.findOne({
+      where: {
+        project_id: workItems[0].task.project.id,
+        activity_id: workItems[0].activity_id,
+        measure_id: workItems[0].measure_id
+      }
+    });
+
+    if (!defaultPricing) {
+      throw new Error("Default pricing not found for this combination");
+    }
+
+    // Изчисляваме общата сума използвайки artisan_price от DefaultPricing
+    const total_amount = workItems.reduce((sum, item) => sum + defaultPricing.artisan_price * item.quantity, 0);
 
     // Create invoice
     const invoice = await Invoice.create(
@@ -782,32 +724,21 @@ const createArtisanInvoice = async (req, res, next) => {
 
     // Create invoice items
     const invoiceItems = await Promise.all(
-      workItems.map(async workItem => {
-        console.log("Creating invoice item from work item:", {
-          workItemId: workItem.id,
-          artisanPrice: workItem.artisan_price,
-          quantity: workItem.quantity
-        });
-
-        const invoiceItem = await InvoiceItem.create(
+      workItems.map(item =>
+        InvoiceItem.create(
           {
             invoice_id: invoice.id,
-            activity_id: workItem.activity_id,
-            measure_id: workItem.measure_id,
-            project_id: workItem.task.project.id,
-            task_id: workItem.task_id,
-            quantity: workItem.quantity,
-            price_per_unit: workItem.artisan_price,
-            total_price: workItem.artisan_price * workItem.quantity
+            work_item_id: item.id,
+            project_id: item.task.project.id,
+            activity_id: item.activity_id,
+            measure_id: item.measure_id,
+            quantity: item.quantity,
+            price_per_unit: defaultPricing.artisan_price,
+            total_price: item.quantity * defaultPricing.artisan_price
           },
           { transaction: t }
-        );
-
-        // Mark work item as invoiced
-        await workItem.update({ is_client_invoiced: true }, { transaction: t });
-
-        return invoiceItem;
-      })
+        )
+      )
     );
 
     // Mark work items as artisan invoiced
