@@ -1,6 +1,5 @@
-//client\src\components\common\FormElements\FormArtisanSelector.tsx
 import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Artisan } from "@/types/artisan-types/artisanTypes";
 import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
@@ -26,11 +25,18 @@ const ArtisanSelector = ({ label, name, placeholder, defaultVal }: TableFormSele
       render={({ field }) => (
         <FormItem>
           <FormLabel className="font-semibold">{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={defaultVal}>
+          <Select
+            multiSelect
+            value={field.value || []}
+            onValueChange={(selectedValues) => field.onChange(selectedValues)}
+            defaultValue={defaultVal}
+          >
             <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder={placeholder} />
-              </SelectTrigger>
+              <SelectTrigger
+                multiSelect
+                selectedValues={field.value || []}
+                placeholder={placeholder || "Select artisans"}
+              />
             </FormControl>
             <SelectContent>
               <SelectGroup>
