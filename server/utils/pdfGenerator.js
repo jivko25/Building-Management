@@ -389,17 +389,30 @@ const createArtisanInvoicePDF = async invoiceId => {
             .logo {
               max-width: 200px;
               max-height: 100px;
+              order: 2; /* Move logo to right */
             }
             .invoice-details {
               margin-bottom: 30px;
+              order: 1; /* Move details to left */
             }
-            .company-details, .artisan-details {
-              margin-bottom: 20px;
+            .details-container {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 30px;
+            }
+            .company-details {
+              width: 48%;
+              order: 2; /* Company details on right */
+            }
+            .artisan-details {
+              width: 48%;
+              order: 1; /* Artisan details on left */
             }
             table {
               width: 100%;
               border-collapse: collapse;
               margin-bottom: 30px;
+              clear: both;
             }
             th, td {
               border: 1px solid #ddd;
@@ -414,39 +427,37 @@ const createArtisanInvoicePDF = async invoiceId => {
               font-weight: bold;
               margin-top: 20px;
             }
-            .footer {
-              margin-top: 50px;
-              font-size: 12px;
-            }
           </style>
         </head>
         <body>
           <div class="header">
-            ${invoice.company.logo_url ? `<img src="${invoice.company.logo_url}" class="logo" />` : ""}
             <div class="invoice-details">
               <h2>Фактура № ${invoice.invoice_number}</h2>
               <p>Дата: ${new Date(invoice.invoice_date).toLocaleDateString("bg-BG")}</p>
               <p>Краен срок: ${new Date(invoice.due_date).toLocaleDateString("bg-BG")}</p>
             </div>
+            ${invoice.company.logo_url ? `<img src="${invoice.company.logo_url}" class="logo" />` : ""}
           </div>
 
-          <div class="company-details">
-            <h3>Издател:</h3>
-            <p>${invoice.company.name}</p>
-            <p>Адрес: ${invoice.company.address}</p>
-            <p>ЕИК: ${invoice.company.registration_number}</p>
-            <p>ДДС номер: ${invoice.company.vat_number}</p>
-            <p>МОЛ: ${invoice.company.mol}</p>
-            <p>IBAN: ${invoice.company.iban}</p>
-            <p>Телефон: ${invoice.company.phone}</p>
-            <p>Имейл: ${invoice.company.email}</p>
-          </div>
+          <div class="details-container">
+            <div class="artisan-details">
+              <h3>Получател:</h3>
+              <p>Име: ${invoice.artisan.name}</p>
+              <p>Номер: ${invoice.artisan.number || "N/A"}</p>
+              <p>Имейл: ${invoice.artisan.email}</p>
+            </div>
 
-          <div class="artisan-details">
-            <h3>Получател:</h3>
-            <p>Име: ${invoice.artisan.name}</p>
-            <p>Номер: ${invoice.artisan.number || "N/A"}</p>
-            <p>Имейл: ${invoice.artisan.email}</p>
+            <div class="company-details">
+              <h3>Издател:</h3>
+              <p>${invoice.company.name}</p>
+              <p>Адрес: ${invoice.company.address}</p>
+              <p>ЕИК: ${invoice.company.registration_number}</p>
+              <p>ДДС номер: ${invoice.company.vat_number}</p>
+              <p>МОЛ: ${invoice.company.mol}</p>
+              <p>IBAN: ${invoice.company.iban}</p>
+              <p>Телефон: ${invoice.company.phone}</p>
+              <p>Имейл: ${invoice.company.email}</p>
+            </div>
           </div>
 
           <table>
@@ -487,10 +498,6 @@ const createArtisanInvoicePDF = async invoiceId => {
               </tr>
             </tfoot>
           </table>
-
-          <div class="footer">
-            <p>Забележка: Това е фактура за извършена работа от подизпълнител.</p>
-          </div>
         </body>
       </html>
     `;
