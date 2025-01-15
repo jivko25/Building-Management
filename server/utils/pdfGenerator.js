@@ -1,7 +1,7 @@
 //server/utils/pdfGenerator.js
 const puppeteer = require("puppeteer");
 const db = require("../data/index.js");
-const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client } = db;
+const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client, Task, Artisan } = db;
 const translations = require("./translations/invoiceTranslations");
 
 const getLanguageCode = languageId => {
@@ -56,6 +56,11 @@ const createInvoicePDF = async (invoiceId, languageId) => {
               model: Project,
               as: "project",
               attributes: ["id", "name", "company_name", "email", "address", "location"]
+            },
+            {
+              model: Task,
+              as: "task",
+              attributes: ["id"]
             }
           ]
         }
@@ -125,7 +130,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
         measure: item.measure.name,
         quantity: parseFloat(item.quantity),
         price_per_unit: parseFloat(item.price_per_unit),
-        total: parseFloat(item.total_price)
+        total: parseFloat(item.quantity) * parseFloat(item.price_per_unit)
       })),
       totalAmount: parseFloat(invoice.total_amount)
     };
@@ -312,6 +317,222 @@ const createInvoicePDF = async (invoiceId, languageId) => {
   }
 };
 
+const createArtisanInvoicePDF = async invoiceId => {
+  console.log("Generating artisan PDF for invoice:", invoiceId);
+  let browser;
+
+  try {
+    const invoice = await Invoice.findByPk(invoiceId, {
+      include: [
+        {
+          model: Company,
+          as: "company",
+          attributes: ["name", "address", "vat_number", "iban", "logo_url", "phone", "registration_number", "email", "mol"]
+        },
+        {
+          model: Artisan,
+          as: "artisan",
+          attributes: ["name", "email", "number"]
+        },
+        {
+          model: InvoiceItem,
+          as: "items",
+          include: [
+            {
+              model: Activity,
+              as: "activity"
+            },
+            {
+              model: Measure,
+              as: "measure"
+            },
+            {
+              model: Project,
+              as: "project"
+            },
+            {
+              model: Task,
+              as: "task"
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!invoice) {
+      throw new Error("Invoice not found");
+    }
+
+    console.log("Processing invoice items:", invoice.items);
+
+    const formatPrice = price => {
+      const numPrice = typeof price === "string" ? parseFloat(price) : price;
+      return numPrice ? numPrice.toFixed(2) : "0.00";
+    };
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 20px;
+              color: #333;
+            }
+            .header {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 30px;
+            }
+            .logo {
+              max-width: 200px;
+              max-height: 100px;
+              order: 2; /* Move logo to right */
+            }
+            .invoice-details {
+              margin-bottom: 30px;
+              order: 1; /* Move details to left */
+            }
+            .details-container {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 30px;
+            }
+            .company-details {
+              width: 48%;
+              order: 2; /* Company details on right */
+            }
+            .artisan-details {
+              width: 48%;
+              order: 1; /* Artisan details on left */
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 30px;
+              clear: both;
+            }
+            th, td {
+              border: 1px solid #ddd;
+              padding: 8px;
+              text-align: left;
+            }
+            th {
+              background-color: #f5f5f5;
+            }
+            .total {
+              text-align: right;
+              font-weight: bold;
+              margin-top: 20px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="invoice-details">
+              <h2>Invoice № ${invoice.invoice_number}</h2>
+              <p>Date: ${new Date(invoice.invoice_date).toLocaleDateString("bg-BG")}</p>
+              <p>Due date: ${new Date(invoice.due_date).toLocaleDateString("bg-BG")}</p>
+            </div>
+            ${invoice.company.logo_url ? `<img src="${invoice.company.logo_url}" class="logo" />` : ""}
+          </div>
+
+          <div class="details-container">
+            <div class="artisan-details">
+              <h3>Recipient:</h3>
+              <p>Name: ${invoice.artisan.name}</p>
+              <p>Number: ${invoice.artisan.number || "N/A"}</p>
+              <p>Email: ${invoice.artisan.email}</p>
+            </div>
+
+            <div class="company-details">
+              <h3>Issuer:</h3>
+              <p>${invoice.company.name}</p>
+              <p>Address: ${invoice.company.address}</p>
+              <p>EIK: ${invoice.company.registration_number}</p>
+              <p>VAT number: ${invoice.company.vat_number}</p>
+              <p>MOL: ${invoice.company.mol}</p>
+              <p>IBAN: ${invoice.company.iban}</p>
+              <p>Phone: ${invoice.company.phone}</p>
+              <p>Email: ${invoice.company.email}</p>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>№</th>
+                <th>Project</th>
+                <th>Task</th>
+                <th>Activity</th>
+                <th>Measure</th>
+                <th>Quantity</th>
+                <th>Unit price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${invoice.items
+                .map(
+                  (item, index) => `
+                <tr>
+                  <td>${index + 1}</td>
+                  <td>${item.project?.name || "N/A"}</td>
+                  <td>${item.task?.name || "N/A"}</td>
+                  <td>${item.activity?.name || "N/A"}</td>
+                  <td>${item.measure?.name || "N/A"}</td>
+                  <td>${item.quantity}</td>
+                  <td>${formatPrice(item.price_per_unit)} €</td>
+                  <td>${formatPrice(item.total_price)} €</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="7" style="text-align: right;"><strong>Total:</strong></td>
+                <td><strong>${formatPrice(invoice.total_amount)} €</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </body>
+      </html>
+    `;
+
+    browser = await puppeteer.launch({
+      headless: "new",
+      args: ["--no-sandbox"]
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(htmlContent);
+
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: {
+        top: "20px",
+        right: "20px",
+        bottom: "20px",
+        left: "20px"
+      }
+    });
+
+    return pdfBuffer;
+  } catch (error) {
+    console.error("Error generating artisan PDF:", error);
+    throw error;
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
+  }
+};
+
 module.exports = {
-  createInvoicePDF
+  createInvoicePDF,
+  createArtisanInvoicePDF
 };

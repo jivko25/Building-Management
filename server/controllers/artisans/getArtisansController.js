@@ -1,6 +1,6 @@
 //server\controllers\artisans\getArtisansController.js
 const db = require("../../data/index.js");
-const { Artisan, Company, User, Task, Sequelize } = db;
+const { Artisan, Company, User, Task, Sequelize, Project } = db;
 const ApiError = require("../../utils/apiError");
 const { Op } = Sequelize;
 
@@ -8,6 +8,15 @@ const getPaginatedArtisans = async (req, res, next) => {
   try {
     const { _page = 1, _limit = 10, q = "" } = req.query;
     const offset = (parseInt(_page) - 1) * parseInt(_limit);
+    const isAdmin = req.user.role === "admin";
+    const users = await User.findAll({
+      where: {
+        manager_id: req.user.id
+      }
+    });
+    if (users.length === 0) {
+      throw new ApiError(404, "You are not authorized to access this resource");
+    }
 
     const whereClause = q
       ? {
@@ -17,7 +26,7 @@ const getPaginatedArtisans = async (req, res, next) => {
         }
       : {};
 
-    const { count, rows } = await Artisan.findAndCountAll({
+    const rows = await Artisan.findAll({
       where: whereClause,
       include: [
         { model: Company, as: "company", attributes: ["name"] },
@@ -33,40 +42,82 @@ const getPaginatedArtisans = async (req, res, next) => {
       order: [["id", "DESC"]]
     });
 
+    const artisans = rows.filter(artisan => {
+      if (isAdmin) {
+        return true;
+      }
+      return artisan.user_id === req.user.id;
+    });
     res.json({
-      artisans: rows,
-      artisansCount: count,
+      artisans: artisans,
+      artisansCount: artisans.length,
       page: parseInt(_page),
       limit: parseInt(_limit),
-      totalPages: Math.ceil(count / parseInt(_limit))
+      totalPages: Math.ceil(artisans.length / parseInt(_limit))
     });
   } catch (error) {
-    console.log(error);
+    if (error instanceof ApiError) {
+      next(error);
+    }
     next(new ApiError(500, "Internal server Error!"));
   }
 };
 
 const getArtisans = async (req, res, next) => {
   try {
-    const artisans = await Artisan.findAll({
-      include: [
-        {
-          model: Company,
-          as: "company",
-          attributes: ["name"]
-        },
-        {
-          model: User,
-          as: "user",
-          attributes: ["full_name"]
-        }
-      ],
-      order: [["id", "DESC"]]
+    const isAdmin = req.user.role === "admin";
+    const users = await User.findAll({
+      where: {
+        manager_id: req.user.id
+      }
     });
 
+    if (users.length === 0) {
+      throw new ApiError(404, "You are not authorized to access this resource");
+    }
+    let artisans;
+    if (!isAdmin) {
+      artisans = await Artisan.findAll({
+        include: [
+          {
+            model: Company,
+            as: "company",
+            attributes: ["name"]
+          },
+          {
+            model: User,
+            as: "user",
+            attributes: ["full_name"]
+          }
+        ],
+        where: {
+          user_id: {
+            [Op.in]: users.map(user => user.id)
+          }
+        },
+        order: [["id", "DESC"]]
+      });
+    } else {
+      artisans = await Artisan.findAll({
+        include: [
+          {
+            model: Company,
+            as: "company",
+            attributes: ["name"]
+          },
+          {
+            model: User,
+            as: "user",
+            attributes: ["full_name"]
+          }
+        ]
+      });
+    }
     res.json(artisans);
   } catch (error) {
-    console.log(error);
+    if (error instanceof ApiError) {
+      next(error);
+    }
     next(new ApiError(500, "Internal server Error!"));
   }
 };

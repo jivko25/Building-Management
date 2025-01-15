@@ -66,6 +66,14 @@ module.exports = {
         defaultValue: "inactive",
         comment: "Status of the project"
       },
+      client_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_clients",
+          key: "id"
+        }
+      },
       creator_id: {
         type: Sequelize.INTEGER,
         allowNull: true,

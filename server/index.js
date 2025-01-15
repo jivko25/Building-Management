@@ -15,6 +15,7 @@ const mailRoutes = require("./routes/emailRoutes.js");
 const imageRoutes = require("./routes/imageRoutes");
 const defaultPricingRoutes = require("./routes/defaultPricingRoutes");
 const invoiceRoutes = require("./routes/invoiceRoutes");
+const artisanInvoiceRoutes = require("./routes/artisanInvoiceRoutes");
 const clientRoutes = require("./routes/clientRoutes");
 const languageRoutes = require("./routes/languageRoutes");
 const cookieParser = require("cookie-parser");
@@ -59,6 +60,7 @@ app.use("/", mailRoutes);
 app.use("/", imageRoutes);
 app.use("/", defaultPricingRoutes);
 app.use("/invoices", invoiceRoutes);
+app.use("/artisan-invoices", artisanInvoiceRoutes);
 app.use("/clients", clientRoutes);
 app.use("/languages", languageRoutes);
 
