@@ -24,22 +24,6 @@ module.exports = (sequelize, DataTypes) => {
           key: "id"
         }
       },
-      artisan_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: "tbl_artisans",
-          key: "id"
-        }
-      },
-      manager_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: "tbl_users",
-          key: "id"
-        }
-      },
       project_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -48,7 +32,11 @@ module.exports = (sequelize, DataTypes) => {
           key: "id"
         }
       },
-      price: {
+      manager_price: {
+        type: DataTypes.FLOAT,
+        allowNull: false
+      },
+      artisan_price: {
         type: DataTypes.FLOAT,
         allowNull: false
       }

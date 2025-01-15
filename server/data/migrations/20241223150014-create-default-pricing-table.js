@@ -28,26 +28,6 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       },
-      artisan_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "tbl_artisans",
-          key: "id"
-        },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
-      },
-      manager_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "tbl_users",
-          key: "id"
-        },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
-      },
       project_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -58,7 +38,11 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
       },
-      price: {
+      manager_price: {
+        type: Sequelize.FLOAT,
+        allowNull: false
+      },
+      artisan_price: {
         type: Sequelize.FLOAT,
         allowNull: false
       }

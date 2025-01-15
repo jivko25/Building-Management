@@ -8,19 +8,17 @@ module.exports = {
           id: 1,
           activity_id: 1,
           measure_id: 1,
-          artisan_id: 1,
-          manager_id: 1,
           project_id: 1,
-          price: 100.0
+          manager_price: 100.0,
+          artisan_price: 50.0
         },
         {
           id: 2,
           activity_id: 2,
           measure_id: 2,
-          artisan_id: 2,
-          manager_id: 2,
           project_id: 2,
-          price: 150.0
+          manager_price: 150.0,
+          artisan_price: 75.0
         }
       ],
       {}
