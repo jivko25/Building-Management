@@ -30,6 +30,14 @@ module.exports = {
           key: "id"
         }
       },
+      client_company_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_clients",
+          key: "id"
+        }
+      },
       invoice_date: {
         type: Sequelize.DATE,
         allowNull: false

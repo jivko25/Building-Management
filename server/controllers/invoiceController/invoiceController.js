@@ -49,29 +49,12 @@ const createInvoice = async (req, res, next) => {
     console.log("Creating invoice with data:", req.body);
     const { company_id, client_company_id, due_date_weeks, selected_projects, selected_work_items } = req.body;
 
-    // Първо генерираме номера на фактурата
-    const currentDate = new Date();
-    const { week, year } = getWeekNumber(currentDate);
-    console.log("Current week and year:", { week, year });
-
-    const invoiceNumber = await generateUniqueInvoiceNumber(year, week);
-    console.log("Generated invoice number:", invoiceNumber);
-
-    // Създаваме фактурата с генерирания номер
-    const invoice = await Invoice.create(
-      {
-        invoice_number: invoiceNumber,
-        year: year,
-        week_number: week,
-        company_id,
-        client_company_id,
-        invoice_date: currentDate,
-        due_date: new Date(currentDate.setDate(currentDate.getDate() + due_date_weeks * 7)),
-        status: "pending",
-        total_amount: 0 // Ще обновим тази стойност по-късно
-      },
-      { transaction: t }
-    );
+    // Първо намираме клиента за да вземем езика и имейла
+    const client = await Client.findByPk(client_company_id);
+    if (!client) {
+      throw new Error("Client not found");
+    }
+    console.log("Found client:", { id: client.id, email: client.client_emails });
 
     // Намираме всички работни елементи
     const workItems = await WorkItem.findAll({
@@ -104,13 +87,39 @@ const createInvoice = async (req, res, next) => {
       ]
     });
 
+    console.log("Found work items:", workItems.length);
+
     if (!workItems.length) {
-      console.error("No valid work items found");
+      await t.rollback();
       return res.status(400).json({
         success: false,
         message: "No valid work items found"
       });
     }
+
+    // Първо генерираме номера на фактурата
+    const currentDate = new Date();
+    const { week, year } = getWeekNumber(currentDate);
+    console.log("Current week and year:", { week, year });
+
+    const invoiceNumber = await generateUniqueInvoiceNumber(year, week);
+    console.log("Generated invoice number:", invoiceNumber);
+
+    // Създаваме фактурата с генерирания номер
+    const invoice = await Invoice.create(
+      {
+        invoice_number: invoiceNumber,
+        year: year,
+        week_number: week,
+        company_id,
+        client_company_id,
+        invoice_date: currentDate,
+        due_date: new Date(currentDate.setDate(currentDate.getDate() + due_date_weeks * 7)),
+        status: "pending",
+        total_amount: 0 // Ще обновим тази стойност по-късно
+      },
+      { transaction: t }
+    );
 
     // За всеки work item намираме съответната цена от DefaultPricing
     const workItemsWithPricing = await Promise.all(
@@ -167,6 +176,23 @@ const createInvoice = async (req, res, next) => {
 
     // Маркираме работните елементи като фактурирани
     await Promise.all(workItems.map(workItem => workItem.update({ is_client_invoiced: true }, { transaction: t })));
+
+    // След успешно създаване на фактурата, генерираме PDF и изпращаме имейл
+    try {
+      console.log("Generating PDF for invoice:", invoice.id);
+      const pdfBuffer = await createInvoicePDF(invoice.id, client.invoice_language_id);
+
+      // Изпращаме имейл ако има имейл адрес
+      if (client.client_emails) {
+        console.log("Sending invoice email to client:", client.client_emails);
+        await sendInvoiceEmail(client.client_emails, pdfBuffer, invoice.invoice_number, client.invoice_language_id);
+      } else {
+        console.log("No email address found for client");
+      }
+    } catch (error) {
+      console.error("Error with PDF/email generation:", error);
+      // Не прекъсваме транзакцията при грешка в изпращането на имейл
+    }
 
     await t.commit();
 

@@ -27,6 +27,22 @@ module.exports = {
           project_id: 2,
           manager_price: 200.0,
           artisan_price: 100.0
+        },
+        {
+          id: 4,
+          activity_id: 1,
+          measure_id: 1,
+          project_id: 2,
+          manager_price: 120.0,
+          artisan_price: 60.0
+        },
+        {
+          id: 5,
+          activity_id: 2,
+          measure_id: 1,
+          project_id: 2,
+          manager_price: 180.0,
+          artisan_price: 90.0
         }
       ],
       {}

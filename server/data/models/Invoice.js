@@ -60,9 +60,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       tableName: "tbl_invoices",
-      timestamps: true,
-      createdAt: "created_at",
-      updatedAt: "updated_at"
+      underscored: true
     }
   );
 
@@ -73,7 +71,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Invoice.belongsTo(models.Client, {
-      foreignKey: "client_id",
+      foreignKey: "client_company_id",
       as: "client"
     });
 

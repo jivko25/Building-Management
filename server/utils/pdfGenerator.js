@@ -21,12 +21,11 @@ const getLanguageCode = languageId => {
 };
 
 const createInvoicePDF = async (invoiceId, languageId) => {
-  console.log("Generating PDF for invoice:", invoiceId);
-  console.log("Using language ID:", languageId);
-
   let browser;
   try {
-    const invoice = await Invoice.findByPk(invoiceId, {
+    console.log("Starting PDF generation for invoice:", invoiceId);
+    const invoice = await Invoice.findOne({
+      where: { id: invoiceId },
       include: [
         {
           model: Company,
@@ -52,14 +51,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
             },
             {
               model: Project,
-              as: "project",
-              include: [
-                {
-                  model: DefaultPricing,
-                  as: "defaultPricing",
-                  attributes: ["manager_price", "artisan_price"]
-                }
-              ]
+              as: "project"
             }
           ]
         }
@@ -67,28 +59,22 @@ const createInvoicePDF = async (invoiceId, languageId) => {
     });
 
     if (!invoice) {
+      console.error("Invoice not found with ID:", invoiceId);
       throw new Error("Invoice not found");
     }
 
-    console.log("Invoice data loaded successfully");
+    console.log("Found invoice:", {
+      id: invoice.id,
+      number: invoice.invoice_number,
+      itemsCount: invoice.items?.length
+    });
 
-    // Използваме новата функция за определяне на езика
+    // Get language code
     const languageCode = getLanguageCode(languageId);
+    console.log("Using language code:", languageCode);
+
+    // Get translations
     const t = translations[languageCode];
-
-    console.log("Using language:", languageCode);
-
-    // Форматираме датите според локала
-    const dateLocaleMap = {
-      bg: "bg-BG",
-      en: "en-US",
-      ro: "ro-RO",
-      ru: "ru-RU",
-      tr: "tr-TR",
-      pl: "pl-PL",
-      nl: "nl-NL",
-      de: "de-DE"
-    };
 
     // Formatting the invoice number
     const formatInvoiceNumber = invoiceNumber => {
@@ -103,6 +89,18 @@ const createInvoicePDF = async (invoiceId, languageId) => {
 
     const formattedInvoiceNumber = formatInvoiceNumber(invoice.invoice_number);
     console.log("Formatted invoice number:", formattedInvoiceNumber);
+
+    // Formatting the date
+    const dateLocaleMap = {
+      bg: "bg-BG",
+      en: "en-US",
+      ro: "ro-RO",
+      ru: "ru-RU",
+      tr: "tr-TR",
+      pl: "pl-PL",
+      nl: "nl-NL",
+      de: "de-DE"
+    };
 
     // Preparing the data for the template
     const data = {
@@ -128,7 +126,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
         project_address: item.project.address,
         measure: item.measure.name,
         quantity: parseFloat(item.quantity),
-        price_per_unit: item.price_per_unit,
+        price_per_unit: parseFloat(item.price_per_unit),
         total: parseFloat(item.total_price)
       })),
       totalAmount: parseFloat(invoice.total_amount)
@@ -316,7 +314,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
   }
 };
 
-const createArtisanInvoicePDF = async (invoiceId) => {
+const createArtisanInvoicePDF = async invoiceId => {
   console.log("Generating artisan PDF for invoice:", invoiceId);
   let browser;
 
@@ -347,14 +345,11 @@ const createArtisanInvoicePDF = async (invoiceId) => {
             },
             {
               model: Project,
-              as: "project",
-              include: [
-                {
-                  model: DefaultPricing,
-                  as: "defaultPricing",
-                  attributes: ["manager_price", "artisan_price"]
-                }
-              ]
+              as: "project"
+            },
+            {
+              model: Task,
+              as: "task"
             }
           ]
         }
@@ -371,15 +366,6 @@ const createArtisanInvoicePDF = async (invoiceId) => {
       const numPrice = typeof price === "string" ? parseFloat(price) : price;
       return numPrice ? numPrice.toFixed(2) : "0.00";
     };
-
-    const items = invoice.items.map(item => ({
-      activity: item.activity.name,
-      project_name: item.project.name,
-      measure: item.measure.name,
-      quantity: parseFloat(item.quantity),
-      price_per_unit: item.price_per_unit,
-      total: parseFloat(item.total_price)
-    }));
 
     const htmlContent = `
       <!DOCTYPE html>
