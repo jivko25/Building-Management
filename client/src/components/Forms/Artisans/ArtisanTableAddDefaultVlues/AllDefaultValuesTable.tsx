@@ -19,7 +19,7 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
   const [rows, setRows] = useState(10);
   const [responseMessage, setResponseMessage] = useState<ResponseMessageType | null>(null);
 
-  console.log(artisanName);
+  //TODO: handle 0 data response
   const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
     URL: `/default-pricing/${artisanId}`,
     queryKey: ["defaultPricings"]

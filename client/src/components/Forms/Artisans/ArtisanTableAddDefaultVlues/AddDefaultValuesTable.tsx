@@ -111,14 +111,14 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
     const defaultPricing: DefaultPricing = {
       activity_id: activity.id,
       measure_id: measure.id,
-      price: price
+      price: price,
+      manager_price: mangerPrice
     };
 
     try {
       await createEntity(`/default-pricing/${artisanId}`, defaultPricing);
       setIsAdding(false);
       setResponseMessage({ type: "success", message: "Values added successfully!" });
-      refetchDefaultPricings();
     } catch (error) {
       console.error(error);
       setResponseMessage({ type: "error", message: "Something went wrong!" });

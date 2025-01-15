@@ -2,18 +2,19 @@
 const db = require("../../data/index.js");
 const { Project, Company } = db;
 const { Op } = require("sequelize");
+const ApiError = require("../../utils/apiError.js");
 
 const getProjects = async (req, res, next) => {
   try {
     let whereClause = {};
     const isAdmin = req.user.role === "admin";
 
-    if(isAdmin){
+    if (isAdmin) {
       const projects = await Project.findAll();
       return res.json(projects);
     }
 
-    if(projects.length === 0){
+    if (projects.length === 0) {
       throw new ApiError(404, "No projects found for current user");
     }
 
@@ -32,7 +33,7 @@ const getProjects = async (req, res, next) => {
       order: [["id", "DESC"]]
     });
 
-    if(projects.length === 0){
+    if (projects.length === 0) {
       throw new ApiError(404, "No projects found for current user");
     }
 

@@ -1,7 +1,6 @@
 //client\src\components\tables\ArtisansTable\ArtisansCard.tsx
 import EditArtisan from "@/components/Forms/Artisans/ArtisanFormEdit/EditArtisan";
 import ArtisanAction from "@/components/Forms/Artisans/ArtisanTableAddDefaultVlues/ArtisanAction";
-import ArtisanAllDefaultValues from "@/components/Forms/Artisans/ArtisanTableAddDefaultVlues/ArtisanAllDefaultValues";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useAuth } from "@/context/AuthContext";
 import { Artisan } from "@/types/artisan-types/artisanTypes";
