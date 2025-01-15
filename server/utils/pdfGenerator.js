@@ -1,7 +1,7 @@
 //server/utils/pdfGenerator.js
 const puppeteer = require("puppeteer");
 const db = require("../data/index.js");
-const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client, Task } = db;
+const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client, Task, Artisan } = db;
 const translations = require("./translations/invoiceTranslations");
 
 const getLanguageCode = languageId => {
@@ -317,6 +317,145 @@ const createInvoicePDF = async (invoiceId, languageId) => {
   }
 };
 
+const createArtisanInvoicePDF = async invoiceId => {
+  console.log("Generating PDF for artisan invoice:", invoiceId);
+  let browser;
+
+  try {
+    const invoice = await Invoice.findByPk(invoiceId, {
+      include: [
+        {
+          model: Company,
+          as: "company",
+          attributes: ["name", "address", "vat_number", "iban", "logo_url", "phone", "registration_number", "email", "mol"]
+        },
+        {
+          model: Artisan,
+          as: "artisan",
+          attributes: ["name", "email", "number"]
+        },
+        {
+          model: InvoiceItem,
+          as: "items",
+          include: [
+            {
+              model: Activity,
+              as: "activity",
+              attributes: ["name"]
+            },
+            {
+              model: Measure,
+              as: "measure",
+              attributes: ["name"]
+            },
+            {
+              model: Project,
+              as: "project",
+              attributes: ["name", "location", "address"]
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!invoice) {
+      throw new Error("Artisan invoice not found");
+    }
+
+    // HTML шаблон за фактурата на майстора
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            /* Add your CSS styles here */
+          </style>
+        </head>
+        <body>
+          <h1>Artisan Invoice ${invoice.invoice_number}</h1>
+          <div class="company-info">
+            <h2>${invoice.company.name}</h2>
+            <p>Address: ${invoice.company.address}</p>
+            <p>VAT: ${invoice.company.vat_number}</p>
+          </div>
+          
+          <div class="artisan-info">
+            <h2>Artisan: ${invoice.artisan.name}</h2>
+            <p>Contact: ${invoice.artisan.number}</p>
+            <p>Email: ${invoice.artisan.email}</p>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Activity</th>
+                <th>Location</th>
+                <th>Address</th>
+                <th>Measure</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${invoice.items
+                .map(
+                  item => `
+                <tr>
+                  <td>${item.activity.name}</td>
+                  <td>${item.project.location}</td>
+                  <td>${item.project.address}</td>
+                  <td>${item.measure.name}</td>
+                  <td>${item.quantity}</td>
+                  <td>${item.price_per_unit} €</td>
+                  <td>${item.total_price} €</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="6" style="text-align: right;"><strong>Total:</strong></td>
+                <td><strong>${invoice.total_amount} €</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </body>
+      </html>
+    `;
+
+    browser = await puppeteer.launch({
+      headless: "new",
+      args: ["--no-sandbox"]
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(htmlContent);
+
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: {
+        top: "20px",
+        right: "20px",
+        bottom: "20px",
+        left: "20px"
+      }
+    });
+
+    return pdfBuffer;
+  } catch (error) {
+    console.error("Error generating artisan PDF:", error);
+    throw error;
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
+  }
+};
+
 module.exports = {
-  createInvoicePDF
+  createInvoicePDF,
+  createArtisanInvoicePDF
 };

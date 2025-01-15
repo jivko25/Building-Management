@@ -1,9 +1,9 @@
 const db = require("../../data/index.js");
-const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem, InvoiceLanguage } = db;
+const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem, InvoiceLanguage, Artisan } = db;
 const { createInvoicePDF } = require("../../utils/pdfGenerator");
 const { sendInvoiceEmail } = require("../../utils/invoiceEmailService");
 const { sequelize } = require("../../data/index.js");
-
+const { createArtisanInvoicePDF } = require("../../utils/pdfGenerator");
 const generateUniqueInvoiceNumber = async (year, week) => {
   console.log("Generating unique invoice number for year:", year, "week:", week);
 
@@ -150,7 +150,7 @@ const createInvoice = async (req, res, next) => {
     const items = await Promise.all(
       Object.values(groupedItems).map(async item => {
         console.log("Creating invoice item with data:", item);
-        
+
         return InvoiceItem.create({
           invoice_id: invoice.id,
           activity_id: item.activity_id,
@@ -572,6 +572,280 @@ const updateInvoiceStatus = async (req, res, next) => {
   }
 };
 
+const createArtisanInvoice = async (req, res, next) => {
+  console.log("Creating artisan invoice with data:", req.body);
+  const t = await sequelize.transaction({
+    timeout: 30000
+  });
+
+  try {
+    const { company_id, artisan_id, due_date_weeks, selected_projects, selected_work_items } = req.body;
+
+    // Validate required fields
+    if (!company_id || !artisan_id || !due_date_weeks || !selected_work_items?.length) {
+      console.error("Missing required fields");
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields"
+      });
+    }
+
+    // Get artisan details
+    const artisan = await Artisan.findByPk(artisan_id);
+    if (!artisan) {
+      throw new Error("Artisan not found");
+    }
+
+    console.log("Fetching work items...");
+    const workItems = await WorkItem.findAll({
+      where: {
+        id: selected_work_items,
+        isInvoiced: false,
+        artisan_id: artisan_id
+      },
+      include: [
+        {
+          model: Task,
+          as: "task",
+          required: true,
+          include: [
+            {
+              model: Project,
+              as: "project",
+              required: true,
+              where: {
+                id: selected_projects
+              }
+            }
+          ]
+        },
+        {
+          model: Activity,
+          as: "activity",
+          required: true
+        },
+        {
+          model: Measure,
+          as: "measure",
+          required: true
+        }
+      ]
+    });
+
+    if (!workItems.length) {
+      throw new Error("No valid work items found");
+    }
+
+    const now = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + due_date_weeks * 7);
+
+    const year = now.getFullYear();
+    const week = Math.ceil((now.getDate() + 1) / 7);
+
+    const invoiceNumber = await generateUniqueInvoiceNumber(year, week);
+
+    const totalAmount = workItems.reduce((sum, item) => {
+      return sum + parseFloat(item.artisan_price || 0);
+    }, 0);
+
+    console.log("Creating invoice with total amount:", totalAmount);
+
+    // Създаване на фактурата
+    const invoice = await Invoice.create(
+      {
+        invoice_number: invoiceNumber,
+        year,
+        week_number: week,
+        company_id,
+        artisan_id,
+        invoice_date: now,
+        due_date: dueDate,
+        total_amount: totalAmount,
+        is_artisan_invoice: true
+      },
+      { transaction: t }
+    );
+
+    // Създаване на елементите на фактурата
+    const invoiceItems = workItems.map(item => ({
+      invoice_id: invoice.id,
+      activity_id: item.activity_id,
+      measure_id: item.measure_id,
+      project_id: item.task.project.id,
+      task_id: item.task_id,
+      quantity: parseFloat(item.quantity || 0),
+      price_per_unit: parseFloat(item.artisan_price || 0) / parseFloat(item.quantity || 1),
+      total_price: parseFloat(item.artisan_price || 0)
+    }));
+
+    await InvoiceItem.bulkCreate(invoiceItems, { transaction: t });
+
+    // Маркиране на работните елементи като фактурирани
+    await WorkItem.update(
+      { isInvoiced: true },
+      {
+        where: { id: selected_work_items },
+        transaction: t
+      }
+    );
+
+    // Първо commit-ваме транзакцията
+    await t.commit();
+
+    // След това генерираме PDF-а
+    console.log("Generating PDF...");
+    const pdfBuffer = await createArtisanInvoicePDF(invoice.id);
+
+    // Взимаме пълните данни за фактурата
+    const fullInvoice = await Invoice.findByPk(invoice.id, {
+      include: [
+        {
+          model: Company,
+          as: "company"
+        },
+        {
+          model: Artisan,
+          as: "artisan"
+        },
+        {
+          model: InvoiceItem,
+          as: "items",
+          include: [
+            {
+              model: Activity,
+              as: "activity"
+            },
+            {
+              model: Measure,
+              as: "measure"
+            },
+            {
+              model: Project,
+              as: "project"
+            }
+          ]
+        }
+      ]
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Artisan invoice created successfully",
+      data: fullInvoice
+    });
+  } catch (error) {
+    await t.rollback();
+    console.error("Error creating artisan invoice:", error);
+    res.status(500).json({
+      success: false,
+      status: "error",
+      message: error.message
+    });
+  }
+};
+
+const getArtisanInvoicePDF = async (req, res, next) => {
+  console.log("Getting artisan invoice PDF for ID:", req.params.id);
+  try {
+    const invoice = await Invoice.findOne({
+      where: {
+        id: req.params.id,
+        is_artisan_invoice: true
+      }
+    });
+
+    if (!invoice) {
+      return res.status(404).json({
+        success: false,
+        message: "Artisan invoice not found"
+      });
+    }
+
+    const pdfBuffer = await createArtisanInvoicePDF(invoice.id);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=artisan-invoice-${invoice.invoice_number}.pdf`);
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error("Error getting artisan invoice PDF:", error);
+    next(error);
+  }
+};
+
+const updateArtisanInvoice = async (req, res, next) => {
+  console.log("Updating artisan invoice:", req.params.id);
+  const t = await sequelize.transaction();
+
+  try {
+    const invoice = await Invoice.findOne({
+      where: {
+        id: req.params.id,
+        is_artisan_invoice: true
+      }
+    });
+
+    if (!invoice) {
+      return res.status(404).json({
+        success: false,
+        message: "Artisan invoice not found"
+      });
+    }
+
+    const { paid } = req.body;
+    await invoice.update({ paid }, { transaction: t });
+
+    await t.commit();
+    res.json({
+      success: true,
+      message: "Artisan invoice updated successfully",
+      data: invoice
+    });
+  } catch (error) {
+    await t.rollback();
+    console.error("Error updating artisan invoice:", error);
+    next(error);
+  }
+};
+
+const deleteArtisanInvoice = async (req, res, next) => {
+  console.log("Deleting artisan invoice:", req.params.id);
+  const t = await sequelize.transaction();
+
+  try {
+    const invoice = await Invoice.findOne({
+      where: {
+        id: req.params.id,
+        is_artisan_invoice: true
+      }
+    });
+
+    if (!invoice) {
+      return res.status(404).json({
+        success: false,
+        message: "Artisan invoice not found"
+      });
+    }
+
+    await InvoiceItem.destroy({
+      where: { invoice_id: invoice.id },
+      transaction: t
+    });
+
+    await invoice.destroy({ transaction: t });
+
+    await t.commit();
+    res.json({
+      success: true,
+      message: "Artisan invoice deleted successfully"
+    });
+  } catch (error) {
+    await t.rollback();
+    console.error("Error deleting artisan invoice:", error);
+    next(error);
+  }
+};
+
 module.exports = {
   createInvoice,
   getAllInvoices,
@@ -580,5 +854,9 @@ module.exports = {
   updateInvoice,
   getInvoicePDF,
   updateInvoiceStatus,
-  generateUniqueInvoiceNumber
+  generateUniqueInvoiceNumber,
+  createArtisanInvoice,
+  getArtisanInvoicePDF,
+  updateArtisanInvoice,
+  deleteArtisanInvoice
 };
