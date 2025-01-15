@@ -19,8 +19,8 @@ const ArtisansCard = ({ artisans }: ArtisansCardProps) => {
         <TableRow key={artisan.id}>
           <TableCell className="font-semibold">{artisan.name}</TableCell>
           <TableCell className="text-end w-[200px]">
-            <ArtisanAllDefaultValues artisanId={artisan.id!} artisanName={artisan.name} />
-            {defaultValuesGuard && <ArtisanAction artisanId={artisan.id!} />}
+            {defaultValuesGuard && <ArtisanAction artisanId={artisan.id!} artisanName={artisan.name} type="all" />}
+            <EditArtisan artisan={artisan} />
           </TableCell>
         </TableRow>
       ))}

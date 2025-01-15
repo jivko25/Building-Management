@@ -9,7 +9,7 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export default function EditDefaultValuesTable({ editProps }: { editProps: EditDefaultValuesTableProps }) {
   const [newPrice, setNewPrice] = useState<number>(editProps.price);
