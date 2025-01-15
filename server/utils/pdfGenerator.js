@@ -432,31 +432,31 @@ const createArtisanInvoicePDF = async invoiceId => {
         <body>
           <div class="header">
             <div class="invoice-details">
-              <h2>Фактура № ${invoice.invoice_number}</h2>
-              <p>Дата: ${new Date(invoice.invoice_date).toLocaleDateString("bg-BG")}</p>
-              <p>Краен срок: ${new Date(invoice.due_date).toLocaleDateString("bg-BG")}</p>
+              <h2>Invoice № ${invoice.invoice_number}</h2>
+              <p>Date: ${new Date(invoice.invoice_date).toLocaleDateString("bg-BG")}</p>
+              <p>Due date: ${new Date(invoice.due_date).toLocaleDateString("bg-BG")}</p>
             </div>
             ${invoice.company.logo_url ? `<img src="${invoice.company.logo_url}" class="logo" />` : ""}
           </div>
 
           <div class="details-container">
             <div class="artisan-details">
-              <h3>Получател:</h3>
-              <p>Име: ${invoice.artisan.name}</p>
-              <p>Номер: ${invoice.artisan.number || "N/A"}</p>
-              <p>Имейл: ${invoice.artisan.email}</p>
+              <h3>Recipient:</h3>
+              <p>Name: ${invoice.artisan.name}</p>
+              <p>Number: ${invoice.artisan.number || "N/A"}</p>
+              <p>Email: ${invoice.artisan.email}</p>
             </div>
 
             <div class="company-details">
-              <h3>Издател:</h3>
+              <h3>Issuer:</h3>
               <p>${invoice.company.name}</p>
-              <p>Адрес: ${invoice.company.address}</p>
-              <p>ЕИК: ${invoice.company.registration_number}</p>
-              <p>ДДС номер: ${invoice.company.vat_number}</p>
-              <p>МОЛ: ${invoice.company.mol}</p>
+              <p>Address: ${invoice.company.address}</p>
+              <p>EIK: ${invoice.company.registration_number}</p>
+              <p>VAT number: ${invoice.company.vat_number}</p>
+              <p>MOL: ${invoice.company.mol}</p>
               <p>IBAN: ${invoice.company.iban}</p>
-              <p>Телефон: ${invoice.company.phone}</p>
-              <p>Имейл: ${invoice.company.email}</p>
+              <p>Phone: ${invoice.company.phone}</p>
+              <p>Email: ${invoice.company.email}</p>
             </div>
           </div>
 
@@ -464,13 +464,13 @@ const createArtisanInvoicePDF = async invoiceId => {
             <thead>
               <tr>
                 <th>№</th>
-                <th>Проект</th>
-                <th>Задача</th>
-                <th>Дейност</th>
-                <th>Мярка</th>
-                <th>Количество</th>
-                <th>Ед. цена</th>
-                <th>Общо</th>
+                <th>Project</th>
+                <th>Task</th>
+                <th>Activity</th>
+                <th>Measure</th>
+                <th>Quantity</th>
+                <th>Unit price</th>
+                <th>Total</th>
               </tr>
             </thead>
             <tbody>
@@ -484,8 +484,8 @@ const createArtisanInvoicePDF = async invoiceId => {
                   <td>${item.activity?.name || "N/A"}</td>
                   <td>${item.measure?.name || "N/A"}</td>
                   <td>${item.quantity}</td>
-                  <td>${formatPrice(item.price_per_unit)} лв.</td>
-                  <td>${formatPrice(item.total_price)} лв.</td>
+                  <td>${formatPrice(item.price_per_unit)} €</td>
+                  <td>${formatPrice(item.total_price)} €</td>
                 </tr>
               `
                 )
@@ -493,8 +493,8 @@ const createArtisanInvoicePDF = async invoiceId => {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="7" style="text-align: right;"><strong>Обща сума:</strong></td>
-                <td><strong>${formatPrice(invoice.total_amount)} лв.</strong></td>
+                <td colspan="7" style="text-align: right;"><strong>Total:</strong></td>
+                <td><strong>${formatPrice(invoice.total_amount)} €</strong></td>
               </tr>
             </tfoot>
           </table>
