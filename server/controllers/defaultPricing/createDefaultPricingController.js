@@ -1,5 +1,5 @@
 const db = require("../../data/index.js");
-const { DefaultPricing, Artisan, Activity, Measure } = db;
+const { DefaultPricing, Artisan, Activity, Measure, Project } = db;
 const ApiError = require("../../utils/apiError");
 
 const createDefaultPricing = async (req, res, next) => {
@@ -18,10 +18,10 @@ const createDefaultPricing = async (req, res, next) => {
             throw new ApiError(404, "Artisan not found!");
         }
 
-        const { activity_id, measure_id, price } = req.body;
+        const { activity_id, measure_id, manager_price, artisan_price, project_id } = req.body;
 
-        if (!activity_id || !measure_id || !price || !artisan_id) {
-            throw new ApiError(400, "Activity id, measure id, price and artisan id are required!");
+        if (!activity_id || !measure_id || !manager_price || !artisan_price || !artisan_id || !project_id) {
+            throw new ApiError(400, "Activity id, measure id, manager price, artisan price, artisan id and project id are required!");
         }
 
         const isActivity = await Activity.findOne({
@@ -48,11 +48,21 @@ const createDefaultPricing = async (req, res, next) => {
             throw new ApiError(404, "Measure not found!");
         }
 
+        const isProject = await Project.findOne({
+            where: {
+                id: project_id
+            }
+        });
+        if (!isProject) {
+            throw new ApiError(404, "Project not found!");
+        }
+
         const isDefaultPricing = await DefaultPricing.findOne({
             where: {
                 artisan_id: artisan_id,
                 activity_id: activity_id,
-                measure_id: measure_id
+                measure_id: measure_id, 
+                project_id: project_id
             }
         });
         if (isDefaultPricing) {
@@ -62,8 +72,11 @@ const createDefaultPricing = async (req, res, next) => {
         const defaultPricing = await DefaultPricing.create({
             activity_id,
             measure_id,
-            artisan_id: artisan_id,
-            price
+            artisan_id,
+            project_id,
+            manager_price,
+            artisan_price,
+            creator_id: req.user.id
         }); 
 
         res.status(201).json({
