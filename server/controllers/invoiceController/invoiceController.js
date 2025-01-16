@@ -42,15 +42,6 @@ const generateUniqueInvoiceNumber = async (year, week) => {
   return invoiceNumber;
 };
 
-
-
-
-
-
-
-
-
-
 const getInvoicePDF = async (req, res, next) => {
   console.log("Generating PDF for invoice ID:", req.params.id);
   try {
@@ -428,11 +419,6 @@ const deleteArtisanInvoice = async (req, res, next) => {
 };
 
 module.exports = {
-  createInvoice,
-  getAllInvoices,
-  getInvoiceById,
-  deleteInvoice,
-  updateInvoice,
   getInvoicePDF,
   updateInvoiceStatus,
   generateUniqueInvoiceNumber,
