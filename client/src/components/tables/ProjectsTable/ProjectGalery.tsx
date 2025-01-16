@@ -16,7 +16,7 @@ const ProjectGallery: React.FC<ProjectGalleryProps> = () => {
   const { id } = useParams();
 
   const handleDeleteImage = (id: number) => {
-    apiClient.delete(`/images/${id}`).then(response => {
+    apiClient.delete(`/images/${id}`).then(() => {
       setImages(images.filter(image => image.id !== id));
     });
     console.log(images)

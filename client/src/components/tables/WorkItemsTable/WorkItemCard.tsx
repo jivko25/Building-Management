@@ -3,7 +3,7 @@ import EditWorkItem from "@/components/Forms/WorkItems/WorkItemFormEdit/EditWork
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import { PaginatedWorkItems, WorkItem } from "@/types/work-item-types/workItem";
+import { PaginatedWorkItems } from "@/types/work-item-types/workItem";
 import { Separator } from "@/components/ui/separator";
 // import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
