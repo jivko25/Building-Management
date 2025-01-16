@@ -1,7 +1,7 @@
 //server/utils/pdfGenerator.js
 const puppeteer = require("puppeteer");
 const db = require("../data/index.js");
-const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client, Task, Artisan, DefaultPricing } = db;
+const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client, Task, Artisan, User } = db;
 const translations = require("./translations/invoiceTranslations");
 
 const getLanguageCode = languageId => {
@@ -315,11 +315,11 @@ const createInvoicePDF = async (invoiceId, languageId) => {
 };
 
 const createArtisanInvoicePDF = async invoiceId => {
-  console.log("Generating artisan PDF for invoice:", invoiceId);
   let browser;
-
   try {
-    const invoice = await Invoice.findByPk(invoiceId, {
+    console.log("Starting PDF generation for artisan invoice:", invoiceId);
+    const invoice = await Invoice.findOne({
+      where: { id: invoiceId },
       include: [
         {
           model: Company,
@@ -329,6 +329,13 @@ const createArtisanInvoicePDF = async invoiceId => {
         {
           model: Artisan,
           as: "artisan",
+          include: [
+            {
+              model: User,
+              as: "user",
+              attributes: ["full_name", "email"]
+            }
+          ],
           attributes: ["name", "email", "number"]
         },
         {
@@ -342,25 +349,11 @@ const createArtisanInvoicePDF = async invoiceId => {
             {
               model: Measure,
               as: "measure"
-            },
-            {
-              model: Project,
-              as: "project"
-            },
-            {
-              model: Task,
-              as: "task"
             }
           ]
         }
       ]
     });
-
-    if (!invoice) {
-      throw new Error("Invoice not found");
-    }
-
-    console.log("Processing invoice items:", invoice.items);
 
     const formatPrice = price => {
       const numPrice = typeof price === "string" ? parseFloat(price) : price;
@@ -386,24 +379,19 @@ const createArtisanInvoicePDF = async invoiceId => {
             .logo {
               max-width: 200px;
               max-height: 100px;
-              order: 2; /* Move logo to right */
+              order: 2;
             }
             .invoice-details {
               margin-bottom: 30px;
-              order: 1; /* Move details to left */
+              order: 1;
             }
             .details-container {
               display: flex;
               justify-content: space-between;
               margin-bottom: 30px;
             }
-            .company-details {
+            .recipient-info, .issuer-info {
               width: 48%;
-              order: 2; /* Company details on right */
-            }
-            .artisan-details {
-              width: 48%;
-              order: 1; /* Artisan details on left */
             }
             table {
               width: 100%;
@@ -437,23 +425,17 @@ const createArtisanInvoicePDF = async invoiceId => {
           </div>
 
           <div class="details-container">
-            <div class="artisan-details">
+            <div class="recipient-info">
               <h3>Recipient:</h3>
-              <p>${invoice.company.name}</p>
-              <p>Address: ${invoice.company.address}</p>
-              <p>EIK: ${invoice.company.registration_number}</p>
-              <p>VAT number: ${invoice.company.vat_number}</p>
-              <p>MOL: ${invoice.company.mol}</p>
-              <p>IBAN: ${invoice.company.iban}</p>
-              <p>Phone: ${invoice.company.phone}</p>
-              <p>Email: ${invoice.company.email}</p>
+              <p>Name: ${invoice.artisan.user.full_name}</p>
+              <p>Email: ${invoice.artisan.user.email}</p>
             </div>
 
-            <div class="company-details">
+            <div class="issuer-info">
               <h3>Issuer:</h3>
               <p>Name: ${invoice.artisan.name}</p>
-              <p>Number: ${invoice.artisan.number || "N/A"}</p>
               <p>Email: ${invoice.artisan.email}</p>
+              <p>Phone: ${invoice.artisan.number || "N/A"}</p>
             </div>
           </div>
 
@@ -461,10 +443,7 @@ const createArtisanInvoicePDF = async invoiceId => {
             <thead>
               <tr>
                 <th>№</th>
-                <th>Project</th>
-                <th>Task</th>
                 <th>Activity</th>
-                <th>Measure</th>
                 <th>Quantity</th>
                 <th>Unit price</th>
                 <th>Total</th>
@@ -476,11 +455,8 @@ const createArtisanInvoicePDF = async invoiceId => {
                   (item, index) => `
                 <tr>
                   <td>${index + 1}</td>
-                  <td>${item.project?.name || "N/A"}</td>
-                  <td>${item.task?.name || "N/A"}</td>
                   <td>${item.activity?.name || "N/A"}</td>
-                  <td>${item.measure?.name || "N/A"}</td>
-                  <td>${item.quantity}</td>
+                  <td>${item.quantity} ${item.measure?.name || ""}</td>
                   <td>${formatPrice(item.price_per_unit)} €</td>
                   <td>${formatPrice(item.total_price)} €</td>
                 </tr>
@@ -490,7 +466,7 @@ const createArtisanInvoicePDF = async invoiceId => {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="7" style="text-align: right;"><strong>Total:</strong></td>
+                <td colspan="4" style="text-align: right;"><strong>Total:</strong></td>
                 <td><strong>${formatPrice(invoice.total_amount)} €</strong></td>
               </tr>
             </tfoot>
