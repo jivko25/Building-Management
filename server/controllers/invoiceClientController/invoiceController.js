@@ -1,9 +1,9 @@
 const db = require("../../data/index.js");
 const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem, InvoiceLanguage, Artisan, DefaultPricing } = db;
-const { createInvoicePDF } = require("../../utils/pdfGenerator");
-const { sendInvoiceEmail } = require("../../utils/invoiceEmailService");
+const { createInvoicePDF } = require("../../utils/pdfGenerator.js");
+const { sendInvoiceEmail } = require("../../utils/invoiceEmailService.js");
 const { sequelize } = require("../../data/index.js");
-const { createArtisanInvoicePDF } = require("../../utils/pdfGenerator");
+const { createArtisanInvoicePDF } = require("../../utils/pdfGenerator.js");
 
 const getWeekNumber = date => {
   const d = new Date(date);

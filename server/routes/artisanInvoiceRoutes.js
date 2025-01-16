@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { createArtisanInvoice, getArtisanInvoicePDF, updateArtisanInvoice, deleteArtisanInvoice } = require("../controllers/invoiceController/invoiceController");
+const { createArtisanInvoice, getArtisanInvoicePDF, updateArtisanInvoice, deleteArtisanInvoice } = require("../controllers/invoiceClientController/invoiceController");
 
 // Създаване на фактура за майстор
 router.post("/", createArtisanInvoice);
