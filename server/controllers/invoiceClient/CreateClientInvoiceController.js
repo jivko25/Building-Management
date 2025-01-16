@@ -42,19 +42,19 @@ const createClientInvoice = async (req, res, next) => {
 
   try {
     console.log("Creating invoice with data:", req.body);
-    const { company_id, client_company_id, due_date_weeks, selected_projects, selected_work_items } = req.body;
+    const { company_id, client_company_id, due_date_weeks, project_ids, work_item_ids } = req.body;
 
     // Валидация на входните данни
-    if (!company_id || !client_company_id || !due_date_weeks || !selected_projects || !selected_work_items) {
-      throw new Error("Missing required fields: company_id, client_company_id, due_date_weeks, selected_projects, selected_work_items");
+    if (!company_id || !client_company_id || !due_date_weeks || !project_ids || !work_item_ids) {
+      throw new Error("Missing required fields: company_id, client_company_id, due_date_weeks, project_ids, work_item_ids");
     }
 
-    if (!Array.isArray(selected_projects) || selected_projects.length === 0) {
-      throw new Error("selected_projects must be a non-empty array");
+    if (!Array.isArray(project_ids) || project_ids.length === 0) {
+      throw new Error("project_ids must be a non-empty array");
     }
 
-    if (!Array.isArray(selected_work_items) || selected_work_items.length === 0) {
-      throw new Error("selected_work_items must be a non-empty array");
+    if (!Array.isArray(work_item_ids) || work_item_ids.length === 0) {
+      throw new Error("work_item_ids must be a non-empty array");
     }
 
     // Проверка дали компанията съществува
@@ -72,16 +72,16 @@ const createClientInvoice = async (req, res, next) => {
 
     // Проверка дали проектите съществуват
     const projects = await Project.findAll({
-      where: { id: selected_projects }
+      where: { id: project_ids }
     });
-    if (projects.length !== selected_projects.length) {
+    if (projects.length !== project_ids.length) {
       throw new Error("One or more selected projects do not exist");
     }
 
     // Намираме работните елементи с всички необходими релации
     const workItems = await WorkItem.findAll({
       where: {
-        id: selected_work_items,
+        id: work_item_ids,
         is_client_invoiced: false
       },
       include: [
@@ -95,7 +95,7 @@ const createClientInvoice = async (req, res, next) => {
               as: "project",
               required: true,
               where: {
-                id: selected_projects
+                id: project_ids
               }
             }
           ]
@@ -184,7 +184,7 @@ const createClientInvoice = async (req, res, next) => {
     await WorkItem.update(
       { is_client_invoiced: true },
       {
-        where: { id: selected_work_items },
+        where: { id: work_item_ids },
         transaction: t
       }
     );
