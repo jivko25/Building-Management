@@ -439,13 +439,6 @@ const createArtisanInvoicePDF = async invoiceId => {
           <div class="details-container">
             <div class="artisan-details">
               <h3>Recipient:</h3>
-              <p>Name: ${invoice.artisan.name}</p>
-              <p>Number: ${invoice.artisan.number || "N/A"}</p>
-              <p>Email: ${invoice.artisan.email}</p>
-            </div>
-
-            <div class="company-details">
-              <h3>Issuer:</h3>
               <p>${invoice.company.name}</p>
               <p>Address: ${invoice.company.address}</p>
               <p>EIK: ${invoice.company.registration_number}</p>
@@ -454,6 +447,13 @@ const createArtisanInvoicePDF = async invoiceId => {
               <p>IBAN: ${invoice.company.iban}</p>
               <p>Phone: ${invoice.company.phone}</p>
               <p>Email: ${invoice.company.email}</p>
+            </div>
+
+            <div class="company-details">
+              <h3>Issuer:</h3>
+              <p>Name: ${invoice.artisan.name}</p>
+              <p>Number: ${invoice.artisan.number || "N/A"}</p>
+              <p>Email: ${invoice.artisan.email}</p>
             </div>
           </div>
 
