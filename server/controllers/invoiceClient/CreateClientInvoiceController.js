@@ -1,8 +1,9 @@
 const db = require("../../data/index.js");
-const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem } = db;
+const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem, DefaultPricing } = db;
 const { createInvoicePDF } = require("../../utils/pdfGenerator.js");
 const { sendInvoiceEmail } = require("../../utils/invoiceEmailService.js");
 const { sequelize } = require("../../data/index.js");
+const ApiError = require("../../utils/apiError");
 
 const getWeekNumber = date => {
   const d = new Date(date);
@@ -46,27 +47,27 @@ const createClientInvoice = async (req, res, next) => {
 
     // Валидация на входните данни
     if (!company_id || !client_company_id || !due_date_weeks || !project_ids || !work_item_ids) {
-      throw new Error("Missing required fields: company_id, client_company_id, due_date_weeks, project_ids, work_item_ids");
+      throw new ApiError(400, "Missing required fields!");
     }
 
     if (!Array.isArray(project_ids) || project_ids.length === 0) {
-      throw new Error("project_ids must be a non-empty array");
+      throw new ApiError(400, "project_ids must be a non-empty array");
     }
 
     if (!Array.isArray(work_item_ids) || work_item_ids.length === 0) {
-      throw new Error("work_item_ids must be a non-empty array");
+      throw new ApiError(400, "work_item_ids must be a non-empty array");
     }
 
     // Проверка дали компанията съществува
     const company = await Company.findByPk(company_id);
     if (!company) {
-      throw new Error(`Company with ID ${company_id} not found`);
+      throw new ApiError(404, `Company with ID ${company_id} not found`);
     }
 
     // Проверка дали клиентът съществува
     const client = await Client.findByPk(client_company_id);
     if (!client) {
-      throw new Error(`Client with ID ${client_company_id} not found`);
+      throw new ApiError(404, `Client with ID ${client_company_id} not found`);
     }
     console.log("Found client:", { id: client.id, email: client.client_emails });
 
@@ -75,7 +76,7 @@ const createClientInvoice = async (req, res, next) => {
       where: { id: project_ids }
     });
     if (projects.length !== project_ids.length) {
-      throw new Error("One or more selected projects do not exist");
+      throw new ApiError(404, "One or more selected projects do not exist");
     }
 
     // Намираме работните елементи с всички необходими релации
@@ -114,25 +115,22 @@ const createClientInvoice = async (req, res, next) => {
     });
 
     if (!workItems.length) {
-      throw new Error("No valid work items found. Items might be already invoiced or not associated with selected projects");
+      throw new ApiError(404, "No valid work items found. Items might be already invoiced or not associated with selected projects");
     }
 
     // Проверка за липсващи данни в работните елементи
     workItems.forEach((workItem, index) => {
       if (!workItem.task) {
-        throw new Error(`Work item ${workItem.id} has no associated task`);
+        throw new ApiError(400, `Work item ${workItem.id} has no associated task`);
       }
       if (!workItem.task.project) {
-        throw new Error(`Task for work item ${workItem.id} has no associated project`);
+        throw new ApiError(400, `Task for work item ${workItem.id} has no associated project`);
       }
       if (!workItem.activity) {
-        throw new Error(`Work item ${workItem.id} has no associated activity`);
+        throw new ApiError(400, `Work item ${workItem.id} has no associated activity`);
       }
       if (!workItem.measure) {
-        throw new Error(`Work item ${workItem.id} has no associated measure`);
-      }
-      if (!workItem.task.price_per_measure) {
-        throw new Error(`Task for work item ${workItem.id} has no price per measure set`);
+        throw new ApiError(400, `Work item ${workItem.id} has no associated measure`);
       }
     });
 
@@ -160,34 +158,43 @@ const createClientInvoice = async (req, res, next) => {
     // Създаваме елементите на фактурата
     let totalAmount = 0;
     for (const workItem of workItems) {
+      // Намираме цената от DefaultPricing
+      const defaultPricing = await DefaultPricing.findOne({
+        where: {
+          project_id: workItem.task.project.id,
+          activity_id: workItem.activity.id,
+          measure_id: workItem.measure.id
+        },
+        attributes: ['id', 'activity_id', 'measure_id', 'project_id', 'manager_price', 'artisan_price']
+      });
+
+      if (!defaultPricing) {
+        throw new ApiError(404, `No default pricing found for activity ${workItem.activity.name} in project ${workItem.task.project.name}`);
+      }
+
       const invoiceItem = await InvoiceItem.create(
         {
           invoice_id: invoice.id,
           work_item_id: workItem.id,
-          activity_id: workItem.activity_id,
-          measure_id: workItem.measure_id,
+          activity_id: workItem.activity.id,
+          measure_id: workItem.measure.id,
           project_id: workItem.task.project.id,
-          task_id: workItem.task_id,
+          task_id: workItem.task.id,
           quantity: parseFloat(workItem.quantity),
-          price_per_unit: parseFloat(workItem.task.price_per_measure),
-          total_price: parseFloat(workItem.quantity) * parseFloat(workItem.task.price_per_measure)
+          price_per_unit: parseFloat(defaultPricing.manager_price),
+          total_price: parseFloat(workItem.quantity) * parseFloat(defaultPricing.manager_price)
         },
         { transaction: t }
       );
+
       totalAmount += invoiceItem.total_price;
+
+      // Маркираме работния елемент като фактуриран
+      await workItem.update({ is_client_invoiced: true }, { transaction: t });
     }
 
-    // Обновяваме общата сума
+    // Обновяваме общата сума на фактурата
     await invoice.update({ total_amount: totalAmount }, { transaction: t });
-
-    // Маркираме работните елементи като фактурирани
-    await WorkItem.update(
-      { is_client_invoiced: true },
-      {
-        where: { id: work_item_ids },
-        transaction: t
-      }
-    );
 
     await t.commit();
 
@@ -206,17 +213,22 @@ const createClientInvoice = async (req, res, next) => {
       message: "Invoice created successfully",
       data: {
         invoice_id: invoice.id,
-        invoice_number: invoiceNumber
+        invoice_number: invoiceNumber,
+        total_amount: totalAmount
       }
     });
   } catch (error) {
     await t.rollback();
     console.error("Error creating invoice:", error);
-    res.status(400).json({
-      success: false,
-      status: "error",
-      message: error.message
-    });
+    if (error instanceof ApiError) {
+      res.status(error.statusCode).json({
+        success: false,
+        status: error.status,
+        message: error.message
+      });
+    } else {
+      next(new ApiError(500, "Internal Server Error"));
+    }
   }
 };
 
