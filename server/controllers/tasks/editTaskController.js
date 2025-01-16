@@ -5,7 +5,7 @@ const ApiError = require("../../utils/apiError");
 
 const editTask = async (req, res, next) => {
   const { taskId } = req.params;
-  const { name, artisans, activity, measure, price_per_measure, total_price, total_work_in_selected_measure, start_date, end_date, note, status } = req.body;
+  const { name, artisans, activity, measure, total_price, total_work_in_selected_measure, start_date, end_date, note, status } = req.body;
 
   try {
     const task = await Task.findByPk(taskId);
@@ -30,7 +30,6 @@ const editTask = async (req, res, next) => {
       name,
       activity_id: activityRecord.id,
       measure_id: measureRecord.id,
-      price_per_measure,
       total_price,
       total_work_in_selected_measure,
       start_date,
