@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { createClientInvoice } = require("../controllers/invoiceClient/CreateClientInvoice");
-const { editClientInvoice } = require("../controllers/invoiceClient/EditClientInvoice");
-const { getAllClientInvoices } = require("../controllers/invoiceClient/GetAllClientInvoices");
-const { getClientInvoiceById } = require("../controllers/invoiceClient/GetClientInvoiceById");
-const { getPDFClientInvoiceById } = require("../controllers/invoiceClient/GetPDFClientInvoiceById");
-const { updateClientInvoiceStatus } = require("../controllers/invoiceClient/UpdateClientInvoiceStatus");
+const { createClientInvoice } = require("../controllers/invoiceClient/CreateClientInvoiceController");
+const { editClientInvoice } = require("../controllers/invoiceClient/EditClientInvoiceController");
+const { getAllClientInvoices } = require("../controllers/invoiceClient/GetAllClientInvoicesController");
+const { getClientInvoiceById } = require("../controllers/invoiceClient/GetClientInvoiceByIdController");
+const { getPDFClientInvoiceById } = require("../controllers/invoiceClient/GetPDFClientInvoiceByIdController");
+const { updateClientInvoiceStatus } = require("../controllers/invoiceClient/UpdateClientInvoiceStatusController");
 
 router.post("/create", createClientInvoice);
 router.put("/:id/edit", editClientInvoice);
