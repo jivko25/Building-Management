@@ -42,8 +42,6 @@ const generateUniqueInvoiceNumber = async (year, week) => {
   return invoiceNumber;
 };
 
-
-
 const updateInvoiceStatus = async (req, res, next) => {
   console.log("Updating invoice status:", req.params.id);
   try {
@@ -387,7 +385,6 @@ const deleteArtisanInvoice = async (req, res, next) => {
 };
 
 module.exports = {
-  getInvoicePDF,
   updateInvoiceStatus,
   generateUniqueInvoiceNumber,
   createArtisanInvoice,
