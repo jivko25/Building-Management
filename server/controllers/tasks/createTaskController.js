@@ -10,7 +10,6 @@ const createTask = async (req, res, next) => {
     artisans, // Променено от artisan на artisans (масив от имена)
     activity,
     measure,
-    price_per_measure,
     total_price,
     total_work_in_selected_measure,
     start_date,
@@ -54,7 +53,6 @@ const createTask = async (req, res, next) => {
       name,
       activity_id: activityRecord.id,
       measure_id: measureRecord.id,
-      price_per_measure,
       total_price,
       total_work_in_selected_measure,
       start_date,

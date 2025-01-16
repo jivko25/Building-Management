@@ -35,7 +35,7 @@ const getWorkItems = async (req, res, next) => {
         {
           model: Task,
           as: "task",
-          attributes: ["name", "price_per_measure", "total_price", "total_work_in_selected_measure", "status"],
+          attributes: ["name", "total_price", "total_work_in_selected_measure", "status"],
           include: [
             {
               model: Artisan,
