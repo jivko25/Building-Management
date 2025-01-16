@@ -8,7 +8,7 @@ module.exports = {
     await queryInterface.bulkInsert("tbl_artisans", [
       {
         id: 1,
-        name: "Иван Иванов",
+        name: "Майстор Майсторов",
         note: "Опитен майстор",
         number: "123456789",
         email: "gogata1905@gmail.com",
@@ -20,7 +20,7 @@ module.exports = {
       },
       {
         id: 2,
-        name: "Петър Петров",
+        name: "Майстор Петров",
         note: "Нов в екипа",
         number: "987654321",
         email: "petar@example.com",
@@ -32,7 +32,7 @@ module.exports = {
       },
       {
         id: 3,
-        name: "Симеон Симеонов",
+        name: "Майстор Симеонов",
         note: "Опитен майстор",
         number: "123456789",
         email: "simeon@example.com",
@@ -44,7 +44,7 @@ module.exports = {
       },
       {
         id: 4,
-        name: "Георги Георгиев",
+        name: "Майстор Георгиев",
         note: "Нов в екипа",
         number: "987654321",
         email: "georgi@example.com",
@@ -56,7 +56,7 @@ module.exports = {
       },
       {
         id: 5,
-        name: "Иван Иванов",
+        name: "Майстор Иванов",
         note: "Опитен майстор",
         number: "123456789",
         email: "ivan@example.com",
@@ -68,7 +68,7 @@ module.exports = {
       }
     ]);
   },
- 
+
   async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete("tbl_artisans", null, {});
   }
