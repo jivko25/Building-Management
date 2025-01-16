@@ -8,9 +8,7 @@ import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import TasksCard from "@/components/tables/TasksTable/TasksCard";
 import TasksBreadcrumbs from "@/components/common/Breadcrumbs/TasksBreadcrumb";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import ProjectGallery, { ImageType } from "../ProjectsTable/ProjectGalery";
-import { useEffect, useState } from "react";
-import apiClient from "@/api/axiosConfig";
+import ProjectGallery from "../ProjectsTable/ProjectGalery";
 
 const ProjectsTasksBody = () => {
   const { id } = useParams();
