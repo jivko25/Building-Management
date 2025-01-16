@@ -2,10 +2,6 @@ const db = require("../../data/index.js");
 const { Client, User, InvoiceLanguage } = db;
 
 const getClients = async (req, res, next) => {
-  console.log("Fetching all clients...");
-  console.log("User role:", req.user.role);
-  console.log("User ID:", req.user.id);
-
   try {
     let clients;
     const includeOptions = [
@@ -36,10 +32,8 @@ const getClients = async (req, res, next) => {
       });
     }
 
-    console.log("Number of clients found:", clients.length);
     res.json(clients);
   } catch (error) {
-    console.error("Error fetching clients:", error);
     next(error);
   }
 };
