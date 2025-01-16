@@ -5,47 +5,59 @@ const ApiError = require("../../utils/apiError");
 
 const createTask = async (req, res, next) => {
   const projectId = req.params.id;
-  const {
-    name,
-    artisans, // Променено от artisan на artisans (масив от имена)
-    activity,
-    measure,
-    total_price,
-    total_work_in_selected_measure,
-    start_date,
-    end_date,
-    note,
-    status
-  } = req.body;
+  const { name, artisans, activity, measure, total_price, total_work_in_selected_measure, start_date, end_date, note, status } = req.body;
 
   try {
-    console.log("Creating new task:", { name, artisans });
+    console.log("Creating new task with data:", {
+      projectId,
+      name,
+      artisans,
+      activity,
+      measure
+    });
 
-    const existingTask = await Task.findOne({ where: { name } });
-    if (existingTask) {
-      throw new ApiError(400, `${name} already exists!`);
+    // Валидация на входните данни
+    if (!name || !artisans || !activity || !measure) {
+      throw new ApiError(400, "Missing required fields!");
     }
 
-    // Проверка дали artisans е масив
+    // Проверка за съществуваща задача
+    const existingTask = await Task.findOne({ where: { name, project_id: projectId } });
+    if (existingTask) {
+      throw new ApiError(400, `Task "${name}" already exists in this project!`);
+    }
+
+    // Проверка на артисаните
     if (!Array.isArray(artisans)) {
       throw new ApiError(400, "Artisans must be an array!");
     }
 
-    // Намиране на всички артисани
-    const artisanRecords = await Artisan.findAll({
+    // Намиране на артисаните
+    const foundArtisans = await Artisan.findAll({
       where: { name: artisans }
     });
 
-    console.log("Found artisans:", artisanRecords.length);
+    console.log(
+      "Found artisans:",
+      foundArtisans.map(a => a.name)
+    );
 
-    if (artisanRecords.length !== artisans.length) {
-      throw new ApiError(404, "Some artisans were not found!");
+    // Проверка дали всички артисани са намерени
+    const missingArtisans = artisans.filter(artisanName => !foundArtisans.some(found => found.name === artisanName));
+
+    if (missingArtisans.length > 0) {
+      throw new ApiError(404, `Artisans not found: ${missingArtisans.join(", ")}`);
     }
 
+    // Намиране на дейност и мярка
     const [activityRecord, measureRecord] = await Promise.all([Activity.findOne({ where: { name: activity } }), Measure.findOne({ where: { name: measure } })]);
 
-    if (!activityRecord) throw new ApiError(404, "Activity not found!");
-    if (!measureRecord) throw new ApiError(404, "Measure not found!");
+    if (!activityRecord) {
+      throw new ApiError(404, `Activity "${activity}" not found!`);
+    }
+    if (!measureRecord) {
+      throw new ApiError(404, `Measure "${measure}" not found!`);
+    }
 
     // Създаване на задачата
     const newTask = await Task.create({
@@ -64,7 +76,7 @@ const createTask = async (req, res, next) => {
     console.log("Task created:", newTask.id);
 
     // Добавяне на артисаните към задачата
-    await newTask.setArtisans(artisanRecords);
+    await newTask.setArtisans(foundArtisans);
 
     // Взимане на задачата с всички връзки
     const taskWithRelations = await Task.findByPk(newTask.id, {
@@ -74,23 +86,36 @@ const createTask = async (req, res, next) => {
           as: "artisans",
           through: { attributes: [] }
         },
-        { model: Activity, as: "activity", attributes: ["name"] },
-        { model: Measure, as: "measure", attributes: ["name"] }
+        {
+          model: Activity,
+          as: "activity",
+          attributes: ["name"]
+        },
+        {
+          model: Measure,
+          as: "measure",
+          attributes: ["name"]
+        }
       ]
     });
 
-    console.log("Task created successfully with artisans");
+    console.log("Task created successfully with all relations");
 
     res.status(201).json({
+      success: true,
       message: "Task created successfully!",
       task: taskWithRelations
     });
   } catch (error) {
     console.error("Error in createTask:", error);
     if (error instanceof ApiError) {
-      next(error);
+      res.status(error.statusCode).json({
+        success: false,
+        status: error.status,
+        message: error.message
+      });
     } else {
-      next(new ApiError(500, "Internal server Error!"));
+      next(new ApiError(500, "Internal Server Error!"));
     }
   }
 };
