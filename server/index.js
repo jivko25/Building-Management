@@ -15,7 +15,7 @@ const mailRoutes = require("./routes/emailRoutes.js");
 const imageRoutes = require("./routes/imageRoutes");
 const defaultPricingRoutes = require("./routes/defaultPricingRoutes");
 const invoiceClientRoutes = require("./routes/invoiceClientRoutes");
-const artisanInvoiceRoutes = require("./routes/artisanInvoiceRoutes");
+const invoiceArtisanRoutes = require("./routes/invoiceArtisanRoutes");
 const clientRoutes = require("./routes/clientRoutes");
 const languageRoutes = require("./routes/languageRoutes");
 const cookieParser = require("cookie-parser");
@@ -59,10 +59,10 @@ app.use("/", workItemRoutes);
 app.use("/", mailRoutes);
 app.use("/", imageRoutes);
 app.use("/", defaultPricingRoutes);
-app.use("/artisan-invoices", artisanInvoiceRoutes);
 app.use("/clients", clientRoutes);
 app.use("/languages", languageRoutes);
 app.use("/invoices-client", invoiceClientRoutes);
+app.use("/invoices-artisan", invoiceArtisanRoutes);
 app.use(errorHandler);
 
 app.listen(port, () => {
