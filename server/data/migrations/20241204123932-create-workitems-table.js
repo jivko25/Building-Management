@@ -85,6 +85,14 @@ module.exports = {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: false
       },
+      project_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_projects",
+          key: "id"
+        }
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
