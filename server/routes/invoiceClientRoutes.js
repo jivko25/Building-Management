@@ -6,6 +6,7 @@ const { getAllClientInvoices } = require("../controllers/invoiceClient/GetAllCli
 const { getClientInvoiceById } = require("../controllers/invoiceClient/GetClientInvoiceByIdController");
 const { getPDFClientInvoiceById } = require("../controllers/invoiceClient/GetPDFClientInvoiceByIdController");
 const { updateClientInvoiceStatus } = require("../controllers/invoiceClient/UpdateClientInvoiceStatusController");
+const { deleteClientInvoice } = require("../controllers/invoiceClient/DeleteClientInvoiceController");
 
 router.post("/create", createClientInvoice);
 router.put("/:id/edit", editClientInvoice);
@@ -13,5 +14,6 @@ router.get("/", getAllClientInvoices);
 router.get("/:id", getClientInvoiceById);
 router.get("/:id/pdf", getPDFClientInvoiceById);
 router.put("/:id/update-status", updateClientInvoiceStatus);
+router.delete("/:id", deleteClientInvoice);
 
 module.exports = router;
