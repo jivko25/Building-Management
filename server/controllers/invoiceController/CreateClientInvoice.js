@@ -44,14 +44,41 @@ const createClientInvoice = async (req, res, next) => {
     console.log("Creating invoice with data:", req.body);
     const { company_id, client_company_id, due_date_weeks, selected_projects, selected_work_items } = req.body;
 
-    // Намираме клиента
+    // Валидация на входните данни
+    if (!company_id || !client_company_id || !due_date_weeks || !selected_projects || !selected_work_items) {
+      throw new Error("Missing required fields: company_id, client_company_id, due_date_weeks, selected_projects, selected_work_items");
+    }
+
+    if (!Array.isArray(selected_projects) || selected_projects.length === 0) {
+      throw new Error("selected_projects must be a non-empty array");
+    }
+
+    if (!Array.isArray(selected_work_items) || selected_work_items.length === 0) {
+      throw new Error("selected_work_items must be a non-empty array");
+    }
+
+    // Проверка дали компанията съществува
+    const company = await Company.findByPk(company_id);
+    if (!company) {
+      throw new Error(`Company with ID ${company_id} not found`);
+    }
+
+    // Проверка дали клиентът съществува
     const client = await Client.findByPk(client_company_id);
     if (!client) {
-      throw new Error("Client not found");
+      throw new Error(`Client with ID ${client_company_id} not found`);
     }
     console.log("Found client:", { id: client.id, email: client.client_emails });
 
-    // Намираме работните елементи
+    // Проверка дали проектите съществуват
+    const projects = await Project.findAll({
+      where: { id: selected_projects }
+    });
+    if (projects.length !== selected_projects.length) {
+      throw new Error("One or more selected projects do not exist");
+    }
+
+    // Намираме работните елементи с всички необходими релации
     const workItems = await WorkItem.findAll({
       where: {
         id: selected_work_items,
@@ -61,10 +88,12 @@ const createClientInvoice = async (req, res, next) => {
         {
           model: Task,
           as: "task",
+          required: true,
           include: [
             {
               model: Project,
               as: "project",
+              required: true,
               where: {
                 id: selected_projects
               }
@@ -73,18 +102,39 @@ const createClientInvoice = async (req, res, next) => {
         },
         {
           model: Activity,
-          as: "activity"
+          as: "activity",
+          required: true
         },
         {
           model: Measure,
-          as: "measure"
+          as: "measure",
+          required: true
         }
       ]
     });
 
     if (!workItems.length) {
-      throw new Error("No valid work items found. Its either invoiced or not valid");
+      throw new Error("No valid work items found. Items might be already invoiced or not associated with selected projects");
     }
+
+    // Проверка за липсващи данни в работните елементи
+    workItems.forEach((workItem, index) => {
+      if (!workItem.task) {
+        throw new Error(`Work item ${workItem.id} has no associated task`);
+      }
+      if (!workItem.task.project) {
+        throw new Error(`Task for work item ${workItem.id} has no associated project`);
+      }
+      if (!workItem.activity) {
+        throw new Error(`Work item ${workItem.id} has no associated activity`);
+      }
+      if (!workItem.measure) {
+        throw new Error(`Work item ${workItem.id} has no associated measure`);
+      }
+      if (!workItem.task.price_per_measure) {
+        throw new Error(`Task for work item ${workItem.id} has no price per measure set`);
+      }
+    });
 
     // Генерираме номер на фактурата
     const currentDate = new Date();
