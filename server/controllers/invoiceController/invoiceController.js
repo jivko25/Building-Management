@@ -42,39 +42,7 @@ const generateUniqueInvoiceNumber = async (year, week) => {
   return invoiceNumber;
 };
 
-const getInvoicePDF = async (req, res, next) => {
-  console.log("Generating PDF for invoice ID:", req.params.id);
-  try {
-    const invoice = await Invoice.findByPk(req.params.id, {
-      include: [
-        {
-          model: Client,
-          as: "client",
-          attributes: ["invoice_language_id"]
-        }
-      ]
-    });
 
-    if (!invoice) {
-      throw new Error("Invoice not found");
-    }
-
-    const pdfBuffer = await createInvoicePDF(req.params.id, invoice.client.invoice_language_id);
-
-    // Set correct headers
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="invoice-${req.params.id}.pdf"`);
-    res.setHeader("Content-Length", pdfBuffer.length);
-
-    // Send buffer directly
-    res.end(pdfBuffer);
-
-    console.log("PDF sent successfully");
-  } catch (error) {
-    console.error("Error generating PDF:", error);
-    next(error);
-  }
-};
 
 const updateInvoiceStatus = async (req, res, next) => {
   console.log("Updating invoice status:", req.params.id);
