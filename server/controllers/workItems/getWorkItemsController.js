@@ -1,4 +1,5 @@
 //server\controllers\workItems\getWorkItemsController.js
+const { where } = require("sequelize");
 const db = require("../../data/index.js");
 const { WorkItem, Task, Artisan, Project } = db;
 const ApiError = require("../../utils/apiError");
@@ -12,7 +13,12 @@ const getWorkItems = async (req, res, next) => {
 
   try {
     if(isAdmin){
-      const workItems = await WorkItem.findAll();
+      const workItems = await WorkItem.findAll({
+        where : { task_id },
+        limit: parseInt(_limit),
+        offset: offset,
+        order: [["id", "DESC"]]
+      });
       return res.json(workItems);
     }
 
