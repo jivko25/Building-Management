@@ -1,6 +1,6 @@
-const db = require("../../data/index.js");
+const db = require("../../../data/index.js");
 const { Invoice, Client } = db;
-const { createInvoicePDF } = require("../../utils/pdfGenerator.js");
+const { createInvoicePDF } = require("../../../utils/pdfGenerator.js");
 
 const getPDFClientInvoiceById = async (req, res, next) => {
   console.log("Generating PDF for client invoice ID:", req.params.id);

@@ -1,8 +1,8 @@
-const db = require("../../data/index.js");
+const db = require("../../../data/index.js");
 const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem, InvoiceLanguage, Artisan, DefaultPricing } = db;
-const { sendInvoiceEmail } = require("../../utils/invoiceEmailService.js");
-const { sequelize } = require("../../data/index.js");
-const { createArtisanInvoicePDF } = require("../../utils/pdfGenerator.js");
+const { sendInvoiceEmail } = require("../../../utils/invoiceEmailService.js");
+const { sequelize } = require("../../../data/index.js");
+const { createArtisanInvoicePDF } = require("../../../utils/pdfGenerator.js");
 
 const getWeekNumber = date => {
   const d = new Date(date);
@@ -40,7 +40,6 @@ const generateUniqueInvoiceNumber = async (year, week) => {
   console.log("Generated invoice number:", invoiceNumber);
   return invoiceNumber;
 };
-
 
 const createArtisanInvoice = async (req, res, next) => {
   console.log("Creating artisan invoice with data:", req.body);

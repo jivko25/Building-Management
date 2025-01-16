@@ -1,6 +1,6 @@
-const db = require("../../data/index.js");
+const db = require("../../../data/index.js");
 const { Invoice, InvoiceItem, Client, Activity, Measure, Project } = db;
-const { sequelize } = require("../../data/index.js");
+const { sequelize } = require("../../../data/index.js");
 
 const editClientInvoice = async (req, res, next) => {
   console.log("Updating invoice with ID:", req.params.id);

@@ -1,6 +1,6 @@
-const db = require("../../data/index.js");
+const db = require("../../../data/index.js");
 const { Invoice, InvoiceItem, WorkItem } = db;
-const { sequelize } = require("../../data/index.js");
+const { sequelize } = require("../../../data/index.js");
 
 const deleteClientInvoice = async (req, res, next) => {
   const t = await sequelize.transaction();

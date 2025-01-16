@@ -1,4 +1,4 @@
-const db = require("../../data/index.js");
+const db = require("../../../data/index.js");
 const { Invoice, Company, Client } = db;
 
 const updateClientInvoiceStatus = async (req, res, next) => {

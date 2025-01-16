@@ -1,9 +1,9 @@
-const db = require("../../data/index.js");
+const db = require("../../../data/index.js");
 const { Invoice, InvoiceItem, Company, Activity, Measure, Project, Task, Client, WorkItem, DefaultPricing } = db;
-const { createInvoicePDF } = require("../../utils/pdfGenerator.js");
-const { sendInvoiceEmail } = require("../../utils/invoiceEmailService.js");
-const { sequelize } = require("../../data/index.js");
-const ApiError = require("../../utils/apiError");
+const { createInvoicePDF } = require("../../../utils/pdfGenerator.js");
+const { sendInvoiceEmail } = require("../../../utils/invoiceEmailService.js");
+const { sequelize } = require("../../../data/index.js");
+const ApiError = require("../../../utils/apiError.js");
 
 const getWeekNumber = date => {
   const d = new Date(date);
@@ -165,7 +165,7 @@ const createClientInvoice = async (req, res, next) => {
           activity_id: workItem.activity.id,
           measure_id: workItem.measure.id
         },
-        attributes: ['id', 'activity_id', 'measure_id', 'project_id', 'manager_price', 'artisan_price']
+        attributes: ["id", "activity_id", "measure_id", "project_id", "manager_price", "artisan_price"]
       });
 
       if (!defaultPricing) {
