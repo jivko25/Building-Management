@@ -151,6 +151,33 @@ const createArtisanInvoice = async (req, res, next) => {
 
     await t.commit();
 
+    // Добавяме генериране на PDF и изпращане на имейл
+    try {
+      // Намираме занаятчията, за да вземем имейла му
+      const artisan = await Artisan.findByPk(artisan_id);
+
+      if (!artisan || !artisan.email) {
+        console.error("Artisan email not found");
+        throw new Error("Artisan email not found");
+      }
+
+      // Генерираме PDF
+      const pdfBuffer = await createArtisanInvoicePDF(invoice.id);
+
+      // Изпращаме имейла
+      await sendInvoiceEmail(
+        artisan.email,
+        pdfBuffer,
+        invoice.invoice_number,
+        1 // Използваме английски език по подразбиране за занаятчии
+      );
+
+      console.log("PDF generated and email sent successfully");
+    } catch (error) {
+      console.error("Error with PDF/email:", error);
+      // Не прекъсваме изпълнението, ако имейлът не се изпрати
+    }
+
     res.status(201).json({
       success: true,
       message: "Artisan invoice created successfully",
