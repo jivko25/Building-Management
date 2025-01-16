@@ -1,4 +1,3 @@
-//client\src\components\tables\TasksTable\TasksTableBody.tsx
 import { useParams } from "react-router-dom";
 import ProjectTasksSkeleton from "@/utils/SkeletonLoader/Tasks/ProjectTasksSkeleton";
 import { CircleAlert, ClipboardList } from "lucide-react";
@@ -8,6 +7,8 @@ import ConditionalRenderer from "@/components/common/ConditionalRenderer/Conditi
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import TasksCard from "@/components/tables/TasksTable/TasksCard";
 import TasksBreadcrumbs from "@/components/common/Breadcrumbs/TasksBreadcrumb";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import ProjectGallery from "../ProjectsTable/ProjectGalery";
 
 const ProjectsTasksBody = () => {
   const { id } = useParams();
@@ -36,17 +37,28 @@ const ProjectsTasksBody = () => {
     <>
       <TasksBreadcrumbs />
       <div className="flex flex-col border rounded-lg mt-48 mb-28 mx-8 p-4 backdrop-blur-sm bg-slate-900/20">
-        <div className="flex flex-wrap sm:w-full gap-4">
-          <ConditionalRenderer
-            data={tasks}
-            renderData={tasks => <TasksCard tasks={tasks as Task[]} id={id!} />}
-            noResults={{
-              title: "No tasks found",
-              description: "It looks like you haven't added any tasks yet.",
-              Icon: ClipboardList
-            }}
-          />
-        </div>
+        <Tabs defaultValue="tasks">
+          <TabsList>
+            <TabsTrigger value="tasks">Tasks</TabsTrigger>
+            <TabsTrigger value="images">Images</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tasks">
+            <div className="flex flex-wrap sm:w-full gap-4">
+              <ConditionalRenderer
+                data={tasks}
+                renderData={tasks => <TasksCard tasks={tasks as Task[]} id={id!} />}
+                noResults={{
+                  title: "No tasks found",
+                  description: "It looks like you haven't added any tasks yet.",
+                  Icon: ClipboardList
+                }}
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value="images">
+            <ProjectGallery />
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   );

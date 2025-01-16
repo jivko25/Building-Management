@@ -9,10 +9,12 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { bg } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 export const UpdateInvoicePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   console.log("🔄 UpdateInvoicePage mounted with id:", id);
 
@@ -55,21 +57,23 @@ export const UpdateInvoicePage = () => {
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={() => navigate(`/invoices/${id}`)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
+            {t("Back")}
           </Button>
-          <h1 className="text-3xl font-bold">Edit Invoice {invoice.invoice_number}</h1>
+          <h1 className="text-3xl font-bold">
+            {t("Edit Invoice")} {invoice.invoice_number}
+          </h1>
         </div>
       </div>
 
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Payment Status</CardTitle>
+            <CardTitle>{t("Payment Status")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-2">
               <Switch id="paid-status" checked={invoice.paid} onCheckedChange={handleStatusChange} />
-              <Label htmlFor="paid-status">{invoice.paid ? "Paid" : "Unpaid"}</Label>
+              <Label htmlFor="paid-status">{invoice.paid ? t("Paid") : t("Unpaid")}</Label>
             </div>
           </CardContent>
         </Card>
@@ -77,23 +81,23 @@ export const UpdateInvoicePage = () => {
         {/* Read-only information */}
         <Card>
           <CardHeader>
-            <CardTitle>Invoice Details</CardTitle>
+            <CardTitle>{t("Invoice Details")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>Invoice Number</Label>
+              <Label>{t("Invoice Number")}</Label>
               <div className="mt-1">{invoice.invoice_number}</div>
             </div>
             <div>
-              <Label>Issue Date</Label>
+              <Label>{t("Issue Date")}</Label>
               <div className="mt-1">{format(new Date(invoice.invoice_date), "dd.MM.yyyy", { locale: bg })}</div>
             </div>
             <div>
-              <Label>Due Date</Label>
+              <Label>{t("Due Date")}</Label>
               <div className="mt-1">{format(new Date(invoice.due_date), "dd.MM.yyyy", { locale: bg })}</div>
             </div>
             <div>
-              <Label>Total Amount</Label>
+              <Label>{t("Total Amount")}</Label>
               <div className="mt-1">{invoice.total_amount} €</div>
             </div>
           </CardContent>
@@ -102,23 +106,23 @@ export const UpdateInvoicePage = () => {
         {/* Client Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Client Information</CardTitle>
+            <CardTitle>{t("Client Information")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>Company Name</Label>
+              <Label>{t("Company Name")}</Label>
               <div className="mt-1">{invoice.client.client_company_name}</div>
             </div>
             <div>
-              <Label>Contact Person</Label>
+              <Label>{t("Contact Person")}</Label>
               <div className="mt-1">{invoice.client.client_company_mol}</div>
             </div>
             <div>
-              <Label>Address</Label>
+              <Label>{t("Address")}</Label>
               <div className="mt-1">{invoice.client.client_company_address}</div>
             </div>
             <div>
-              <Label>IBAN</Label>
+              <Label>{t("IBAN")}</Label>
               <div className="mt-1">{invoice.client.client_company_iban}</div>
             </div>
           </CardContent>

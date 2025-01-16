@@ -24,10 +24,10 @@ type EditWorkItemFormProps = {
 const EditWorkItemForm = ({ handleSubmit, isPending, id, taskId, workItemId }: EditWorkItemFormProps) => {
   const workItem = useCachedData<WorkItem>({
     queryKey: ["projects", id, "tasks", taskId, "work-items"],
-    selectFn: data => {
+    selectFn: (data : any) => {
       if ("pages" in data) {
         for (const page of data.pages) {
-          const item = findItemById<WorkItem>(page, workItemId, item => item.id as string);
+          const item = findItemById<WorkItem>(page.workItems, workItemId, item => item.id as string);
           if (item) {
             return item;
           }

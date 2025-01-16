@@ -1,5 +1,6 @@
 //client\src\main.tsx
-import React from "react";
+import "./i18n/config";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import "./global.css";
 import "./customize.scss";
@@ -13,7 +14,9 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { PrimeReactProvider } from "primereact/api";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-import 'primereact/resources/themes/bootstrap4-dark-blue/theme.css';
+import "primereact/resources/themes/bootstrap4-dark-blue/theme.css";
+import { LanguageProvider } from "./contexts/LanguageContext";
+import { useTranslation } from "react-i18next";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,18 +29,25 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Router>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-          <PrimeReactProvider>
-            <AuthProvider>
-              <AppRoutes />
-              <Toaster />
-              <ReactQueryDevtools />
-            </AuthProvider>
-          </PrimeReactProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </Router>
+    <Suspense fallback="Loading...">
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+            <PrimeReactProvider>
+              <LanguageProvider>
+                <AuthProvider>
+                  <AppRoutes />
+                  <Toaster />
+                  <ReactQueryDevtools />
+                </AuthProvider>
+              </LanguageProvider>
+            </PrimeReactProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </Router>
+    </Suspense>
   </React.StrictMode>
 );
+
+const { t } = useTranslation();
+console.log("Current translations:", t("settings"));

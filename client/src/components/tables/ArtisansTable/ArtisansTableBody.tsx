@@ -13,6 +13,7 @@ import useSearchHandler from "@/hooks/useSearchHandler";
 import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import ArtisansCard from "./ArtisansCard";
 import ArtisansHeader from "./ArtisansHeader";
+import { useTranslation } from "react-i18next";
 interface ArtisanResponse {
   artisans: Artisan[];
   artisansCount: number;
@@ -21,6 +22,7 @@ interface ArtisanResponse {
   totalPages: number;
 }
 const ArtisansTableBody = () => {
+  const { t } = useTranslation();
   const { setSearchParams, itemsLimit, page } = useSearchParamsHook();
 
   const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
@@ -52,7 +54,7 @@ const ArtisansTableBody = () => {
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar handleSearch={handleSearch} placeholder="Search artisans..." search={search} />
+        <SearchBar handleSearch={handleSearch} placeholder={t("Search artisans...")} search={search} />
         <CreateArtisan />
       </div>
       <Table className="w-full min-w-full">
@@ -62,8 +64,8 @@ const ArtisansTableBody = () => {
             data={typedArtisansResponse?.artisans || []}
             renderData={data => <ArtisansCard artisans={data as Artisan[]} />}
             noResults={{
-              title: "No artisans found",
-              description: "It looks like you haven't added any artisans yet.",
+              title: t("No artisans found"),
+              description: t("It looks like you haven't added any artisans yet."),
               Icon: ContactRound
             }}
             wrapper={content => (

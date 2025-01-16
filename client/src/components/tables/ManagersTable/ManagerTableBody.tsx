@@ -13,8 +13,10 @@ import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import apiClient from "@/api/axiosConfig";
+import { useTranslation } from "react-i18next";
 
 const ManagersTableBody = () => {
+  const { t } = useTranslation();
   const { itemsLimit, page } = useSearchParamsHook();
   const [readonlyValue, setReadonlyValue] = useState<any>(null);
 
@@ -54,14 +56,15 @@ const ManagersTableBody = () => {
       <div className="flex justify-content-end">
         <IconField iconPosition="left">
           <InputIcon className="pi pi-search" />
-          <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" className="search-input" />
+          <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={t("Keyword Search")} className="search-input" />
         </IconField>
       </div>
     );
   };
 
   const changePermissionsToReadOnly = (manager: User) => {
-    apiClient.patch(`/users/managers/update-readonly/${manager && manager?.id}`)
+    apiClient
+      .patch(`/users/managers/update-readonly/${manager && manager?.id}`)
       .then(response => {
         console.log("Permissions updated:", response.data);
       })
@@ -69,13 +72,13 @@ const ManagersTableBody = () => {
         console.error("Error updating permissions:", error);
       });
   };
-  
+
   const readonlyBodyTemplate = (rowData: User) => {
     const options = [
-      { label: "On", value: true },
-      { label: "Off", value: false }
+      { label: t("On"), value: true },
+      { label: t("Off"), value: false }
     ];
-  
+
     return (
       <Dropdown
         value={rowData.readonly}
@@ -94,8 +97,8 @@ const ManagersTableBody = () => {
       <Dropdown
         value={readonlyValue || options.value}
         options={[
-          { label: "On", value: true },
-          { label: "Off", value: false }
+          { label: t("On"), value: true },
+          { label: t("Off"), value: false }
         ]}
         onChange={e => options.filterApplyCallback(e.value)}
         placeholder="Select readonly"
@@ -118,11 +121,11 @@ const ManagersTableBody = () => {
 
   return (
     <div className="mx-auto mt-2">
-      <DataTable value={managers?.data} paginator rows={itemsLimit} totalRecords={managers?.totalCount} dataKey="id" filters={filters} globalFilterFields={["full_name", "email", "role", "status"]} header={header} filterDisplay="row" loading={isPending} emptyMessage="No managers found.">
-        <Column field="full_name" header="Full Name" filter sortable filterPlaceholder="Search by name" style={{ minWidth: "12rem" }} />
-        <Column field="email" header="Email" filter sortable filterPlaceholder="Search by email" style={{ minWidth: "12rem" }} />
-        <Column field="role" header="Role" filter sortable filterPlaceholder="Search by role" style={{ minWidth: "12rem" }} />
-        <Column field="readonly" header="Readonly" body={readonlyBodyTemplate} filter sortable filterElement={statusFilterTemplate} style={{ minWidth: "12rem" }} />
+      <DataTable value={managers?.data} paginator rows={itemsLimit} totalRecords={managers?.totalCount} dataKey="id" filters={filters} globalFilterFields={["full_name", "email", "role", "status"]} header={header} filterDisplay="row" loading={isPending} emptyMessage={t("No managers found")}>
+        <Column field="full_name" header={t("Full Name")} filter sortable filterPlaceholder={t("Search by name")} style={{ minWidth: "12rem" }} />
+        <Column field="email" header={t("Email")} filter sortable filterPlaceholder={t("Search by email")} style={{ minWidth: "12rem" }} />
+        <Column field="role" header={t("Role")} filter sortable filterPlaceholder={t("Search by role")} style={{ minWidth: "12rem" }} />
+        <Column field="readonly" header={t("Readonly")} body={readonlyBodyTemplate} filter sortable filterElement={statusFilterTemplate} style={{ minWidth: "12rem" }} />
       </DataTable>
     </div>
   );

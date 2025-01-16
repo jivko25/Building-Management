@@ -25,6 +25,7 @@ import { InvoiceDetailsPage } from "./pages/Invoices/InvoiceDetailsPage";
 import { UpdateInvoicePage } from "./pages/Invoices/UpdateInvoicePage";
 import ClientsTablePage from "./pages/ClientsTablePage";
 import AdminGuard from "./guards/AdminGuard";
+import { LanguageSettings } from "./pages/Settings/LanguageSettings";
 
 const AppRoutes = () => {
   return (
@@ -220,6 +221,18 @@ const AppRoutes = () => {
           element={
             <TableLayout>
               <ManagerTablePage />
+            </TableLayout>
+          }
+        />
+      </Route>
+
+      {/* Protected routes */}
+      <Route element={<UserGuard />}>
+        <Route
+          path="/settings"
+          element={
+            <TableLayout>
+              <LanguageSettings />
             </TableLayout>
           }
         />

@@ -7,8 +7,10 @@ import { useClientFormHooks } from "@/hooks/forms/useClientForm";
 import { useCreateEntity } from "@/hooks/useQueryHook";
 import { Client } from "@/types/client-types/clientTypes";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 const CreateClient = () => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { useCreateClientForm } = useClientFormHooks();
   const form = useCreateClientForm();
@@ -33,12 +35,12 @@ const CreateClient = () => {
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Add Client
+          {t("Add Client")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create Client</DialogTitle>
+          <DialogTitle>{t("Create Client")}</DialogTitle>
         </DialogHeader>
         <ClientForm form={form} onSubmit={createClient} />
       </DialogContent>

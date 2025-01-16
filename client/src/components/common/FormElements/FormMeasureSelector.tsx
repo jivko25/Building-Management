@@ -5,11 +5,12 @@ import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { Measure } from "@/types/measure-types/measureTypes";
 import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
+import { PaginatedData } from "../Pagination/Pagination";
 
 const MeasureSelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
   const { control } = useFormContext();
 
-  const { data: measures } = useFetchDataQuery<Measure[]>({
+  const { data: measures } = useFetchDataQuery<PaginatedData<Measure>>({
     URL: "/measures",
     queryKey: ["measures"],
     options: {
@@ -33,7 +34,7 @@ const MeasureSelector = ({ label, name, placeholder, defaultVal }: TableFormSele
             <SelectContent>
               <SelectGroup>
                 {measures &&
-                  measures.map(measure => (
+                  measures.data.map(measure => (
                     <SelectItem key={measure.id} value={measure.name}>
                       {measure.name}
                     </SelectItem>
