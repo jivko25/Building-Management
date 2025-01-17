@@ -34,11 +34,9 @@ import { useTranslation } from "react-i18next";
 import ArtisansDetailsPage from "./pages/ArtisansDetailsPage";
 import ManagerDefaultPricesPage from "./pages/ManagerDefaultPricesPage";
 
-
 const AppRoutes = () => {
-
-const { t } = useTranslation();
-console.log("Current translations:", t("settings"));
+  const { t } = useTranslation();
+  console.log("Current translations:", t("settings"));
   return (
     <Routes>
       {/* Public routes */}
