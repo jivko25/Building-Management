@@ -1,26 +1,42 @@
 //server\controllers\projects\getProjectByIdController.js
 const db = require("../../data/index.js");
-const { Project } = db;
-const ApiError = require("../../utils/apiError");
+const { Project, Artisan, TasksArtisan, Task } = db;
+const { Op } = require("sequelize");
 
 const getProjectById = async (req, res, next) => {
-  try {
-    const project = await Project.findByPk(req.params.id);
+    const isAdmin = req.user.role === "admin";
+    if (isAdmin) {
+        const project = await Project.findByPk(req.params.id);
+        if (!project) {
+            return res.json([]);
+        }
+        return res.json(project);
+    }
 
+    const artisan = await Artisan.findOne({ where: { user_id: req.user.id } });
+    if (artisan) {
+        const tasksArtisan = await TasksArtisan.findAll({ where: { artisan_id: artisan.id } });
+        if (tasksArtisan.length === 0) {
+            return res.json([]);
+        }
+        const taskIds = tasksArtisan.map(task => task.task_id);
+        const tasks = await Task.findAll({ where: { id: { [Op.in]: taskIds } } });
+
+        const project = tasks.find(task => task.project_id === Number(req.params.id));
+        if (!project) {
+            return res.json([]);
+        }
+        return res.json(project);
+    }
+
+    const project = await Project.findByPk(req.params.id, { where: { creator_id: req.user.id } });
     if (!project) {
-      throw new ApiError(404, "Project not found!");
+        return res.json([]);
     }
 
     res.json(project);
-  } catch (error) {
-    if (error instanceof ApiError) {
-      next(error);
-    } else {
-      next(new ApiError(500, "Internal server Error!"));
-    }
-  }
-};
+}
 
 module.exports = {
-  getProjectById
+    getProjectById
 };

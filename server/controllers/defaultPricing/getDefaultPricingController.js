@@ -1,6 +1,5 @@
 const db = require("../../data/index.js");
 const { DefaultPricing } = db;
-const ApiError = require("../../utils/apiError");
 
 const getDefaultPricing = async (req, res, next) => {
   try {
@@ -10,10 +9,7 @@ const getDefaultPricing = async (req, res, next) => {
         artisan_id: artisanId
       }
     });
-    // if (defaultPricing.length === 0) {
-    //     throw new ApiError(404, "Default pricing not found!");
-    // }
-    res.status(200).json({
+     res.status(200).json({
       message: "Default pricing fetched successfully!",
       defaultPricing
     });
