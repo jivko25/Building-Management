@@ -75,7 +75,10 @@ const updateManagerReadonly = async (req, res, next) => {
             throw new ApiError(404, "Manager not found.");
         }
 
-        console.log(manager.readonly);
+        await User.update(
+            { readonly: manager.readonly ? false : true },
+            { where: { creator_id: managerId } }
+          );
 
         manager.readonly = manager.readonly ? false : true;
         await manager.save();
