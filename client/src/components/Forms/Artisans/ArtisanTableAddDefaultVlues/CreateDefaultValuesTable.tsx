@@ -55,7 +55,7 @@ export default function CreateDefaultValuesTable({ artisanId, refetch }: { artis
   const measuresBodyTemplate = () => {
     return (
       <Dropdown
-        options={measures?.data.map(m => ({ label: m.name, value: m }))}
+        options={measures?.data?.map(m => ({ label: m.name, value: m }))}
         value={measure}
         panelClassName="z-50 pointer-events-auto"
         scrollHeight="200px"
