@@ -90,7 +90,7 @@ export const InvoiceArtisanDetailsPage = () => {
   };
 
   return (
-    <div className="container mx-auto py-10 space-y-6">
+    <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={() => navigate("/invoices-artisan")}>
@@ -102,7 +102,7 @@ export const InvoiceArtisanDetailsPage = () => {
           </h1>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleShowPDF}>
+          <Button variant="outline" onClick={() => setShowPdfPreview(!showPdfPreview)}>
             <FileText className="mr-2 h-4 w-4" />
             {showPdfPreview ? t("Hide PDF") : t("Show PDF")}
           </Button>
@@ -112,6 +112,91 @@ export const InvoiceArtisanDetailsPage = () => {
           </Button>
         </div>
       </div>
+
+      {showPdfPreview && (
+        <div className="mb-6 bg-white p-6 rounded-lg shadow-lg">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">{t("PDF Preview")}</h2>
+            <Button variant="ghost" size="icon" onClick={() => setShowPdfPreview(false)}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="border rounded-lg p-8" style={{ fontFamily: "Arial, sans-serif" }}>
+            <div className="flex justify-between mb-8">
+              <div className="invoice-info">
+                <h1 className="text-xl font-bold mb-2">
+                  {t("Invoice")} {invoice.invoice_number}
+                </h1>
+                <p>
+                  {t("Date of issue")}: {format(new Date(invoice.invoice_date), "dd.MM.yyyy", { locale: bg })}
+                </p>
+                <p>
+                  {t("Due date")}: {format(new Date(invoice.due_date), "dd.MM.yyyy", { locale: bg })}
+                </p>
+              </div>
+              <div className="text-right">{invoice.company?.logo_url && <img src={invoice.company.logo_url} alt="Company Logo" className="max-w-[226px] max-h-[98px]" />}</div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-10 mb-8">
+              <div className="border p-5 rounded">
+                <h3 className="font-bold mb-2">{t("Recipient")}:</h3>
+                <p>
+                  {t("Name")}: {invoice.artisan.name}
+                </p>
+                <p>
+                  {t("Email")}: {invoice.artisan.email}
+                </p>
+              </div>
+
+              <div className="border p-5 rounded">
+                <h3 className="font-bold mb-2">{t("Issuer")}:</h3>
+                <p>
+                  {t("Name")}: {invoice.artisan.name}
+                </p>
+                <p>
+                  {t("Email")}: {invoice.artisan.email}
+                </p>
+                <p>
+                  {t("Phone")}: {invoice.artisan.number || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <table className="w-full mb-8 text-sm">
+              <thead>
+                <tr className="border">
+                  <th className="border p-2 text-left">№</th>
+                  <th className="border p-2 text-left">{t("Activity")}</th>
+                  <th className="border p-2 text-right">{t("Quantity")}</th>
+                  <th className="border p-2 text-right">{t("Price")}</th>
+                  <th className="border p-2 text-right">{t("Total")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoice.items.map((item, index) => (
+                  <tr key={item.id} className="border">
+                    <td className="border p-2">{index + 1}</td>
+                    <td className="border p-2">{item.activity?.name || "N/A"}</td>
+                    <td className="border p-2 text-right">
+                      {parseFloat(item.quantity).toFixed(2)} {item.measure?.name || ""}
+                    </td>
+                    <td className="border p-2 text-right">{parseFloat(item.price_per_unit).toFixed(2)} €</td>
+                    <td className="border p-2 text-right">{parseFloat(item.total_price).toFixed(2)} €</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={4} className="border p-2 text-right font-bold">
+                    {t("Total")}:
+                  </td>
+                  <td className="border p-2 text-right font-bold">{parseFloat(invoice.total_amount).toFixed(2)} €</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-6">
         <Card>
@@ -184,109 +269,6 @@ export const InvoiceArtisanDetailsPage = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* PDF Preview Modal */}
-      {showPdfPreview && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">{t("Invoice Preview")}</h2>
-              <Button variant="ghost" size="icon" onClick={handleClosePDF}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {/* PDF Content */}
-            <div className="space-y-6">
-              {/* Header */}
-              <div className="flex justify-between items-start">
-                <div>
-                  <h1 className="text-2xl font-bold mb-2">
-                    {t("Invoice")} #{invoice.invoice_number}
-                  </h1>
-                  <p>
-                    {t("Date")}: {formatDate(invoice.invoice_date)}
-                  </p>
-                  <p>
-                    {t("Due Date")}: {formatDate(invoice.due_date)}
-                  </p>
-                </div>
-                {/* Company Logo could be added here */}
-              </div>
-
-              {/* Artisan Information */}
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <h3 className="font-bold mb-2">{t("Artisan Information")}</h3>
-                  <p>
-                    {t("Name")}: {invoice.artisan.name}
-                  </p>
-                  <p>
-                    {t("Address")}: {invoice.artisan.address}
-                  </p>
-                  {invoice.artisan.number && (
-                    <p>
-                      {t("Phone")}: {invoice.artisan.number}
-                    </p>
-                  )}
-                  {invoice.artisan.email && (
-                    <p>
-                      {t("Email")}: {invoice.artisan.email}
-                    </p>
-                  )}
-                  {invoice.artisan.iban && <p>IBAN: {invoice.artisan.iban}</p>}
-                </div>
-                <div>
-                  <h3 className="font-bold mb-2">{t("Company Information")}</h3>
-                  <p>
-                    {t("Name")}: {invoice.company.name}
-                  </p>
-                  <p>
-                    {t("Address")}: {invoice.company.address}
-                  </p>
-                  {invoice.company.email && (
-                    <p>
-                      {t("Email")}: {invoice.company.email}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Items Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border p-2 text-left">{t("Activity")}</th>
-                      <th className="border p-2 text-left">{t("Measure")}</th>
-                      <th className="border p-2 text-right">{t("Quantity")}</th>
-                      <th className="border p-2 text-right">{t("Price")}</th>
-                      <th className="border p-2 text-right">{t("Total")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {invoice.items.map((item, index) => (
-                      <tr key={index}>
-                        <td className="border p-2">{item.activity.name}</td>
-                        <td className="border p-2">{item.measure.name}</td>
-                        <td className="border p-2 text-right">{parseFloat(item.quantity).toFixed(2)}</td>
-                        <td className="border p-2 text-right">{parseFloat(item.price_per_unit).toFixed(2)} €</td>
-                        <td className="border p-2 text-right">{parseFloat(item.total_price).toFixed(2)} €</td>
-                      </tr>
-                    ))}
-                    <tr className="font-bold">
-                      <td colSpan={4} className="border p-2 text-right">
-                        {t("Total Amount")}:
-                      </td>
-                      <td className="border p-2 text-right">{parseFloat(invoice.total_amount).toFixed(2)} €</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
