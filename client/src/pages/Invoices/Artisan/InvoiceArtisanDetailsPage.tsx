@@ -8,6 +8,7 @@ import { format, parseISO, isValid } from "date-fns";
 import { bg } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export const InvoiceArtisanDetailsPage = () => {
   const { id } = useParams();
@@ -47,18 +48,21 @@ export const InvoiceArtisanDetailsPage = () => {
   };
 
   const handleDownloadPDF = async () => {
+    console.log("📥 Downloading PDF for invoice:", id);
     try {
-      console.log("📥 Downloading PDF for invoice:", id);
       const response = await fetch(`${import.meta.env.VITE_API_URL}/invoices-artisan/${id}/pdf`, {
-        credentials: "include"
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Accept: "application/pdf"
+        }
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to download PDF");
-      }
+      if (!response.ok) throw new Error("Failed to download PDF");
 
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const pdfBlob = new Blob([blob], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(pdfBlob);
       const a = document.createElement("a");
       a.href = url;
       a.download = `invoice-${invoice.invoice_number.replace(/\//g, "_")}.pdf`;
@@ -68,14 +72,16 @@ export const InvoiceArtisanDetailsPage = () => {
       document.body.removeChild(a);
 
       console.log("✅ PDF downloaded successfully");
+      toast.success(t("PDF downloaded successfully"));
     } catch (error) {
       console.error("❌ Error downloading PDF:", error);
+      toast.error(t("Failed to download PDF"));
     }
   };
 
   const handleShowPDF = () => {
     console.log("📄 Showing PDF preview for invoice:", id);
-    setShowPdfPreview(true);
+    setShowPdfPreview(!showPdfPreview);
   };
 
   const handleClosePDF = () => {
@@ -98,7 +104,7 @@ export const InvoiceArtisanDetailsPage = () => {
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleShowPDF}>
             <FileText className="mr-2 h-4 w-4" />
-            {t("Show PDF")}
+            {showPdfPreview ? t("Hide PDF") : t("Show PDF")}
           </Button>
           <Button variant="outline" onClick={handleDownloadPDF}>
             <Download className="mr-2 h-4 w-4" />
