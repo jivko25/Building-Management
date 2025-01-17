@@ -23,9 +23,10 @@ const getTasks = async (userId, isAdmin) => {
   });
 
   if (projects.length === 0) {
-    throw new ApiError(404, NO_PROJECTS_FOUND);
+    return [];
   }
 
+  // Get all tasks for these projects
   const tasks = await Task.findAll({
     where: {
       project_id: {
