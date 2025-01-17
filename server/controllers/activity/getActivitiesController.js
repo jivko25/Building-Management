@@ -51,7 +51,6 @@ const getPaginatedActivities = async (req, res, next) => {
     const whereClause = {
       ...(q && { name: { [Op.like]: `%${q}%` } }),
       creator_id: req.user.id
-      ,
     };
 
     const { count: total, rows: data } = await Activity.findAndCountAll({

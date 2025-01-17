@@ -15,29 +15,15 @@ const getProjects = async (req, res, next) => {
           {
             model: Client,
             as: "client",
-            attributes: ["client_company_name"],
-          },
+            attributes: ["client_company_name"]
+          }
         ],
-        attributes: [
-          "id",
-          "name",
-          "company_id",
-          "company_name",
-          "email",
-          "address",
-          "location",
-          "start_date",
-          "end_date",
-          "note",
-          "status",
-          "creator_id",
-          "client_id",
-        ],
+        attributes: ["id", "name", "company_id", "company_name", "email", "address", "location", "start_date", "end_date", "note", "status", "creator_id", "client_id"]
       });
 
-      const formattedProjects = projects.map((project) => ({
+      const formattedProjects = projects.map(project => ({
         ...project.toJSON(),
-        client_company_name: project.client?.client_company_name,
+        client_company_name: project.client?.client_company_name
       }));
 
       return res.json(formattedProjects);
@@ -47,10 +33,7 @@ const getProjects = async (req, res, next) => {
     if (req.query.search) {
       whereClause = {
         ...whereClause,
-        [Op.or]: [
-          { name: { [Op.like]: `%${req.query.search}%` } },
-          { company_name: { [Op.like]: `%${req.query.search}%` } },
-        ],
+        [Op.or]: [{ name: { [Op.like]: `%${req.query.search}%` } }, { company_name: { [Op.like]: `%${req.query.search}%` } }]
       };
     }
 
@@ -61,31 +44,17 @@ const getProjects = async (req, res, next) => {
         {
           model: Client,
           as: "client",
-          attributes: ["client_company_name"],
-        },
+          attributes: ["client_company_name"]
+        }
       ],
-      attributes: [
-        "id",
-        "name",
-        "company_id",
-        "company_name",
-        "email",
-        "address",
-        "location",
-        "start_date",
-        "end_date",
-        "note",
-        "status",
-        "creator_id",
-        "client_id",
-      ],
+      attributes: ["id", "name", "company_id", "company_name", "email", "address", "location", "start_date", "end_date", "note", "status", "creator_id", "client_id"],
       where: whereClause,
-      order: [["id", "DESC"]],
+      order: [["id", "DESC"]]
     });
 
-    const formattedProjects = projects.map((project) => ({
+    const formattedProjects = projects.map(project => ({
       ...project.toJSON(),
-      client_company_name: project.client?.client_company_name,
+      client_company_name: project.client?.client_company_name
     }));
 
     res.json(formattedProjects);
@@ -101,18 +70,18 @@ const getProjects = async (req, res, next) => {
   if (req.user.role === "user") {
     try {
       const artisan = await Artisan.findOne({
-        where: { user_id: req.user.id },
+        where: { user_id: req.user.id }
       });
       if (artisan) {
         const tasks = await TasksArtisan.findAll({
-          where: { artisan_id: artisan.id },
+          where: { artisan_id: artisan.id }
         });
         if (tasks.length === 0) {
           return res.json([]);
         }
-        const taskIds = tasks.map((task) => task.task_id);
+        const taskIds = tasks.map(task => task.task_id);
         const projects = await Project.findAll({
-          where: { id: { [Op.in]: taskIds } },
+          where: { id: { [Op.in]: taskIds } }
         });
         if (projects.length === 0) {
           return res.json([]);
@@ -126,5 +95,5 @@ const getProjects = async (req, res, next) => {
 };
 
 module.exports = {
-  getProjects,
+  getProjects
 };
