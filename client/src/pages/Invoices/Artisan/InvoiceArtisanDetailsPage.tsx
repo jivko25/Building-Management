@@ -36,10 +36,8 @@ export const InvoiceArtisanDetailsPage = () => {
   const formatDate = (dateString: string) => {
     try {
       if (!dateString) return "N/A";
-
-      const date = parseISO(dateString);
-      if (!isValid(date)) return "N/A";
-
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "N/A";
       return format(date, "dd.MM.yyyy", { locale: bg });
     } catch (error) {
       console.error("Error formatting date:", error);
@@ -128,10 +126,10 @@ export const InvoiceArtisanDetailsPage = () => {
                   {t("Invoice")} {invoice.invoice_number}
                 </h1>
                 <p>
-                  {t("Date of issue")}: {format(new Date(invoice.invoice_date), "dd.MM.yyyy", { locale: bg })}
+                  {t("Date of issue")}: {formatDate(invoice.invoice_date)}
                 </p>
                 <p>
-                  {t("Due date")}: {format(new Date(invoice.due_date), "dd.MM.yyyy", { locale: bg })}
+                  {t("Due date")}: {formatDate(invoice.due_date)}
                 </p>
               </div>
               <div className="text-right">{invoice.company?.logo_url && <img src={invoice.company.logo_url} alt="Company Logo" className="max-w-[226px] max-h-[98px]" />}</div>
