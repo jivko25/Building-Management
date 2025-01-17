@@ -17,10 +17,10 @@ const createTask = async (req, res, next) => {
       measure
     });
 
-    // Валидация на входните данни
-    if (!name || !artisans || !activity || !measure) {
-      throw new ApiError(400, "Missing required fields!");
-    }
+    // const existingTask = await Task.findOne({ where: { name } });
+    // if (existingTask) {
+    //   throw new ApiError(400, `${name} already exists!`);
+    // }
 
     // const existingTask = await Task.findOne({ where: { name } });
     // if (existingTask) {
@@ -38,23 +38,16 @@ const createTask = async (req, res, next) => {
       throw new ApiError(400, "Artisans must be an array!");
     }
 
-    // Намиране на артисаните
-    const foundArtisans = await Artisan.findAll({
-      where: { name: artisans }
+    // Намиране на всички артисани
+    const artisanRecords = await Artisan.findAll({
+      where: {
+        name: {
+          [Op.in]: artisans,
+        }
+      }
     });
 
-    console.log(
-      "Found artisans:",
-      foundArtisans.map(a => a.name)
-    );
-    // // Намиране на всички артисани
-    // const artisanRecords = await Artisan.findAll({
-    //   where: {
-    //     name: {
-    //       [Op.in]: artisans,
-    //     }
-    //   }
-    // });
+    console.log("Found artisans:", artisanRecords);
 
     // Проверка дали всички артисани са намерени
     const missingArtisans = artisans.filter(artisanName => !foundArtisans.some(found => found.name === artisanName));
