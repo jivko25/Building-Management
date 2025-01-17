@@ -26,8 +26,12 @@ import { UpdateInvoicePage } from "./pages/Invoices/UpdateInvoicePage";
 import ClientsTablePage from "./pages/ClientsTablePage";
 import AdminGuard from "./guards/AdminGuard";
 import { LanguageSettings } from "./pages/Settings/LanguageSettings";
+import { useTranslation } from "react-i18next";
 
 const AppRoutes = () => {
+
+const { t } = useTranslation();
+console.log("Current translations:", t("settings"));
   return (
     <Routes>
       {/* Public routes */}

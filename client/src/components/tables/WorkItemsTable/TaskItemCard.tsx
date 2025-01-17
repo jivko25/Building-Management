@@ -23,9 +23,9 @@ const TaskItemCard = ({ workItems }: TaskItemCardProps) => {
       return null;
     }
 
-    const workItemsPages = workItems.pages.flatMap((page: any) => page.workItems || []);
+    const workItemsPages = workItems?.pages.flatMap((page: any) => page.workItems || []);
 
-    if (!workItemsPages.length) {
+    if (!workItemsPages?.length) {
       return {
         taskName: task.name,
         artisanName: task.artisans.map((artisan: { name: any; }) => artisan.name).join(", "),
