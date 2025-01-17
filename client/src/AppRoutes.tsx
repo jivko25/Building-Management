@@ -28,6 +28,12 @@ import { UpdateClientInvoicePage } from "./pages/Invoices/Client/UpdateClientInv
 import { LanguageSettings } from "./pages/Settings/LanguageSettings";
 import { useTranslation } from "react-i18next";
 import { UserWorkitemProvider } from "./context/UserWorkitemContext";
+import ArtisansDetailsPage from "./pages/ArtisansDetailsPage";
+import ManagerDefaultPricesPage from "./pages/ManagerDefaultPricesPage";
+import { InvoicesArtisanPage } from "./pages/Invoices/Artisan/InvoicesArtisanPage";
+import { CreateArtisanInvoicePage } from "./pages/Invoices/Artisan/CreateArtisanInvoicePage";
+import { InvoiceArtisanDetailsPage } from "./pages/Invoices/Artisan/InvoiceArtisanDetailsPage";
+import { UpdateArtisanInvoicePage } from "./pages/Invoices/Artisan/UpdateArtisanInvoicePage";
 
 const AppRoutes = () => {
   const { t } = useTranslation();
