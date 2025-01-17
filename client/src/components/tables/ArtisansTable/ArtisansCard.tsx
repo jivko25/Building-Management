@@ -19,7 +19,7 @@ const ArtisansCard = ({ artisans }: ArtisansCardProps) => {
           <TableCell className="font-semibold">{artisan.name}</TableCell>
           <TableCell className="text-end w-[200px]">
             {defaultValuesGuard && <ArtisanAction key={artisan.id} artisanId={artisan.id!} artisanName={artisan.name} type="all" />}
-            <EditArtisan artisan={artisan} />
+            <EditArtisan artisanId={artisan.id!} />
           </TableCell>
         </TableRow>
       ))}
