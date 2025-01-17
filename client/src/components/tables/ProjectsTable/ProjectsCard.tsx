@@ -3,12 +3,15 @@ import EditProject from "@/components/Forms/Projects/ProjectFormEdit/EditProject
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Project } from "@/types/project-types/projectTypes";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type CardFormProps = {
   projects: Project[];
 };
 
 const ProjectsCard = ({ projects }: CardFormProps) => {
+  const { t } = useTranslation();
+
   return (
     <>
       {projects.map(project => (
@@ -22,23 +25,23 @@ const ProjectsCard = ({ projects }: CardFormProps) => {
           </CardHeader>
           <CardContent className="p-5">
             <CardDescription className="break-words">
-              <span className="font-semibold pr-1">Address:</span>
+              <span className="font-semibold pr-1">{t("Address:")} </span>
               <span>{project.address}</span>
             </CardDescription>
             <CardDescription>
-              <span className="font-semibold pr-1">Location:</span>
+              <span className="font-semibold pr-1">{t("Location:")} </span>
               <span>{project.location}</span>
             </CardDescription>
             <CardDescription>
-              <span className="font-semibold pr-1">Deadline:</span>
+              <span className="font-semibold pr-1">{t("Deadline:")} </span>
               <span>{new Date(project.end_date!).toLocaleDateString().slice(0, 10)}</span>
             </CardDescription>
             <CardDescription>
-              <span className="font-semibold pr-1">Status:</span>
+              <span className="font-semibold pr-1">{t("Status:")} </span>
               <span>{project.status}</span>
             </CardDescription>
             <CardDescription>
-              <span className="font-semibold pr-1">Company:</span>
+              <span className="font-semibold pr-1">{t("Company:")} </span>
               <span>{project.company_name}</span>
             </CardDescription>
           </CardContent>

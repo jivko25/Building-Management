@@ -16,6 +16,7 @@ const ClientsCard = ({ clients }: ClientsCardProps) => {
           <TableCell className="font-semibold">{client.client_name}</TableCell>
           <TableCell className="font-semibold">{client.client_company_address}</TableCell>
           <TableCell className="font-semibold">{client.client_company_iban}</TableCell>
+          <TableCell className="font-semibold">{client.invoiceLanguage?.name || "English"}</TableCell>
           <TableCell className="text-center">
             <Badge variant={client.status === "active" ? "default" : "secondary"}>{client.status}</Badge>
           </TableCell>

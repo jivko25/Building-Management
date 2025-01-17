@@ -1,19 +1,25 @@
 const db = require("../../data/index.js");
-const { Client, User } = db;
+const { Client, User, InvoiceLanguage } = db;
 
 const getClients = async (req, res, next) => {
   try {
     let clients;
+    const includeOptions = [
+      {
+        model: User,
+        as: "creator",
+        attributes: ["username"]
+      },
+      {
+        model: InvoiceLanguage,
+        as: "invoiceLanguage",
+        attributes: ["code", "name"]
+      }
+    ];
 
     if (req.user.role === "admin") {
       clients = await Client.findAll({
-        include: [
-          {
-            model: User,
-            as: "creator",
-            attributes: ["username"]
-          }
-        ],
+        include: includeOptions,
         order: [["id", "DESC"]]
       });
     } else {
@@ -21,13 +27,7 @@ const getClients = async (req, res, next) => {
         where: {
           creator_id: req.user.id
         },
-        include: [
-          {
-            model: User,
-            as: "creator",
-            attributes: ["username"]
-          }
-        ],
+        include: includeOptions,
         order: [["id", "DESC"]]
       });
     }

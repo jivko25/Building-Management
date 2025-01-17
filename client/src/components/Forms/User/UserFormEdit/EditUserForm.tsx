@@ -9,6 +9,7 @@ import { useUserFormHooks } from "@/hooks/forms/useUserForm";
 import { UserSchema } from "@/models/user/userSchema";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "react-i18next";
 
 type EditUserFormProps = {
   handleSubmit: (userData: UserSchema) => void;
@@ -17,6 +18,7 @@ type EditUserFormProps = {
 };
 
 const EditUserForm = ({ handleSubmit, isPending, userId }: EditUserFormProps) => {
+  const { t } = useTranslation();
   const { data: user } = useFetchDataQuery<{
     id: string;
     full_name: string;
@@ -48,16 +50,16 @@ const EditUserForm = ({ handleSubmit, isPending, userId }: EditUserFormProps) =>
     <FormProvider {...form}>
       <form id="form-edit" onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="grid grid-cols-1 gap-2 mb-2">
-          <FormFieldInput type="text" label="Name, Surname" name="full_name" className="pl-10" Icon={UserIcon} />
-          <FormFieldInput type="text" label="Username" name="username" className="pl-10" Icon={UserIcon} />
-          <FormFieldInput type="password" label="Password" name="password" className="pl-10" Icon={Lock} />
+          <FormFieldInput type="text" label={t("Name, Surname")} name="full_name" className="pl-10" Icon={UserIcon} />
+          <FormFieldInput type="text" label={t("Username")} name="username" className="pl-10" Icon={UserIcon} />
+          <FormFieldInput type="password" label={t("Password")} name="password" className="pl-10" Icon={Lock} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2">
-          <RoleSelector label="Role" name="role" placeholder="Role" defaultVal={user?.role === "admin" ? "manager" : user?.role} />
-          <StatusSelector label="Status" name="status" defaultVal={user?.status} />
+          <RoleSelector label={t("Role")} name="role" placeholder={t("Role")} defaultVal={user?.role === "admin" ? "manager" : user?.role} />
+          <StatusSelector label={t("Status")} name="status" defaultVal={user?.status} />
         </div>
-        <DialogFooter disabled={!form.formState.isDirty || isPending} label="Submit" formName="form-edit" className="mt-6" />
+        <DialogFooter disabled={!form.formState.isDirty || isPending} label={t("Submit")} formName="form-edit" className="mt-6" />
       </form>
     </FormProvider>
   );

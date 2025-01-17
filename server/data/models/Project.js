@@ -1,4 +1,4 @@
-//server\data\models\Project.js
+// server\data\models\Project.js
 module.exports = (sequelize, DataTypes) => {
   const Project = sequelize.define(
     "Project",
@@ -82,6 +82,11 @@ module.exports = (sequelize, DataTypes) => {
     Project.belongsTo(models.User, {
       foreignKey: "creator_id",
       as: "creator"
+    });
+
+    Project.hasMany(models.ProjectImage, {
+      foreignKey: "projectId",
+      as: "images"
     });
   };
 

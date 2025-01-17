@@ -10,8 +10,10 @@ import SearchBar from "@/components/common/SearchBar/SearchBar";
 import useSearchHandler from "@/hooks/useSearchHandler";
 import useSearchParamsHook from "@/hooks/useSearchParamsHook";
 import CreateProject from "@/components/Forms/Projects/ProjectFormCreate/CreateProject";
+import { useTranslation } from "react-i18next";
 
 const ProjectsTableBody = () => {
+  const { t } = useTranslation();
   const { setSearchParams } = useSearchParamsHook();
 
   const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
@@ -39,7 +41,7 @@ const ProjectsTableBody = () => {
     <div className="flex flex-col border rounded-lg mt-4 mx-8 p-4 backdrop-blur-sm bg-slate-900/20">
       <div className="flex flex-col-reverse md:flex-row gap-4 w-full mb-4 justify-between items-center">
         <div className="w-full md:w-1/3">
-          <SearchBar handleSearch={handleSearch} placeholder="Search projects..." search={search} />
+          <SearchBar handleSearch={handleSearch} placeholder={t("Search projects...")} search={search} />
         </div>
         <CreateProject />
       </div>
@@ -48,8 +50,8 @@ const ProjectsTableBody = () => {
           data={projects}
           renderData={projects => <ProjectsCard projects={projects as Project[]} />}
           noResults={{
-            title: "No projects found",
-            description: "It seems you haven't added any projects yet",
+            title: t("No projects found"),
+            description: t("It seems you haven't added any projects yet"),
             Icon: BrickWall
           }}
         />

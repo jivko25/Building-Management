@@ -11,6 +11,7 @@ import { useArtisanFormHooks } from "@/hooks/forms/useArtisanForm";
 import { ArtisanSchema } from "@/models/artisan/artisanSchema";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "react-i18next";
 
 type EditArtisanFormProps = {
   handleSubmit: (artisanData: ArtisanSchema) => void;
@@ -19,6 +20,7 @@ type EditArtisanFormProps = {
 };
 
 const EditArtisanForm = ({ artisanId, handleSubmit, isPending }: EditArtisanFormProps) => {
+  const { t } = useTranslation();
   const { data: artisan } = useFetchDataQuery<{
     id: string;
     name: string;
@@ -54,19 +56,19 @@ const EditArtisanForm = ({ artisanId, handleSubmit, isPending }: EditArtisanForm
     <FormProvider {...form}>
       <form id="form-edit" onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="grid grid-cols-1 gap-2 mb-2">
-          <FormFieldInput type="text" label="Artisan name" name="name" className="pl-10" Icon={User} />
-          <FormFieldInput type="text" label="Artisan phone" name="number" className="pl-10" Icon={Phone} />
-          <FormFieldInput type="text" label="Artisan email" name="email" className="pl-10" Icon={Mail} />
+          <FormFieldInput type="text" label={t("Artisan name")} name="name" className="pl-10" Icon={User} />
+          <FormFieldInput type="text" label={t("Artisan phone")} name="number" className="pl-10" Icon={Phone} />
+          <FormFieldInput type="text" label={t("Artisan email")} name="email" className="pl-10" Icon={Mail} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2">
-          <StatusSelector label="Status" name="status" defaultVal={artisan?.status} />
-          <UsersSelector label="Select user" name="artisanName" defaultVal={artisan?.user?.full_name} />
-          <CompanySelector label="Select company" name="company" defaultVal={artisan?.company?.name} />
+          <StatusSelector label={t("Status")} name="status" defaultVal={artisan?.status} />
+          <UsersSelector label={t("Select user")} name="artisanName" defaultVal={artisan?.user?.full_name} />
+          <CompanySelector label={t("Select company")} name="company" defaultVal={artisan?.company?.name} />
         </div>
         <Separator className="mt-4 mb-2" />
-        <FormTextareaInput name="note" label="Artisan note" placeholder="Artisan notes..." type="text" />
-        <DialogFooter disabled={!form.formState.isDirty || isPending} label="Submit" formName="form-edit" className="mt-6" />
+        <FormTextareaInput name="note" label={t("Artisan note")} placeholder={t("Artisan notes...")} type="text" />
+        <DialogFooter disabled={!form.formState.isDirty || isPending} label={t("Submit")} formName="form-edit" className="mt-6" />
       </form>
     </FormProvider>
   );
