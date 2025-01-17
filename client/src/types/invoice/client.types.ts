@@ -1,22 +1,6 @@
-export interface Invoice {
-  id: number;
-  invoice_number: string;
-  invoice_date: string;
-  due_date: string;
-  total_amount: string;
-  paid: boolean;
-  company: {
-    id: number;
-    name: string;
-    address: string;
-    registration_number?: string;
-    vat_number?: string;
-    phone?: string;
-    email?: string;
-    iban?: string;
-    mol?: string;
-    logo_url?: string;
-  };
+import { BaseInvoice, BaseInvoiceItem } from "./base.types";
+
+export interface ClientInvoice extends BaseInvoice {
   client: {
     id: number;
     client_name: string;
@@ -27,27 +11,15 @@ export interface Invoice {
     client_company_iban?: string;
     client_emails: string | string[];
   };
-  items: InvoiceItem[];
+  items: ClientInvoiceItem[];
 }
 
-export interface InvoiceItem {
-  id: number;
-  activity: {
-    id: number;
-    name: string;
-  };
-  measure: {
-    id: number;
-    name: string;
-  };
+export interface ClientInvoiceItem extends BaseInvoiceItem {
   project: {
     id: number;
     location: string;
     address: string;
   };
-  quantity: string;
-  price_per_unit: string;
-  total_price: string;
   task: {
     id: number;
     activity_id: number;
@@ -58,7 +30,7 @@ export interface InvoiceItem {
   };
 }
 
-export interface CreateInvoiceData {
+export interface CreateClientInvoiceData {
   company_id: number;
   client_company_id: number;
   due_date_weeks: number;
