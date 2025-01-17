@@ -1,10 +1,6 @@
 //client\src\context\AuthContext.tsx
 import { createContext, useContext, useEffect, useReducer } from "react";
-import {
-  AuthState,
-  AuthActionType,
-  AuthContextProps,
-} from "@/types/auth-types/authTypes";
+import { AuthState, AuthActionType, AuthContextProps } from "@/types/auth-types/authTypes";
 import { User } from "@/types/user-types/userTypes";
 import { useLocation, useNavigate } from "react-router-dom";
 import authReducer from "./authReducer";
@@ -14,7 +10,7 @@ const initialState: AuthState = {
   error: undefined,
   role: null,
   isLoading: false,
-  loading: true,
+  loading: true
 };
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -30,25 +26,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const login = async (
-    username: string,
-    password: string
-  ): Promise<boolean> => {
+  const login = async (username: string, password: string): Promise<boolean> => {
     dispatch({
-      type: AuthActionType.LOGIN_REQUEST,
+      type: AuthActionType.LOGIN_REQUEST
     });
 
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           username,
-          password,
+          password
         }),
-        credentials: "include",
+        credentials: "include"
       });
 
       const userData: { user: User } = await response.json();
@@ -60,8 +53,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       dispatch({
         type: AuthActionType.LOGIN_SUCCESS,
         payload: {
-          user: userData.user,
-        },
+          user: userData.user
+        }
       });
 
       sessionStorage.setItem("user", JSON.stringify(userData.user));
@@ -72,29 +65,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         dispatch({
           type: AuthActionType.LOGIN_ERROR,
           payload: {
-            error: error.message,
-          },
+            error: error.message
+          }
         });
       return false;
     }
   };
 
-  const register = async (
-    username: string,
-    password: string,
-    full_name: string,
-    email: string,
-    creator_id?: string
-  ): Promise<boolean> => {
+  const register = async (username: string, password: string, full_name: string, email: string, creator_id?: string): Promise<boolean> => {
     dispatch({
-      type: AuthActionType.REGISTER_REQUEST,
+      type: AuthActionType.REGISTER_REQUEST
     });
-  
+
     try {
       const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           username,
@@ -103,114 +90,109 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           creator_id,
           email
         }),
-        credentials: "include",
+        credentials: "include"
       });
-  
+
       const userData: { user: User } = await response.json();
-  
+
       if (!response.ok) {
         throw new Error("Registration failed");
       }
-  
+
       dispatch({
         type: AuthActionType.REGISTER_SUCCESS,
         payload: {
-          user: userData.user,
-        },
+          user: userData.user
+        }
       });
-  
+
       sessionStorage.setItem("user", JSON.stringify(userData.user));
-  
+
       return true;
     } catch (error: unknown) {
       if (error instanceof Error)
         dispatch({
           type: AuthActionType.REGISTER_ERROR,
           payload: {
-            error: error.message,
-          },
+            error: error.message
+          }
         });
       return false;
     }
   };
 
-  const resetPassword = async (
-    token: string,
-    newPassword: string
-  ): Promise<boolean> => {
+  const resetPassword = async (token: string, newPassword: string): Promise<boolean> => {
     dispatch({
-      type: AuthActionType.RESET_PASSWORD_REQUEST,
+      type: AuthActionType.RESET_PASSWORD_REQUEST
     });
-  
+
     try {
       const response = await fetch(`${API_URL}/auth/reset-password`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           token,
           newPassword
         }),
-        credentials: "include",
+        credentials: "include"
       });
-  
+
       if (!response.ok) {
         throw new Error("Password reset failed");
       }
-  
+
       dispatch({
-        type: AuthActionType.RESET_PASSWORD_SUCCESS,
+        type: AuthActionType.RESET_PASSWORD_SUCCESS
       });
-  
+
       return true;
     } catch (error: unknown) {
       if (error instanceof Error)
         dispatch({
           type: AuthActionType.RESET_PASSWORD_ERROR,
           payload: {
-            error: error.message,
-          },
+            error: error.message
+          }
         });
       return false;
     }
   };
-  
-  const forgotPassword = async (
-    email: string
-  ): Promise<boolean> => {
+
+  const forgotPassword = async (email: string): Promise<boolean> => {
     dispatch({
-      type: AuthActionType.FORGOT_PASSWORD_REQUEST,
+      type: AuthActionType.FORGOT_PASSWORD_REQUEST
     });
-  
+
     try {
       const response = await fetch(`${API_URL}/auth/forgot-password`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           email
         }),
-        credentials: "include",
+        credentials: "include"
       });
-  
+
       if (!response.ok) {
         throw new Error("Forgot password request failed");
       }
-  
+
       dispatch({
-        type: AuthActionType.FORGOT_PASSWORD_SUCCESS,
+        type: AuthActionType.FORGOT_PASSWORD_SUCCESS
       });
-  
+
       return true;
     } catch (error: unknown) {
       if (error instanceof Error)
         dispatch({
           type: AuthActionType.FORGOT_PASSWORD_ERROR,
           payload: {
-            error: error.message,
-          },
+            error: error.message
+          }
         });
       return false;
     }
@@ -220,15 +202,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     await fetch(`${API_URL}/auth/logout`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
-      credentials: "include",
+      credentials: "include"
     });
 
     sessionStorage.removeItem("user");
 
     dispatch({
-      type: AuthActionType.LOGOUT,
+      type: AuthActionType.LOGOUT
     });
 
     navigate("/login");
@@ -244,22 +226,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           type: AuthActionType.LOGIN_SUCCESS,
           payload: {
             user: parsedUser,
-            role: parsedUser.role,
-          },
+            role: parsedUser.role
+          }
         });
       }
     }
     dispatch({
       type: AuthActionType.SET_LOADING,
       payload: {
-        loading: false,
-      },
+        loading: false
+      }
     });
   }, [location.pathname]);
 
   return (
     <AuthContext.Provider value={{ ...state, login, register, logout, resetPassword, forgotPassword }}>
-      {children}
+      <div className={state?.user?.readonly ? "readonly" : ""}>{children}</div>
     </AuthContext.Provider>
   );
 };

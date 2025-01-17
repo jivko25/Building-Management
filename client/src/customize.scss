@@ -67,3 +67,9 @@ table {
   border-radius: 10px 10px 0 0;
   overflow: hidden;
 }
+
+body:has(.readonly) input, button[role="combobox"] {
+  user-select: none !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+}
