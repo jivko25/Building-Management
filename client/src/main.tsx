@@ -49,5 +49,3 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   </React.StrictMode>
 );
 
-const { t } = useTranslation();
-console.log("Current translations:", t("settings"));
