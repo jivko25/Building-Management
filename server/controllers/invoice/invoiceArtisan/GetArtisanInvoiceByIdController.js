@@ -15,7 +15,7 @@ const getArtisanInvoiceById = async (req, res) => {
         {
           model: Artisan,
           as: "artisan",
-          attributes: ["id", "name", "note", "email", "number"],
+          attributes: ["id", "name", "note", "email", "number", "company_id", "user_id", "status"],
           include: [
             {
               model: User,
@@ -27,7 +27,7 @@ const getArtisanInvoiceById = async (req, res) => {
         {
           model: Company,
           as: "company",
-          attributes: ["id", "name", "address", "email"]
+          attributes: ["id", "name", "address", "email", "logo_url", "phone", "mol", "registration_number", "vat_number", "iban"]
         },
         {
           model: InvoiceItem,
@@ -71,6 +71,9 @@ const getArtisanInvoiceById = async (req, res) => {
         email: invoice.artisan.email,
         number: invoice.artisan.number,
         note: invoice.artisan.note,
+        company_id: invoice.artisan.company_id,
+        user_id: invoice.artisan.user_id,
+        status: invoice.artisan.status,
         manager: invoice.artisan.user
           ? {
               id: invoice.artisan.user.id,
@@ -83,7 +86,13 @@ const getArtisanInvoiceById = async (req, res) => {
         id: invoice.company.id,
         name: invoice.company.name,
         address: invoice.company.address,
-        email: invoice.company.email
+        email: invoice.company.email,
+        logo_url: invoice.company.logo_url,
+        phone: invoice.company.phone,
+        mol: invoice.company.mol,
+        registration_number: invoice.company.registration_number,
+        vat_number: invoice.company.vat_number,
+        iban: invoice.company.iban
       },
       items: invoice.items.map(item => ({
         id: item.id,

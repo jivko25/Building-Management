@@ -149,37 +149,28 @@ export const InvoiceArtisanDetailsPage = () => {
             <div className="grid grid-cols-2 gap-10 mb-8">
               <div className="border p-5 rounded">
                 <h3 className="font-bold mb-2">{t("Recipient")}</h3>
-                <p>
-                  {t("Name")}: {invoice.artisan.name}
-                </p>
-                <p>
-                  {t("Email")}: {invoice.artisan.email}
-                </p>
-                <p>
-                  {t("Phone")}: {invoice.artisan.number || "N/A"}
-                </p>
-                {invoice.artisan.user && (
+                {invoice.artisan.manager && (
                   <>
                     <p>
-                      {t("Manager")}: {invoice.artisan.user?.full_name}
+                      {t("Manager")}: {invoice.artisan.manager?.full_name}
                     </p>
                     <p>
-                      {t("Manager Email")}: {invoice.artisan.user?.email}
+                      {t("Manager Email")}: {invoice.artisan.manager?.email}
                     </p>
                   </>
                 )}
               </div>
 
               <div className="border p-5 rounded">
-                <h3 className="font-bold mb-2">{t("Company Information")}</h3>
+                <h3 className="font-bold mb-2">{t("Issuer")}</h3>
                 <p>
-                  {t("Name")}: {invoice.company.name}
+                  {t("Name")}: {invoice.artisan.name}
                 </p>
                 <p>
-                  {t("Address")}: {invoice.company.address}
+                  {t("Address")}: {invoice.artisan.email}
                 </p>
                 <p>
-                  {t("Email")}: {invoice.company.email}
+                  {t("Email")}: {invoice.artisan.number}
                 </p>
               </div>
             </div>
@@ -254,15 +245,15 @@ export const InvoiceArtisanDetailsPage = () => {
               <span className="font-semibold">{t("Phone")} : </span>
               {invoice.artisan.number || "N/A"}
             </div>
-            {invoice.artisan.user && (
+            {invoice.artisan.manager && (
               <>
                 <div>
                   <span className="font-semibold">{t("Manager")} : </span>
-                  {invoice.artisan.user?.full_name}
+                  {invoice.artisan.manager?.full_name}
                 </div>
                 <div>
                   <span className="font-semibold">{t("Manager Email")} : </span>
-                  {invoice.artisan.user?.email}
+                  {invoice.artisan.manager?.email}
                 </div>
               </>
             )}
