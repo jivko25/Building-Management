@@ -26,20 +26,12 @@ import { CreateClientInvoicePage } from "./pages/Invoices/Client/CreateClientInv
 import { InvoiceClientDetailsPage } from "./pages/Invoices/Client/InvoiceClientDetailsPage";
 import { UpdateClientInvoicePage } from "./pages/Invoices/Client/UpdateClientInvoicePage";
 import { LanguageSettings } from "./pages/Settings/LanguageSettings";
-import { InvoicesArtisanPage } from "./pages/Invoices/Artisan/InvoicesArtisanPage";
-import { CreateArtisanInvoicePage } from "./pages/Invoices/Artisan/CreateArtisanInvoicePage";
-import { InvoiceArtisanDetailsPage } from "./pages/Invoices/Artisan/InvoiceArtisanDetailsPage";
-import { UpdateArtisanInvoicePage } from "./pages/Invoices/Artisan/UpdateArtisanInvoicePage";
 import { useTranslation } from "react-i18next";
-import ArtisansDetailsPage from "./pages/ArtisansDetailsPage";
-import ManagerDefaultPricesPage from "./pages/ManagerDefaultPricesPage";
-import { UserWorkitemProvider } from "./context/UserWorkitemContext";
 
 const AppRoutes = () => {
-  const { t } = useTranslation();
-  console.log("Current translations:", t("settings"));
-  const { t } = useTranslation();
-  console.log("Current translations:", t("settings"));
+
+const { t } = useTranslation();
+console.log("Current translations:", t("settings"));
   return (
     <Routes>
       {/* Public routes */}
