@@ -5,7 +5,7 @@ export interface ArtisanInvoice extends BaseInvoice {
     id: number;
     name: string;
     address: string;
-    phone?: string;
+    number?: string;
     email?: string;
     iban?: string;
   };
