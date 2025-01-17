@@ -6,7 +6,6 @@ const { createDefaultPricing } = require("../controllers/defaultPricing/createDe
 const { removeDefaultPricing } = require("../controllers/defaultPricing/removeDefaultPricingController");
 const { editDefaultPricing } = require("../controllers/defaultPricing/editDefaultPricingController");
 const { getDefaultPricingById } = require("../controllers/defaultPricing/getDefaultPricingByIdController");
-const { addDefaultPricings } = require("../controllers/defaultPricing/addDefaultPricingsController");
 const router = express.Router();
 
 router.get("/default-pricing/:id", authenticateToken, getDefaultPricing);
@@ -14,6 +13,5 @@ router.get("/default-pricing/get-by-id/:id", authenticateToken, getDefaultPricin
 router.post("/default-pricing/:id", authenticateToken, createDefaultPricing);
 router.put("/default-pricing/:id", authenticateToken, editDefaultPricing);
 router.delete("/default-pricing/:id", authenticateToken, removeDefaultPricing);
-router.post("/default-pricing/add/:id", authenticateToken, addDefaultPricings);
 
 module.exports = router;

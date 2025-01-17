@@ -1,16 +1,14 @@
-<<<<<<< HEAD
-=======
 const db = require("../../data/index.js");
-const { DefaultPricing, Measure, Activity, User, Project } = db;
+const { DefaultPricing, Measure, Activity, Project } = db;
 const ApiError = require("../../utils/apiError");
 
 const editDefaultPricing = async (req, res, next) => {
   try {
     const defaultPricingId = req.params.id;
 
-    const { price, activity_id, measure_id, manager_id, project_id } = req.body;
-    if (!price || !activity_id || !measure_id || !manager_id || !project_id) {
-      throw new ApiError(400, "Price, activity id, measure id, manager id and project id are required!");
+    const { artisan_price, manager_price, activity_id, measure_id, project_id } = req.body;
+    if (!artisan_price || !manager_price || !activity_id || !measure_id || !project_id) {
+      throw new ApiError(400, "Artisan price, manager price, activity id, measure id and project id are required!");
     }
 
     const isMeasure = await Measure.findByPk(measure_id, {
@@ -31,15 +29,6 @@ const editDefaultPricing = async (req, res, next) => {
       throw new ApiError(404, "Activity not found!");
     }
 
-    const isManager = await User.findByPk(manager_id, {
-      attributes: {
-        exclude: ["user_id"]
-      }
-    });
-    if (!isManager) {
-      throw new ApiError(404, "Manager not found!");
-    }
-
     const isProject = await Project.findByPk(project_id, {
       attributes: {
         exclude: ["project_id"]
@@ -54,7 +43,7 @@ const editDefaultPricing = async (req, res, next) => {
       throw new ApiError(404, "Default pricing not found!");
     }
 
-    await defaultPricing.update({ price, activity_id, measure_id, manager_id, project_id });
+    await defaultPricing.update({ artisan_price, manager_price, activity_id, measure_id, project_id });
     res.status(200).json({ message: "Default pricing updated successfully!", defaultPricing });
   } catch (error) {
     if (error instanceof ApiError) {
@@ -68,4 +57,3 @@ const editDefaultPricing = async (req, res, next) => {
 module.exports = {
   editDefaultPricing
 };
->>>>>>> d878942dddd263657a48e7c12026dfc277f989db
