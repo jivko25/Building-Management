@@ -17,6 +17,10 @@ const getTasks = async (userId, isAdmin) => {
     }
   });
 
+  if (projects.length === 0) {
+    return [];
+  }
+
   // Get all tasks for these projects
   const tasks = await Task.findAll({
     where: {
@@ -26,6 +30,10 @@ const getTasks = async (userId, isAdmin) => {
     }
   });
 
+  if (tasks.length === 0) {
+    return [];
+  }
+
   return tasks;
 };
 
@@ -34,16 +42,14 @@ const getPaginatedActivities = async (req, res, next) => {
   const offset = (parseInt(_page) - 1) * parseInt(_limit);
   const isAdmin = req.user.role === "admin";
 
-  const tasks = await getTasks(req.user.id, isAdmin);
-
-  const whereClause = {
-    ...(q && { name: { [Op.like]: `%${q}%` } }),
-    ...(!isAdmin && {
-      id: {
-        [Op.in]: tasks.map(task => task.activity_id)
+  const whereClause = isAdmin
+    ? {
+        ...(q && { name: { [Op.like]: `%${q}%` } })
       }
-    })
-  };
+    : {
+        ...(q && { name: { [Op.like]: `%${q}%` } }),
+        creator_id: req.user.id
+      };
 
   // Get paginated activities for these tasks
   const { count: total, rows: data } = await Activity.findAndCountAll({
@@ -72,9 +78,6 @@ const getActivities = async (req, res, next) => {
     const activities = await Activity.findAll();
     return res.json(activities);
   }
-
-  // Get all tasks for projects where user is creator
-  const tasks = await getTasks(req.user.id, isAdmin);
 
   // Get all activities for these tasks
   const activities = await Activity.findAll({

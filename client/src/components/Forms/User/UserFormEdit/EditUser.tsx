@@ -1,5 +1,5 @@
 //client\src\components\Forms\User\UserFormEdit\EditUser.tsx
-import { userSchema, UserSchema } from "@/models/user/userSchema";
+import { EditUserSchema, editUserSchema } from "@/models/user/userSchema";
 import useDialogState from "@/hooks/useDialogState";
 import { useSubmitHandler } from "@/utils/helpers/submitHandler";
 import { useMutationHook } from "@/hooks/useMutationHook";
@@ -17,14 +17,14 @@ const EditUser = ({ userId }: UserFormProps) => {
 
   const { useEditEntity } = useMutationHook();
 
-  const { mutate, isPending } = useEditEntity<UserSchema>({
+  const { mutate, isPending } = useEditEntity<EditUserSchema>({
     URL: `/users/${userId}/edit`,
     queryKey: ["users"],
     successToast: t("User updated successfully!"),
     setIsOpen
   });
 
-  const handleSubmit = useSubmitHandler(mutate, userSchema);
+  const handleSubmit = useSubmitHandler(mutate, editUserSchema);
 
   return <DialogModal Component={EditUserForm} props={{ handleSubmit, isPending, userId }} isOpen={isOpen} setIsOpen={setIsOpen} title={t("Edit user")} />;
 };

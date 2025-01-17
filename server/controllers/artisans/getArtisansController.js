@@ -24,12 +24,15 @@ const getPaginatedArtisans = async (req, res, next) => {
       ? {
         name: {
           [Op.like]: `%${q}%`
-        }
+        },
       }
       : {};
 
     const rows = await Artisan.findAll({
-      where: whereClause,
+      where: {
+        ...whereClause,
+        ...(isAdmin ? {} : { creator_id: req.user.id })
+      },
       include: [
         { model: Company, as: "company", attributes: ["name"] },
         { model: User, as: "user", attributes: ["full_name"] },
@@ -44,19 +47,19 @@ const getPaginatedArtisans = async (req, res, next) => {
       order: [["id", "DESC"]]
     });
 
-    const artisans = rows.filter((artisan) => {
-      if (isAdmin) {
-        return true;
-      }
-      return artisan.user_id === req.user.id;
-    });
+    // const artisans = rows.filter((artisan) => {
+    //   if (isAdmin) {
+    //     return true;
+    //   }
+    //   return artisan.user_id === req.user.id;
+    // });
 
     res.json({
-      artisans: artisans,
-      artisansCount: artisans.length,
+      artisans: rows,
+      artisansCount: rows.length,
       page: parseInt(_page),
       limit: parseInt(_limit),
-      totalPages: Math.ceil(artisans.length / parseInt(_limit))
+      totalPages: Math.ceil(rows.length / parseInt(_limit))
     });
   } catch (error) {
     if (error instanceof ApiError) {
@@ -80,6 +83,7 @@ const getArtisans = async (req, res, next) => {
       throw new ApiError(404, "You are not authorized to access this resource");
     }
 
+
     let artisans;
     if (!isAdmin) {
       artisans = await Artisan.findAll({
@@ -96,9 +100,7 @@ const getArtisans = async (req, res, next) => {
           }
         ],
         where: {
-          user_id: {
-            [Op.in]: users.map((user) => user.id)
-          }
+          creator_id: req.user.id
         },
         order: [["id", "DESC"]]
       });

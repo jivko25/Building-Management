@@ -26,6 +26,7 @@ const CreateUserForm = ({ handleSubmit, isPending }: CreateUserFormProps) => {
         <div className="grid grid-cols-1 gap-2 mb-2">
           <FormFieldInput type="text" label={t("Name, Surname")} name="full_name" className="pl-10" Icon={User} />
           <FormFieldInput type="text" label={t("Username")} name="username" className="pl-10" Icon={User} />
+          <FormFieldInput type="text" label={t("Email")} name="email" className="pl-10" Icon={User} />
           <FormFieldInput type="password" label={t("Password")} name="password" className="pl-10" Icon={Lock} />
         </div>
         <Separator className="mt-4 mb-2" />
