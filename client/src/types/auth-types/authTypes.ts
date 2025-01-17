@@ -6,6 +6,7 @@ export interface User {
   role: string;
   status: string;
   email: string;
+  readonly?: boolean;
 }
 
 export interface AuthState {
