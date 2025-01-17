@@ -16,7 +16,7 @@ const createArtisan = async (req, res, next) => {
     }
 
     // Намиране на всички необходими записи едновременно
-    const [companyRecord, userRecord, activityRecord, measureRecord] = await Promise.all([Company.findOne({ where: { name: company } }), User.findOne({ where: { full_name: artisanName } }), Activity.findOne({ where: { name: activity } }), Measure.findOne({ where: { name: measure } })]);
+    const [companyRecord, userRecord] = await Promise.all([Company.findOne({ where: { name: company } }), User.findOne({ where: { full_name: artisanName } })]);
 
     // Проверка за съществуване на записите
     if (!companyRecord) {
@@ -26,14 +26,6 @@ const createArtisan = async (req, res, next) => {
     if (!userRecord) {
       console.log("User not found:", artisanName);
       throw new ApiError(404, "User not found!");
-    }
-    if (!activityRecord) {
-      console.log("Activity not found:", activity);
-      throw new ApiError(404, "Activity not found!");
-    }
-    if (!measureRecord) {
-      console.log("Measure not found:", measure);
-      throw new ApiError(404, "Measure not found!");
     }
 
     // Създаване на новия артисан
@@ -45,8 +37,7 @@ const createArtisan = async (req, res, next) => {
       company_id: companyRecord.id,
       user_id: userRecord.id,
       status,
-      activity_id: activityRecord.id,
-      measure_id: measureRecord.id
+      creator_id: req.user.id
     });
 
     // Взимане на артисана с всички връзки
@@ -70,7 +61,7 @@ const createArtisan = async (req, res, next) => {
     if (error instanceof ApiError) {
       next(error);
     } else {
-      next(new ApiError(500, "Internal server Error!"));
+      next(new ApiError(500, error.message));
     }
   }
 };

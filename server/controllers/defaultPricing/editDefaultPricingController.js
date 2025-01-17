@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 const db = require("../../data/index.js");
 const { DefaultPricing, Measure, Activity, User, Project } = db;
 const ApiError = require("../../utils/apiError");
@@ -68,4 +66,3 @@ const editDefaultPricing = async (req, res, next) => {
 module.exports = {
   editDefaultPricing
 };
->>>>>>> d878942dddd263657a48e7c12026dfc277f989db

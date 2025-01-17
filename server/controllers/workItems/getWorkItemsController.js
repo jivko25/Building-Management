@@ -1,18 +1,17 @@
-//server\controllers\workItems\getWorkItemsController.js
-const { where } = require("sequelize");
+const { Op } = require("sequelize"); // Добавяне на Op, ако липсва
 const db = require("../../data/index.js");
 const { WorkItem, Task, Artisan, Project } = db;
 
 const getWorkItems = async (req, res, next) => {
-    const { _page = 1, _limit = 4 } = req.query;
+  const { _page = 1, _limit = 4 } = req.query;
 
-    const offset = (_page - 1) * _limit;
-    const isAdmin = req.user.role === "admin";
+  const offset = (_page - 1) * _limit;
+  const isAdmin = req.user.role === "admin";
 
   try {
-    if(isAdmin){
+    if (isAdmin) {
       const workItems = await WorkItem.findAll({
-        where : { task_id },
+        where: { task_id: req.params.task_id }, // task_id трябва да бъде дефиниран
         limit: parseInt(_limit),
         offset: offset,
         order: [["id", "DESC"]]
@@ -21,52 +20,54 @@ const getWorkItems = async (req, res, next) => {
     }
 
     const projects = await Project.findAll({
-        where: {
-            creator_id: req.user.id,
-            id: req.params.project_id
-        }
+      where: {
+        creator_id: req.user.id,
+        id: req.params.project_id
+      }
     });
 
     if (projects.length === 0) {
-        return res.json([]);
+      return res.json([]);
     }
 
     const taskIds = projects.map((project) => project.task_id);
     if (taskIds.length === 0) {
-        return res.json([]);
+      return res.json([]);
     }
 
     const workItems = await WorkItem.findAndCountAll({
-        where: { task_id: { [Op.in]: taskIds } },
-        include: [
+      where: { task_id: { [Op.in]: taskIds } },
+      include: [
+        {
+          model: Task,
+          as: "task",
+          attributes: ["name", "price_per_measure", "total_price", "total_work_in_selected_measure", "status"],
+          include: [
             {
-                model: Task,
-                as: "task",
-                attributes: ["name", "price_per_measure", "total_price", "total_work_in_selected_measure", "status"],
-                include: [
-                    {
-                        model: Artisan,
-                        as: "artisans",
-                        attributes: ["name"]
-                    }
-                ]
+              model: Artisan,
+              as: "artisans",
+              attributes: ["name"]
             }
-        ],
-        limit: parseInt(_limit),
-        offset: offset,
-        order: [["id", "DESC"]]
+          ]
+        }
+      ],
+      limit: parseInt(_limit),
+      offset: offset,
+      order: [["id", "DESC"]]
     });
 
     res.json({
-        workItems: workItems.rows,
-        workItemsCount: workItems.count,
-        page: parseInt(_page),
-        limit: parseInt(_limit),
-        totalPages: Math.ceil(workItems.count / parseInt(_limit))
+      workItems: workItems.rows,
+      workItemsCount: workItems.count,
+      page: parseInt(_page),
+      limit: parseInt(_limit),
+      totalPages: Math.ceil(workItems.count / parseInt(_limit))
     });
+  } catch (error) {
+    next(error); // Добавяне на обработка на грешки
+  }
 };
 
 module.exports = {
-    getWorkItems
+  getWorkItems
 };
-

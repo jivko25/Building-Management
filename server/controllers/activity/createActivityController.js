@@ -17,7 +17,8 @@ const createActivity = async (req, res, next) => {
 
     const newActivity = await Activity.create({
       name,
-      status
+      status,
+      creator_id: req.user.id
     });
 
     res.status(201).json({

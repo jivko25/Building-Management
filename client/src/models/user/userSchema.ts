@@ -15,6 +15,9 @@ export const userSchema = z.object({
   password: z.string().min(5, {
     message: "Password must be at least 5 characters"
   }),
+  email: z.string().email({
+    message: "Invalid email address"
+  }),
   role: z.enum(["user", "manager", "admin"], {
     message: "Please select role"
   }),
@@ -22,6 +25,25 @@ export const userSchema = z.object({
     message: "Please select status"
   })
 });
+
+export const editUserSchema = z.object({
+  full_name: z.string().min(7, {
+    message: "Name must be at least 7 characters"
+  }),
+  username: z.string().min(5, {
+    message: "Username must be at least 5 characters"
+  }),
+  email: z.string().email({
+    message: "Invalid email address"
+  }),
+  role: z.enum(["user", "manager", "admin"], {
+    message: "Please select role"
+  }),
+  status: z.enum(["active", "inactive"], {
+    message: "Please select status"
+  })
+});
+
 
 export const loginFormSchema = z.object({
   username: z.string().min(5, {
@@ -87,3 +109,5 @@ export const forgotPasswordDefaultValues = {
 };
 
 export type UserSchema = z.infer<typeof userSchema>;
+
+export type EditUserSchema = z.infer<typeof editUserSchema>;

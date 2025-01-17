@@ -7,7 +7,7 @@ const ApiError = require("../../utils/apiError");
 const createUser = async (req, res, next) => {
 
   console.log("Creating new user with data:", req.body);
-  const { full_name, username, password, role, status } = req.body;
+  const { full_name, username, password, role, status, email } = req.body;
 
   try {
     const existingUser = await User.findOne({ where: { username } });
@@ -29,7 +29,8 @@ const createUser = async (req, res, next) => {
       role,
       status,
       manager_id,
-      creator_id: req.user?.id
+      creator_id: req.user?.id,
+      email
     });
 
     console.log("User created successfully:", {
@@ -48,7 +49,8 @@ const createUser = async (req, res, next) => {
         role: newUser.role,
         status: newUser.status,
         manager_id: newUser.manager_id,
-        creator_id: newUser.creator_id
+        creator_id: newUser.creator_id,
+        email: newUser.email
       }
     });
   } catch (error) {
@@ -56,7 +58,7 @@ const createUser = async (req, res, next) => {
     if (error instanceof ApiError) {
       next(error);
     } else {
-      next(new ApiError(500, "Internal Server Error", error));
+      next(new ApiError(500, error, error));
     }
   }
 };
