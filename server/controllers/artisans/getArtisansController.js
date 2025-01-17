@@ -23,13 +23,13 @@ const getPaginatedArtisans = async (req, res, next) => {
 
     const whereClause = q
       ? {
-          name: {
-            [Op.like]: `%${q}%`
-          }
-        }
+        name: {
+          [Op.like]: `%${q}%`
+        },
+      }
       : {};
 
-    const { count, rows } = await Artisan.findAndCountAll({
+    const rows = await Artisan.findAll({
       where: {
         ...whereClause,
         ...(isAdmin ? {} : { creator_id: req.user.id })
@@ -80,6 +80,7 @@ const getArtisans = async (req, res, next) => {
     if (users.length === 0) {
       throw new ApiError(404, "You are not authorized to access this resource");
     }
+
 
     let artisans;
     if (!isAdmin) {

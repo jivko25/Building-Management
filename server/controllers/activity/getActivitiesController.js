@@ -35,7 +35,7 @@ const getTasks = async (userId, isAdmin) => {
   });
 
   if (tasks.length === 0) {
-    throw new ApiError(404, NO_TASKS_FOUND);
+    return [];
   }
 
   return tasks;
