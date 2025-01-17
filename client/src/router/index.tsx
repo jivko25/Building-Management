@@ -6,6 +6,10 @@ import { CreateClientInvoicePage } from "@/pages/Invoices/Client/CreateClientInv
 import { InvoiceClientDetailsPage } from "@/pages/Invoices/Client/InvoiceClientDetailsPage";
 import { UpdateClientInvoicePage } from "@/pages/Invoices/Client/UpdateClientInvoicePage";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { InvoicesArtisanPage } from "@/pages/Invoices/Artisan/InvoicesArtisanPage";
+import { CreateArtisanInvoicePage } from "@/pages/Invoices/Artisan/CreateArtisanInvoicePage";
+import { InvoiceArtisanDetailsPage } from "@/pages/Invoices/Artisan/InvoiceArtisanDetailsPage";
+import { UpdateArtisanInvoicePage } from "@/pages/Invoices/Artisan/UpdateArtisanInvoicePage";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +38,31 @@ export const router = createBrowserRouter([
           {
             path: ":id/edit",
             element: <UpdateClientInvoicePage />,
+            errorElement: <ErrorBoundary />
+          }
+        ]
+      },
+      {
+        path: "invoices-artisan",
+        children: [
+          {
+            path: "",
+            element: <InvoicesArtisanPage />,
+            errorElement: <ErrorBoundary />
+          },
+          {
+            path: "create",
+            element: <CreateArtisanInvoicePage />,
+            errorElement: <ErrorBoundary />
+          },
+          {
+            path: ":id",
+            element: <InvoiceArtisanDetailsPage />,
+            errorElement: <ErrorBoundary />
+          },
+          {
+            path: ":id/edit",
+            element: <UpdateArtisanInvoicePage />,
             errorElement: <ErrorBoundary />
           }
         ]

@@ -97,7 +97,7 @@ export const InvoiceClientDetailsPage = () => {
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => navigate("/invoices")}>
+          <Button variant="outline" onClick={() => navigate("/invoices-client")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             {t("Back")}
           </Button>

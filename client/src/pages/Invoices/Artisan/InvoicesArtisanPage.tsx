@@ -1,6 +1,5 @@
-// client\src\pages\Invoices\Client\InvoicesClientPage.tsx
 import { useQuery } from "@tanstack/react-query";
-import { invoiceService } from "@/services/invoiceService";
+import { artisanInvoiceService } from "@/services/invoice/artisanService";
 import { DataTable, DataTableFilterMeta, DataTableFilterMetaData } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "@/components/ui/button";
@@ -8,8 +7,8 @@ import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { bg } from "date-fns/locale";
-import { Invoice } from "@/types/invoice.types";
-import { useEffect, useState } from "react";
+import { ArtisanInvoice } from "@/types/invoice/artisan.types";
+import { useState } from "react";
 import { FilterMatchMode } from "primereact/api";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
@@ -18,18 +17,18 @@ import Sidebar from "@/components/Sidebar/Sidebar";
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export const InvoicesClientPage = () => {
+export const InvoicesArtisanPage = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     invoice_number: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    "client.client_name": { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    "artisan.name": { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     total_amount: { value: null, matchMode: FilterMatchMode.EQUALS }
   });
 
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
   const { t } = useTranslation();
-  const [invoiceType, setInvoiceType] = useState("client");
+  const [invoiceType, setInvoiceType] = useState("artisan");
 
   const handleTabChange = (value: string) => {
     console.log("Tab changed to:", value);
@@ -41,11 +40,12 @@ export const InvoicesClientPage = () => {
     }
   };
 
-  const { data: invoices, isLoading } = useQuery<Invoice[]>({
-    queryKey: ["invoices"],
+  const { data: invoices, isLoading } = useQuery<ArtisanInvoice[]>({
+    queryKey: ["artisan-invoices"],
     queryFn: async () => {
-      const response = await invoiceService.getAll();
-      console.log("📄 Processed invoices:", response);
+      console.log("Fetching artisan invoices");
+      const response = await artisanInvoiceService.getAll();
+      console.log("📄 Processed artisan invoices:", response);
       return response;
     },
     refetchOnWindowFocus: false
@@ -68,19 +68,11 @@ export const InvoicesClientPage = () => {
             <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={t("search...")} className="search-input" />
           </IconField>
         </div>
-        <Button onClick={() => navigate(`/invoices-${invoiceType}/create`)}>
-          <Plus className="mr-2 h-4 w-4" />
-          {t("New invoice")}
-        </Button>
       </div>
     );
   };
 
-  useEffect(() => {
-    console.log("📊 DataTable value:", invoices);
-  }, [invoices]);
-
-  const dateTemplate = (rowData: Invoice) => {
+  const dateTemplate = (rowData: ArtisanInvoice) => {
     try {
       return format(new Date(rowData.invoice_date), "dd.MM.yyyy", { locale: bg });
     } catch (error) {
@@ -89,7 +81,7 @@ export const InvoicesClientPage = () => {
     }
   };
 
-  const dueDateTemplate = (rowData: Invoice) => {
+  const dueDateTemplate = (rowData: ArtisanInvoice) => {
     try {
       return format(new Date(rowData.due_date), "dd.MM.yyyy", { locale: bg });
     } catch (error) {
@@ -98,7 +90,7 @@ export const InvoicesClientPage = () => {
     }
   };
 
-  const amountTemplate = (rowData: Invoice) => {
+  const amountTemplate = (rowData: ArtisanInvoice) => {
     try {
       return `${Math.round(parseFloat(rowData.total_amount))} лв.`;
     } catch (error) {
@@ -107,23 +99,23 @@ export const InvoicesClientPage = () => {
     }
   };
 
-  const clientTemplate = (rowData: Invoice) => {
+  const artisanTemplate = (rowData: ArtisanInvoice) => {
     try {
-      return rowData.client.client_name || "N/A";
+      return rowData.artisan.name || "N/A";
     } catch (error) {
-      console.error("Error getting client name:", error, rowData);
+      console.error("Error getting artisan name:", error, rowData);
       return "N/A";
     }
   };
 
-  const paidTemplate = (rowData: Invoice) => {
+  const paidTemplate = (rowData: ArtisanInvoice) => {
     return rowData.paid ? "Yes" : "No";
   };
 
-  const actionTemplate = (rowData: Invoice) => {
+  const actionTemplate = (rowData: ArtisanInvoice) => {
     return (
       <div className="flex gap-2">
-        <Button variant="outline" size="sm" onClick={() => navigate(`/invoices-client/${rowData.id}`)}>
+        <Button variant="outline" size="sm" onClick={() => navigate(`/invoices-artisan/${rowData.id}`)}>
           {t("Details")}
         </Button>
       </div>
@@ -139,24 +131,24 @@ export const InvoicesClientPage = () => {
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-4">
               <h1 className="text-3xl font-bold">{t("Invoices")}</h1>
-              <Tabs defaultValue="client" onValueChange={handleTabChange}>
+              <Tabs defaultValue="artisan" onValueChange={handleTabChange}>
                 <TabsList>
                   <TabsTrigger value="client">{t("Clients")}</TabsTrigger>
                   <TabsTrigger value="artisan">{t("Artisans")}</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
-            {/* <Button onClick={() => navigate(`/invoices-${invoiceType}/create`)}>
+            <Button onClick={() => navigate(`/invoices-${invoiceType}/create`)}>
               <Plus className="mr-2 h-4 w-4" />
               {t("New invoice")}
-            </Button> */}
+            </Button>
           </div>
 
-          <DataTable value={invoices} paginator rows={10} rowsPerPageOptions={[10, 20, 50]} filters={filters} globalFilterFields={["invoice_number", "client.client_name", "total_amount"]} header={renderHeader} emptyMessage="No invoices found" loading={isLoading} stripedRows showGridlines dataKey="id" sortMode="single" removableSort tableStyle={{ minWidth: "50rem" }} scrollable>
+          <DataTable value={invoices} paginator rows={10} rowsPerPageOptions={[10, 20, 50]} filters={filters} globalFilterFields={["invoice_number", "artisan.name", "total_amount"]} header={renderHeader} emptyMessage="No invoices found" loading={isLoading} stripedRows showGridlines dataKey="id" sortMode="single" removableSort tableStyle={{ minWidth: "50rem" }} scrollable>
             <Column field="invoice_number" header={t("Number")} sortable filter filterPlaceholder={t("Search by number")} style={{ width: "15%" }} />
             <Column field="invoice_date" header={t("Date")} body={dateTemplate} sortable style={{ width: "15%" }} />
             <Column field="due_date" header={t("Due date")} body={dueDateTemplate} sortable style={{ width: "15%" }} />
-            <Column field="client.client_name" header={t("Client")} body={clientTemplate} sortable filter filterPlaceholder={t("Search by client")} style={{ width: "20%" }} />
+            <Column field="artisan.name" header={t("Artisan")} body={artisanTemplate} sortable filter filterPlaceholder={t("Search by artisan")} style={{ width: "20%" }} />
             <Column field="total_amount" header={t("Amount")} body={amountTemplate} sortable filter filterPlaceholder={t("Search by amount")} style={{ width: "15%" }} />
             <Column field="paid" header={t("Paid")} body={paidTemplate} sortable style={{ width: "10%" }} />
             <Column body={actionTemplate} style={{ width: "10%" }} />
