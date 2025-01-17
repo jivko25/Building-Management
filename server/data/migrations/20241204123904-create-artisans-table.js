@@ -48,6 +48,16 @@ module.exports = {
       status: {
         type: Sequelize.ENUM("active", "inactive"),
         defaultValue: "inactive"
+      },
+      creator_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_users",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL"
       }
     });
   },

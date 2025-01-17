@@ -17,20 +17,6 @@ const getProjects = async (req, res, next) => {
         return res.json(projects);
     }
 
-    const artisan = await Artisan.findOne({ where: { user_id: req.user.id } });
-    if (artisan) {
-        const tasks = await TasksArtisan.findAll({ where: { artisan_id: artisan.id } });
-        if (tasks.length === 0) {
-            return res.json([]);
-        }
-        const taskIds = tasks.map(task => task.task_id);
-        const projects = await Project.findAll({ where: { id: { [Op.in]: taskIds } } });
-        if (projects.length === 0) {
-            return res.json([]);
-        }
-        return res.json(projects);
-    }
-
     if (req.query.search) {
         whereClause = {
             ...whereClause,

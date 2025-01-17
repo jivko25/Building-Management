@@ -1,6 +1,7 @@
 //server/controllers/tasks/createTaskController.js
 const db = require("../../data/index.js");
 const { Task, Artisan, Activity, Measure } = db;
+const { Op } = db.Sequelize;
 const ApiError = require("../../utils/apiError");
 
 const createTask = async (req, res, next) => {
@@ -22,10 +23,10 @@ const createTask = async (req, res, next) => {
   try {
     console.log("Creating new task:", { name, artisans });
 
-    const existingTask = await Task.findOne({ where: { name } });
-    if (existingTask) {
-      throw new ApiError(400, `${name} already exists!`);
-    }
+    // const existingTask = await Task.findOne({ where: { name } });
+    // if (existingTask) {
+    //   throw new ApiError(400, `${name} already exists!`);
+    // }
 
     // Проверка дали artisans е масив
     if (!Array.isArray(artisans)) {
@@ -34,10 +35,14 @@ const createTask = async (req, res, next) => {
 
     // Намиране на всички артисани
     const artisanRecords = await Artisan.findAll({
-      where: { name: artisans }
+      where: {
+        name: {
+          [Op.in]: artisans,
+        }
+      }
     });
 
-    console.log("Found artisans:", artisanRecords.length);
+    console.log("Found artisans:", artisanRecords);
 
     if (artisanRecords.length !== artisans.length) {
       throw new ApiError(404, "Some artisans were not found!");

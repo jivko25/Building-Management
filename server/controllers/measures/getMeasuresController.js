@@ -17,37 +17,8 @@ const getMeasures = async (req, res, next) => {
         });
     }
 
-    const projects = await Project.findAll({
-        where: {
-            creator_id: req.user.id
-        }
-    });
-
-    if (projects.length === 0) {
-        return res.json([]);
-    }
-
-    const tasks = await Task.findAll({
-        where: {
-            project_id: {
-                [Op.in]: projects.map((project) => project.id)
-            }
-        }
-    });
-
-    if (tasks.length === 0) {
-        return res.json([]);
-    }
-
-    const measureIds = tasks.map((task) => task.measure_id);
-
     const measures = await Measure.findAll({
-        where: {
-            id: {
-                [Op.in]: measureIds
-            }
-        },
-        order: [["name", "ASC"]]
+      order: [["name", "ASC"]]
     });
 
     res.json({
