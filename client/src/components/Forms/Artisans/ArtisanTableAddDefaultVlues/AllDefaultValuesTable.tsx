@@ -12,18 +12,14 @@ import { Trash2 as Trash } from "lucide-react";
 import { deleteEntity } from "@/api/apiCall";
 import { ResponseMessageType } from "@/types/response-message/responseMessageTypes";
 import ResponseMessage from "@/components/common/ResponseMessages/ResponseMessage";
+import { Project } from "@/types/project-types/projectTypes";
 
 export default function AllDefaultValuesTable({ artisanId, artisanName }: { artisanId: string; artisanName: string }) {
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(10);
+  const [rows] = useState(10);
   const [responseMessage, setResponseMessage] = useState<ResponseMessageType | null>(null);
-
-  //TODO: handle 0 data response
-  const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
-    URL: `/default-pricing/${artisanId}`,
-    queryKey: ["defaultPricings"]
-  });
+  console.log(artisanId);
 
   const { data: activitiesResponse } = useFetchDataQuery<ActivityResponse>({
     URL: "/activities",
@@ -34,18 +30,14 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
     URL: "/measures",
     queryKey: ["measures"]
   });
-
-  const deleteDefaultPricing = async (defaultPriceId: string) => {
-    console.log(defaultPriceId);
-    try {
-      await deleteEntity(`/default-pricing/${defaultPriceId}`, {});
-      setResponseMessage({ type: "success", message: "Values deleted successfully!" });
-      refetch();
-    } catch (error) {
-      console.error(error);
-      setResponseMessage({ type: "error", message: "Something went wrong!" });
-    }
-  };
+  const { data: projects } = useFetchDataQuery<Project[]>({
+    URL: `/projects-for-manager`,
+    queryKey: ["projects"]
+  });
+  const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
+    URL: `/default-pricing/${artisanId}`,
+    queryKey: ["default-pricing"]
+  });
 
   const defaultPricings = defaultPricingsResponse?.defaultPricing || [];
   const activities = activitiesResponse?.data || [];
@@ -62,15 +54,18 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
   };
 
   const priceBodyTemplate = (rowData: DefaultPricing) => {
-    return <InputText value={rowData.price} readOnly className="w-[65px] text-xs md:text-sm border rounded  p-2" />;
+    return <InputText value={`${rowData.artisan_price}`} readOnly className="w-[65px] text-xs md:text-sm border rounded  p-2" />;
   };
+
   const managerPriceBodyTemplate = (rowData: DefaultPricing) => {
-    return <InputText value={rowData.price} readOnly className="w-[65px] text-xs md:text-sm border rounded  p-2" />;
+    return <InputText value={`${rowData.manager_price}`} readOnly className="w-[65px] text-xs md:text-sm border rounded  p-2" />;
   };
-  const projectBodyTemplate = (rowData: string) => {
-    rowData = "Filler Project";
-    return <InputText value={rowData} readOnly className="w-[100px]  text-xs md:text-sm border rounded  p-2" />;
+
+  const projectBodyTemplate = (rowData: DefaultPricing) => {
+    const project = projects?.find(p => p.id === rowData.project_id);
+    return <InputText value={project?.name} readOnly className="w-[100px]  text-xs md:text-sm border rounded  p-2" />;
   };
+
   const actionBodyTemplate = (rowData: DefaultPricing) => {
     const activity = activities.find(a => a.id === rowData.activity_id);
     const measure = measures.find(m => m.id === rowData.measure_id);
@@ -79,21 +74,24 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
         <ArtisanAction
           type="edit"
           artisanId={artisanId}
+          artisanName={artisanName}
           editProps={{
-            artisanId,
+            artisanId: artisanId,
             activity: activity?.name || "",
             measure: measure?.name || "",
-            price: rowData.price,
-            managerPrice: rowData.price,
+            price: rowData.artisan_price,
+            managerPrice: rowData.manager_price,
             defaultPricing: rowData
           }}
+          refetch={refetch}
         />
-        <Button variant="ghost" size="icon" onClick={() => deleteDefaultPricing(rowData.id)}>
+        <Button variant="ghost" size="icon" onClick={() => deleteDefaultPricing(rowData.id!)}>
           {<Trash />}
         </Button>
       </div>
     );
   };
+
   const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGlobalFilter(e.target.value);
   };
@@ -106,11 +104,22 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
       </span>
       <div className=" flex flex-col items-center justify-center gap-5">
         <p className="font-semibold">{artisanName}</p>
-        <ArtisanAction type="create" artisanId={artisanId} />
+        <ArtisanAction type="create" artisanName={artisanName} artisanId={artisanId} refetch={refetch} />
       </div>
     </div>
   );
-
+  //Delete default pricing
+  const deleteDefaultPricing = async (defaultPriceId: string) => {
+    console.log(defaultPriceId);
+    try {
+      await deleteEntity(`/default-pricing/${defaultPriceId}`, {});
+      setResponseMessage({ type: "success", message: "Values deleted successfully!" });
+      refetch();
+    } catch (error) {
+      console.error(error);
+      setResponseMessage({ type: "error", message: "Something went wrong!" });
+    }
+  };
   const filteredData = globalFilter
     ? defaultPricings.filter(pricing => {
         const activity = activities.find(a => a.id === pricing.activity_id);
@@ -119,8 +128,8 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
     : defaultPricings;
 
   return (
-    <div className="w-full flex flex-col justify-center items-center w-">
-      <DataTable value={filteredData} className="text-sm md:text-base max-w-full " style={{ width: "100%" }} paginator rows={rows} first={first} onPage={e => setFirst(e.first)} header={header} sortMode="multiple" removableSort>
+    <div className="w-full flex flex-col justify-center items-center overflow-auto">
+      <DataTable value={filteredData} className="text-sm md:text-base max-w-full !overflow-hidden " style={{ width: "100%" }} paginator rows={rows} first={first} onPage={e => setFirst(e.first)} header={header} sortMode="multiple" removableSort>
         <Column field="activity" header="Activity" body={activityBodyTemplate} className="text-sm md:text-base" sortable />
         <Column field="project" header="Project" body={projectBodyTemplate} className="text-sm md:text-base" sortable />
         <Column field="measure" header="Measure" body={measureBodyTemplate} className="text-sm md:text-base" sortable />

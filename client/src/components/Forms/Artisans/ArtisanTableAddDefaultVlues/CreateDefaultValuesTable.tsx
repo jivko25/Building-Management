@@ -1,10 +1,11 @@
 import { createEntity } from "@/api/apiCall";
 import ResponseMessage from "@/components/common/ResponseMessages/ResponseMessage";
 import { Button } from "@/components/ui/button";
+import { priceBodyTemplate } from "@/components/ui/defaultPricingTableRows";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { Activity, ActivityResponse } from "@/types/activity-types/activityTypes";
 import { Artisan } from "@/types/artisan-types/artisanTypes";
-import { DefaultPricing, DefaultPricingResponse } from "@/types/defaultPricingType/defaultPricingTypes";
+import { DefaultPricing } from "@/types/defaultPricingType/defaultPricingTypes";
 import { Measure, MeasureResponse } from "@/types/measure-types/measureTypes";
 import { Project } from "@/types/project-types/projectTypes";
 import { ResponseMessageType } from "@/types/response-message/responseMessageTypes";
@@ -12,13 +13,9 @@ import { Column } from "primereact/column";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
-import { InputNumber } from "primereact/inputnumber";
 import { useEffect, useState } from "react";
-interface PriceBodyTemplateProps {
-  set: React.Dispatch<React.SetStateAction<number>>;
-  price: number;
-}
-export default function AddDefaultValuesTable({ artisanId }: { artisanId: string }) {
+
+export default function CreateDefaultValuesTable({ artisanId, refetch }: { artisanId: string; refetch: () => void }) {
   const [price, setPrice] = useState<number>(0);
   const [mangerPrice, setManagerPrice] = useState<number>(0);
   const [measure, setMeasure] = useState<Measure>();
@@ -38,9 +35,8 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
     URL: `/projects-for-manager`,
     queryKey: ["projects"]
   });
-  console.log(price, mangerPrice);
   const activities: Activity[] = activitiesResponse?.data || [];
-  console.log("project id : ", project);
+
   const activityBodyTemplate = () => {
     return (
       <Dropdown
@@ -71,22 +67,6 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
     );
   };
 
-  const priceBodyTemplate = ({ set, price }: PriceBodyTemplateProps) => {
-    return (
-      <InputNumber
-        className=" "
-        value={price}
-        inputId="currency-germany"
-        currency="EUR"
-        onChange={e => {
-          set(e.value ?? 0);
-          setIsAdding(true);
-        }}
-        size={3}
-        style={{ height: "36px" }}
-      />
-    );
-  };
   const projectBodyTemplate = () => {
     return (
       <Dropdown
@@ -107,18 +87,30 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
       setResponseMessage({ type: "error", message: "Please select both activity and measure" });
       return;
     }
+    if (!price || !mangerPrice) {
+      setResponseMessage({ type: "error", message: "Please enter both artisan and manager prices" });
+      return;
+    }
+    if (!project || !project.id) {
+      setResponseMessage({ type: "error", message: "Please select a project" });
+      return;
+    }
 
     const defaultPricing: DefaultPricing = {
+      artisan_id: artisanId,
       activity_id: activity.id,
       measure_id: measure.id,
-      price: price,
-      manager_price: mangerPrice
+      artisan_price: price,
+      manager_price: mangerPrice,
+      project_id: project.id
     };
-
     try {
       await createEntity(`/default-pricing/${artisanId}`, defaultPricing);
       setIsAdding(false);
       setResponseMessage({ type: "success", message: "Values added successfully!" });
+      //this  is losing the dp Id
+      //refetch(previous => [...previous, defaultPricing]);
+      refetch();
     } catch (error) {
       console.error(error);
       setResponseMessage({ type: "error", message: "Something went wrong!" });
@@ -154,23 +146,14 @@ export default function AddDefaultValuesTable({ artisanId }: { artisanId: string
     setArtisan(artisanResponse);
   }, [artisanResponse]);
 
-  //Set the price to the existing price if it exists
-  // useEffect(() => {
-  //   const defaultPricings: DefaultPricing[] = defaultPricingsResponse?.defaultPricing || [];
-  //   if (activity && measure && defaultPricings) {
-  //     const existingPricing = defaultPricings.find(p => p.activity_id === activity.id && p.measure_id === measure.id);
-  //     setPrice(existingPricing?.price || 0);
-  //     setIsAdding(false);
-  //   }
-  // }, [activity, measure, defaultPricingsResponse]);
   return (
-    <div className="w-full flex flex-col justify-center items-center ">
-      <DataTable value={artisan ? [artisan] : []} responsiveLayout="stack" breakpoint="960px" className="text-sm md:text-base max-w-full !overflow-x-hidden " style={{ width: "100%" }}>
+    <div className="w-full flex flex-col justify-center items-center overflow-auto ">
+      <DataTable value={artisan ? [artisan] : []} className="text-sm md:text-base max-w-full !overflow-hidden " style={{ width: "100%" }}>
         <Column field="project" header="Project" body={projectBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
         <Column field="activity" header="Activity" body={activityBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
         <Column field="measure" header="Measure" body={measuresBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
-        <Column field="price" header="Price" body={() => priceBodyTemplate({ set: setPrice, price })} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
-        <Column field="price" header="Manger Price" body={() => priceBodyTemplate({ set: setManagerPrice, price: mangerPrice })} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
+        <Column field="price" header="Price" body={() => priceBodyTemplate({ set: setPrice, price, setIsAdding })} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
+        <Column field="price" header="Manger Price" body={() => priceBodyTemplate({ set: setManagerPrice, price: mangerPrice, setIsAdding })} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
       </DataTable>
       <ConfirmDialog />
       <div className="flex flex-col justify-center items-center mt-4">

@@ -61,7 +61,8 @@ const createDefaultPricing = async (req, res, next) => {
       where: {
         artisan_id: artisan_id,
         activity_id: activity_id,
-        measure_id: measure_id
+        measure_id: measure_id,
+        project_id: project_id
       }
     });
     if (isDefaultPricing) {
@@ -89,10 +90,6 @@ const createDefaultPricing = async (req, res, next) => {
       next(new ApiError(500, "Internal server Error!"));
     }
   }
-  res.status(201).json({
-    message: "Default pricing created successfully!",
-    defaultPricing
-  });
 };
 
 module.exports = {
