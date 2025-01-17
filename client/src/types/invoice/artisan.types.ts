@@ -4,12 +4,17 @@ export interface ArtisanInvoice extends BaseInvoice {
   artisan: {
     id: number;
     name: string;
-    address: string;
+    email: string;
     number?: string;
-    email?: string;
-    iban?: string;
+    note?: string;
+    user?: {
+      id: number;
+      full_name: string;
+      email: string;
+    };
   };
   items: ArtisanInvoiceItem[];
+  invoice_date: string;
 }
 
 export interface ArtisanInvoiceItem extends BaseInvoiceItem {

@@ -1,5 +1,5 @@
 const db = require("../../../data/index.js");
-const { Invoice, Artisan, Company, InvoiceItem, Activity, Measure } = db;
+const { Invoice, Artisan, Company, InvoiceItem, Activity, Measure, User } = db;
 
 const getArtisanInvoiceById = async (req, res) => {
   try {
@@ -10,11 +10,19 @@ const getArtisanInvoiceById = async (req, res) => {
         id: req.params.id,
         is_artisan_invoice: true
       },
+      attributes: ["id", "invoice_number", "invoice_date", "due_date", "total_amount", "paid"],
       include: [
         {
           model: Artisan,
           as: "artisan",
-          attributes: ["id", "name", "note", "email", "number"]
+          attributes: ["id", "name", "note", "email", "number"],
+          include: [
+            {
+              model: User,
+              as: "user",
+              attributes: ["id", "full_name", "email"]
+            }
+          ]
         },
         {
           model: Company,
@@ -53,52 +61,47 @@ const getArtisanInvoiceById = async (req, res) => {
     const formattedInvoice = {
       id: invoice.id,
       invoice_number: invoice.invoice_number,
-      artisan: invoice.artisan
-        ? {
-            id: invoice.artisan.id,
-            name: invoice.artisan.name,
-            email: invoice.artisan.email,
-            number: invoice.artisan.number,
-            note: invoice.artisan.note
-          }
-        : null,
-      company: invoice.company
-        ? {
-            id: invoice.company.id,
-            name: invoice.company.name,
-            address: invoice.company.address,
-            email: invoice.company.email
-          }
-        : null,
-      items: invoice.items
-        ? invoice.items.map(item => ({
-            id: item.id,
-            activity: item.activity
-              ? {
-                  id: item.activity.id,
-                  name: item.activity.name
-                }
-              : null,
-            measure: item.measure
-              ? {
-                  id: item.measure.id,
-                  name: item.measure.name
-                }
-              : null,
-            quantity: item.quantity,
-            price_per_unit: item.price_per_unit,
-            total_price: item.total_price
-          }))
-        : [],
-      total_amount: invoice.total_amount,
-      status: invoice.status,
+      invoice_date: invoice.invoice_date,
       due_date: invoice.due_date,
-      created_at: invoice.created_at
+      total_amount: invoice.total_amount,
+      paid: invoice.paid,
+      artisan: {
+        id: invoice.artisan.id,
+        name: invoice.artisan.name,
+        email: invoice.artisan.email,
+        number: invoice.artisan.number,
+        note: invoice.artisan.note,
+        manager: invoice.artisan.user
+          ? {
+              id: invoice.artisan.user.id,
+              full_name: invoice.artisan.user.full_name,
+              email: invoice.artisan.user.email
+            }
+          : null
+      },
+      company: {
+        id: invoice.company.id,
+        name: invoice.company.name,
+        address: invoice.company.address,
+        email: invoice.company.email
+      },
+      items: invoice.items.map(item => ({
+        id: item.id,
+        activity: {
+          id: item.activity.id,
+          name: item.activity.name
+        },
+        measure: {
+          id: item.measure.id,
+          name: item.measure.name
+        },
+        quantity: item.quantity,
+        price_per_unit: item.price_per_unit,
+        total_price: item.total_price
+      }))
     };
 
-    console.log("Formatted invoice:", JSON.stringify(formattedInvoice, null, 2));
-
-    res.status(200).json({
+    res.json({
       success: true,
       data: formattedInvoice
     });
