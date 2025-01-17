@@ -25,9 +25,10 @@ export const clientSchema = z.object({
   client_company_vat_number: z.string().min(5, {
     message: "VAT number must be at least 5 characters"
   }),
-  invoice_language_id: z.union([z.number(), z.string().transform(val => Number(val))], {
-    required_error: "Please select a language"
+  invoice_language_id: z.number({
+    required_error: "Please select a language",
   })
+
 });
 
 export const clientDefaultValues: Client = {
