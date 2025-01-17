@@ -103,7 +103,7 @@ export const UpdateArtisanInvoicePage = () => {
             </div>
             <div>
               <Label>{t("Phone")}</Label>
-              <div className="mt-1">{invoice.artisan.phone || "N/A"}</div>
+              <div className="mt-1">{invoice.artisan.number || "N/A"}</div>
             </div>
             <div>
               <Label>{t("Email")}</Label>
