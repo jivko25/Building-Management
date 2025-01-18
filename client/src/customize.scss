@@ -73,3 +73,11 @@ body:has(.readonly) input, button[role="combobox"] {
   pointer-events: none !important;
   cursor: not-allowed !important;
 }
+
+body:has(#login-form),
+body:has(#forgot-password-form),
+body:has(#register-form) {
+  h1, p, label {
+    color: white !important;
+  }
+}
