@@ -13,6 +13,7 @@ import useSearchHandler from "@/hooks/useSearchHandler";
 import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import CompaniesHeader from "./CompaniesHeader";
 import CompaniesCard from "./CompaniesCard";
+import { useTranslation } from "react-i18next";
 
 interface CompanyResponse {
   companies: Company[];
@@ -22,6 +23,7 @@ interface CompanyResponse {
   totalPages: number;
 }
 const CompaniesTableBody = () => {
+  const { t } = useTranslation();
   const { setSearchParams, itemsLimit, page } = useSearchParamsHook();
 
   const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
@@ -53,7 +55,7 @@ const CompaniesTableBody = () => {
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar handleSearch={handleSearch} placeholder="Search companies..." search={search} />
+        <SearchBar handleSearch={handleSearch} placeholder={t("Search companies...")} search={search} />
         <CreateCompany />
       </div>
       <Table className="w-full min-w-full">
@@ -63,8 +65,8 @@ const CompaniesTableBody = () => {
             data={typedCompaniesResponse.companies || []}
             renderData={data => <CompaniesCard companies={data as Company[]} />}
             noResults={{
-              title: "No companies found",
-              description: "It looks like you haven't added any companies yet.",
+              title: t("No companies found"),
+              description: t("It looks like you haven't added any companies yet."),
               Icon: Building2
             }}
             wrapper={content => (

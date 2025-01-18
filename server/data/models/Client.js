@@ -39,6 +39,11 @@ module.exports = (sequelize, DataTypes) => {
       client_company_vat_number: {
         type: DataTypes.STRING,
         allowNull: true
+      },
+      invoice_language_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1
       }
     },
     {
@@ -57,6 +62,10 @@ module.exports = (sequelize, DataTypes) => {
     Client.hasMany(models.Invoice, {
       foreignKey: "client_id",
       as: "invoices"
+    });
+    Client.belongsTo(models.InvoiceLanguage, {
+      foreignKey: "invoice_language_id",
+      as: "invoiceLanguage"
     });
   };
 

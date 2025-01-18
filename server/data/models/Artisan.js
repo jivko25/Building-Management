@@ -67,6 +67,14 @@ module.exports = (sequelize, DataTypes) => {
           model: "tbl_default_pricings",
           key: "id"
         }
+      },
+      creator_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_users",
+          key: "id"
+        }
       }
     },
     {

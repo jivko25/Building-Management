@@ -1,6 +1,6 @@
 //server\controllers\workItems\getWorkItemsController.js
 const db = require("../../data/index.js");
-const { WorkItem, Task, Artisan, Project } = db;
+const { WorkItem, Task, Artisan } = db;
 const ApiError = require("../../utils/apiError");
 
 const getWorkItems = async (req, res, next) => {
@@ -8,32 +8,12 @@ const getWorkItems = async (req, res, next) => {
   const { _page = 1, _limit = 4 } = req.query;
 
   const offset = (_page - 1) * _limit;
-  const isAdmin = req.user.role === "admin";
 
   try {
-    if(isAdmin){
-      const workItems = await WorkItem.findAll();
-      return res.json(workItems);
-    }
-
-    const projects = await Project.findAll({
-      where: {
-        creator_id: req.user.id,
-        id: req.params.project_id
-      }
-    });
-
-    if(projects.length === 0){
-      throw new ApiError(404, "No projects found for current user");
-    }
-
-    const taskIds = projects.map((project) => project.task_id);
-    if(taskIds.length === 0){
-      throw new ApiError(404, "No tasks found for current user");
-    }
+    console.log("Fetching work items for task_id:", task_id);
 
     const workItems = await WorkItem.findAndCountAll({
-      where: { task_id: { [Op.in]: taskIds } },
+      where: { task_id },
       include: [
         {
           model: Task,
@@ -53,6 +33,8 @@ const getWorkItems = async (req, res, next) => {
       order: [["id", "DESC"]]
     });
 
+    console.log("Successfully fetched work items:", workItems.count);
+
     res.json({
       workItems: workItems.rows,
       workItemsCount: workItems.count,
@@ -61,11 +43,8 @@ const getWorkItems = async (req, res, next) => {
       totalPages: Math.ceil(workItems.count / parseInt(_limit))
     });
   } catch (error) {
-    if (error instanceof ApiError) {
-      next(error);
-    } else {
-      next(new ApiError(500, "Internal server Error!"));
-    }
+    console.log("Error fetching work items:", error);
+    next(new ApiError(500, "Internal server Error!"));
   }
 };
 

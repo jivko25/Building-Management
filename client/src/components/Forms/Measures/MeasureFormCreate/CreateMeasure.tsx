@@ -5,8 +5,10 @@ import useDialogState from "@/hooks/useDialogState";
 import { useSubmitHandler } from "@/utils/helpers/submitHandler";
 import { useMutationHook } from "@/hooks/useMutationHook";
 import DialogModal from "@/components/common/DialogElements/DialogModal";
+import { useTranslation } from "react-i18next";
 
 const CreateMeasure = () => {
+  const { t } = useTranslation();
   const { isOpen, setIsOpen } = useDialogState();
 
   const { useCreateNewEntity } = useMutationHook();
@@ -14,13 +16,13 @@ const CreateMeasure = () => {
   const { mutate, isPending } = useCreateNewEntity<MeasureSchema>({
     URL: "/measures/create",
     queryKey: ["measures"],
-    successToast: "Measure created successfully!",
+    successToast: t("Measure created successfully!"),
     setIsOpen
   });
 
   const handleSubmit = useSubmitHandler(mutate, measureSchema);
 
-  return <DialogModal Component={CreateMeasureForm} props={{ handleSubmit, isPending }} isOpen={isOpen} setIsOpen={setIsOpen} CreateButtonModal createButtonTitle="Add new measure" title="New measure" />;
+  return <DialogModal Component={CreateMeasureForm} props={{ handleSubmit, isPending }} isOpen={isOpen} setIsOpen={setIsOpen} CreateButtonModal createButtonTitle={t("Add new measure")} title={t("New measure")} />;
 };
 
 export default CreateMeasure;

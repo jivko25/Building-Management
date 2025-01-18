@@ -4,11 +4,6 @@ const Activity = db.Activity;
 const Task = db.Task;
 const Project = db.Project;
 const { Op } = db.Sequelize;
-const ApiError = require("../../utils/apiError");
-
-const NO_PROJECTS_FOUND = "No projects found for current user";
-const NO_TASKS_FOUND = "No tasks found for current user";
-const NO_ACTIVITIES_FOUND = "No activities found for current user";
 
 const getTasks = async (userId, isAdmin) => {
   if (isAdmin) {
@@ -22,21 +17,21 @@ const getTasks = async (userId, isAdmin) => {
     }
   });
 
-  if(projects.length === 0){
-    throw new ApiError(404, NO_PROJECTS_FOUND);
+  if (projects.length === 0) {
+    return [];
   }
 
   // Get all tasks for these projects
   const tasks = await Task.findAll({
     where: {
       project_id: {
-        [Op.in]: projects.map((project) => project.id)
+        [Op.in]: projects.map(project => project.id)
       }
     }
   });
 
-  if(tasks.length === 0){
-    throw new ApiError(404, NO_TASKS_FOUND);
+  if (tasks.length === 0) {
+    return [];
   }
 
   return tasks;
@@ -47,78 +42,57 @@ const getPaginatedActivities = async (req, res, next) => {
   const offset = (parseInt(_page) - 1) * parseInt(_limit);
   const isAdmin = req.user.role === "admin";
 
-  try {   
-    const tasks = await getTasks(req.user.id, isAdmin);
+  const whereClause = isAdmin
+    ? {
+        ...(q && { name: { [Op.like]: `%${q}%` } })
+      }
+    : {
+        ...(q && { name: { [Op.like]: `%${q}%` } }),
+        creator_id: req.user.id
+      };
 
-    const whereClause = {
-      ...(q && { name: { [Op.like]: `%${q}%` } }),
-      ...(!isAdmin && {
-        id: {
-          [Op.in]: tasks.map((task) => task.activity_id)
-        }
-      })
-    };
+  // Get paginated activities for these tasks
+  const { count: total, rows: data } = await Activity.findAndCountAll({
+    where: whereClause,
+    limit: parseInt(_limit),
+    offset: offset
+  });
 
-    // Get paginated activities for these tasks
-    const { count: total, rows: data } = await Activity.findAndCountAll({
-      where: whereClause,
-      limit: parseInt(_limit),
-      offset: offset
-    });
-
-    if(data.length === 0){
-      throw new ApiError(404, NO_ACTIVITIES_FOUND);
-    }
-
-    res.json({
-      data,
-      total, 
-      page: parseInt(_page),
-      limit: parseInt(_limit),
-      totalPages: Math.ceil(total / parseInt(_limit))
-    });
-  } catch (error) {
-    if (error instanceof ApiError) {
-      next(error);
-    } else {
-      next(new ApiError(500, "Internal server error!", error));
-    }
+  if (data.length === 0) {
+    return res.json([]);
   }
+
+  res.json({
+    data,
+    total,
+    page: parseInt(_page),
+    limit: parseInt(_limit),
+    totalPages: Math.ceil(total / parseInt(_limit))
+  });
 };
 
 const getActivities = async (req, res, next) => {
   const isAdmin = req.user.role === "admin";
 
-  try {
-    if (isAdmin) {
-      const activities = await Activity.findAll();
-      return res.json(activities);
-    }
-
-    // Get all tasks for projects where user is creator
-    const tasks = await getTasks(req.user.id, isAdmin);
-
-    // Get all activities for these tasks
-    const activities = await Activity.findAll({
-      where: {
-        id: {
-          [Op.in]: tasks.map((task) => task.activity_id)
-        }
-      }
-    });
-
-    if(activities.length === 0){
-      throw new ApiError(404, NO_ACTIVITIES_FOUND);
-    }
-
-    res.json(activities);
-  } catch (error) {
-    if (error instanceof ApiError) {
-      next(error);
-    } else {
-      next(new ApiError(500, "Internal server error!", error));
-    }
+  if (isAdmin) {
+    const activities = await Activity.findAll();
+    return res.json(activities);
   }
+
+  // Get all activities for these tasks
+  const activities = await Activity.findAll({
+    where: {
+      id: {
+        [Op.in]: tasks.map(task => task.activity_id)
+      }
+    }
+  });
+
+  if (activities.length === 0) {
+    return res.json([]);
+  }
+
+  res.json(activities);
 };
 
 module.exports = {

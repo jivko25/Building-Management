@@ -8,6 +8,7 @@ import StatusSelector from "@/components/common/FormElements/FormStatusSelector"
 import { Lock, User } from "lucide-react";
 import { useUserFormHooks } from "@/hooks/forms/useUserForm";
 import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "react-i18next";
 
 type CreateUserFormProps = {
   handleSubmit: (userData: UserSchema) => void;
@@ -15,6 +16,7 @@ type CreateUserFormProps = {
 };
 
 const CreateUserForm = ({ handleSubmit, isPending }: CreateUserFormProps) => {
+  const { t } = useTranslation();
   const { useCreateUserForm } = useUserFormHooks();
   const form = useCreateUserForm();
 
@@ -22,16 +24,17 @@ const CreateUserForm = ({ handleSubmit, isPending }: CreateUserFormProps) => {
     <FormProvider {...form}>
       <form id="user-form" onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="grid grid-cols-1 gap-2 mb-2">
-          <FormFieldInput type="text" label="Name, Surname" name="full_name" className="pl-10" Icon={User} />
-          <FormFieldInput type="text" label="Username" name="username" className="pl-10" Icon={User} />
-          <FormFieldInput type="password" label="Password" name="password" className="pl-10" Icon={Lock} />
+          <FormFieldInput type="text" label={t("Name, Surname")} name="full_name" className="pl-10" Icon={User} />
+          <FormFieldInput type="text" label={t("Username")} name="username" className="pl-10" Icon={User} />
+          <FormFieldInput type="text" label={t("Email")} name="email" className="pl-10" Icon={User} />
+          <FormFieldInput type="password" label={t("Password")} name="password" className="pl-10" Icon={Lock} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2">
-          <RoleSelector label="Role" name="role" placeholder="user" />
-          <StatusSelector label="Status" name="status" placeholder="active" />
+          <RoleSelector label={t("Role")} name="role" placeholder={t("user")} />
+          <StatusSelector label={t("Status")} name="status" placeholder={t("active")} />
         </div>
-        <DialogFooter disabled={!form.formState.isDirty || isPending} label="Submit" formName="user-form" className="mt-6" />
+        <DialogFooter disabled={!form.formState.isDirty || isPending} label={t("Submit")} formName="user-form" className="mt-6" />
       </form>
     </FormProvider>
   );

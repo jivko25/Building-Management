@@ -5,12 +5,14 @@ const { createProject } = require("../controllers/projects/createProjectControll
 const { editProject } = require("../controllers/projects/editProjectController");
 const { getProjectById } = require("../controllers/projects/getProjectByIdController");
 const { getProjects } = require("../controllers/projects/getProjectsController");
+const { getMyProjects } = require("../controllers/projects/getProjectsForManager");
 
 const router = express.Router();
 
-router.get("/projects", authenticateToken, getProjects);
 router.get("/projects/:id", authenticateToken, getProjectById);
+router.get("/projects-for-manager", authenticateToken, getMyProjects);
 router.post("/projects/create", authenticateToken, createProject);
 router.put("/projects/:id/edit", authenticateToken, editProject);
+router.get("/projects", authenticateToken, getProjects);
 
 module.exports = router;
