@@ -71,7 +71,7 @@ const CompaniesTableBody = () => {
             }}
             wrapper={content => (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-3xl">
+                <TableCell colSpan={5} className="text-center text-3xl">
                   {content}
                 </TableCell>
               </TableRow>
