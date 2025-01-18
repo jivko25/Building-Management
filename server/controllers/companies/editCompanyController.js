@@ -1,5 +1,6 @@
 //server\controllers\companies\editCompanyController.js
 const db = require("../../data/index.js");
+const s3Service = require("../../services/s3Service");
 const { Company } = db;
 const ApiError = require("../../utils/apiError");
 
@@ -49,6 +50,36 @@ const editCompany = async (req, res, next) => {
   }
 };
 
+const uploadCompanyLogo = async (req, res) => {
+  try {
+    const companyId = req.params.id;
+    const { response, imageUrl } = await s3Service.uploadImageAsync(req.file, req.file.name);
+
+    const company = await Company.findByPk(companyId);
+
+    await company.update(
+      { logo_url: imageUrl },
+      { where: { id: companyId } }
+    );
+
+    res.status(200).json({
+      message: "Image uploaded and record created successfully!",
+      image: imageUrl,
+      companyId
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Image upload or record creation failed!",
+      error: error
+    });
+  }
+};
+
+
+
+
 module.exports = {
-  editCompany
+  editCompany,
+  uploadCompanyLogo
 };

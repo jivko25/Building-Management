@@ -14,7 +14,7 @@ export const companySchema = z.object({
   phone: z.string().regex(phoneValidator, { message: "Invalid phone format" }),
   dds: z.enum(["yes", "no"], { message: "DDS is required." }),
   status: z.enum(["active", "inactive"], { message: "Please, select status." }),
-  logo_url: z.string().optional(),
+  logo_url: z.any(),
   vat_number: z.string().min(3, { message: "VAT number must be at least 3 characters." }).max(50, { message: "VAT number cannot exceed 50 characters." }),
   iban: z.string().min(3, { message: "IBAN must be at least 3 characters." }).max(50, { message: "IBAN cannot exceed 50 characters." })
 });
