@@ -16,6 +16,7 @@ const imageRoutes = require("./routes/imageRoutes");
 const defaultPricingRoutes = require("./routes/defaultPricingRoutes");
 const invoiceRoutes = require("./routes/invoiceRoutes");
 const clientRoutes = require("./routes/clientRoutes");
+const accountantsRoutes = require("./routes/accountantsRoutes");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const errorHandler = require("./middlewares/errorHandler");
@@ -57,6 +58,7 @@ app.use("/", workItemRoutes);
 app.use("/", mailRoutes);
 app.use("/", imageRoutes);
 app.use("/", defaultPricingRoutes);
+app.use("/", accountantsRoutes);
 app.use("/invoices", invoiceRoutes);
 app.use("/clients", clientRoutes);
 
