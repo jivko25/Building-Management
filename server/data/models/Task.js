@@ -94,6 +94,13 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "task_id",
       as: "workItems"
     });
+
+    Task.belongsToMany(models.Accountant, {
+      through: "tbl_task_accountants",
+      foreignKey: "task_id",
+      otherKey: "accountant_id",
+      as: "accountants"
+    });
   };
 
   return Task;
