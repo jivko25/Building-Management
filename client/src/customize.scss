@@ -81,3 +81,10 @@ body:has(#register-form) {
     color: white !important;
   }
 }
+
+form {
+  @media (max-width: 576px) {
+    max-height: 80vh;
+    overflow-y: scroll;
+  }
+}
