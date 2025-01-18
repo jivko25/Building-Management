@@ -43,11 +43,13 @@ const useRegisterUser = () => {
     const isSuccess = await register(userData.username, userData.password, userData.full_name, userData.email, userData.creator_id);
     console.log("Registration attempt result:", isSuccess);
 
+    const storagedUser = JSON.parse(sessionStorage.getItem("user") || '');
+
     if (isSuccess) {
       console.log("Registration successful");
       setIsRegisterSuccess(true);
       if (user?.role) {
-        handleNavigation(user.role);
+        handleNavigation(user.role || storagedUser.role);
       }
     }
   };
