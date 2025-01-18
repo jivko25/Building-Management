@@ -67,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
   
       Accountant.belongsTo(models.User, {
         foreignKey: "user_id",
-        as: "use"
+        as: "user"
       });
   
       Accountant.belongsToMany(models.Task, {
