@@ -45,12 +45,11 @@ const useRegisterUser = () => {
 
     const storagedUser = JSON.parse(sessionStorage.getItem("user") || '');
 
+
     if (isSuccess) {
       console.log("Registration successful");
       setIsRegisterSuccess(true);
-      if (user?.role) {
-        handleNavigation(user.role || storagedUser.role);
-      }
+        handleNavigation(user?.role || storagedUser.role || "user");
     }
   };
 
