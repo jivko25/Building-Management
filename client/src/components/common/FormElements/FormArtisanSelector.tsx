@@ -25,26 +25,17 @@ const ArtisanSelector = ({ label, name, placeholder, defaultVal }: TableFormSele
       render={({ field }) => (
         <FormItem>
           <FormLabel className="font-semibold">{label}</FormLabel>
-          <Select
-            multiSelect
-            value={field.value || []}
-            onValueChange={(selectedValues) => field.onChange(selectedValues)}
-            defaultValue={defaultVal}
-          >
+          <Select multiSelect value={field.value || []} onValueChange={selectedValues => field.onChange(selectedValues)} defaultValue={defaultVal}>
             <FormControl>
-              <SelectTrigger
-                multiSelect
-                selectedValues={field.value || []}
-                placeholder={placeholder || "Select artisans"}
-              />
+              <SelectTrigger multiSelect selectedValues={field.value || []} placeholder={placeholder || "Select artisans"} />
             </FormControl>
             <SelectContent>
               <SelectGroup>
                 {artisans &&
                   artisans
                     .filter(artisan => artisan.status === "active")
-                    .map(artisan => (
-                      <SelectItem key={artisan.id} value={artisan.name}>
+                    .map((artisan, index) => (
+                      <SelectItem key={index} value={artisan.name}>
                         {artisan.name}
                       </SelectItem>
                     ))}
