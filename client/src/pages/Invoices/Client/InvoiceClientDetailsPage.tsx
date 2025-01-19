@@ -1,7 +1,7 @@
 // client\src\pages\Invoices\Client\InvoiceClientDetailsPage.tsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { invoiceService } from "@/services/invoiceService";
+import { invoiceClientService } from "@/services/invoice/invoiceClientService";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { bg } from "date-fns/locale";
@@ -21,11 +21,11 @@ export const InvoiceClientDetailsPage = () => {
 
   const { data: invoice, isLoading } = useQuery({
     queryKey: ["invoice", id],
-    queryFn: () => invoiceService.getById(Number(id))
+    queryFn: () => invoiceClientService.getById(Number(id))
   });
 
   const deleteMutation = useMutation({
-    mutationFn: invoiceService.deleteInvoice,
+    mutationFn: invoiceClientService.delete,
     onSuccess: () => {
       toast.success("Invoice deleted successfully");
       navigate("/invoices-client");

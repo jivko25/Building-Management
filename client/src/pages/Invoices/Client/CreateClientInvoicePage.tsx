@@ -1,21 +1,30 @@
-// client\src\pages\Invoices\Client\CreateClientInvoicePage.tsx
-import { useNavigate } from "react-router-dom";
-import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { z } from "zod";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { invoiceClientService } from "@/services/invoice/invoiceClientService";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { invoiceService } from "@/services/invoiceService";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { createClientInvoiceSchema } from "@/schemas/invoice/client.schema";
-import { Input } from "@/components/ui/input";
-import { ClientInvoice, CreateClientInvoiceData, ClientInvoiceItem } from "@/types/invoice/client.types";
+const createClientInvoiceSchema = z.object({
+  company_id: z.number({
+    required_error: "Please select a company"
+  }),
+  client_company_id: z.number({
+    required_error: "Please select a client company"
+  }),
+  due_date_weeks: z.number().min(1, "Due date weeks is required"),
+  selected_projects: z.array(z.number()).optional(),
+  selected_work_items: z.array(z.number()).optional()
+});
+
 export const CreateClientInvoicePage = () => {
   const navigate = useNavigate();
-  console.log("Rendering CreateInvoicePage");
+  console.log("Rendering CreateClientInvoicePage");
 
   const { data: companiesResponse } = useQuery({
     queryKey: ["companies"],
@@ -84,67 +93,50 @@ export const CreateClientInvoicePage = () => {
     queryKey: ["workItems", form.watch("selected_projects")],
     queryFn: async () => {
       const selectedProjects = form.watch("selected_projects") ?? [];
-      if (selectedProjects.length === 0) return [];
+      console.log("📋 Selected projects for work items:", selectedProjects);
 
-      console.log("Selected projects:", selectedProjects);
+      if (selectedProjects.length === 0) return [];
 
       const workItemsByProject = await Promise.all(
         selectedProjects.map(async projectId => {
-          try {
-            // Първо вземаме всички задачи за проекта
-            const tasksResponse = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/tasks`, { credentials: "include" });
-            const tasksData = await tasksResponse.json();
-            console.log(`📋 Tasks for project ${projectId}:`, tasksData);
+          console.log(`🔍 Fetching tasks for project ${projectId}`);
 
-            // След това вземаме работните елементи за всяка задача
-            const workItems = await Promise.all(
-              tasksData.map(async (task: any) => {
-                const workItemsResponse = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/tasks/${task.id}/work-items`, { credentials: "include" });
-                const workItemsData = await workItemsResponse.json();
-                console.log(`🛠️ Work items for task ${task.id}:`, workItemsData);
+          // Първо взимаме задачите за проекта
+          const tasksResponse = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/tasks`, { credentials: "include" });
+          const tasksData = await tasksResponse.json();
+          console.log(`📑 Tasks data for project ${projectId}:`, tasksData);
 
-                // Директно използваме масива от работни елементи
-                return workItemsData.map((workItem: any) => ({
-                  ...workItem,
-                  task: {
-                    ...task,
-                    price_per_measure: task.price_per_measure || 0,
-                    total_work_in_selected_measure: workItem.quantity || 0
-                  }
-                }));
-              })
-            );
+          // След това взимаме работните елементи за всяка задача
+          const workItems = await Promise.all(
+            tasksData.map(async (task: any) => {
+              const workItemsResponse = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/tasks/${task.id}/work-items`, { credentials: "include" });
+              const workItemsData = await workItemsResponse.json();
+              return workItemsData;
+            })
+          );
 
-            // Обединяваме всички работни елементи за проекта
-            const allWorkItems = workItems.flat();
-            console.log(`🛠️ All work items for project ${projectId}:`, allWorkItems);
+          // Обединяваме всички работни елементи
+          const flattenedWorkItems = workItems.flat();
+          console.log(`📦 Work items data for project ${projectId}:`, flattenedWorkItems);
 
-            return {
-              projectId,
-              projectName: projects.find((p: any) => p.id === projectId)?.name || `Project ${projectId}`,
-              workItems: allWorkItems
-            };
-          } catch (error) {
-            console.error(`Error fetching data for project ${projectId}:`, error);
-            return {
-              projectId,
-              projectName: projects.find((p: any) => p.id === projectId)?.name || `Project ${projectId}`,
-              workItems: []
-            };
-          }
+          return {
+            projectId,
+            projectName: projects.find((p: any) => p.id === projectId)?.name,
+            workItems: flattenedWorkItems.filter(item => !item.is_client_invoiced)
+          };
         })
       );
 
-      console.log("Final workItemsByProject:", workItemsByProject);
-      return workItemsByProject.filter(project => project.workItems.length > 0);
+      console.log("🔄 Final work items data:", workItemsByProject);
+      return workItemsByProject;
     },
     enabled: (form.watch("selected_projects") ?? []).length > 0
   });
 
-  const createInvoiceMutation = useMutation({
-    mutationFn: invoiceService.create,
+  const createClientInvoiceMutation = useMutation({
+    mutationFn: invoiceClientService.create,
     onSuccess: () => {
-      toast.success("Invoice created successfully");
+      toast.success("Client Invoice created successfully");
       navigate("/invoices");
     },
     onError: error => {
@@ -158,8 +150,8 @@ export const CreateClientInvoicePage = () => {
       console.log("Form data:", data);
 
       // Трансформираме избраните работни елементи в правилния формат
-      const items = (data.selected_work_items ?? []).map((workItemId: number) => {
-        const workItem = workItemsData?.flatMap(project => project.workItems).find((wi: any) => wi.id === workItemId);
+      const items = (data.selected_work_items ?? []).map(workItemId => {
+        const workItem = workItemsData?.flatMap(project => project.workItems).find(wi => wi.id === workItemId);
 
         if (!workItem || !workItem.task) {
           throw new Error("Work item not found");
@@ -185,12 +177,12 @@ export const CreateClientInvoicePage = () => {
 
       console.log("Transformed invoice data:", invoiceData);
 
-      await createInvoiceMutation.mutateAsync(invoiceData);
-      toast.success("Фактурата е създадена успешно");
+      await createClientInvoiceMutation.mutateAsync(invoiceData);
+      toast.success("Client Invoice created successfully");
       navigate("/invoices");
     } catch (error) {
       console.error("Error creating invoice:", error);
-      toast.error("Грешка при създаване на фактурата");
+      toast.error("Error creating client invoice");
     }
   };
 
@@ -214,7 +206,7 @@ export const CreateClientInvoicePage = () => {
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{t("New invoice")}</h1>
-        <Button variant="outline" onClick={() => navigate("/invoices-client")}>
+        <Button variant="outline" onClick={() => navigate("/invoices")}>
           {t("Back")}
         </Button>
       </div>
@@ -230,7 +222,7 @@ export const CreateClientInvoicePage = () => {
                   <FormLabel>{t("Building company")}</FormLabel>
                   <Select
                     onValueChange={value => {
-                      const id = parseInt(value);
+                      const id = parseInt(value.toString());
                       field.onChange(id);
                       handleCompanyChange(id);
                     }}
@@ -259,7 +251,7 @@ export const CreateClientInvoicePage = () => {
                   <FormLabel>{t("Client company")}</FormLabel>
                   <Select
                     onValueChange={value => {
-                      const id = parseInt(value);
+                      const id = parseInt(value.toString());
                       field.onChange(id);
                       handleClientCompanyChange(id);
                     }}
@@ -479,8 +471,8 @@ export const CreateClientInvoicePage = () => {
           )}
 
           <div className="flex justify-end gap-4">
-            <Button type="submit" disabled={createInvoiceMutation.isPending}>
-              {createInvoiceMutation.isPending ? "Creating..." : "Create invoice"}
+            <Button type="submit" disabled={createClientInvoiceMutation.isPending}>
+              {createClientInvoiceMutation.isPending ? "Creating..." : "Create invoice"}
             </Button>
           </div>
         </form>

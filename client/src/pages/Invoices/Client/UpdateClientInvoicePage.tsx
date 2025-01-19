@@ -1,7 +1,7 @@
 // client\src\pages\Invoices\Client\UpdateClientInvoicePage.tsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { invoiceService } from "@/services/invoiceService";
+import { invoiceClientService } from "@/services/invoice/invoiceClientService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
@@ -21,11 +21,11 @@ export const UpdateClientInvoicePage = () => {
 
   const { data: invoice, isLoading } = useQuery({
     queryKey: ["invoice", id],
-    queryFn: () => invoiceService.getById(Number(id))
+    queryFn: () => invoiceClientService.getById(Number(id))
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: { id: number; paid: boolean }) => invoiceService.updateStatus(data.id, data.paid),
+    mutationFn: (data: { id: number; paid: boolean }) => invoiceClientService.updateStatus(data.id, data.paid),
     onSuccess: () => {
       console.log("✅ Invoice status updated successfully");
       toast.success("Invoice status updated successfully");

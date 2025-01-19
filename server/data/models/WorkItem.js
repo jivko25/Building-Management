@@ -75,6 +75,14 @@ module.exports = (sequelize, DataTypes) => {
       quantity: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
+      },
+      project_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_projects",
+          key: "id"
+        }
       }
     },
     {
@@ -104,6 +112,11 @@ module.exports = (sequelize, DataTypes) => {
     WorkItem.belongsTo(models.Artisan, {
       foreignKey: "artisan_id",
       as: "artisan"
+    });
+
+    WorkItem.belongsTo(models.Project, {
+      foreignKey: "project_id",
+      as: "project"
     });
   };
 

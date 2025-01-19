@@ -1,6 +1,6 @@
 // client\src\pages\Invoices\Client\InvoicesClientPage.tsx
 import { useQuery } from "@tanstack/react-query";
-import { invoiceService } from "@/services/invoiceService";
+import { invoiceClientService } from "@/services/invoice/invoiceClientService";
 import { DataTable, DataTableFilterMeta, DataTableFilterMetaData } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ export const InvoicesClientPage = () => {
   const { data: invoices, isLoading } = useQuery<Invoice[]>({
     queryKey: ["invoices"],
     queryFn: async () => {
-      const response = await invoiceService.getAll();
+      const response = await invoiceClientService.getAll();
       console.log("📄 Processed invoices:", response);
       return response;
     },
