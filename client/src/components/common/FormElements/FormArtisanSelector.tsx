@@ -34,8 +34,8 @@ const ArtisanSelector = ({ label, name, placeholder, defaultVal }: TableFormSele
                 {artisans &&
                   artisans
                     .filter(artisan => artisan.status === "active")
-                    .map(artisan => (
-                      <SelectItem key={artisan.id} value={artisan.name}>
+                    .map((artisan, index) => (
+                      <SelectItem key={index} value={artisan.name}>
                         {artisan.name}
                       </SelectItem>
                     ))}
