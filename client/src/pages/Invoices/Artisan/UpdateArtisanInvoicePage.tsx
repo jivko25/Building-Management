@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { bg } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
+import { InvoiceArtisanDetailsPage } from "./InvoiceArtisanDetailsPage";
 
 export const UpdateArtisanInvoicePage = () => {
   const { id } = useParams();
@@ -98,10 +99,6 @@ export const UpdateArtisanInvoicePage = () => {
               <div className="mt-1">{invoice.artisan.name}</div>
             </div>
             <div>
-              <Label>{t("Address")}</Label>
-              <div className="mt-1">{invoice.artisan.address}</div>
-            </div>
-            <div>
               <Label>{t("Phone")}</Label>
               <div className="mt-1">{invoice.artisan.number || "N/A"}</div>
             </div>
@@ -109,9 +106,25 @@ export const UpdateArtisanInvoicePage = () => {
               <Label>{t("Email")}</Label>
               <div className="mt-1">{invoice.artisan.email || "N/A"}</div>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("Artisan's Company Information")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div>
-              <Label>{t("IBAN")}</Label>
-              <div className="mt-1">{invoice.artisan.iban || "N/A"}</div>
+              <Label>{t("Company")}</Label>
+              <div className="mt-1">{invoice.company?.name || "N/A"}</div>
+            </div>
+            <div>
+              <Label>{t("Manager")}</Label>
+              <div className="mt-1">{invoice.artisan.manager?.full_name || "N/A"}</div>
+            </div>
+            <div>
+              <Label>{t("Manager Email")}</Label>
+              <div className="mt-1">{invoice.artisan.manager?.email || "N/A"}</div>
             </div>
           </CardContent>
         </Card>

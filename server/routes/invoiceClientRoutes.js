@@ -12,6 +12,6 @@ router.put("/:id/edit", editClientInvoice);
 router.get("/", getAllClientInvoices);
 router.get("/:id", getClientInvoiceById);
 router.get("/:id/pdf", getPDFClientInvoiceById);
-router.put("/:id/update-status", updateClientInvoiceStatus);
+router.patch("/:id/status", updateClientInvoiceStatus);
 
 module.exports = router;

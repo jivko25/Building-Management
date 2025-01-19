@@ -46,7 +46,7 @@ export const artisanInvoiceService = {
 
   updateStatus: async (id: number, paid: boolean): Promise<ArtisanInvoice> => {
     console.log("Updating artisan invoice status:", id, paid);
-    const response = await axios.put(`${API_URL}/invoices-artisan/${id}/update-status`, { paid }, { withCredentials: true });
+    const response = await axios.patch(`${API_URL}/invoices-artisan/${id}/status`, { paid }, { withCredentials: true });
     return response.data.data;
   },
 
