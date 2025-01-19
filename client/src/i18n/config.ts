@@ -12,7 +12,7 @@ i18n
   .init({
     fallbackLng: "en",
     supportedLngs: ["en", "bg", "ro", "ru", "tr", "pl", "nl", "de"],
-    debug: false,
+    debug: false, //console logs for i18n
     backend: {
       loadPath: "/locales/{{lng}}/{{ns}}.json"
     },
