@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { artisanInvoiceService } from "@/services/invoice/artisanService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +16,7 @@ export const UpdateArtisanInvoicePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
 
   console.log("🔄 UpdateArtisanInvoicePage mounted with id:", id);
 
@@ -29,6 +30,8 @@ export const UpdateArtisanInvoicePage = () => {
     onSuccess: () => {
       console.log("✅ Invoice status updated successfully");
       toast.success(t("Invoice status updated successfully"));
+      queryClient.invalidateQueries({ queryKey: ["artisan-invoice", id] });
+      queryClient.invalidateQueries({ queryKey: ["artisan-invoices"] });
     },
     onError: () => {
       console.error("❌ Failed to update invoice status");
