@@ -34,13 +34,6 @@ export interface CreateClientInvoiceData {
   company_id: number;
   client_company_id: number;
   due_date_weeks: number;
-  selected_projects: number[];
-  selected_work_items: number[];
-  items: {
-    activity_id: number;
-    measure_id: number;
-    project_id: number;
-    quantity: number;
-    price_per_unit: number;
-  }[];
+  project_ids: number[];
+  work_item_ids: number[];
 }
