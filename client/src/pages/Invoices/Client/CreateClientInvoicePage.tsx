@@ -92,14 +92,31 @@ export const CreateClientInvoicePage = () => {
   });
 
   const { data: workItemsData = [] } = useQuery({
-    queryKey: ["workItems", form.watch("company_id"), form.watch("client_company_id")],
+    queryKey: ["workItems", form.watch("company_id"), form.watch("client_company_id"), form.watch("selected_projects")],
     queryFn: async () => {
       const company_id = form.watch("company_id");
       const client_id = form.watch("client_company_id");
+      const selected_projects = form.watch("selected_projects");
 
-      console.log("🔍 Fetching work items with filters:", { company_id, client_id });
+      console.log("🔍 Fetching work items with filters:", {
+        company_id,
+        client_id,
+        selected_projects
+      });
 
       try {
+        // Ако има избрани проекти, правим отделни заявки за всеки проект
+        if (selected_projects && selected_projects.length > 0) {
+          const projectPromises = selected_projects.map(project_id => invoiceClientService.getWorkItemsForInvoice(company_id || undefined, client_id || undefined, project_id));
+
+          const projectResults = await Promise.all(projectPromises);
+          // Обединяваме резултатите
+          const combinedResults = projectResults.flat();
+          console.log("📦 Combined work items for selected projects:", combinedResults);
+          return combinedResults;
+        }
+
+        // Ако няма избрани проекти, взимаме всички работни елементи за компанията/клиента
         const data = await invoiceClientService.getWorkItemsForInvoice(company_id || undefined, client_id || undefined);
         console.log("📦 Received work items:", data);
         return data;
@@ -180,6 +197,24 @@ export const CreateClientInvoicePage = () => {
     console.log("Selected company ID:", company_id);
     form.setValue("company_id", company_id);
     refetchProjects();
+  };
+
+  const handleProjectChange = (projectId: number, isChecked: boolean) => {
+    const currentSelected = form.watch("selected_projects") || [];
+
+    if (isChecked) {
+      console.log("Adding project:", projectId);
+      form.setValue("selected_projects", [...currentSelected, projectId]);
+    } else {
+      console.log("Removing project:", projectId);
+      form.setValue(
+        "selected_projects",
+        currentSelected.filter((id: number) => id !== projectId)
+      );
+    }
+
+    // Изчистваме избраните работни елементи при промяна на проектите
+    form.setValue("selected_work_items", []);
   };
 
   return (
@@ -297,20 +332,7 @@ export const CreateClientInvoicePage = () => {
                             focus:ring-blue-500/30
                           "
                           checked={form.watch("selected_projects")?.includes(project.id)}
-                          onChange={e => {
-                            const currentSelected = form.watch("selected_projects") || [];
-                            if (e.target.checked) {
-                              console.log("Adding project:", project.id);
-                              form.setValue("selected_projects", [...currentSelected, project.id]);
-                            } else {
-                              console.log("Removing project:", project.id);
-                              form.setValue(
-                                "selected_projects",
-                                currentSelected.filter((id: number) => id !== project.id)
-                              );
-                            }
-                            console.log("Selected projects:", form.watch("selected_projects"));
-                          }}
+                          onChange={e => handleProjectChange(project.id, e.target.checked)}
                         />
                         <svg
                           className="
