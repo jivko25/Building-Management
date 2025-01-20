@@ -4,7 +4,7 @@ const ApiError = require("../../utils/apiError");
 
 const editAccountant = async (req, res, next) => {
   const accountantId = req.params.id;
-  const { name, note, number, email, company, accountantName, status, measure_id } = req.body;
+  const { name, note, number, email, company, accountantName, status } = req.body;
 
   try {
     const accountant = await Accountant.findByPk(accountantId);
@@ -27,8 +27,7 @@ const editAccountant = async (req, res, next) => {
       email,
       company_id: companyRecord.id,
       user_id: userRecord.id,
-      status,
-      measure_id
+      status
     });
 
     res.json({

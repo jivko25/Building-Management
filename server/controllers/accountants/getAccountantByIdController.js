@@ -32,14 +32,6 @@ const getAccountantById = async (req, res, next) => {
           model: User,
           as: "user",
           attributes: ["full_name"]
-        },
-        {
-          model: Task,
-          as: 'tasks',
-          through: {
-            model: TaskAccountant,
-            attributes: []
-          }
         }
       ]
     });

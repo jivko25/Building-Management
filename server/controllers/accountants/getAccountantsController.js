@@ -1,6 +1,6 @@
 //server\controllers\accountants\getAccountantsController.js
 const db = require("../../data/index.js");
-const { Accountant, User, Sequelize, Company, TaskAccountant, Task } = db;
+const { Accountant, User, Sequelize, Company } = db;
 const { Op } = Sequelize;
 const ApiError = require("../../utils/apiError");
 
@@ -26,15 +26,7 @@ const getPaginatedAccountants = async (req, res, next) => {
           user_id: {
             [Op.in]: users.map((user) => user.id)
           }
-        },
-        include: [{
-          model: Task,
-          as: 'tasks',
-          through: {
-            model: TaskAccountant,
-            attributes: []
-          }
-        }]
+        }
       });
 
       return res.json(accountants);
@@ -52,15 +44,7 @@ const getPaginatedAccountants = async (req, res, next) => {
       where: whereClause,
       include: [
         { model: Company, as: "company", attributes: ["name"] },
-        { model: User, as: "user", attributes: ["full_name"] },
-        { 
-          model: Task, 
-          as: 'tasks', 
-          through: { 
-            model: TaskAccountant,
-            attributes: []
-          }
-        }
+        { model: User, as: "user", attributes: ["full_name"] }
       ],
       limit: parseInt(_limit),
       offset: offset,
@@ -116,14 +100,6 @@ const getAccountants = async (req, res, next) => {
             model: User,
             as: "user",
             attributes: ["full_name"]
-          },
-          {
-            model: Task,
-            as: 'tasks',
-            through: {
-              model: TaskAccountant,
-              attributes: []
-            }
           }
         ],
         where: {
@@ -145,14 +121,6 @@ const getAccountants = async (req, res, next) => {
             model: User,
             as: "user",
             attributes: ["full_name"]
-          },
-          {
-            model: Task,
-            as: 'tasks',
-            through: {
-              model: TaskAccountant,
-              attributes: []
-            }
           }
         ]
       });
