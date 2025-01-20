@@ -6,10 +6,14 @@ const { getAllClientInvoices } = require("../controllers/invoice/invoiceClient/G
 const { getClientInvoiceById } = require("../controllers/invoice/invoiceClient/GetClientInvoiceByIdController");
 const { getPDFClientInvoiceById } = require("../controllers/invoice/invoiceClient/GetPDFClientInvoiceByIdController");
 const { updateClientInvoiceStatus } = require("../controllers/invoice/invoiceClient/UpdateClientInvoiceStatusController");
+const { getWorkItemsForClientInvoice } = require("../controllers/workItems/getWorkItemsForClientInvoiceController");
+
+router.get("/work-items", getWorkItemsForClientInvoice);
 
 router.post("/create", createClientInvoice);
-router.put("/:id/edit", editClientInvoice);
 router.get("/", getAllClientInvoices);
+
+router.put("/:id/edit", editClientInvoice);
 router.get("/:id", getClientInvoiceById);
 router.get("/:id/pdf", getPDFClientInvoiceById);
 router.patch("/:id/status", updateClientInvoiceStatus);
