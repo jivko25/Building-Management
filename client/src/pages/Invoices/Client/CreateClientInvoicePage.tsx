@@ -92,13 +92,16 @@ export const CreateClientInvoicePage = () => {
   });
 
   const { data: workItemsData = [] } = useQuery({
-    queryKey: ["workItems"],
+    queryKey: ["workItems", form.watch("company_id"), form.watch("client_company_id")],
     queryFn: async () => {
-      console.log("🔍 Fetching all work items initially");
+      const company_id = form.watch("company_id");
+      const client_id = form.watch("client_company_id");
+
+      console.log("🔍 Fetching work items with filters:", { company_id, client_id });
 
       try {
-        const data = await invoiceClientService.getWorkItemsForInvoice();
-        console.log("📦 Received initial work items:", data);
+        const data = await invoiceClientService.getWorkItemsForInvoice(company_id || undefined, client_id || undefined);
+        console.log("📦 Received work items:", data);
         return data;
       } catch (error) {
         console.error("❌ Error fetching work items:", error);
@@ -109,16 +112,6 @@ export const CreateClientInvoicePage = () => {
   });
 
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    const company_id = form.watch("company_id");
-    const client_id = form.watch("client_company_id");
-
-    if (company_id || client_id) {
-      console.log("🔄 Refetching work items with filters:", { company_id, client_id });
-      queryClient.invalidateQueries({ queryKey: ["workItems"] });
-    }
-  }, [form.watch("company_id"), form.watch("client_company_id")]);
 
   const createClientInvoiceMutation = useMutation({
     mutationFn: invoiceClientService.create,
