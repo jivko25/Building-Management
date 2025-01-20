@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { invoiceClientService } from "@/services/invoice/invoiceClientService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
+
 const createClientInvoiceSchema = z.object({
   company_id: z.number({
     required_error: "Please select a company"
@@ -83,55 +85,40 @@ export const CreateClientInvoicePage = () => {
     defaultValues: {
       company_id: 0,
       client_company_id: 0,
-      due_date_weeks: 0,
+      due_date_weeks: 2,
       selected_projects: [],
       selected_work_items: []
     }
   });
 
-  const { data: workItemsData } = useQuery({
-    queryKey: ["workItems", form.watch("selected_projects")],
+  const { data: workItemsData = [] } = useQuery({
+    queryKey: ["workItems"],
     queryFn: async () => {
-      const selectedProjects = form.watch("selected_projects") ?? [];
-      console.log("📋 Selected projects for work items:", selectedProjects);
+      console.log("🔍 Fetching all work items initially");
 
-      if (selectedProjects.length === 0) return [];
-
-      const workItemsByProject = await Promise.all(
-        selectedProjects.map(async projectId => {
-          console.log(`🔍 Fetching tasks for project ${projectId}`);
-
-          // Първо взимаме задачите за проекта
-          const tasksResponse = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/tasks`, { credentials: "include" });
-          const tasksData = await tasksResponse.json();
-          console.log(`📑 Tasks data for project ${projectId}:`, tasksData);
-
-          // След това взимаме работните елементи за всяка задача
-          const workItems = await Promise.all(
-            tasksData.map(async (task: any) => {
-              const workItemsResponse = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/tasks/${task.id}/work-items`, { credentials: "include" });
-              const workItemsData = await workItemsResponse.json();
-              return workItemsData;
-            })
-          );
-
-          // Обединяваме всички работни елементи
-          const flattenedWorkItems = workItems.flat();
-          console.log(`📦 Work items data for project ${projectId}:`, flattenedWorkItems);
-
-          return {
-            projectId,
-            projectName: projects.find((p: any) => p.id === projectId)?.name,
-            workItems: flattenedWorkItems.filter(item => !item.is_client_invoiced)
-          };
-        })
-      );
-
-      console.log("🔄 Final work items data:", workItemsByProject);
-      return workItemsByProject;
-    },
-    enabled: (form.watch("selected_projects") ?? []).length > 0
+      try {
+        const data = await invoiceClientService.getWorkItemsForInvoice();
+        console.log("📦 Received initial work items:", data);
+        return data;
+      } catch (error) {
+        console.error("❌ Error fetching work items:", error);
+        toast.error("Error fetching work items");
+        return [];
+      }
+    }
   });
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const company_id = form.watch("company_id");
+    const client_id = form.watch("client_company_id");
+
+    if (company_id || client_id) {
+      console.log("🔄 Refetching work items with filters:", { company_id, client_id });
+      queryClient.invalidateQueries({ queryKey: ["workItems"] });
+    }
+  }, [form.watch("company_id"), form.watch("client_company_id")]);
 
   const createClientInvoiceMutation = useMutation({
     mutationFn: invoiceClientService.create,
@@ -151,18 +138,18 @@ export const CreateClientInvoicePage = () => {
 
       // Трансформираме избраните работни елементи в правилния формат
       const items = (data.selected_work_items ?? []).map(workItemId => {
-        const workItem = workItemsData?.flatMap(project => project.workItems).find(wi => wi.id === workItemId);
+        const workItem = workItemsData?.find((wi: any) => wi.id === workItemId);
 
-        if (!workItem || !workItem.task) {
+        if (!workItem || !workItem.activity || !workItem.measure) {
           throw new Error("Work item not found");
         }
 
         return {
-          activity_id: Number(workItem.task.activity_id),
-          measure_id: Number(workItem.task.measure_id),
-          project_id: Number(workItem.task.project_id),
-          quantity: Number(workItem.task.total_work_in_selected_measure),
-          price_per_unit: Number(workItem.task.price_per_measure)
+          activity_id: Number(workItem.activity.id),
+          measure_id: Number(workItem.measure.id),
+          project_id: Number(workItem.project.id),
+          quantity: Number(workItem.quantity),
+          price_per_unit: Number(workItem.activity.price_per_measure)
         };
       });
 
@@ -381,85 +368,49 @@ export const CreateClientInvoicePage = () => {
             <div className="mt-8">
               <h2 className="text-xl font-semibold mb-4">{t("Select Work Items")}</h2>
               <div className="space-y-6">
-                {workItemsData.map(({ projectId, projectName, workItems }) => (
+                {workItemsData.map(({ projectId, projectName, projectLocation, workItems }: any) => (
                   <div key={projectId} className="border rounded-lg p-4 bg-white shadow-sm">
-                    <h3 className="text-lg font-medium mb-3 text-gray-900">{projectName}</h3>
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-lg font-medium text-gray-900">{projectName}</h3>
+                      <span className="text-sm text-gray-500">{projectLocation}</span>
+                    </div>
                     <div className="grid gap-3">
                       {workItems.map((workItem: any) => (
-                        <div key={workItem.id} className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50 transition-colors duration-200">
+                        <div key={workItem.id} className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50">
                           <div className="flex items-center min-w-0">
                             <div className="relative inline-flex items-center">
                               <input
                                 type="checkbox"
                                 id={`workItem-${workItem.id}`}
-                                className="
-                                  peer
-                                  appearance-none
-                                  w-5 
-                                  h-5 
-                                  border-2 
-                                  border-gray-300 
-                                  rounded-md 
-                                  bg-white
-                                  checked:bg-blue-500 
-                                  checked:border-blue-500
-                                  transition-colors 
-                                  duration-200
-                                  cursor-pointer
-                                  focus:outline-none 
-                                  focus:ring-2 
-                                  focus:ring-blue-500/30
-                                "
+                                className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-md bg-white
+                                         checked:bg-blue-500 checked:border-blue-500 transition-colors duration-200
+                                         cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                                 checked={form.watch("selected_work_items")?.includes(workItem.id)}
                                 onChange={e => {
                                   const currentSelected = form.watch("selected_work_items") || [];
                                   if (e.target.checked) {
-                                    console.log("Adding work item:", workItem.id);
                                     form.setValue("selected_work_items", [...currentSelected, workItem.id]);
                                   } else {
-                                    console.log("Removing work item:", workItem.id);
                                     form.setValue(
                                       "selected_work_items",
                                       currentSelected.filter((id: number) => id !== workItem.id)
                                     );
                                   }
-                                  console.log("Selected work items:", form.watch("selected_work_items"));
                                 }}
                               />
-                              <svg
-                                className="
-                                  absolute 
-                                  w-4 
-                                  h-4 
-                                  text-white 
-                                  left-0.5 
-                                  top-0.5
-                                  pointer-events-none 
-                                  opacity-0 
-                                  peer-checked:opacity-100 
-                                  transition-opacity 
-                                  duration-200
-                                "
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth="3">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                              </svg>
+                              {/* Checkmark icon */}
                             </div>
                             <div className="ml-3">
-                              <label htmlFor={`workItem-${workItem.id}`} className="text-sm font-medium text-gray-900 cursor-pointer">
+                              <label htmlFor={`workItem-${workItem.id}`} className="text-sm font-medium text-gray-900">
                                 {workItem.name}
                               </label>
-                              <div className="text-xs text-gray-500">Status: {workItem.status === "done" ? "Done" : "In Progress"}</div>
+                              <div className="text-xs text-gray-500">
+                                {workItem.activity?.name} - {workItem.measure?.name}
+                              </div>
                             </div>
                           </div>
                           <div className="text-sm text-gray-500">
-                            {workItem.task?.price_per_measure && (
-                              <span>
-                                {t("Price")}: ${workItem.task.price_per_measure}
-                              </span>
-                            )}
+                            {workItem.quantity} {workItem.measure?.name}
                           </div>
                         </div>
                       ))}

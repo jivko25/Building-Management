@@ -44,5 +44,35 @@ export const invoiceClientService = {
   updateStatus: async (id: number, paid: boolean): Promise<ClientInvoice> => {
     const response = await axios.patch(`${API_URL}/client-invoices/${id}/status`, { paid });
     return response.data.data;
+  },
+
+  getWorkItemsForInvoice: async (company_id?: number, client_id?: number, project_id?: number) => {
+    try {
+      console.log("🔍 Fetching work items for invoice with filters:", { company_id, client_id, project_id });
+
+      let url = `${API_URL}/invoices-client/work-items`;
+      const params = new URLSearchParams();
+
+      if (company_id) params.append("company_id", company_id.toString());
+      if (client_id) params.append("client_id", client_id.toString());
+      if (project_id) params.append("project_id", project_id.toString());
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      const response = await axios.get(url);
+      console.log("📦 Work items response:", response.data);
+
+      if (!response.data.data) {
+        console.warn("⚠️ No work items found");
+        return [];
+      }
+
+      return response.data.data;
+    } catch (error) {
+      console.error("❌ Error fetching work items:", error);
+      throw error;
+    }
   }
 };
