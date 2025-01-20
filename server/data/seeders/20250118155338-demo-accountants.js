@@ -8,8 +8,7 @@ module.exports = {
         email: 'ivan@example.com',
         company_id: 1,
         user_id: 1,
-        status: 'active',
-        measure_id: 1
+        status: 'active'
       },
       {
         name: 'Мария Петрова',
@@ -18,8 +17,7 @@ module.exports = {
         email: 'maria@example.com',
         company_id: 2,
         user_id: 2,
-        status: 'active',
-        measure_id: 1
+        status: 'active'
       },
       {
         name: 'Георги Димитров',
@@ -28,8 +26,7 @@ module.exports = {
         email: 'georgi@example.com',
         company_id: 1,
         user_id: 3,
-        status: 'inactive',
-        measure_id: 2
+        status: 'inactive'
       }
     ], {});
   },

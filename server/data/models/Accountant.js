@@ -43,14 +43,6 @@ module.exports = (sequelize, DataTypes) => {
         status: {
           type: DataTypes.ENUM("active", "inactive"),
           defaultValue: "inactive"
-        },
-        measure_id: {
-          type: DataTypes.INTEGER,
-          allowNull: true,
-          references: {
-            model: "tbl_measures",
-            key: "id"
-          }
         }
       },
       {
@@ -75,11 +67,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "accountant_id",
         otherKey: "task_id",
         as: "tasks"
-      });
-  
-      Accountant.belongsTo(models.Measure, {
-        foreignKey: "measure_id",
-        as: "measure"
       });
 
       Accountant.belongsToMany(models.Invoice, {
