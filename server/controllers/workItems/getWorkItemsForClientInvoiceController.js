@@ -4,15 +4,16 @@ const ApiError = require("../../utils/apiError");
 const { Op } = require("sequelize");
 
 const getWorkItemsForClientInvoice = async (req, res, next) => {
-  const { company_id, client_id } = req.query;
+  const { company_id, client_id, project_id } = req.query;
 
   try {
-    console.log("🔍 Starting to fetch work items with filters:", { company_id, client_id });
+    console.log("🔍 Starting to fetch work items with filters:", { company_id, client_id, project_id });
 
     // Конвертираме стринговите параметри в числа, ако съществуват
     const whereClause = {};
     if (company_id) whereClause.company_id = parseInt(company_id);
     if (client_id) whereClause.client_id = parseInt(client_id);
+    if (project_id) whereClause.id = parseInt(project_id); // За проекта използваме id
 
     console.log("📋 Constructed where clause:", whereClause);
 
