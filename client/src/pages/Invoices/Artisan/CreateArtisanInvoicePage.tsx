@@ -114,38 +114,12 @@ export const CreateArtisanInvoicePage = () => {
     form.setValue("artisan_id", artisanId);
   };
 
-  // Add validation function
-  const validateForm = (data: CreateArtisanInvoiceSchema) => {
-    const newErrors = {
-      company_id: "",
-      artisan_id: "",
-      due_date_weeks: "",
-      work_item_ids: ""
-    };
-
-    if (!data.company_id || data.company_id === 0) {
-      newErrors.company_id = "Моля, изберете строителна фирма";
-    }
-
-    if (!data.artisan_id || data.artisan_id === 0) {
-      newErrors.artisan_id = "Моля, изберете майстор";
-    }
-
-    if (!data.due_date_weeks || data.due_date_weeks < 0) {
-      newErrors.due_date_weeks = "Моля, въведете валиден срок за плащане";
-    }
-
-    if (!data.work_item_ids || data.work_item_ids.length === 0) {
-      newErrors.work_item_ids = "Моля, изберете поне един работен елемент";
-    }
-
-    return Object.values(newErrors).every(error => error === "");
-  };
-
-  // Add isFormValid function
+  // Опростяваме функцията за валидация
   const isFormValid = () => {
     const formData = form.getValues();
-    return validateForm(formData);
+    console.log("Form data for validation:", formData);
+
+    return !!(formData.company_id && formData.artisan_id && formData.due_date_weeks && Array.isArray(formData.work_item_ids) && formData.work_item_ids.length > 0);
   };
 
   return (
@@ -292,9 +266,6 @@ export const CreateArtisanInvoicePage = () => {
           </div>
         </form>
       </Form>
-
-      {/* Add tooltip for disabled button */}
-      {!isFormValid() && <div className="text-sm text-gray-500 mt-2 text-right">{t("Please fill in all required fields and select at least one work item")}</div>}
     </div>
   );
 };
