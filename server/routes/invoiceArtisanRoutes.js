@@ -5,6 +5,9 @@ const { getAllArtisanInvoices } = require("../controllers/invoice/invoiceArtisan
 const { getArtisanInvoiceById } = require("../controllers/invoice/invoiceArtisan/GetArtisanInvoiceByIdController");
 const { updateArtisanInvoiceStatus } = require("../controllers/invoice/invoiceArtisan/UpdateArtisanInvoiceStatusController");
 const { getPDFArtisanInvoiceById } = require("../controllers/invoice/invoiceArtisan/GetPDFArtisanInvoiceByIdController");
+const { getWorkItemsForArtisanInvoice } = require("../controllers/workItems/getWorkItemsForArtisanInvoiceController");
+
+router.get("/work-items", getWorkItemsForArtisanInvoice);
 
 // Artisan invoice routes
 router.post("/create", createArtisanInvoice);
