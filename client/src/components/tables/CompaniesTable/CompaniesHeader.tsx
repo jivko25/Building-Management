@@ -9,6 +9,7 @@ const CompaniesHeader = () => {
     { key: "name", label: t("Company name"), width: "w-[23rem]", align: "left" },
     { key: "number", label: t("Company number"), width: "w-[21.5rem]", align: "center" },
     { key: "mrp", label: t("MRP"), width: "w-[21rem]", align: "center" },
+    { key: "logo", label: t("Logo"), width: "w-[21rem]", align: "center" },
     { key: "options", label: t("Options"), width: "w-[12.5rem]", align: "right" }
   ];
 
