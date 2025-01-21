@@ -74,7 +74,16 @@ export const InvoicesArtisanPage = () => {
 
   const dateTemplate = (rowData: ArtisanInvoice) => {
     try {
-      return format(new Date(rowData.invoice_date), "dd.MM.yyyy", { locale: bg });
+      console.log("Formatting date for:", rowData);
+      if (!rowData.invoice_date) {
+        return "N/A";
+      }
+      const date = new Date(rowData.invoice_date);
+      if (isNaN(date.getTime())) {
+        console.log("Invalid date:", rowData.invoice_date);
+        return "N/A";
+      }
+      return format(date, "dd.MM.yyyy", { locale: bg });
     } catch (error) {
       console.error("Error formatting date:", error, rowData);
       return "N/A";
@@ -83,7 +92,15 @@ export const InvoicesArtisanPage = () => {
 
   const dueDateTemplate = (rowData: ArtisanInvoice) => {
     try {
-      return format(new Date(rowData.due_date), "dd.MM.yyyy", { locale: bg });
+      if (!rowData.due_date) {
+        return "N/A";
+      }
+      const date = new Date(rowData.due_date);
+      if (isNaN(date.getTime())) {
+        console.log("Invalid due date:", rowData.due_date);
+        return "N/A";
+      }
+      return format(date, "dd.MM.yyyy", { locale: bg });
     } catch (error) {
       console.error("Error formatting due date:", error, rowData);
       return "N/A";
@@ -147,7 +164,7 @@ export const InvoicesArtisanPage = () => {
           <DataTable value={invoices} paginator rows={10} rowsPerPageOptions={[10, 20, 50]} filters={filters} globalFilterFields={["invoice_number", "artisan.name", "total_amount"]} header={renderHeader} emptyMessage="No invoices found" loading={isLoading} stripedRows showGridlines dataKey="id" sortMode="single" removableSort tableStyle={{ minWidth: "50rem" }} scrollable>
             <Column field="invoice_number" header={t("Number")} sortable filter filterPlaceholder={t("Search by number")} style={{ width: "15%" }} />
             <Column field="invoice_date" header={t("Date")} body={dateTemplate} sortable style={{ width: "15%" }} />
-            <Column field="due_date" header={t("Due date")} body={dueDateTemplate} sortable style={{ width: "15%" }} />
+            <Column field="due_date" header={t("Due Date")} body={dueDateTemplate} sortable style={{ width: "15%" }} />
             <Column field="artisan.name" header={t("Artisan")} body={artisanTemplate} sortable filter filterPlaceholder={t("Search by artisan")} style={{ width: "20%" }} />
             <Column field="total_amount" header={t("Amount")} body={amountTemplate} sortable filter filterPlaceholder={t("Search by amount")} style={{ width: "15%" }} />
             <Column field="paid" header={t("Paid")} body={paidTemplate} sortable style={{ width: "10%" }} />

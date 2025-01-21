@@ -90,7 +90,11 @@ const createArtisanInvoice = async (req, res, next) => {
     const { week, year } = getWeekNumber(currentDate);
     const invoiceNumber = await generateUniqueInvoiceNumber(year, week);
 
-    // Create invoice
+    // Форматираме датите правилно
+    const invoice_date = new Date().toISOString();
+    const due_date = new Date(currentDate.setDate(currentDate.getDate() + due_date_weeks * 7)).toISOString();
+
+    // Create invoice с форматирани дати
     const invoice = await Invoice.create(
       {
         invoice_number: invoiceNumber,
@@ -98,8 +102,8 @@ const createArtisanInvoice = async (req, res, next) => {
         week_number: week,
         company_id,
         client_company_id: null,
-        invoice_date: currentDate,
-        due_date: new Date(currentDate.setDate(currentDate.getDate() + due_date_weeks * 7)),
+        invoice_date: invoice_date,
+        due_date: due_date,
         total_amount: 0,
         paid: false,
         is_artisan_invoice: true,
