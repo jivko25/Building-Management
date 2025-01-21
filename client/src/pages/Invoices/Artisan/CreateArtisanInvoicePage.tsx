@@ -100,9 +100,9 @@ export const CreateArtisanInvoicePage = () => {
     enabled: true
   });
 
-  const handleCompanyChange = (value: string) => {
+  const handleCompanyChange = (value: string | string[]) => {
     console.log("🏢 Company changed to:", value);
-    const companyId = parseInt(value);
+    const companyId = parseInt(value as string);
     setSelectedCompanyId(companyId);
     form.setValue("company_id", companyId);
   };
@@ -161,7 +161,13 @@ export const CreateArtisanInvoicePage = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("Artisan")}</FormLabel>
-                <Select onValueChange={handleArtisanChange} defaultValue={field.value.toString()}>
+                <Select
+                  onValueChange={value => {
+                    const id = parseInt(value.toString());
+                    field.onChange(id);
+                    handleArtisanChange(id.toString());
+                  }}
+                  value={field.value ? field.value.toString() : ""}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder={t("Select artisan")} />
