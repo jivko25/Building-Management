@@ -27,11 +27,12 @@ import ClientsTablePage from "./pages/ClientsTablePage";
 import AdminGuard from "./guards/AdminGuard";
 import { LanguageSettings } from "./pages/Settings/LanguageSettings";
 import { useTranslation } from "react-i18next";
+import AccountantsTablePage from "./pages/AccountantsTablePage";
 
 const AppRoutes = () => {
 
-const { t } = useTranslation();
-console.log("Current translations:", t("settings"));
+  const { t } = useTranslation();
+  console.log("Current translations:", t("settings"));
   return (
     <Routes>
       {/* Public routes */}
@@ -189,6 +190,16 @@ console.log("Current translations:", t("settings"));
           element={
             <TableLayout>
               <ClientsTablePage />
+            </TableLayout>
+          }
+        />
+      </Route>
+      <Route element={<ManagerGuard />}>
+        <Route
+          path="/accountants"
+          element={
+            <TableLayout>
+              <AccountantsTablePage />
             </TableLayout>
           }
         />

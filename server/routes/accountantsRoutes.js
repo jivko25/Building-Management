@@ -11,7 +11,7 @@ const router = express.Router();
 router.get("/accountants", authenticateToken, getPaginatedAccountants);
 router.get("/accountants", authenticateToken, getAccountants);
 router.get("/accountants/:id", authenticateToken, getAccountantById);
-router.post("/accountants", authenticateToken, createAccountant);
-router.put("/accountants/:id", authenticateToken, editAccountant);
+router.post("/accountants/create", authenticateToken, createAccountant);
+router.put("/accountants/:id/edit", authenticateToken, editAccountant);
 
 module.exports = router;
