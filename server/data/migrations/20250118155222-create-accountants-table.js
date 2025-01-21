@@ -45,6 +45,16 @@ module.exports = {
       status: {
         type: Sequelize.ENUM('active', 'inactive'),
         defaultValue: 'inactive'
+      },
+      measure_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'tbl_measures',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       }
     });
   },
