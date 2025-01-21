@@ -11,4 +11,5 @@ export type Project = {
   location: string;
   status: "active" | "inactive";
   client_id: number;
+  client_company_name?: string;
 };
