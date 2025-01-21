@@ -7,9 +7,10 @@ import { fetchClients } from "@/api/apiCall";
 type FormClientSelectorProps = {
   label: string;
   name: string;
+  defaultVal?: string;
 };
 
-const FormClientSelector = ({ label, name }: FormClientSelectorProps) => {
+const FormClientSelector = ({ label, name, defaultVal }: FormClientSelectorProps) => {
   const { control } = useFormContext();
 
   const { data: clients } = useQuery({
@@ -24,7 +25,7 @@ const FormClientSelector = ({ label, name }: FormClientSelectorProps) => {
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <Select onValueChange={value => field.onChange(Number(value))} defaultValue={field.value?.toString()}>
+          <Select onValueChange={value => field.onChange(Number(value))} defaultValue={defaultVal || field.value?.toString()}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select client company name" />
