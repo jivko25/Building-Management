@@ -97,7 +97,7 @@ export const CreateArtisanInvoicePage = () => {
   const { data: workItemsData, isLoading: isLoadingWorkItems } = useQuery({
     queryKey: ["workItems", selectedCompanyId, selectedArtisanId],
     queryFn: () => artisanInvoiceService.getWorkItemsForInvoice(selectedCompanyId, selectedArtisanId),
-    enabled: !!(selectedCompanyId || selectedArtisanId)
+    enabled: true
   });
 
   const handleCompanyChange = (value: string) => {
@@ -187,7 +187,16 @@ export const CreateArtisanInvoicePage = () => {
               <FormItem>
                 <FormLabel>{t("Due Date (weeks)")}</FormLabel>
                 <FormControl>
-                  <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
+                  <Input
+                    type="number"
+                    {...field}
+                    value={field.value || ""}
+                    onChange={e => {
+                      const value = parseInt(e.target.value);
+                      field.onChange(value);
+                      form.setValue("due_date_weeks", value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
