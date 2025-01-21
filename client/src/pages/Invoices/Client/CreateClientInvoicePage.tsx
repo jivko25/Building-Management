@@ -10,8 +10,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CreateClientInvoiceData } from "@/types/invoice/client.types";
+import { Loader2 } from "lucide-react";
 
 const createClientInvoiceSchema = z.object({
   company_id: z.number({
@@ -131,14 +132,45 @@ export const CreateClientInvoicePage = () => {
 
   const queryClient = useQueryClient();
 
+  // Add error states
+  const [errors, setErrors] = useState({
+    company_id: "",
+    client_company_id: "",
+    due_date_weeks: ""
+  });
+
+  // Add validation function
+  const validateForm = (data: z.infer<typeof createClientInvoiceSchema>) => {
+    const newErrors = {
+      company_id: "",
+      client_company_id: "",
+      due_date_weeks: ""
+    };
+
+    if (!data.company_id || data.company_id === 0) {
+      newErrors.company_id = "Моля, изберете строителна фирма";
+    }
+
+    if (!data.client_company_id || data.client_company_id === 0) {
+      newErrors.client_company_id = "Моля, изберете клиентска фирма";
+    }
+
+    if (!data.due_date_weeks || data.due_date_weeks < 0) {
+      newErrors.due_date_weeks = "Моля, въведете валиден срок за плащане";
+    }
+
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(error => error !== "");
+  };
+
   const createClientInvoiceMutation = useMutation({
     mutationFn: invoiceClientService.create,
     onSuccess: () => {
-      toast.success("Client Invoice created successfully");
+      toast.success("Фактурата е създадена успешно");
       navigate("/invoices");
     },
     onError: error => {
-      toast.error("Error creating invoice");
+      toast.error("Грешка при създаване на фактура");
       console.error("Error creating invoice:", error);
     }
   });
@@ -147,19 +179,8 @@ export const CreateClientInvoicePage = () => {
     try {
       console.log("Form data:", data);
 
-      // Валидация преди изпращане
-      if (!data.client_company_id || data.client_company_id === 0) {
-        toast.error("Please select a client company");
-        return;
-      }
-
-      if (!data.company_id || data.company_id === 0) {
-        toast.error("Please select a building company");
-        return;
-      }
-
-      if (!data.selected_work_items?.length) {
-        toast.error("Please select at least one work item");
+      // Validate form
+      if (!validateForm(data)) {
         return;
       }
 
@@ -190,8 +211,8 @@ export const CreateClientInvoicePage = () => {
         navigate("/invoices-client");
       }
     } catch (error) {
-      console.error("Error creating invoice:", error);
-      toast.error(error instanceof Error ? error.message : "Error creating client invoice");
+      console.error("Error submitting form:", error);
+      toast.error("Възникна грешка при създаване на фактурата");
     }
   };
 
@@ -239,6 +260,18 @@ export const CreateClientInvoicePage = () => {
         currentSelected.filter((id: number) => id !== workItemId)
       );
     }
+  };
+
+  // Add isFormValid function
+  const isFormValid = () => {
+    const formData = {
+      company_id: form.watch("company_id"),
+      client_company_id: form.watch("client_company_id"),
+      due_date_weeks: form.watch("due_date_weeks"),
+      selected_work_items: form.watch("selected_work_items")
+    };
+
+    return formData.company_id > 0 && formData.client_company_id > 0 && formData.due_date_weeks >= 0 && (formData.selected_work_items?.length || 0) > 0;
   };
 
   return (
@@ -450,10 +483,17 @@ export const CreateClientInvoicePage = () => {
             </div>
           )}
 
-          <div className="flex justify-end gap-4">
-            <Button type="submit" disabled={createClientInvoiceMutation.isPending}>
-              {createClientInvoiceMutation.isPending ? "Creating..." : "Create invoice"}
-            </Button>
+          <div className="flex justify-end mt-4">
+            <button type="submit" disabled={!isFormValid() || createClientInvoiceMutation.isPending} className={`px-4 py-2 rounded-md text-white flex items-center gap-2 ${isFormValid() && !createClientInvoiceMutation.isPending ? "bg-indigo-600 hover:bg-indigo-700" : "bg-gray-400 cursor-not-allowed"}`}>
+              {createClientInvoiceMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("Creating...")}
+                </>
+              ) : (
+                t("Create invoice")
+              )}
+            </button>
           </div>
         </form>
       </Form>
