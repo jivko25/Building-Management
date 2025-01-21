@@ -23,7 +23,7 @@ module.exports = {
         name: "Майстор Петров",
         note: "Нов в екипа",
         number: "987654321",
-        email: "petar@example.com",
+        email: "gogata1905@gmail.com",
         company_id: 2,
         user_id: 2,
         status: "inactive",
