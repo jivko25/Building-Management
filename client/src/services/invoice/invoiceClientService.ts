@@ -41,7 +41,7 @@ export const invoiceClientService = {
   },
 
   delete: async (id: number): Promise<void> => {
-    await axios.delete(`${API_URL}/invoices-client/${id}`);
+    await axios.delete(`${API_URL}/invoices/${id}`);
   },
 
   updateStatus: async (id: number, paid: boolean): Promise<ClientInvoice> => {
