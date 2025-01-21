@@ -117,6 +117,40 @@ export const CreateArtisanInvoicePage = () => {
     form.setValue("artisan_id", artisanId);
   };
 
+  // Add validation function
+  const validateForm = (data: CreateArtisanInvoiceSchema) => {
+    const newErrors = {
+      company_id: "",
+      artisan_id: "",
+      due_date_weeks: "",
+      work_item_ids: ""
+    };
+
+    if (!data.company_id || data.company_id === 0) {
+      newErrors.company_id = "Моля, изберете строителна фирма";
+    }
+
+    if (!data.artisan_id || data.artisan_id === 0) {
+      newErrors.artisan_id = "Моля, изберете майстор";
+    }
+
+    if (!data.due_date_weeks || data.due_date_weeks < 0) {
+      newErrors.due_date_weeks = "Моля, въведете валиден срок за плащане";
+    }
+
+    if (!data.work_item_ids || data.work_item_ids.length === 0) {
+      newErrors.work_item_ids = "Моля, изберете поне един работен елемент";
+    }
+
+    return Object.values(newErrors).every(error => error === "");
+  };
+
+  // Add isFormValid function
+  const isFormValid = () => {
+    const formData = form.getValues();
+    return validateForm(formData);
+  };
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
@@ -248,7 +282,7 @@ export const CreateArtisanInvoicePage = () => {
           ) : null}
 
           <div className="flex justify-end gap-4">
-            <Button type="submit" disabled={createInvoiceMutation.isPending}>
+            <Button type="submit" disabled={!isFormValid() || createInvoiceMutation.isPending} className={`${!isFormValid() || createInvoiceMutation.isPending ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-primary/90"}`}>
               {createInvoiceMutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -261,6 +295,9 @@ export const CreateArtisanInvoicePage = () => {
           </div>
         </form>
       </Form>
+
+      {/* Add tooltip for disabled button */}
+      {!isFormValid() && <div className="text-sm text-gray-500 mt-2 text-right">{t("Please fill in all required fields and select at least one work item")}</div>}
     </div>
   );
 };
