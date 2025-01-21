@@ -92,10 +92,10 @@ export const InvoicesArtisanPage = () => {
 
   const amountTemplate = (rowData: ArtisanInvoice) => {
     try {
-      return `${Math.round(parseFloat(rowData.total_amount))} лв.`;
+      return `${Math.round(parseFloat(rowData.total_amount))}€.`;
     } catch (error) {
       console.error("Error formatting amount:", error, rowData);
-      return "0 лв.";
+      return "0€.";
     }
   };
 

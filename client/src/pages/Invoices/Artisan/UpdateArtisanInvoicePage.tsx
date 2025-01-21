@@ -87,7 +87,7 @@ export const UpdateArtisanInvoicePage = () => {
             </div>
             <div>
               <Label>{t("Total Amount")}</Label>
-              <div className="mt-1">{invoice.total_amount} лв.</div>
+              <div className="mt-1">{invoice.total_amount}€.</div>
             </div>
           </CardContent>
         </Card>
