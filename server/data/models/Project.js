@@ -92,7 +92,6 @@ module.exports = (sequelize, DataTypes) => {
       as: "creator"
     });
 
-//////// HEAD
     Project.belongsTo(models.Client, {
       foreignKey: "client_id",
       as: "client"
@@ -101,11 +100,11 @@ module.exports = (sequelize, DataTypes) => {
     Project.hasMany(models.DefaultPricing, {
       foreignKey: "project_id",
       as: "defaultPricing"
-//////////
-    // Project.hasMany(models.ProjectImage, {
-    //   foreignKey: "projectId",
-    //   as: "images"
-///////// dev
+    });
+
+    Project.hasMany(models.ProjectImage, {
+      foreignKey: "projectId",
+      as: "images"
     });
   };
 
