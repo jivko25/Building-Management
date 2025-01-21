@@ -43,10 +43,6 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "SET NULL"
       },
-      price_per_measure: {
-        type: Sequelize.DECIMAL(10, 2),
-        allowNull: true
-      },
       total_price: {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: true

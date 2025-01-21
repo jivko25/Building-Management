@@ -9,23 +9,43 @@ module.exports = (sequelize, DataTypes) => {
       },
       invoice_id: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: "tbl_invoices",
+          key: "id"
+        }
       },
-      activity_id: {
+      work_item_id: {
         type: DataTypes.INTEGER,
-        allowNull: false
-      },
-      measure_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: "tbl_workitems",
+          key: "id"
+        }
       },
       project_id: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: "tbl_projects",
+          key: "id"
+        }
       },
-      task_id: {
+      activity_id: {
         type: DataTypes.INTEGER,
-        allowNull: true
+        allowNull: false,
+        references: {
+          model: "tbl_activities",
+          key: "id"
+        }
+      },
+      measure_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_measures",
+          key: "id"
+        }
       },
       quantity: {
         type: DataTypes.DECIMAL(10, 2),
@@ -42,9 +62,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       tableName: "tbl_invoice_items",
-      timestamps: true,
-      createdAt: "created_at",
-      updatedAt: "updated_at"
+      timestamps: false
     }
   );
 

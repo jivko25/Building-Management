@@ -39,11 +39,57 @@ module.exports = (sequelize, DataTypes) => {
       status: {
         type: DataTypes.ENUM("done", "in_progress"),
         defaultValue: "in_progress"
+      },
+      is_client_invoiced: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+      },
+      is_artisan_invoiced: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+      },
+      activity_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_activities",
+          key: "id"
+        }
+      },
+      measure_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_measures",
+          key: "id"
+        }
+      },
+      artisan_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_artisans",
+          key: "id"
+        }
+      },
+      quantity: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false
+      },
+      project_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_projects",
+          key: "id"
+        }
       }
     },
     {
       tableName: "tbl_workitems",
-      timestamps: false
+      timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at"
     }
   );
 
@@ -51,6 +97,26 @@ module.exports = (sequelize, DataTypes) => {
     WorkItem.belongsTo(models.Task, {
       foreignKey: "task_id",
       as: "task"
+    });
+
+    WorkItem.belongsTo(models.Activity, {
+      foreignKey: "activity_id",
+      as: "activity"
+    });
+
+    WorkItem.belongsTo(models.Measure, {
+      foreignKey: "measure_id",
+      as: "measure"
+    });
+
+    WorkItem.belongsTo(models.Artisan, {
+      foreignKey: "artisan_id",
+      as: "artisan"
+    });
+
+    WorkItem.belongsTo(models.Project, {
+      foreignKey: "project_id",
+      as: "project"
     });
   };
 
