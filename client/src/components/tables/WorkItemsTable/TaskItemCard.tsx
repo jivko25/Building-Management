@@ -6,33 +6,54 @@ import { Separator } from "@/components/ui/separator";
 import { PaginatedWorkItems } from "@/types/work-item-types/workItem";
 import { ClipboardList, DollarSign, Hammer, User } from "lucide-react";
 import { useMemo } from "react";
+import { useLocation } from "react-router-dom";
 
 type TaskItemCardProps = {
   workItems: PaginatedWorkItems;
 };
 
 const TaskItemCard = ({ workItems }: TaskItemCardProps) => {
+  const location = useLocation();
+  const { task } = location.state || {};
+
   const taskDetails = useMemo(() => {
-    if (!workItems) {
+
+    if (!workItems || !Array.isArray(workItems.pages)) {
+      console.error("Invalid workItems format:", workItems);
       return null;
     }
 
-    const workItemsPages = workItems.pages.flat();
+    const workItemsPages = workItems?.pages.flatMap((page: any) => page.workItems || []);
 
-    const taskName = new Set(workItemsPages.map(task => task.task_name));
-    const artisanName = new Set(workItemsPages.map(task => task.artisan_name));
-    const measurePrice = new Set(workItemsPages.map(task => task.price_per_measure));
-    const totalWork = new Set(workItemsPages.map(task => task.total_work_in_selected_measure));
-    const totalPrice = new Set(workItemsPages.map(task => task.total_price));
-    const taskStatus = new Set(workItemsPages.map(task => task.task_status));
+    if (!workItemsPages?.length) {
+      return {
+        taskName: task.name,
+        artisanName: task.artisans.map((artisan: { name: any; }) => artisan.name).join(", "),
+        measurePrice: task.price_per_measure,
+        totalPrice: task.total_price,
+        taskStatus: task.status,
+        totalWork: task.total_work_in_selected_measure
+      }
+    }
+
+    const taskNames = Array.from(new Set(workItemsPages.map(item => item.task?.name))).join(", ");
+    const artisanNames = Array.from(
+      new Set(
+        workItemsPages.flatMap(item => item.task?.artisans.map((artisan: { name: any; }) => artisan.name))
+      )
+    ).join(", ");
+    const measurePrices = Array.from(new Set(workItemsPages.map(item => item.task?.price_per_measure))).join(", ");
+    const totalWorks = Array.from(new Set(workItemsPages.map(item => item.task?.total_work_in_selected_measure))).join(", ");
+    const totalPrices = Array.from(new Set(workItemsPages.map(item => item.task?.total_price))).join(", ");
+    const taskStatuses = Array.from(new Set(workItemsPages.map(item => item.task?.status)));
 
     return {
-      taskName: Array.from(taskName),
-      artisanName: Array.from(artisanName),
-      measurePrice: Array.from(measurePrice),
-      totalPrice: Array.from(totalPrice),
-      taskStatus: Array.from(taskStatus),
-      totalWork: Array.from(totalWork)
+      taskName: taskNames,
+      artisanName: artisanNames,
+      measurePrice: measurePrices,
+      totalPrice: totalPrices,
+      taskStatus: taskStatuses,
+      totalWork: totalWorks,
     };
   }, [workItems]);
 

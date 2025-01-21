@@ -30,8 +30,13 @@ import { InvoicesArtisanPage } from "./pages/Invoices/Artisan/InvoicesArtisanPag
 import { CreateArtisanInvoicePage } from "./pages/Invoices/Artisan/CreateArtisanInvoicePage";
 import { InvoiceArtisanDetailsPage } from "./pages/Invoices/Artisan/InvoiceArtisanDetailsPage";
 import { UpdateArtisanInvoicePage } from "./pages/Invoices/Artisan/UpdateArtisanInvoicePage";
+import { useTranslation } from "react-i18next";
+
 
 const AppRoutes = () => {
+
+const { t } = useTranslation();
+console.log("Current translations:", t("settings"));
   return (
     <Routes>
       {/* Public routes */}

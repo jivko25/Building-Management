@@ -1,6 +1,7 @@
 //server/controllers/tasks/createTaskController.js
 const db = require("../../data/index.js");
 const { Task, Artisan, Activity, Measure } = db;
+const { Op } = db.Sequelize;
 const ApiError = require("../../utils/apiError");
 
 const createTask = async (req, res, next) => {
@@ -20,6 +21,11 @@ const createTask = async (req, res, next) => {
     if (!name || !artisans || !activity || !measure) {
       throw new ApiError(400, "Missing required fields!");
     }
+
+    // const existingTask = await Task.findOne({ where: { name } });
+    // if (existingTask) {
+    //   throw new ApiError(400, `${name} already exists!`);
+    // }
 
     // Проверка за съществуваща задача
     const existingTask = await Task.findOne({ where: { name, project_id: projectId } });
@@ -41,6 +47,16 @@ const createTask = async (req, res, next) => {
       "Found artisans:",
       foundArtisans.map(a => a.name)
     );
+    // // Намиране на всички артисани
+    // const artisanRecords = await Artisan.findAll({
+    //   where: {
+    //     name: {
+    //       [Op.in]: artisans,
+    //     }
+    //   }
+    // });
+
+    console.log("Found artisans:", artisanRecords);
 
     // Проверка дали всички артисани са намерени
     const missingArtisans = artisans.filter(artisanName => !foundArtisans.some(found => found.name === artisanName));

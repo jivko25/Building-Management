@@ -16,7 +16,6 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "primereact/resources/themes/bootstrap4-dark-blue/theme.css";
 import { LanguageProvider } from "./contexts/LanguageContext";
-import { useTranslation } from "react-i18next";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,5 +48,3 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   </React.StrictMode>
 );
 
-const { t } = useTranslation();
-console.log("Current translations:", t("settings"));

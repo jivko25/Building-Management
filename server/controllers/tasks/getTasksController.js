@@ -32,17 +32,17 @@ const getTasks = async (req, res, next) => {
       throw new ApiError(404, "No projects found for current user");
     }
     const tasks = await Task.findAll({
-      where: { project_id: req.params.id },
-      include: [
-        {
-          model: Artisan,
-          as: "artisans",
-          through: { attributes: [] }
-        },
-        { model: Activity, as: "activity", attributes: ["name"] },
-        { model: Measure, as: "measure", attributes: ["name"] }
-      ],
-      order: [["id", "DESC"]]
+        where: { project_id: req.params.id },
+        include: [
+            {
+                model: Artisan,
+                as: "artisans",
+                through: { attributes: [] }
+            },
+            { model: Activity, as: "activity", attributes: ["name"] },
+            { model: Measure, as: "measure", attributes: ["name"] }
+        ],
+        order: [["id", "DESC"]]
     });
 
     res.json(tasks);
@@ -56,5 +56,6 @@ const getTasks = async (req, res, next) => {
 };
 
 module.exports = {
-  getTasks
+    getTasks
 };
+

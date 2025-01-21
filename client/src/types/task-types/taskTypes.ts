@@ -4,7 +4,7 @@ import { WorkItem } from '../work-item-types/workItem';
 export type Task = {
     id?: string;
     name?: string;
-    artisan?: string;
+    artisans?: any;
     activity?: string;
     measure?: string;
     artisanName?: string;
@@ -23,7 +23,7 @@ export type ProjectTask = {
     taskProjectData: {
         id?: string;
         name?: string;
-        artisan?: string;
+        artisans?: any;
         activity?: string;
         measure?: string;
         artisanName?: string;
