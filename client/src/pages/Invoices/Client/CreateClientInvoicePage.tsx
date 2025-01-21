@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { invoiceClientService } from "@/services/invoice/invoiceClientService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CreateClientInvoiceData } from "@/types/invoice/client.types";
 import { Loader2 } from "lucide-react";
 
@@ -129,8 +129,6 @@ export const CreateClientInvoicePage = () => {
       }
     }
   });
-
-  const queryClient = useQueryClient();
 
   // Add error states
   const [errors, setErrors] = useState({
