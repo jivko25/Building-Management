@@ -308,7 +308,7 @@ export const CreateClientInvoicePage = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  {errors.company_id && <span className="text-red-500">{errors.company_id}</span>}
                 </FormItem>
               )}
             />
