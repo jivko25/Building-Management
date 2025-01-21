@@ -164,7 +164,7 @@ export const CreateArtisanInvoicePage = () => {
             name="company_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("Company")}</FormLabel>
+                <FormLabel>{t("Building Company")}</FormLabel>
                 <Select onValueChange={handleCompanyChange} defaultValue={field.value.toString()}>
                   <FormControl>
                     <SelectTrigger>
