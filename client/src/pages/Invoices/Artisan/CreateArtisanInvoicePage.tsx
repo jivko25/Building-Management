@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { createArtisanInvoiceSchema } from "@/schemas/invoice/artisan.schema";
 import { Input } from "@/components/ui/input";
 import { CreateArtisanInvoiceSchema } from "@/schemas/invoice/artisan.schema";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
 export const CreateArtisanInvoicePage = () => {
@@ -96,22 +96,19 @@ export const CreateArtisanInvoicePage = () => {
 
   const { data: workItemsData, isLoading: isLoadingWorkItems } = useQuery({
     queryKey: ["workItems", selectedCompanyId, selectedArtisanId],
-    queryFn: () => artisanInvoiceService.getWorkItemsForInvoice()
+    queryFn: () => artisanInvoiceService.getWorkItemsForInvoice(selectedCompanyId, selectedArtisanId),
+    enabled: !!(selectedCompanyId || selectedArtisanId)
   });
 
-  useEffect(() => {
-    if (selectedCompanyId || selectedArtisanId) {
-      artisanInvoiceService.getWorkItemsForInvoice(selectedCompanyId, selectedArtisanId);
-    }
-  }, [selectedCompanyId, selectedArtisanId]);
-
   const handleCompanyChange = (value: string) => {
+    console.log("🏢 Company changed to:", value);
     const companyId = parseInt(value);
     setSelectedCompanyId(companyId);
     form.setValue("company_id", companyId);
   };
 
   const handleArtisanChange = (value: string) => {
+    console.log("👷 Artisan changed to:", value);
     const artisanId = parseInt(value);
     setSelectedArtisanId(artisanId);
     form.setValue("artisan_id", artisanId);
