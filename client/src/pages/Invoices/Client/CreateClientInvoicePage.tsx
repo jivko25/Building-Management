@@ -3,14 +3,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { invoiceService } from "@/services/invoiceService";
+import { invoiceClientService } from "@/services/invoice/invoiceClientService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-const createInvoiceSchema = z.object({
+import { useState } from "react";
+import { CreateClientInvoiceData } from "@/types/invoice/client.types";
+import { Loader2 } from "lucide-react";
+
+const createClientInvoiceSchema = z.object({
   company_id: z.number({
     required_error: "Please select a company"
   }),
@@ -22,9 +26,9 @@ const createInvoiceSchema = z.object({
   selected_work_items: z.array(z.number()).optional()
 });
 
-export const CreateInvoicePage = () => {
+export const CreateClientInvoicePage = () => {
   const navigate = useNavigate();
-  console.log("Rendering CreateInvoicePage");
+  console.log("Rendering CreateClientInvoicePage");
 
   const { data: companiesResponse } = useQuery({
     queryKey: ["companies"],
@@ -78,115 +82,142 @@ export const CreateInvoicePage = () => {
 
   const projects = projectsData || [];
 
-  const form = useForm<z.infer<typeof createInvoiceSchema>>({
-    resolver: zodResolver(createInvoiceSchema),
+  const form = useForm<z.infer<typeof createClientInvoiceSchema>>({
+    resolver: zodResolver(createClientInvoiceSchema),
     defaultValues: {
       company_id: 0,
       client_company_id: 0,
-      due_date_weeks: 0,
+      due_date_weeks: 2,
       selected_projects: [],
       selected_work_items: []
     }
   });
 
-  const { data: workItemsData } = useQuery({
-    queryKey: ["workItems", form.watch("selected_projects")],
+  const { data: workItemsData = [] } = useQuery({
+    queryKey: ["workItems", form.watch("company_id"), form.watch("client_company_id"), form.watch("selected_projects")],
     queryFn: async () => {
-      const selectedProjects = form.watch("selected_projects") ?? [];
-      if (selectedProjects.length === 0) return [];
+      const company_id = form.watch("company_id");
+      const client_id = form.watch("client_company_id");
+      const selected_projects = form.watch("selected_projects");
 
-      const workItemsByProject = await Promise.all(
-        selectedProjects.map(async projectId => {
-          // Първо вземаме всички задачи за проекта
-          const tasksResponse = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/tasks`, { credentials: "include" });
-          const tasksData = await tasksResponse.json();
-          console.log(`📋 Tasks for project ${projectId}:`, tasksData);
+      console.log("🔍 Fetching work items with filters:", {
+        company_id,
+        client_id,
+        selected_projects
+      });
 
-          // След това вземаме работните елементи за всяка задача
-          const workItems = await Promise.all(
-            tasksData.map(async (task: any) => {
-              const workItemsResponse = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/tasks/${task.id}/work-items?page&limit`, { credentials: "include" });
-              const workItemsData = await workItemsResponse.json();
-              return workItemsData.workItems || [];
-            })
-          );
+      try {
+        // Ако има избрани проекти, правим отделни заявки за всеки проект
+        if (selected_projects && selected_projects.length > 0) {
+          const projectPromises = selected_projects.map(project_id => invoiceClientService.getWorkItemsForInvoice(company_id || undefined, client_id || undefined, project_id));
 
-          // Обединяваме всички работни елементи
-          const allWorkItems = workItems.flat();
-          console.log(`🛠️ All work items for project ${projectId}:`, allWorkItems);
+          const projectResults = await Promise.all(projectPromises);
+          // Обединяваме резултатите
+          const combinedResults = projectResults.flat();
+          console.log("📦 Combined work items for selected projects:", combinedResults);
+          return combinedResults;
+        }
 
-          return {
-            projectId,
-            projectName: projects.find((p: any) => p.id === projectId)?.name,
-            workItems: allWorkItems
-          };
-        })
-      );
-      return workItemsByProject;
-    },
-    enabled: (form.watch("selected_projects") ?? []).length > 0
+        // Ако няма избрани проекти, взимаме всички работни елементи за компанията/клиента
+        const data = await invoiceClientService.getWorkItemsForInvoice(company_id || undefined, client_id || undefined);
+        console.log("📦 Received work items:", data);
+        return data;
+      } catch (error) {
+        console.error("❌ Error fetching work items:", error);
+        toast.error("Error fetching work items");
+        return [];
+      }
+    }
   });
 
-  const createInvoiceMutation = useMutation({
-    mutationFn: invoiceService.create,
+  // Add error states
+  const [errors, setErrors] = useState({
+    company_id: "",
+    client_company_id: "",
+    due_date_weeks: ""
+  });
+
+  // Add validation function
+  const validateForm = (data: z.infer<typeof createClientInvoiceSchema>) => {
+    const newErrors = {
+      company_id: "",
+      client_company_id: "",
+      due_date_weeks: ""
+    };
+
+    if (!data.company_id || data.company_id === 0) {
+      newErrors.company_id = "Моля, изберете строителна фирма";
+    }
+
+    if (!data.client_company_id || data.client_company_id === 0) {
+      newErrors.client_company_id = "Моля, изберете клиентска фирма";
+    }
+
+    if (!data.due_date_weeks || data.due_date_weeks < 0) {
+      newErrors.due_date_weeks = "Моля, въведете валиден срок за плащане";
+    }
+
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(error => error !== "");
+  };
+
+  const createClientInvoiceMutation = useMutation({
+    mutationFn: invoiceClientService.create,
     onSuccess: () => {
-      toast.success("Invoice created successfully");
+      toast.success("Фактурата е създадена успешно");
       navigate("/invoices");
     },
     onError: error => {
-      toast.error("Error creating invoice");
+      toast.error("Грешка при създаване на фактура");
       console.error("Error creating invoice:", error);
     }
   });
 
-  const onSubmit = async (data: z.infer<typeof createInvoiceSchema>) => {
+  const onSubmit = async (data: z.infer<typeof createClientInvoiceSchema>) => {
     try {
       console.log("Form data:", data);
 
-      // Трансформираме избраните работни елементи в правилния формат
-      const items = (data.selected_work_items ?? []).map(workItemId => {
-        const workItem = workItemsData?.flatMap(project => project.workItems).find(wi => wi.id === workItemId);
+      // Validate form
+      if (!validateForm(data)) {
+        return;
+      }
 
-        if (!workItem || !workItem.task) {
-          throw new Error("Work item not found");
-        }
+      // Събираме уникалните project_ids от избраните work items
+      const allWorkItems = workItemsData.reduce((acc: any[], group: any) => {
+        return acc.concat(group.workItems || []);
+      }, []);
 
-        return {
-          activity_id: Number(workItem.task.activity_id),
-          measure_id: Number(workItem.task.measure_id),
-          project_id: Number(workItem.task.project_id),
-          quantity: Number(workItem.task.total_work_in_selected_measure),
-          price_per_unit: Number(workItem.task.price_per_measure)
-        };
-      });
+      const selectedWorkItems = allWorkItems.filter((wi: any) => data.selected_work_items?.includes(wi.id));
 
-      const invoiceData = {
+      const uniqueProjectIds = [...new Set(selectedWorkItems.map((wi: any) => wi.project_id))];
+
+      const invoiceData: CreateClientInvoiceData = {
         company_id: Number(data.company_id),
         client_company_id: Number(data.client_company_id),
         due_date_weeks: Number(data.due_date_weeks),
-        selected_projects: data.selected_projects?.map(Number) || [],
-        selected_work_items: data.selected_work_items?.map(Number) || [],
-        items
+        project_ids: uniqueProjectIds as number[],
+        work_item_ids: data.selected_work_items || []
       };
 
-      console.log("Transformed invoice data:", invoiceData);
+      console.log("Sending invoice data:", invoiceData);
 
-      await createInvoiceMutation.mutateAsync(invoiceData);
-      toast.success("Фактурата е създадена успешно");
-      navigate("/invoices");
+      const result = await createClientInvoiceMutation.mutateAsync(invoiceData);
+      console.log("Create invoice result:", result);
+
+      if (result) {
+        toast.success("Invoice created successfully!");
+        navigate("/invoices-client");
+      }
     } catch (error) {
-      console.error("Error creating invoice:", error);
-      toast.error("Грешка при създаване на фактурата");
+      console.error("Error submitting form:", error);
+      toast.error("Възникна грешка при създаване на фактурата");
     }
   };
 
   const handleClientCompanyChange = (clientId: number) => {
     console.log("Selected client ID:", clientId);
-    const selectedClient = clients.find((client: any) => client.id === clientId);
-
-    if (selectedClient) {
-      console.log("Setting client data:", selectedClient);
-      form.setValue("client_company_id", selectedClient.id);
+    if (clientId && clientId > 0) {
+      form.setValue("client_company_id", clientId);
     }
   };
 
@@ -194,6 +225,51 @@ export const CreateInvoicePage = () => {
     console.log("Selected company ID:", company_id);
     form.setValue("company_id", company_id);
     refetchProjects();
+  };
+
+  const handleProjectChange = (projectId: number, isChecked: boolean) => {
+    const currentSelected = form.watch("selected_projects") || [];
+
+    if (isChecked) {
+      console.log("Adding project:", projectId);
+      form.setValue("selected_projects", [...currentSelected, projectId]);
+    } else {
+      console.log("Removing project:", projectId);
+      form.setValue(
+        "selected_projects",
+        currentSelected.filter((id: number) => id !== projectId)
+      );
+    }
+
+    // Изчистваме избраните работни елементи при промяна на проектите
+    form.setValue("selected_work_items", []);
+  };
+
+  const handleWorkItemChange = (workItemId: number, isChecked: boolean) => {
+    const currentSelected = form.watch("selected_work_items") || [];
+
+    if (isChecked) {
+      console.log("Adding work item:", workItemId);
+      form.setValue("selected_work_items", [...currentSelected, workItemId]);
+    } else {
+      console.log("Removing work item:", workItemId);
+      form.setValue(
+        "selected_work_items",
+        currentSelected.filter((id: number) => id !== workItemId)
+      );
+    }
+  };
+
+  // Add isFormValid function
+  const isFormValid = () => {
+    const formData = {
+      company_id: form.watch("company_id"),
+      client_company_id: form.watch("client_company_id"),
+      due_date_weeks: form.watch("due_date_weeks"),
+      selected_work_items: form.watch("selected_work_items")
+    };
+
+    return formData.company_id > 0 && formData.client_company_id > 0 && formData.due_date_weeks >= 0 && (formData.selected_work_items?.length || 0) > 0;
   };
 
   return (
@@ -232,7 +308,7 @@ export const CreateInvoicePage = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  {errors.company_id && <span className="text-red-500">{errors.company_id}</span>}
                 </FormItem>
               )}
             />
@@ -311,20 +387,7 @@ export const CreateInvoicePage = () => {
                             focus:ring-blue-500/30
                           "
                           checked={form.watch("selected_projects")?.includes(project.id)}
-                          onChange={e => {
-                            const currentSelected = form.watch("selected_projects") || [];
-                            if (e.target.checked) {
-                              console.log("Adding project:", project.id);
-                              form.setValue("selected_projects", [...currentSelected, project.id]);
-                            } else {
-                              console.log("Removing project:", project.id);
-                              form.setValue(
-                                "selected_projects",
-                                currentSelected.filter((id: number) => id !== project.id)
-                              );
-                            }
-                            console.log("Selected projects:", form.watch("selected_projects"));
-                          }}
+                          onChange={e => handleProjectChange(project.id, e.target.checked)}
                         />
                         <svg
                           className="
@@ -375,85 +438,39 @@ export const CreateInvoicePage = () => {
             <div className="mt-8">
               <h2 className="text-xl font-semibold mb-4">{t("Select Work Items")}</h2>
               <div className="space-y-6">
-                {workItemsData.map(({ projectId, projectName, workItems }) => (
-                  <div key={projectId} className="border rounded-lg p-4 bg-white shadow-sm">
-                    <h3 className="text-lg font-medium mb-3 text-gray-900">{projectName}</h3>
+                {workItemsData.map((group: any) => (
+                  <div key={group.projectId} className="border rounded-lg p-4 bg-white shadow-sm">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-lg font-medium text-gray-900">{group.projectName}</h3>
+                      <span className="text-sm text-gray-500">{group.projectLocation}</span>
+                    </div>
                     <div className="grid gap-3">
-                      {workItems.map((workItem: any) => (
-                        <div key={workItem.id} className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50 transition-colors duration-200">
+                      {group.workItems.map((workItem: any) => (
+                        <div key={workItem.id} className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50">
                           <div className="flex items-center min-w-0">
                             <div className="relative inline-flex items-center">
                               <input
                                 type="checkbox"
                                 id={`workItem-${workItem.id}`}
-                                className="
-                                  peer
-                                  appearance-none
-                                  w-5 
-                                  h-5 
-                                  border-2 
-                                  border-gray-300 
-                                  rounded-md 
-                                  bg-white
-                                  checked:bg-blue-500 
-                                  checked:border-blue-500
-                                  transition-colors 
-                                  duration-200
-                                  cursor-pointer
-                                  focus:outline-none 
-                                  focus:ring-2 
-                                  focus:ring-blue-500/30
-                                "
+                                className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-md bg-white
+                                         checked:bg-blue-500 checked:border-blue-500 transition-colors duration-200
+                                         cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                                 checked={form.watch("selected_work_items")?.includes(workItem.id)}
-                                onChange={e => {
-                                  const currentSelected = form.watch("selected_work_items") || [];
-                                  if (e.target.checked) {
-                                    console.log("Adding work item:", workItem.id);
-                                    form.setValue("selected_work_items", [...currentSelected, workItem.id]);
-                                  } else {
-                                    console.log("Removing work item:", workItem.id);
-                                    form.setValue(
-                                      "selected_work_items",
-                                      currentSelected.filter((id: number) => id !== workItem.id)
-                                    );
-                                  }
-                                  console.log("Selected work items:", form.watch("selected_work_items"));
-                                }}
+                                onChange={e => handleWorkItemChange(workItem.id, e.target.checked)}
                               />
-                              <svg
-                                className="
-                                  absolute 
-                                  w-4 
-                                  h-4 
-                                  text-white 
-                                  left-0.5 
-                                  top-0.5
-                                  pointer-events-none 
-                                  opacity-0 
-                                  peer-checked:opacity-100 
-                                  transition-opacity 
-                                  duration-200
-                                "
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth="3">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                              </svg>
+                              {/* Checkmark icon */}
                             </div>
                             <div className="ml-3">
-                              <label htmlFor={`workItem-${workItem.id}`} className="text-sm font-medium text-gray-900 cursor-pointer">
+                              <label htmlFor={`workItem-${workItem.id}`} className="text-sm font-medium text-gray-900">
                                 {workItem.name}
                               </label>
-                              <div className="text-xs text-gray-500">Status: {workItem.status === "done" ? "Done" : "In Progress"}</div>
+                              <div className="text-xs text-gray-500">
+                                {workItem.activity?.name} - {workItem.measure?.name}
+                              </div>
                             </div>
                           </div>
                           <div className="text-sm text-gray-500">
-                            {workItem.task?.price_per_measure && (
-                              <span>
-                                {t("Price")}: ${workItem.task.price_per_measure}
-                              </span>
-                            )}
+                            {workItem.quantity} {workItem.measure?.name}
                           </div>
                         </div>
                       ))}
@@ -464,10 +481,17 @@ export const CreateInvoicePage = () => {
             </div>
           )}
 
-          <div className="flex justify-end gap-4">
-            <Button type="submit" disabled={createInvoiceMutation.isPending}>
-              {createInvoiceMutation.isPending ? "Creating..." : "Create invoice"}
-            </Button>
+          <div className="flex justify-end mt-4">
+            <button type="submit" disabled={!isFormValid() || createClientInvoiceMutation.isPending} className={`px-4 py-2 rounded-md text-white flex items-center gap-2 ${isFormValid() && !createClientInvoiceMutation.isPending ? "bg-indigo-600 hover:bg-indigo-700" : "bg-gray-400 cursor-not-allowed"}`}>
+              {createClientInvoiceMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("Creating...")}
+                </>
+              ) : (
+                t("Create invoice")
+              )}
+            </button>
           </div>
         </form>
       </Form>

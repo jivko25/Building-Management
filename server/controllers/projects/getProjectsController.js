@@ -1,20 +1,72 @@
 //server\controllers\projects\getProjectsController.js
 const db = require("../../data/index.js");
-const { Project, Artisan, TasksArtisan } = db;
+const { Project, Artisan, TasksArtisan, Client } = db;
 const { Op } = require("sequelize");
 
 const getProjects = async (req, res, next) => {
-  let whereClause = {};
-  const isAdmin = req.user.role === "admin";
+  try {
+    let whereClause = {};
+    const isAdmin = req.user.role === "admin";
+    if (isAdmin) {
+      const projects = await Project.findAll({
+        include: [
+          {
+            model: Client,
+            as: "client",
+            attributes: ["client_company_name"]
+          }
+        ],
+        attributes: ["id", "name", "company_id", "company_name", "email", "address", "location", "start_date", "end_date", "note", "status", "creator_id", "client_id"]
+      });
 
-  if (isAdmin) {
-    const projects = await Project.findAll();
+      const formattedProjects = projects.map(project => ({
+        ...project.toJSON(),
+        client_company_name: project.client?.client_company_name
+      }));
 
+      return res.json(formattedProjects);
+    }
     if (projects.length === 0) {
-      return res.json([]);
+      throw new ApiError(404, "No projects found for current user");
     }
 
-    return res.json(projects);
+    if (req.query.search) {
+      whereClause = {
+        ...whereClause,
+        [Op.or]: [{ name: { [Op.like]: `%${req.query.search}%` } }, { company_name: { [Op.like]: `%${req.query.search}%` } }]
+      };
+    }
+
+    whereClause.creator_id = req.user.id;
+
+    const projects = await Project.findAll({
+      include: [
+        {
+          model: Client,
+          as: "client",
+          attributes: ["client_company_name"]
+        }
+      ],
+      attributes: ["id", "name", "company_id", "company_name", "email", "address", "location", "start_date", "end_date", "note", "status", "creator_id", "client_id"],
+      where: whereClause,
+      order: [["id", "DESC"]]
+    });
+
+    const formattedProjects = projects.map(project => ({
+      ...project.toJSON(),
+      client_company_name: project.client?.client_company_name
+    }));
+
+    if (formattedProjects.length === 0) {
+      throw new ApiError(404, "No projects found for current user");
+    }
+    res.json(formattedProjects);
+  } catch (error) {
+    if (error instanceof ApiError) {
+      next(error);
+    } else {
+      next(new ApiError(500, "Internal server Error!"));
+    }
   }
 
   if (req.user.role === "user") {

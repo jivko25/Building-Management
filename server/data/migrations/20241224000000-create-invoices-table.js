@@ -32,9 +32,9 @@ module.exports = {
       },
       client_company_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
-          model: "tbl_companies",
+          model: "tbl_clients",
           key: "id"
         }
       },
@@ -57,6 +57,27 @@ module.exports = {
       status: {
         type: Sequelize.ENUM("active", "cancelled"),
         defaultValue: "active"
+      },
+      is_artisan_invoice: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      artisan_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_artisans",
+          key: "id"
+        }
+      },
+      client_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_clients",
+          key: "id"
+        }
       },
       created_at: {
         type: Sequelize.DATE,
