@@ -50,13 +50,13 @@ module.exports = {
       },
       creator_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "tbl_users",
           key: "id"
         },
         onUpdate: "CASCADE",
-        onDelete: "CASCADE"
+        onDelete: "SET NULL"
       },
       artisan_price: {
         type: Sequelize.FLOAT,
