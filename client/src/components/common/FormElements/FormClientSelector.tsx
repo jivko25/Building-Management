@@ -1,0 +1,48 @@
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { useFormContext } from "react-hook-form";
+import { fetchClients } from "@/api/apiCall";
+
+type FormClientSelectorProps = {
+  label: string;
+  name: string;
+};
+
+const FormClientSelector = ({ label, name }: FormClientSelectorProps) => {
+  const { control } = useFormContext();
+
+  const { data: clients } = useQuery({
+    queryKey: ["clients"],
+    queryFn: () => fetchClients()
+  });
+
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <Select onValueChange={value => field.onChange(Number(value))} defaultValue={field.value?.toString()}>
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Select client company name" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {clients?.map(client => (
+                <SelectItem key={client.id} value={client.id?.toString() || ""}>
+                  {client.client_company_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+};
+
+export default FormClientSelector;

@@ -10,4 +10,5 @@ export type Project = {
   address: string;
   location: string;
   status: "active" | "inactive";
+  client_id: number;
 };
