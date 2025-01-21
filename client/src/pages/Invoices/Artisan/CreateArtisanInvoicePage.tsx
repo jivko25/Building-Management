@@ -11,6 +11,8 @@ import { useTranslation } from "react-i18next";
 import { createArtisanInvoiceSchema } from "@/schemas/invoice/artisan.schema";
 import { Input } from "@/components/ui/input";
 import { CreateArtisanInvoiceSchema } from "@/schemas/invoice/artisan.schema";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 
 export const CreateArtisanInvoicePage = () => {
   const navigate = useNavigate();
@@ -52,7 +54,8 @@ export const CreateArtisanInvoicePage = () => {
       company_id: 0,
       artisan_id: 0,
       due_date_weeks: 2,
-      selected_work_items: [],
+      project_ids: [],
+      work_item_ids: [],
       items: []
     }
   });
@@ -72,11 +75,46 @@ export const CreateArtisanInvoicePage = () => {
 
   const onSubmit = (data: CreateArtisanInvoiceSchema) => {
     console.log("📝 Form submitted with data:", data);
+
+    // Извличаме уникалните project_ids от избраните работни елементи
+    const selectedWorkItems = workItemsData?.flatMap((artisanData: any) => artisanData.projects.flatMap((project: any) => project.workItems.filter((item: any) => data.work_item_ids?.includes(item.id)))) || [];
+
+    const uniqueProjectIds = [...new Set(selectedWorkItems.map((item: any) => item.project_id))];
+
     createInvoiceMutation.mutate({
-      ...data,
-      selected_work_items: data.selected_work_items || [],
-      items: data.items || []
+      company_id: data.company_id,
+      artisan_id: data.artisan_id,
+      due_date_weeks: data.due_date_weeks,
+      project_ids: uniqueProjectIds as number[],
+      work_item_ids: data.work_item_ids || [],
+      items: [] // Ако е нужно, можете да добавите items тук
     });
+  };
+
+  const [selectedCompanyId, setSelectedCompanyId] = useState<number>(0);
+  const [selectedArtisanId, setSelectedArtisanId] = useState<number>(0);
+
+  const { data: workItemsData, isLoading: isLoadingWorkItems } = useQuery({
+    queryKey: ["workItems", selectedCompanyId, selectedArtisanId],
+    queryFn: () => artisanInvoiceService.getWorkItemsForInvoice()
+  });
+
+  useEffect(() => {
+    if (selectedCompanyId || selectedArtisanId) {
+      artisanInvoiceService.getWorkItemsForInvoice(selectedCompanyId, selectedArtisanId);
+    }
+  }, [selectedCompanyId, selectedArtisanId]);
+
+  const handleCompanyChange = (value: string) => {
+    const companyId = parseInt(value);
+    setSelectedCompanyId(companyId);
+    form.setValue("company_id", companyId);
+  };
+
+  const handleArtisanChange = (value: string) => {
+    const artisanId = parseInt(value);
+    setSelectedArtisanId(artisanId);
+    form.setValue("artisan_id", artisanId);
   };
 
   return (
@@ -93,7 +131,7 @@ export const CreateArtisanInvoicePage = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("Company")}</FormLabel>
-                <Select onValueChange={value => field.onChange(parseInt(value))} defaultValue={field.value.toString()}>
+                <Select onValueChange={handleCompanyChange} defaultValue={field.value.toString()}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder={t("Select company")} />
@@ -118,7 +156,7 @@ export const CreateArtisanInvoicePage = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("Artisan")}</FormLabel>
-                <Select onValueChange={value => field.onChange(parseInt(value))} defaultValue={field.value.toString()}>
+                <Select onValueChange={handleArtisanChange} defaultValue={field.value.toString()}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder={t("Select artisan")} />
@@ -137,6 +175,64 @@ export const CreateArtisanInvoicePage = () => {
             )}
           />
 
+          {/* Work Items Section */}
+          {isLoadingWorkItems ? (
+            <div className="flex justify-center">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </div>
+          ) : workItemsData?.length > 0 ? (
+            <div className="border rounded-lg p-4">
+              <h2 className="text-lg font-semibold mb-4">{t("Work Items")}</h2>
+              {workItemsData.map((artisanData: any) => (
+                <div key={artisanData.artisanId} className="mb-6">
+                  <h3 className="font-medium mb-2">{artisanData.artisanName}</h3>
+                  {artisanData.projects.map((project: any) => (
+                    <div key={project.projectId} className="ml-4 mb-4">
+                      <h4 className="text-sm font-medium mb-2">
+                        {project.projectName} - {project.projectLocation}
+                      </h4>
+                      <div className="space-y-2">
+                        {project.workItems.map((workItem: any) => (
+                          <div key={workItem.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div className="flex items-center">
+                              <input
+                                type="checkbox"
+                                id={`workItem-${workItem.id}`}
+                                value={workItem.id}
+                                onChange={e => {
+                                  const workItemId = parseInt(e.target.value);
+                                  const currentItems = form.getValues("work_item_ids") || [];
+                                  if (e.target.checked) {
+                                    form.setValue("work_item_ids", [...currentItems, workItemId]);
+                                  } else {
+                                    form.setValue(
+                                      "work_item_ids",
+                                      currentItems.filter(id => id !== workItemId)
+                                    );
+                                  }
+                                }}
+                                className="mr-2"
+                              />
+                              <div>
+                                <div className="text-sm font-medium">{workItem.name}</div>
+                                <div className="text-xs text-gray-500">
+                                  {workItem.activity?.name} - {workItem.measure?.name}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {workItem.quantity} {workItem.measure?.name}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ) : null}
+
           <FormField
             control={form.control}
             name="due_date_weeks"
@@ -153,7 +249,14 @@ export const CreateArtisanInvoicePage = () => {
 
           <div className="flex justify-end gap-4">
             <Button type="submit" disabled={createInvoiceMutation.isPending}>
-              {createInvoiceMutation.isPending ? t("Creating...") : t("Create invoice")}
+              {createInvoiceMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  {t("Creating...")}
+                </>
+              ) : (
+                t("Create invoice")
+              )}
             </Button>
           </div>
         </form>

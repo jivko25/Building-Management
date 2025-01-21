@@ -64,5 +64,34 @@ export const artisanInvoiceService = {
     await axios.delete(`${API_URL}/invoices-artisan/${id}`, {
       withCredentials: true
     });
+  },
+
+  getWorkItemsForInvoice: async (company_id?: number, artisan_id?: number) => {
+    try {
+      console.log("🔍 Fetching work items for artisan invoice with filters:", { company_id, artisan_id });
+
+      let url = `${API_URL}/invoices-artisan/work-items`;
+      const params = new URLSearchParams();
+
+      if (company_id) params.append("company_id", company_id.toString());
+      if (artisan_id) params.append("artisan_id", artisan_id.toString());
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      const response = await axios.get(url, { withCredentials: true });
+      console.log("📦 Work items response:", response.data);
+
+      if (!response.data.data) {
+        console.warn("⚠️ No work items found");
+        return [];
+      }
+
+      return response.data.data;
+    } catch (error) {
+      console.error("❌ Error fetching work items:", error);
+      throw error;
+    }
   }
 };

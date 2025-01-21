@@ -31,8 +31,9 @@ export interface CreateArtisanInvoiceData {
   company_id: number;
   artisan_id: number;
   due_date_weeks: number;
-  selected_work_items: number[];
-  items: {
+  project_ids: number[];
+  work_item_ids: number[];
+  items?: {
     activity_id: number;
     measure_id: number;
     quantity: number;
