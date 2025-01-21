@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { bg } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
-import { InvoiceArtisanDetailsPage } from "./InvoiceArtisanDetailsPage";
 
 export const UpdateArtisanInvoicePage = () => {
   const { id } = useParams();
