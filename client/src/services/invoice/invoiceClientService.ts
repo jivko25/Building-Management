@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Invoice } from "@/types/invoice.types";
 import { ClientInvoice } from "@/types/invoice/client.types";
 import { CreateClientInvoiceData } from "@/types/invoice/client.types";
 
