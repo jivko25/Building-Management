@@ -175,6 +175,20 @@ export const CreateArtisanInvoicePage = () => {
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="due_date_weeks"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("Due Date (weeks)")}</FormLabel>
+                <FormControl>
+                  <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {/* Work Items Section */}
           {isLoadingWorkItems ? (
             <div className="flex justify-center">
@@ -232,20 +246,6 @@ export const CreateArtisanInvoicePage = () => {
               ))}
             </div>
           ) : null}
-
-          <FormField
-            control={form.control}
-            name="due_date_weeks"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("Due Date (weeks)")}</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
           <div className="flex justify-end gap-4">
             <Button type="submit" disabled={createInvoiceMutation.isPending}>
