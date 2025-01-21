@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       client_id: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
       },
       invoice_date: {
         type: DataTypes.DATE,
@@ -43,13 +43,24 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+      },
+      is_artisan_invoice: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      artisan_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_artisans",
+          key: "id"
+        }
       }
     },
     {
       tableName: "tbl_invoices",
-      timestamps: true,
-      createdAt: "created_at",
-      updatedAt: "updated_at"
+      underscored: true
     }
   );
 
@@ -60,13 +71,18 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Invoice.belongsTo(models.Client, {
-      foreignKey: "client_id",
+      foreignKey: "client_company_id",
       as: "client"
     });
 
     Invoice.hasMany(models.InvoiceItem, {
       foreignKey: "invoice_id",
       as: "items"
+    });
+
+    Invoice.belongsTo(models.Artisan, {
+      foreignKey: "artisan_id",
+      as: "artisan"
     });
   };
 

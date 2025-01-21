@@ -1,10 +1,15 @@
+// client\src\router\index.tsx
 import { createBrowserRouter } from "react-router-dom";
 import { Layout } from "@/layouts/Layout";
-import { InvoicesPage } from "@/pages/Invoices/InvoicesPage";
-import { CreateInvoicePage } from "@/pages/Invoices/CreateInvoicePage";
-import { InvoiceDetailsPage } from "@/pages/Invoices/InvoiceDetailsPage";
-import { UpdateInvoicePage } from "@/pages/Invoices/UpdateInvoicePage";
+import { InvoicesClientPage } from "@/pages/Invoices/Client/InvoicesClientPage";
+import { CreateClientInvoicePage } from "@/pages/Invoices/Client/CreateClientInvoicePage";
+import { InvoiceClientDetailsPage } from "@/pages/Invoices/Client/InvoiceClientDetailsPage";
+import { UpdateClientInvoicePage } from "@/pages/Invoices/Client/UpdateClientInvoicePage";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { InvoicesArtisanPage } from "@/pages/Invoices/Artisan/InvoicesArtisanPage";
+import { CreateArtisanInvoicePage } from "@/pages/Invoices/Artisan/CreateArtisanInvoicePage";
+import { InvoiceArtisanDetailsPage } from "@/pages/Invoices/Artisan/InvoiceArtisanDetailsPage";
+import { UpdateArtisanInvoicePage } from "@/pages/Invoices/Artisan/UpdateArtisanInvoicePage";
 
 export const router = createBrowserRouter([
   {
@@ -13,26 +18,51 @@ export const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     children: [
       {
-        path: "invoices",
+        path: "invoices-client",
         children: [
           {
             path: "",
-            element: <InvoicesPage />,
+            element: <InvoicesClientPage />,
             errorElement: <ErrorBoundary />
           },
           {
             path: "create",
-            element: <CreateInvoicePage />,
+            element: <CreateClientInvoicePage />,
             errorElement: <ErrorBoundary />
           },
           {
             path: ":id",
-            element: <InvoiceDetailsPage />,
+            element: <InvoiceClientDetailsPage />,
             errorElement: <ErrorBoundary />
           },
           {
             path: ":id/edit",
-            element: <UpdateInvoicePage />,
+            element: <UpdateClientInvoicePage />,
+            errorElement: <ErrorBoundary />
+          }
+        ]
+      },
+      {
+        path: "invoices-artisan",
+        children: [
+          {
+            path: "",
+            element: <InvoicesArtisanPage />,
+            errorElement: <ErrorBoundary />
+          },
+          {
+            path: "create",
+            element: <CreateArtisanInvoicePage />,
+            errorElement: <ErrorBoundary />
+          },
+          {
+            path: ":id",
+            element: <InvoiceArtisanDetailsPage />,
+            errorElement: <ErrorBoundary />
+          },
+          {
+            path: ":id/edit",
+            element: <UpdateArtisanInvoicePage />,
             errorElement: <ErrorBoundary />
           }
         ]

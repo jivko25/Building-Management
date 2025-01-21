@@ -1,5 +1,6 @@
+// client\src\pages\Invoices\Client\InvoicesClientPage.tsx
 import { useQuery } from "@tanstack/react-query";
-import { invoiceService } from "@/services/invoiceService";
+import { invoiceClientService } from "@/services/invoice/invoiceClientService";
 import { DataTable, DataTableFilterMeta, DataTableFilterMetaData } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "@/components/ui/button";
@@ -15,8 +16,9 @@ import { InputText } from "primereact/inputtext";
 import { IconField } from "primereact/iconfield";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { useTranslation } from "react-i18next";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export const InvoicesPage = () => {
+export const InvoicesClientPage = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -26,11 +28,23 @@ export const InvoicesPage = () => {
   });
 
   const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
+  const { t } = useTranslation();
+  const [invoiceType, setInvoiceType] = useState("client");
+
+  const handleTabChange = (value: string) => {
+    console.log("Tab changed to:", value);
+    setInvoiceType(value);
+    if (value === "client") {
+      navigate("/invoices-client");
+    } else {
+      navigate("/invoices-artisan");
+    }
+  };
 
   const { data: invoices, isLoading } = useQuery<Invoice[]>({
     queryKey: ["invoices"],
     queryFn: async () => {
-      const response = await invoiceService.getAll();
+      const response = await invoiceClientService.getAll();
       console.log("📄 Processed invoices:", response);
       return response;
     },
@@ -54,9 +68,9 @@ export const InvoicesPage = () => {
             <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={t("search...")} className="search-input" />
           </IconField>
         </div>
-        <Button onClick={() => navigate("/invoices/create")}>
+        <Button onClick={() => navigate(`/invoices-${invoiceType}/create`)}>
           <Plus className="mr-2 h-4 w-4" />
-          {t("New Invoice")}
+          {t("New invoice")}
         </Button>
       </div>
     );
@@ -86,10 +100,10 @@ export const InvoicesPage = () => {
 
   const amountTemplate = (rowData: Invoice) => {
     try {
-      return `${Math.round(parseFloat(rowData.total_amount))} лв.`;
+      return `${Math.round(parseFloat(rowData.total_amount))}€.`;
     } catch (error) {
       console.error("Error formatting amount:", error, rowData);
-      return "0 лв.";
+      return "0€.";
     }
   };
 
@@ -109,14 +123,12 @@ export const InvoicesPage = () => {
   const actionTemplate = (rowData: Invoice) => {
     return (
       <div className="flex gap-2">
-        <Button variant="outline" size="sm" onClick={() => navigate(`/invoices/${rowData.id}`)}>
+        <Button variant="outline" size="sm" onClick={() => navigate(`/invoices-client/${rowData.id}`)}>
           {t("Details")}
         </Button>
       </div>
     );
   };
-
-  const { t } = useTranslation();
 
   return (
     <div className="flex md:gap-60 min-h-screen">
@@ -124,7 +136,21 @@ export const InvoicesPage = () => {
 
       <div className="flex-1">
         <div className="container mx-auto py-10">
-          <h1 className="text-3xl font-bold mb-6">{t("invoices")}</h1>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-4">
+              <h1 className="text-3xl font-bold">{t("Invoices")}</h1>
+              <Tabs defaultValue="client" onValueChange={handleTabChange}>
+                <TabsList>
+                  <TabsTrigger value="client">{t("Clients")}</TabsTrigger>
+                  <TabsTrigger value="artisan">{t("Artisans")}</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+            {/* <Button onClick={() => navigate(`/invoices-${invoiceType}/create`)}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t("New invoice")}
+            </Button> */}
+          </div>
 
           <DataTable value={invoices} paginator rows={10} rowsPerPageOptions={[10, 20, 50]} filters={filters} globalFilterFields={["invoice_number", "client.client_name", "total_amount"]} header={renderHeader} emptyMessage="No invoices found" loading={isLoading} stripedRows showGridlines dataKey="id" sortMode="single" removableSort tableStyle={{ minWidth: "50rem" }} scrollable>
             <Column field="invoice_number" header={t("Number")} sortable filter filterPlaceholder={t("Search by number")} style={{ width: "15%" }} />

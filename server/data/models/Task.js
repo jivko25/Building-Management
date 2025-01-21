@@ -36,10 +36,6 @@ module.exports = (sequelize, DataTypes) => {
           key: "id"
         }
       },
-      price_per_measure: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: true
-      },
       total_price: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: true

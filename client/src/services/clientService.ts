@@ -1,3 +1,4 @@
+// client\src\services\clientService.ts
 import apiClient from "@/api/axiosConfig";
 import { Client } from "@/types/client-types/clientTypes";
 

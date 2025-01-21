@@ -37,7 +37,6 @@ const editDefaultPricing = async (req, res, next) => {
     if (!isProject) {
       throw new ApiError(404, "Project not found!");
     }
-
     const defaultPricing = await DefaultPricing.findByPk(defaultPricingId);
     if (!defaultPricing) {
       throw new ApiError(404, "Default pricing not found!");

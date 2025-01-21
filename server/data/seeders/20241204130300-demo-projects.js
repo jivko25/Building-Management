@@ -20,6 +20,7 @@ module.exports = {
           end_date: null,
           note: "Важен проект",
           status: "active",
+          client_id: 1,
           creator_id: 1
         },
         {
@@ -34,6 +35,7 @@ module.exports = {
           end_date: null,
           note: "Малък проект",
           status: "inactive",
+          client_id: 1,
           creator_id: 1
         },
         {
@@ -48,6 +50,7 @@ module.exports = {
           end_date: null,
           note: "Важен проект",
           status: "active",
+          client_id: 2,
           creator_id: 1
         },
         {
@@ -62,6 +65,7 @@ module.exports = {
           end_date: null,
           note: "Малък проект",
           status: "inactive",
+          client_id: 2,
           creator_id: 1
         },
         {
@@ -76,6 +80,7 @@ module.exports = {
           end_date: null,
           note: "Малък проект",
           status: "inactive",
+          client_id: 3,
           creator_id: 1
         },
         {
@@ -90,6 +95,7 @@ module.exports = {
           end_date: null,
           note: "Малък проект",
           status: "inactive",
+          client_id: 3,
           creator_id: 1
         },
         {
@@ -104,6 +110,7 @@ module.exports = {
           end_date: null,
           note: "Малък проект",
           status: "inactive",
+          client_id: 4,
           creator_id: 1
         },
         {
@@ -118,6 +125,7 @@ module.exports = {
           end_date: null,
           note: "Малък проект",
           status: "inactive",
+          client_id: 4,
           creator_id: 1
         },
         {
@@ -132,6 +140,7 @@ module.exports = {
           end_date: null,
           note: "Малък проект",
           status: "inactive",
+          client_id: 5,
           creator_id: 1
         },
         {
@@ -146,6 +155,7 @@ module.exports = {
           end_date: null,
           note: "Малък проект",
           status: "inactive",
+          client_id: 5,
           creator_id: 1
         },
         {
@@ -160,6 +170,7 @@ module.exports = {
           end_date: null,
           note: "Малък проект",
           status: "inactive",
+          client_id: 5,
           creator_id: 1
         },
         {
@@ -174,6 +185,7 @@ module.exports = {
           end_date: null,
           note: "Малък проект",
           status: "inactive",
+          client_id: 3,
           creator_id: 1
         },
         {
@@ -188,6 +200,7 @@ module.exports = {
           end_date: null,
           note: "Малък проект",
           status: "inactive",
+          client_id: 2,
           creator_id: 1
         }
       ],

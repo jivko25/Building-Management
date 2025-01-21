@@ -6,6 +6,7 @@ const { Op } = Sequelize;
 
 const getPaginatedArtisans = async (req, res, next) => {
   try {
+    console.log("Getting paginated artisans for user:", req.user.id);
     const { _page = 1, _limit = 10, q = "" } = req.query;
     const offset = (parseInt(_page) - 1) * parseInt(_limit);
     const isAdmin = req.user.role === "admin";
@@ -22,13 +23,13 @@ const getPaginatedArtisans = async (req, res, next) => {
 
     const whereClause = q
       ? {
-        name: {
-          [Op.like]: `%${q}%`
-        },
-      }
+          name: {
+            [Op.like]: `%${q}%`
+          }
+        }
       : {};
 
-    const rows = await Artisan.findAll({
+    const { count, rows } = await Artisan.findAndCountAll({
       where: {
         ...whereClause,
         ...(isAdmin ? {} : { creator_id: req.user.id })
@@ -47,30 +48,27 @@ const getPaginatedArtisans = async (req, res, next) => {
       order: [["id", "DESC"]]
     });
 
-    // const artisans = rows.filter((artisan) => {
-    //   if (isAdmin) {
-    //     return true;
-    //   }
-    //   return artisan.user_id === req.user.id;
-    // });
-
+    console.log(`Found ${count} artisans for user`);
     res.json({
       artisans: rows,
-      artisansCount: rows.length,
+      artisansCount: count,
       page: parseInt(_page),
       limit: parseInt(_limit),
-      totalPages: Math.ceil(rows.length / parseInt(_limit))
+      totalPages: Math.ceil(count / parseInt(_limit))
     });
   } catch (error) {
+    console.error("Error in getPaginatedArtisans:", error);
     if (error instanceof ApiError) {
       next(error);
+    } else {
+      next(new ApiError(500, "Internal server Error!"));
     }
-    next(new ApiError(500, "Internal server Error!"));
   }
 };
 
 const getArtisans = async (req, res, next) => {
   try {
+    console.log("Getting all artisans for user:", req.user.id);
     const isAdmin = req.user.role === "admin";
 
     const users = await User.findAll({
@@ -82,7 +80,6 @@ const getArtisans = async (req, res, next) => {
     if (users.length === 0) {
       throw new ApiError(404, "You are not authorized to access this resource");
     }
-
 
     let artisans;
     if (!isAdmin) {
@@ -121,12 +118,15 @@ const getArtisans = async (req, res, next) => {
       });
     }
 
+    console.log(`Found ${artisans.length} total artisans`);
     res.json(artisans);
   } catch (error) {
+    console.error("Error in getArtisans:", error);
     if (error instanceof ApiError) {
       next(error);
+    } else {
+      next(new ApiError(500, "Internal server Error!"));
     }
-    next(new ApiError(500, "Internal server Error!"));
   }
 };
 
