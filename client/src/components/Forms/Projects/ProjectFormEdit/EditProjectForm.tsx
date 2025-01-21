@@ -15,6 +15,7 @@ import { findItemById } from "@/utils/helpers/findItemById";
 import { PaginatedDataResponse } from "@/types/query-data-types/paginatedDataTypes";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
+import FormClientSelector from "@/components/common/FormElements/FormClientSelector";
 
 type EditProjectFormProps = {
   handleSubmit: (projectData: ProjectSchema) => void;
@@ -46,6 +47,10 @@ const EditProjectForm = ({ handleSubmit, isPending, projectId }: EditProjectForm
         <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2 mb-4">
           <StatusSelector label={t("Status")} name="status" defaultVal={project && project.status} />
           <CompanySelector label={t("Select company")} name="company_name" defaultVal={project && project.company_name} />
+        </div>
+        <Separator className="mt-4 mb-2" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <FormClientSelector label={t("Select client")} name="client_id" defaultVal={project && project.client_id?.toString()} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1.5">
