@@ -14,6 +14,7 @@ import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import ArtisansCard from "./ArtisansCard";
 import ArtisansHeader from "./ArtisansHeader";
 import { useTranslation } from "react-i18next";
+import Breadcrumb from "@/components/common/Breadcrumbs/Breadcrumb";
 interface ArtisanResponse {
   artisans: Artisan[];
   artisansCount: number;
@@ -54,7 +55,17 @@ const ArtisansTableBody = () => {
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <SearchBar handleSearch={handleSearch} placeholder={t("Search artisans...")} search={search} />
+        <div className="flex flex-col gap-5">
+          <Breadcrumb
+            items={[
+              {
+                label: "Artisans",
+                href: "/artisans"
+              }
+            ]}
+          />
+          <SearchBar handleSearch={handleSearch} placeholder={t("Search artisans...")} search={search} />
+        </div>
         <CreateArtisan />
       </div>
       <Table className="w-full min-w-full">

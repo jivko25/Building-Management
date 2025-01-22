@@ -31,6 +31,7 @@ import { CreateArtisanInvoicePage } from "./pages/Invoices/Artisan/CreateArtisan
 import { InvoiceArtisanDetailsPage } from "./pages/Invoices/Artisan/InvoiceArtisanDetailsPage";
 import { UpdateArtisanInvoicePage } from "./pages/Invoices/Artisan/UpdateArtisanInvoicePage";
 import { useTranslation } from "react-i18next";
+import ArtisansDetailsPage from "./pages/ArtisansDetailsPage";
 
 
 const AppRoutes = () => {
@@ -74,6 +75,16 @@ console.log("Current translations:", t("settings"));
           element={
             <TableLayout>
               <ArtisansTablePage />
+            </TableLayout>
+          }
+        />
+      </Route>
+      <Route element={<ManagerGuard />}>
+        <Route
+          path="/artisans/:id"
+          element={
+            <TableLayout>
+              <ArtisansDetailsPage />
             </TableLayout>
           }
         />

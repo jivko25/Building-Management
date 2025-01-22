@@ -20,7 +20,8 @@ const createWorkItem = async (req, res, next) => {
       end_date,
       note,
       finished_work,
-      status
+      status,
+      creator_id: req.user.id
     });
 
     res.status(201).json({
