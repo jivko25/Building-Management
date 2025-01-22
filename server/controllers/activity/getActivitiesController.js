@@ -48,14 +48,10 @@ const getPaginatedActivities = async (req, res, next) => {
     const offset = (parseInt(_page) - 1) * parseInt(_limit);
     const isAdmin = req.user.role === "admin";
 
-    const tasks = await getTasks(req.user.id, isAdmin);
     const whereClause = {
       ...(q && { name: { [Op.like]: `%${q}%` } }),
-      ...(!isAdmin && {
-        id: {
-          [Op.in]: tasks.map(task => task.activity_id)
-        }
-      })
+      creator_id: req.user.id
+      ,
     };
 
     const { count: total, rows: data } = await Activity.findAndCountAll({

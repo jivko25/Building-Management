@@ -37,38 +37,13 @@ const getPaginatedCompanies = async (req, res, next) => {
       });
     }
 
-    // For non-admin users
-    const projects = await Project.findAll({
-      where: {
-        creator_id: req.user.id
-      }
-    });
-
-    if (projects.length === 0) {
-      console.log("No projects found for user");
-      return res.json({
-        companies: [],
-        companiesCount: 0,
-        page: parseInt(_page),
-        limit: parseInt(_limit),
-        totalPages: 0
-      });
-    }
-
     const whereClause = q
       ? {
-          id: {
-            [Op.in]: projects.map(project => project.company_id)
-          },
           name: {
             [Op.like]: `%${q}%`
           }
         }
-      : {
-          id: {
-            [Op.in]: projects.map(project => project.company_id)
-          }
-        };
+      : {};
 
     const { count, rows } = await Company.findAndCountAll({
       where: whereClause,

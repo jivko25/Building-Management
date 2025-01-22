@@ -8,8 +8,8 @@ module.exports = {
     await queryInterface.bulkInsert(
       "tbl_measures",
       [
-        { id: 1, name: "Квадратен метър" },
-        { id: 2, name: "Линеен метър" }
+        { id: 1, name: "Квадратен метър", creator_id: 2 },
+        { id: 2, name: "Линеен метър", creator_id: 2 }
       ],
       {}
     );

@@ -12,6 +12,16 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      creator_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_users",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL"
       }
     });
   },

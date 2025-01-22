@@ -19,44 +19,8 @@ const getMeasures = async (req, res, next) => {
       });
     }
 
-    // For non-admin users, get measures based on their projects and tasks
-    const projects = await Project.findAll({
-      where: {
-        creator_id: req.user.id
-      }
-    });
-
-    if (projects.length === 0) {
-      console.log("No projects found for user:", req.user.id);
-      return res.json({
-        success: true,
-        data: []
-      });
-    }
-
-    const tasks = await Task.findAll({
-      where: {
-        project_id: {
-          [Op.in]: projects.map(project => project.id)
-        }
-      }
-    });
-
-    if (tasks.length === 0) {
-      console.log("No tasks found for user projects");
-      return res.json({
-        success: true,
-        data: []
-      });
-    }
-
-    const measureIds = tasks.map(task => task.measure_id);
     const measures = await Measure.findAll({
-      where: {
-        id: {
-          [Op.in]: measureIds
-        }
-      },
+      creator_id: req.user.id,
       order: [["name", "ASC"]]
     });
 

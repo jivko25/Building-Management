@@ -28,9 +28,7 @@ const getTasks = async (req, res, next) => {
         id: req.params.id
       }
     });
-    if (projects.length === 0) {
-      throw new ApiError(404, "No projects found for current user");
-    }
+
     const tasks = await Task.findAll({
         where: { project_id: req.params.id },
         include: [
