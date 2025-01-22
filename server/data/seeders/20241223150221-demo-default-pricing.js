@@ -11,8 +11,8 @@ module.exports = {
           project_id: 1,
           manager_price: 100.0,
           artisan_price: 50.0,
-          creator_id: 1,
-          artisan_id: 1
+          creator_id: 2,
+          artisan_id: null
         },
         {
           id: 2,
@@ -21,8 +21,8 @@ module.exports = {
           project_id: 1,
           manager_price: 150.0,
           artisan_price: 75.0,
-          creator_id: 1,
-          artisan_id: 1
+          creator_id: 2,
+          artisan_id: null
         },
         {
           id: 3,
@@ -41,7 +41,7 @@ module.exports = {
           project_id: 1,
           manager_price: 250.0,
           artisan_price: 125.0,
-          creator_id: 1,
+          creator_id: 2,
           artisan_id: 1
         },
         {
@@ -51,7 +51,7 @@ module.exports = {
           project_id: 1,
           manager_price: 300.0,
           artisan_price: 150.0,
-          creator_id: 1,
+          creator_id: 2,
           artisan_id: 2
         },
         {
@@ -61,7 +61,7 @@ module.exports = {
           project_id: 1,
           manager_price: 350.0,
           artisan_price: 175.0,
-          creator_id: 1,
+          creator_id: 2,
           artisan_id: 2
         },
         {
@@ -71,7 +71,7 @@ module.exports = {
           project_id: 1,
           manager_price: 220.0,
           artisan_price: 110.0,
-          creator_id: 1,
+          creator_id: 2,
           artisan_id: 2
         },
         {
@@ -81,7 +81,7 @@ module.exports = {
           project_id: 1,
           manager_price: 280.0,
           artisan_price: 140.0,
-          creator_id: 1,
+          creator_id: 2,
           artisan_id: 2
         }
       ],
