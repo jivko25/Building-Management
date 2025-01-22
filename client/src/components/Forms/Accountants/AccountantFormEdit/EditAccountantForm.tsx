@@ -58,14 +58,11 @@ const EditAccountantForm = ({ accountantId, handleSubmit, isPending }: EditAccou
   return (
 
     <FormProvider {...form}>
-      <form id="form-edit" onSubmit={form.handleSubmit(handleSubmit)}>
-        <div> aaaaaaaaaaaa {JSON.stringify(accountant)}</div>
-
-        <div className="grid grid-cols-1 gap-2 mb-2">
-          <FormFieldInput type="text" label={t("Accountant name")} name="name" className="pl-10" Icon={User} />
-          <FormFieldInput type="text" label={t("Accountant phone")} name="number" className="pl-10" Icon={Phone} />
-          <FormFieldInput type="text" label={t("Accountant email")} name="email" className="pl-10" Icon={Mail} />
-        </div>
+      <form id="form-edit" onSubmit={form.handleSubmit(handleSubmit)}>        <div className="grid grid-cols-1 gap-2 mb-2">
+        <FormFieldInput type="text" label={t("Accountant name")} name="name" className="pl-10" Icon={User} />
+        <FormFieldInput type="text" label={t("Accountant phone")} name="number" className="pl-10" Icon={Phone} />
+        <FormFieldInput type="text" label={t("Accountant email")} name="email" className="pl-10" Icon={Mail} />
+      </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2">
           <StatusSelector label={t("Status")} name="status" defaultVal={accountant?.status} />
