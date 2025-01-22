@@ -1,5 +1,5 @@
 const db = require("../../data/index.js");
-const { Accountant, User, Company, TaskAccountant, Task } = db;
+const { Accountant, User, Company, TaskAccountant, Task, Measure } = db;
 const ApiError = require("../../utils/apiError");
 
 const getAccountantById = async (req, res, next) => {
@@ -32,6 +32,11 @@ const getAccountantById = async (req, res, next) => {
           model: User,
           as: "user",
           attributes: ["full_name"]
+        },
+        {
+          model: Measure,
+          as: "measure",
+          attributes: ["name"]
         }
       ]
     });

@@ -57,6 +57,7 @@ const AccountantsTableBody = () => {
         <SearchBar handleSearch={handleSearch} placeholder={t("Search accountants...")} search={search} />
         <CreateAccountant />
       </div>
+      <div>{JSON.stringify(typedAccountantsResponse)}</div>
       <Table className="w-full min-w-full">
         <AccountantsHeader />
         <TableBody>

@@ -1,10 +1,10 @@
 const db = require("../../data/index.js");
-const { Accountant, Company, User } = db;
+const { Accountant, Company, User, Measure } = db;
 const ApiError = require("../../utils/apiError");
 
 const editAccountant = async (req, res, next) => {
   const accountantId = req.params.id;
-  const { name, note, number, email, company, accountantName, status } = req.body;
+  const { name, note, number, email, company, accountantName, status, measure } = req.body;
 
   try {
     const accountant = await Accountant.findByPk(accountantId);
@@ -12,9 +12,10 @@ const editAccountant = async (req, res, next) => {
       throw new ApiError(404, "Accountant not found!");
     }
 
-    const [companyRecord, userRecord] = await Promise.all([
-      Company.findOne({ where: { name: company } }), 
-      User.findOne({ where: { full_name: accountantName } })
+    const [companyRecord, userRecord, measureRecord] = await Promise.all([
+      Company.findOne({ where: { name: company } }),
+      User.findOne({ where: { full_name: accountantName } }),
+      Measure.findOne({ where: { name: measure } })
     ]);
 
     if (!companyRecord) throw new ApiError(404, "Company not found!");
@@ -27,7 +28,8 @@ const editAccountant = async (req, res, next) => {
       email,
       company_id: companyRecord.id,
       user_id: userRecord.id,
-      status
+      status,
+      measure_id: measureRecord.id
     });
 
     res.json({
