@@ -1,4 +1,5 @@
 const db = require("../../data/index.js");
+const ApiError = require("../../utils/apiError.js");
 const { DefaultPricing } = db;
 
 const getDefaultPricing = async (req, res, next) => {
