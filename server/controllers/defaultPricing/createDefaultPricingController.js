@@ -149,9 +149,9 @@ const createDefaultPricing = async (req, res, next) => {
         project_id: project_id
       }
     });
-    // if (isDefaultPricing) {
-    //   throw new ApiError(400, "Default pricing already exists!");
-    // }
+    if (isDefaultPricing) {
+      throw new ApiError(400, "Default pricing already exists!");
+    }
 
     const defaultPricing = await DefaultPricing.create({
       activity_id,
