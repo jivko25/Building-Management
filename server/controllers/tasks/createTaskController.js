@@ -56,8 +56,6 @@ const createTask = async (req, res, next) => {
     //   }
     // });
 
-    console.log("Found artisans:", artisanRecords);
-
     // Проверка дали всички артисани са намерени
     const missingArtisans = artisans.filter(artisanName => !foundArtisans.some(found => found.name === artisanName));
 
@@ -125,6 +123,7 @@ const createTask = async (req, res, next) => {
   } catch (error) {
     console.error("Error in createTask:", error);
     if (error instanceof ApiError) {
+      console.log(error.message);
       res.status(error.statusCode).json({
         success: false,
         status: error.status,

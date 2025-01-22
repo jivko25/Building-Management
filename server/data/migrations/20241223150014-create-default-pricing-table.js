@@ -65,6 +65,16 @@ module.exports = {
       manager_price: {
         type: Sequelize.FLOAT,
         allowNull: false
+      },
+      artisan_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_artisans",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
       }
     });
   },

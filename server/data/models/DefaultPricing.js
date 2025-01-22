@@ -16,6 +16,14 @@ module.exports = (sequelize, DataTypes) => {
           key: "id"
         }
       },
+      artisan_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_artisans",
+          key: "id"
+        }
+      },
       measure_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

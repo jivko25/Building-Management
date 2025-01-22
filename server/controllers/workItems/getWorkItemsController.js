@@ -12,14 +12,22 @@ const getWorkItems = async (req, res, next) => {
 
   try {
     if (isAdmin) {
-      const workItems = await WorkItem.findAll();
+      const workItems = await WorkItem.findAll({
+        where: {
+          task_id
+        },
+        limit: parseInt(_limit),
+        offset: offset,
+        order: [["id", "DESC"]]
+      });
       return res.json(workItems);
     }
     const projects = await Project.findAll({
       where: {
         creator_id: req.user.id,
         id: req.params.project_id
-      }
+      },
+      
     });
     if (projects.length === 0) {
       throw new ApiError(404, "No projects found for current user");
