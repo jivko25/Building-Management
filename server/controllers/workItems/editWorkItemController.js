@@ -45,6 +45,32 @@ const editWorkItem = async (req, res, next) => {
   }
 };
 
+const updateIsPaidWorkItem = async function (req, res, next) {
+  const workItemId = req.params.id;
+  const { is_paid } = req.body;
+
+  try {
+      const workItem = await WorkItem.findOne({
+          where: { id: workItemId }
+      });
+
+      if (!workItem) {
+          return res.status(404).json({ error: "Work item not found!" });
+      }
+
+      workItem.is_paid = is_paid;
+      await workItem.save();
+
+      return res.status(200).json({
+          message: "Work item updated successfully!",
+          data: workItem
+      });
+  } catch (error) {
+      next(error);
+  }
+};
+
 module.exports = {
-  editWorkItem
+  editWorkItem,
+  updateIsPaidWorkItem
 };

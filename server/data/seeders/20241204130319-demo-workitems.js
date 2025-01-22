@@ -1,5 +1,17 @@
-//server\data\seeders\20241204130319-demo-workitems.js
 "use strict";
+
+function getRandomDateWithinLastMonth() {
+  const now = new Date(); // Текущата дата
+  const pastMonth = new Date(); // Създаваме копие на текущата дата
+  pastMonth.setMonth(now.getMonth() - 1); // Месец назад
+
+  // Генерираме произволна дата между pastMonth и сега
+  return new Date(pastMonth.getTime() + Math.random() * (now.getTime() - pastMonth.getTime()));
+}
+
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -8,7 +20,6 @@ module.exports = {
     await queryInterface.bulkInsert(
       "tbl_workitems",
       [
-        // Компания 1
         {
           id: 1,
           task_id: 1,
@@ -24,7 +35,11 @@ module.exports = {
           finished_work: "Завършена работа",
           status: "done",
           is_client_invoiced: false,
-          is_artisan_invoiced: false
+          is_artisan_invoiced: false,
+          creator_id: 2,
+          total_artisan_price: getRandomNumber(50, 150),
+          total_manager_price: getRandomNumber(50, 150),
+          created_at: getRandomDateWithinLastMonth(),
         },
         {
           id: 2,
@@ -41,10 +56,12 @@ module.exports = {
           finished_work: "Завършена работа",
           status: "done",
           is_client_invoiced: false,
-          is_artisan_invoiced: false
+          is_artisan_invoiced: false,
+          creator_id: 2,
+          total_artisan_price: getRandomNumber(50, 150),
+          total_manager_price: getRandomNumber(50, 150),
+          created_at: getRandomDateWithinLastMonth(),
         },
-
-        // Компания 2
         {
           id: 3,
           task_id: 2,
@@ -60,7 +77,11 @@ module.exports = {
           finished_work: "Завършена работа",
           status: "done",
           is_client_invoiced: false,
-          is_artisan_invoiced: false
+          is_artisan_invoiced: false,
+          creator_id: 2,
+          total_artisan_price: getRandomNumber(50, 150),
+          total_manager_price: getRandomNumber(50, 150),
+          created_at: getRandomDateWithinLastMonth(),
         },
         {
           id: 4,
@@ -77,8 +98,33 @@ module.exports = {
           finished_work: "Завършена работа",
           status: "done",
           is_client_invoiced: false,
-          is_artisan_invoiced: false
-        }
+          is_artisan_invoiced: false,
+          creator_id: 2,
+          total_artisan_price: getRandomNumber(50, 150),
+          total_manager_price: getRandomNumber(50, 150),
+          created_at: getRandomDateWithinLastMonth(),
+        },
+        {
+          id: 5,
+          task_id: 3,
+          project_id: 3,
+          name: "Работен елемент 5",
+          start_date: new Date(),
+          end_date: null,
+          activity_id: 3,
+          measure_id: 2,
+          artisan_id: 3,
+          quantity: getRandomNumber(1, 50),
+          note: "Допълнителен запис",
+          finished_work: "Примерна завършена работа",
+          status: "in_progress",
+          is_client_invoiced: true,
+          is_artisan_invoiced: true,
+          creator_id: 3,
+          total_artisan_price: getRandomNumber(50, 150),
+          total_manager_price: getRandomNumber(50, 150),
+          created_at: getRandomDateWithinLastMonth(),
+        },
       ],
       {}
     );
@@ -86,5 +132,5 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete("tbl_workitems", null, {});
-  }
+  },
 };
