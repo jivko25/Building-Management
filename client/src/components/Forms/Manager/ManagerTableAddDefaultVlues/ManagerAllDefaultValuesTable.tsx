@@ -6,7 +6,7 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
 import { useState } from "react";
-import ArtisanAction from "./ArtisanAction";
+import ManagerAction from "./ManagerAction";
 import { Button } from "@/components/ui/button";
 import { Trash2 as Trash } from "lucide-react";
 import { deleteEntity } from "@/api/apiCall";
@@ -14,11 +14,11 @@ import { ResponseMessageType } from "@/types/response-message/responseMessageTyp
 import ResponseMessage from "@/components/common/ResponseMessages/ResponseMessage";
 import { Project } from "@/types/project-types/projectTypes";
 
-export default function AllDefaultValuesTable({ artisanId, artisanName }: { artisanId: string; artisanName: string }) {
+export default function ManagerAllDefaultValuesTable() {
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [first, setFirst] = useState(0);
+  const [rows] = useState(10);
   const [responseMessage, setResponseMessage] = useState<ResponseMessageType | null>(null);
-  console.log(artisanId);
 
   const { data: activitiesResponse } = useFetchDataQuery<ActivityResponse>({
     URL: "/activities",
@@ -34,7 +34,7 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
     queryKey: ["projects"]
   });
   const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
-    URL: `/default-pricing/${artisanId}`,
+    URL: `/default-pricing`,
     queryKey: ["default-pricing"]
   });
 
@@ -52,10 +52,6 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
     return <InputText value={measure?.name || ""} readOnly className="w-[150px]  text-xs md:text-sm border rounded p-2" />;
   };
 
-  const priceBodyTemplate = (rowData: DefaultPricing) => {
-    return <InputText value={`${rowData.artisan_price}`} readOnly className="w-[65px] text-xs md:text-sm border rounded  p-2" />;
-  };
-
   const managerPriceBodyTemplate = (rowData: DefaultPricing) => {
     return <InputText value={`${rowData.manager_price}`} readOnly className="w-[65px] text-xs md:text-sm border rounded  p-2" />;
   };
@@ -70,12 +66,12 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
     const measure = measures.find(m => m.id === rowData.measure_id);
     return (
       <div className="flex">
-        <ArtisanAction
+        <ManagerAction
           type="edit"
-          artisanId={artisanId}
-          artisanName={artisanName}
+          artisanId={'1'}
+          artisanName={'test'}
           editProps={{
-            artisanId: artisanId,
+            artisanId: '1',
             activity: activity?.name || "",
             measure: measure?.name || "",
             price: rowData.artisan_price,
@@ -102,8 +98,7 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
         <InputText value={globalFilter} onChange={onGlobalFilterChange} placeholder="Search activity..." className="m-8 p-2" />
       </span>
       <div className=" flex flex-col items-center justify-center gap-5">
-        <p className="font-semibold">{artisanName}</p>
-        <ArtisanAction type="create" artisanName={artisanName} artisanId={artisanId} refetch={refetch} />
+        <ManagerAction type="create" artisanName={'test'} artisanId={'1'} refetch={refetch} />
       </div>
     </div>
   );
@@ -127,13 +122,12 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
     : defaultPricings;
 
   return (
-    <div className="w-full flex flex-col justify-center items-center overflow-auto">
-      <DataTable value={filteredData} className="text-sm md:text-base max-w-full !overflow-hidden " style={{ width: "100%" }} paginator rows={5} first={first} onPage={e => setFirst(e.first)} header={header} sortMode="multiple" removableSort>
-        <Column field="activity" header="Activity" body={activityBodyTemplate} className="text-sm md:text-base" sortable />
-        <Column field="project" header="Project" body={projectBodyTemplate} className="text-sm md:text-base" sortable />
-        <Column field="measure" header="Measure" body={measureBodyTemplate} className="text-sm md:text-base" sortable />
-        <Column field="price" header="Price" body={priceBodyTemplate} className="text-sm md:text-base" sortable />
-        <Column field="managerPrice" header="Manager Price" body={managerPriceBodyTemplate} className="text-sm md:text-base text-wrap flex items-center justify-center" sortable />
+    <div className="w-full flex flex-col items-center overflow-auto">
+      <DataTable value={filteredData} className="text-sm md:text-base max-w-full !overflow-hidden " style={{ width: "100%" }} paginator rows={rows} first={first} onPage={e => setFirst(e.first)} header={header} sortMode="multiple" removableSort>
+        <Column field="activity" header="Activity" body={activityBodyTemplate} className="text-sm md:text-base" />
+        <Column field="project" header="Project" body={projectBodyTemplate} className="text-sm md:text-base" />
+        <Column field="measure" header="Measure" body={measureBodyTemplate} className="text-sm md:text-base" />
+        <Column field="managerPrice" header="Price" body={managerPriceBodyTemplate} className="text-sm md:text-base text-wrap flex items-center justify-center" />
         <Column field="action" header="Actions" body={actionBodyTemplate} className="text-sm md:text-base" />
       </DataTable>
       {responseMessage && <ResponseMessage type={responseMessage.type} message={responseMessage.message} duration={2000} onHide={() => setResponseMessage(null)} />}

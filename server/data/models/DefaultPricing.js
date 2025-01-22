@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       artisan_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "tbl_artisans",
           key: "id"
@@ -46,6 +46,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       artisan_price: {
         type: DataTypes.DECIMAL(10, 2),
+        allowNull: true
+      },
       project_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -61,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
           model: "tbl_users",
           key: "id"
         }
-      },
+      }
       // artisan_price: {
       //   type: DataTypes.FLOAT,
       //   allowNull: false
@@ -69,7 +71,6 @@ module.exports = (sequelize, DataTypes) => {
       // manager_price: {
       //   type: DataTypes.FLOAT,
       //   allowNull: false
-      }
     },
     {
       tableName: "tbl_default_pricing",

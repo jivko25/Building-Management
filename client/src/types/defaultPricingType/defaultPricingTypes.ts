@@ -1,9 +1,9 @@
 export type DefaultPricing = {
   id?: string;
-  artisan_id: string;
+  artisan_id: string | null;
   activity_id: string;
   measure_id: string;
-  artisan_price: number;
+  artisan_price?: number;
   manager_price: number;
   project_id: string;
 };
@@ -17,7 +17,7 @@ export type EditDefaultValuesTableProps = {
   defaultPricing: DefaultPricing;
   activity: string;
   measure: string;
-  price: number;
+  price?: number;
   managerPrice: number;
 };
 
