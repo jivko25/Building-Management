@@ -17,7 +17,6 @@ const ActivitySelector = ({ label, name, placeholder, defaultVal }: TableFormSel
       staleTime: Infinity
     }
   });
-  console.log(activities);
 
   return (
     <FormField

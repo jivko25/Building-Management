@@ -55,7 +55,6 @@ export const workItemDefaults = {
   finished_work: "",
   status: undefined,
   activity: "",
-  measure: "",
   quantity: ""
 };
 
