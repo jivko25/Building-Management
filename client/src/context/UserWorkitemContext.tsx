@@ -28,7 +28,6 @@ function reducer(state: any, action: any) {
     case "SET_ARTISAN_ID":
       return { ...state, artisanId: action.payload };
     case "SET_ACTIVITY_MEASURE_ID":
-      console.log(action.payload);
       return { ...state, activityId: action.payload, measure: state.defaultPricings.find(dp => dp.activity.id === action.payload)?.measure };
     case "SET_MEASURE_ID":
       return { ...state, measureId: action.payload };

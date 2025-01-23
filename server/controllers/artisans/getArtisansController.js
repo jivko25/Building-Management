@@ -48,12 +48,7 @@ const getPaginatedArtisans = async (req, res, next) => {
       order: [["id", "DESC"]]
     });
 
-    // const artisans = rows.filter((artisan) => {
-    //   if (isAdmin) {
-    //     return true;
-    //   }
-    //   return artisan.user_id === req.user.id;
-    // });
+    const count = rows.length;
 
     res.json({
       artisans: rows,

@@ -22,6 +22,17 @@ const createTask = async (req, res, next) => {
     //   throw new ApiError(400, `${name} already exists!`);
     // }
 
+    // const existingTask = await Task.findOne({ where: { name } });
+    // if (existingTask) {
+    //   throw new ApiError(400, `${name} already exists!`);
+    // }
+
+    // Проверка за съществуваща задача
+    // const existingTask = await Task.findOne({ where: { name, project_id: projectId } });
+    // if (existingTask) {
+    //   throw new ApiError(400, `Task "${name}" already exists in this project!`);
+    // }
+
     // Проверка на артисаните
     if (!Array.isArray(artisans)) {
       throw new ApiError(400, "Artisans must be an array!");
@@ -36,14 +47,18 @@ const createTask = async (req, res, next) => {
       }
     });
 
+    const foundArtisans = await Artisan.findAll({
+      where: { name: artisans }
+    });
+
     console.log("Found artisans:", artisanRecords);
 
-    // Проверка дали всички артисани са намерени
-    const missingArtisans = artisans.filter(artisanName => !foundArtisans.some(found => found.name === artisanName));
+    // // Проверка дали всички артисани са намерени
+    // const missingArtisans = artisans.filter(artisanName => !foundArtisans.some(found => found.name === artisanName));
 
-    if (missingArtisans.length > 0) {
-      throw new ApiError(404, `Artisans not found: ${missingArtisans.join(", ")}`);
-    }
+    // if (missingArtisans.length > 0) {
+    //   throw new ApiError(404, `Artisans not found: ${missingArtisans.join(", ")}`);
+    // }
 
     // Намиране на дейност и мярка
     const [activityRecord, measureRecord] = await Promise.all([Activity.findOne({ where: { name: activity } }), Measure.findOne({ where: { name: measure } })]);
