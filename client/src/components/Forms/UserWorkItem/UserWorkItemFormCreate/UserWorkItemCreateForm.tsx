@@ -10,6 +10,7 @@ import { useUserWorkitem } from "@/context/UserWorkitemContext";
 import { useWorkItemFormHooks } from "@/hooks/forms/useWorkItemForm";
 import { WorkItemSchema } from "@/models/workItem/workItemSchema";
 import { ClipboardList, Hammer, Calculator } from "lucide-react";
+import { useEffect } from "react";
 import { FormProvider } from "react-hook-form";
 type UserWorkItemCreateFormProps = {
   handleSubmit: (workItemData: WorkItemSchema) => void;
@@ -20,6 +21,10 @@ const UserWorkItemCreateForm = ({ handleSubmit, isPending }: UserWorkItemCreateF
   const { useCreateWorkItemForm } = useWorkItemFormHooks();
   const form = useCreateWorkItemForm();
   const { measure, defaultPricingId } = useUserWorkitem();
+
+  useEffect(() => {
+      form.setValue("defaultPriceId", `${defaultPricingId}`);
+  }, [defaultPricingId, form]);
 
   return (
     <FormProvider {...form}>

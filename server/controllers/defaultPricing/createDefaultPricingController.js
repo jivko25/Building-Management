@@ -140,10 +140,9 @@ const createDefaultPricing = async (req, res, next) => {
       throw new ApiError(404, "Project not found!");
     }
 
-    const isDefaultPricingWhereArtisan = isManager ? {} : {artisan_id}
     const isDefaultPricing = await DefaultPricing.findOne({
       where: {
-        ...isDefaultPricingWhereArtisan,
+        artisan_id: artisan_id,
         activity_id: activity_id,
         project_id: project_id
       }
