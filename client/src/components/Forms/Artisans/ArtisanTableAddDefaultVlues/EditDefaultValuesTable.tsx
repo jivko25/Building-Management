@@ -11,7 +11,7 @@ import { InputText } from "primereact/inputtext";
 import { useState } from "react";
 
 export default function EditDefaultValuesTable({ editProps, refetch }: { editProps: EditDefaultValuesTableProps; refetch: () => void }) {
-  const [price, setPrice] = useState<number>(editProps.price);
+  const [price, setPrice] = useState<any>(editProps.price);
   const [managerPrice, setManagerPrice] = useState<number>(editProps.managerPrice);
   const [responseMessage, setResponseMessage] = useState<ResponseMessageType | null>(null);
 
