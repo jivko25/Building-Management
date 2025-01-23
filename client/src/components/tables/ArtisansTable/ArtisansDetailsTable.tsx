@@ -31,6 +31,7 @@ const ArtisansDetailsTable: React.FC<{ data: WorkItem[]; artisanName: string }> 
   const [filters, setFilters] = useState<any>(null);
   const [selectedPaidStatus, setSelectedPaidStatus] = useState<Record<number, boolean>>({});
   const [filteredData, setFilteredData] = useState<WorkItem[]>(data);
+  const [selectAllPaid, setSelectAllPaid] = useState(false); // Управление на състоянието на хедър чекбокса
 
   useEffect(() => {
     initFilters();
@@ -76,16 +77,30 @@ const ArtisansDetailsTable: React.FC<{ data: WorkItem[]; artisanName: string }> 
     const formattedDate = date.toLocaleDateString("en-US");
 
     const getWeekNumber = (date: Date) => {
-      const firstSunday = new Date(date.getFullYear(), 0, 1);
-      while (firstSunday.getDay() !== 0) {
-        firstSunday.setDate(firstSunday.getDate() + 1);
-      }
-      const daysDifference = Math.floor((date.getTime() - firstSunday.getTime()) / (24 * 60 * 60 * 1000));
-      return Math.ceil((daysDifference + 1) / 7);
+      const targetDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+
+      // Намираме деня от седмицата (понеделник = 1, неделя = 7)
+      const day = targetDate.getUTCDay() || 7;
+
+      // Преместваме датата назад, за да попаднем в правилната ISO седмица
+      targetDate.setUTCDate(targetDate.getUTCDate() + 4 - day);
+
+      // Намираме първия четвъртък на годината
+      const yearStart = new Date(Date.UTC(targetDate.getUTCFullYear(), 0, 1));
+      const yearStartDay = yearStart.getUTCDay() || 7;
+
+      // Преместваме към първия понеделник на годината
+      const firstMonday = new Date(yearStart);
+      firstMonday.setUTCDate(yearStart.getUTCDate() + (1 - yearStartDay));
+
+      // Изчисляваме разликата в дни и номера на седмицата
+      const diff = (targetDate.getTime() - firstMonday.getTime()) / (7 * 24 * 60 * 60 * 1000);
+
+      return Math.floor(diff) + 1;
     };
 
     const weekNumber = getWeekNumber(date);
-    return `${dayOfWeek}, Week ${weekNumber + 1}, ${formattedDate}`;
+    return `${dayOfWeek}, Week ${weekNumber}, ${formattedDate}`;
   };
 
   const dateFilterTemplate = (options: any) => {
@@ -135,6 +150,31 @@ const ArtisansDetailsTable: React.FC<{ data: WorkItem[]; artisanName: string }> 
     return <Checkbox checked={isChecked} onChange={e => handleCheckboxChange(e)} />;
   };
 
+  const handleSelectAllChange = async (e: any) => {
+    const newStatus = e.checked;
+    setSelectAllPaid(newStatus);
+
+    // Обновяване на всички редове
+    const updatedStatuses = data.reduce((acc, item) => {
+      acc[item.id] = newStatus;
+      return acc;
+    }, {} as Record<number, boolean>);
+
+    setSelectedPaidStatus(updatedStatuses);
+
+    // Актуализиране на състоянието в базата
+    for (const item of data) {
+      await updateIsPaidStatus(item.id, newStatus);
+    }
+  };
+
+  const headerCheckbox = (
+    <div className="flex flex-column gap-2 items-center">
+      <p>Paid</p>
+      <Checkbox checked={selectAllPaid} onChange={e => handleSelectAllChange(e)} />
+    </div>
+  );
+
   const isPaidFilterTemplate = (options: any) => {
     return (
       <div className="flex flex-column gap-2">
@@ -163,7 +203,6 @@ const ArtisansDetailsTable: React.FC<{ data: WorkItem[]; artisanName: string }> 
   };
 
   const taskLinkTemplate = (rowData: WorkItem) => {
-    console.log(rowData)
     return (
       <Link to={`/projects/${rowData.task.project.id}/tasks/${rowData.task.id}/work-items`} className="text-blue-500 hover:underline">
         {rowData.task.name}
@@ -182,7 +221,7 @@ const ArtisansDetailsTable: React.FC<{ data: WorkItem[]; artisanName: string }> 
         <Column field="quantity" header="Quantity" style={{ minWidth: "8rem" }} />
         <Column field="single_artisan_price" header="Price" style={{ minWidth: "8rem" }} />
         <Column field="total_artisan_price" header="Total" style={{ minWidth: "12rem", padding: "6px 0" }} footer={`Total: ${calculateTotal()}`} />
-        <Column field="is_paid" header="Paid" body={isPaidTemplate} filter filterMatchMode="equals" filterElement={isPaidFilterTemplate} style={{ minWidth: "8rem" }} />
+        <Column field="is_paid" header={headerCheckbox} body={isPaidTemplate} filter filterMatchMode="equals" filterElement={isPaidFilterTemplate} style={{ minWidth: "8rem" }} />
       </DataTable>
     </div>
   );
