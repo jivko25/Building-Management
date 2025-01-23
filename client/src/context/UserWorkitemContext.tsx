@@ -41,7 +41,7 @@ function reducer(state: any, action: any) {
     case "SET_DEFAULT_PRICING_ID":
       return { ...state, defaultPricingId: action.payload };
     case "SET_TASK_ID":
-      return { ...state, projectId: action.payload };
+      return { ...state, taskId: action.payload };
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
   }
@@ -59,6 +59,7 @@ export const UserWorkitemProvider = ({ children }: { children: React.ReactNode }
   });
 
   const artisanId = data?.id;
+
   // Get default pricings for user
   const { data: defaultPricingsResponse } = useFetchDataQuery<{ defaultPricing: DefaultPricingDto[] }>({
     URL: artisanId && taskId ? `/default-pricing/get-by-project/${artisanId}/${taskId}` : "",
@@ -73,12 +74,13 @@ export const UserWorkitemProvider = ({ children }: { children: React.ReactNode }
     if (defaultPricingsData.length > 0) {
       const transformPricingData = (data: DefaultPricingDto[]) => {
         const activities = data.map(item => item.activity).filter((value, index, self) => self.findIndex(t => t.id === value.id) === index);
-
+        console.log(activities);
         dispatch({ type: "SET_DEFAULT_PRICINGS_ACTIVITY", payload: { defaultPricings: data, activities: activities } });
       };
       transformPricingData(defaultPricingsData);
     }
   }, [defaultPricingsData]);
+
   useEffect(() => {
     if (!activityId || !measure) return;
     const defaultPricing = defaultPricings.find(dp => dp.activity.id === activityId && dp.measure.id === measure.id);

@@ -27,7 +27,6 @@ const UserWorkItemCreate = () => {
   }, [isOpen]);
 
   const handleSubmit = useSubmitHandler(mutate, workItemSchema);
-
   return <DialogModal Component={UserWorkItemCreateForm} CreateButtonModal createButtonTitle="Add work item" props={{ handleSubmit, isPending }} isOpen={isOpen} setIsOpen={setIsOpen} title="New work item" />;
 };
 
