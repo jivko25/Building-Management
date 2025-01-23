@@ -32,20 +32,31 @@ export const workItemSchema = z
     }),
     status: z.enum(["done", "in_progress"], {
       message: "Please, select a status."
+    }),
+    activity: z.string().min(1, {
+      message: "Activity is required."
+    }),
+    defaultPriceId: z.string().min(1, {
+      message: "Default Price ID is required."
+    }),
+    quantity: z.string().min(1, {
+      message: "Quantity is required."
     })
   })
   .refine(data => data.end_date! >= data.start_date!, {
     message: "End date cannot be earlier than start date.",
     path: ["end_date"]
   });
-
 export const workItemDefaults = {
   name: "",
   start_date: "",
   end_date: "",
   note: "",
   finished_work: "",
-  status: undefined
+  status: undefined,
+  activity: "",
+  measure: "",
+  quantity: ""
 };
 
 export type WorkItemSchema = z.infer<typeof workItemSchema>;
