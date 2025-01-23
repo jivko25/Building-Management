@@ -32,6 +32,19 @@ export type DefaultPricingDto = {
   price: number;
   managerPrice: number;
 };
+export type DefaultPricingDto = {
+  id?: string;
+  artisan_id: string;
+  activity: Activity;
+  measure: Measure;
+  price: number;
+  managerPrice: number;
+};
+
+export type DefaultPricingsActivityMeasureDto = {
+  activity: Activity;
+  measures: Measure[];
+};
 
 export type DefaultPricingsActivityMeasureDto = {
   activity: Activity;
