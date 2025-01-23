@@ -1,3 +1,6 @@
+import { Activity } from "../activity-types/activityTypes";
+import { Measure } from "../measure-types/measureTypes";
+
 export type DefaultPricing = {
   id?: string;
   artisan_id: string | null;
@@ -19,6 +22,19 @@ export type EditDefaultValuesTableProps = {
   measure: string;
   price?: number;
   managerPrice: number;
+};
+export type DefaultPricingDto = {
+  id?: string;
+  artisan_id: string;
+  activity: Activity;
+  measure: Measure;
+  price: number;
+  managerPrice: number;
+};
+
+export type DefaultPricingsActivityMeasureDto = {
+  activity: Activity;
+  measures: Measure[];
 };
 
 export interface PriceBodyTemplateProps {
