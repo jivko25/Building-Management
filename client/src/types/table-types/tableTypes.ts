@@ -9,6 +9,7 @@ export type FormInputType = {
   value?: string;
   className?: string;
   Icon?: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>;
+  text?: string;
 };
 
 export type TableFormSelectType = {
