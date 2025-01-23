@@ -13,7 +13,6 @@ import WorkItemCard from "@/components/tables/WorkItemsTable/WorkItemCard";
 
 const WorkItemsTableBody = () => {
   const { ref, inView } = useInView();
-
   const { id, taskId } = useParams();
 
   const {
@@ -27,15 +26,15 @@ const WorkItemsTableBody = () => {
     queryKey: ["projects", id, "tasks", taskId, "work-items"]
   });
 
-  if (isError) {
-    return <ErrorMessage title="Oops..." Icon={CircleAlert} />;
-  }
-
   useEffect(() => {
     if (inView) {
       fetchNextPage();
     }
   }, [fetchNextPage, inView]);
+
+  if (isError) {
+    return <ErrorMessage title="Oops..." Icon={CircleAlert} />;
+  }
 
   return (
     <>

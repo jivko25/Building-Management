@@ -20,6 +20,7 @@ const UserProjectTaskTableBody = () => {
       staleTime: 0
     }
   });
+  console.log(task);
 
   return (
     <>
