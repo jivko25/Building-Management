@@ -33,8 +33,11 @@ import { UpdateArtisanInvoicePage } from "./pages/Invoices/Artisan/UpdateArtisan
 import { useTranslation } from "react-i18next";
 import ArtisansDetailsPage from "./pages/ArtisansDetailsPage";
 import ManagerDefaultPricesPage from "./pages/ManagerDefaultPricesPage";
+import { UserWorkitemProvider } from "./context/UserWorkitemContext";
 
 const AppRoutes = () => {
+  const { t } = useTranslation();
+  console.log("Current translations:", t("settings"));
   const { t } = useTranslation();
   console.log("Current translations:", t("settings"));
   return (
@@ -195,9 +198,11 @@ const AppRoutes = () => {
         <Route
           path="/my-projects/:taskId/task"
           element={
-            <TableLayout>
-              <UserProjectTaskPage />
-            </TableLayout>
+            <UserWorkitemProvider>
+              <TableLayout>
+                <UserProjectTaskPage />
+              </TableLayout>
+            </UserWorkitemProvider>
           }
         />
       </Route>
