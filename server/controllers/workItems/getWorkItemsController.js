@@ -1,4 +1,5 @@
 //server\controllers\workItems\getWorkItemsController.js
+const { Op } = require("sequelize");
 const db = require("../../data/index.js");
 const { WorkItem, Task, Artisan, Project } = db;
 const ApiError = require("../../utils/apiError");
@@ -20,7 +21,14 @@ const getWorkItems = async (req, res, next) => {
         offset: offset,
         order: [["id", "DESC"]]
       });
-      return res.json(workItems);
+      
+      return res.json({
+        workItems: workItems,
+        workItemsCount: workItems.count,
+        page: parseInt(_page),
+        limit: parseInt(_limit),
+        totalPages: Math.ceil(workItems.count / parseInt(_limit))
+      });
     }
     const projects = await Project.findAll({
       where: {
@@ -66,6 +74,7 @@ const getWorkItems = async (req, res, next) => {
       totalPages: Math.ceil(workItems.count / parseInt(_limit))
     });
   } catch (error) {
+    console.log(error);
     if (error instanceof ApiError) {
       next(error);
     } else {

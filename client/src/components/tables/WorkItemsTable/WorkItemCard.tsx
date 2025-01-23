@@ -14,11 +14,12 @@ type WorkItemCardProps = {
 };
 
 const WorkItemCard = ({ workItems }: WorkItemCardProps) => {
+  console.log(workItems)
   return (
     <>
       {workItems &&
         workItems?.pages?.map((page : any) =>
-          page.map((item : any) => (
+          page.workItems.map((item : any) => (
             <Card className="w-full sm:w-full md:w-full lg:max-w-[24rem] shadow-md shadow-slate-700/20 transition duration-300 ease-in-out hover:shadow-md dark:hover:shadow-slate-700/40 motion-preset-pop motion-duration-700" key={item.id}>
               <CardHeader className="px-6 py-4">
                 <div className="flex items-center justify-between gap-4">
