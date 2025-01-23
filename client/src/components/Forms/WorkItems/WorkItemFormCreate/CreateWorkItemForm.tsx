@@ -30,11 +30,7 @@ const CreateWorkItemForm = ({ handleSubmit, isPending }: CreateWorkItemFormProps
           <FormFieldInput name="finished_work" label="Finished work" type="text" className="pl-10" Icon={Hammer} />
         </div>
         <Separator className="mt-4 mb-2" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2 mb-2">
-          <ActivitySelector name="activity" label="Select activity" />
-          <MeasureSelector name="measure" label="Select measure" />
-          <FormFieldInput name="Quantity" label="Quantity" type="number" className="pl-10" />
-        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2 pt-1">
           <FormDatePicker name="start_date" label="Select a start date" />
           <FormDatePicker name="end_date" label="Select an end date" />
