@@ -23,26 +23,14 @@ export type EditDefaultValuesTableProps = {
   price?: number;
   managerPrice: number;
 };
-export type DefaultPricingDto = {
-  id?: string;
-  artisan_id: string;
-  activity: Activity;
-  measure: Measure;
-  price: number;
-  managerPrice: number;
-};
-export type DefaultPricingDto = {
-  id?: string;
-  artisan_id: string;
-  activity: Activity;
-  measure: Measure;
-  price: number;
-  managerPrice: number;
-};
 
-export type DefaultPricingsActivityMeasureDto = {
+export type DefaultPricingDto = {
+  id?: string;
+  artisan_id: string;
   activity: Activity;
-  measures: Measure[];
+  measure: Measure;
+  price: number;
+  managerPrice: number;
 };
 
 export type DefaultPricingsActivityMeasureDto = {
