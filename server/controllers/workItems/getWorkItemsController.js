@@ -46,7 +46,7 @@ const getWorkItems = async (req, res, next) => {
     }
 
     const workItems = await WorkItem.findAndCountAll({
-      where: { task_id: { [Op.in]: taskIds } },
+      where: { task_id },
       include: [
         {
           model: Task,

@@ -9,6 +9,8 @@ export type DefaultPricing = {
   artisan_price?: number;
   manager_price: number;
   project_id: string;
+  activity?: Activity;
+  measure?: Measure;
 };
 export type DefaultPricingResponse = {
   message: string;

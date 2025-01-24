@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
 const db = require("../../data/index.js");
 const ApiError = require("../../utils/apiError.js");
-const { DefaultPricing } = db;
+const { DefaultPricing, Activity, Measure } = db;
 
 const getDefaultPricing = async (req, res, next) => {
   try {
@@ -16,14 +16,22 @@ const getDefaultPricing = async (req, res, next) => {
         where: {
           creator_id: id,
           artisan_id: { [Op.is]: null },
-          artisan_price: { [Op.is]: null }
-        }
+          artisan_price: { [Op.is]: null },
+        },
+        include: [
+          { model: Activity, as: "activity", attributes: ["name"] },
+          { model: Measure, as: "measure", attributes: ["name"] }
+        ]
       });
     } else {
       defaultPricing = await DefaultPricing.findAll({
         where: {
           artisan_id: artisanId,
-        }
+        },
+        include: [
+          { model: Activity, as: "activity", attributes: ["name"] },
+          { model: Measure, as: "measure", attributes: ["name"] }
+        ]
       });
     }
 

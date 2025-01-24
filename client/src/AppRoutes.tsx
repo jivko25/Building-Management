@@ -163,9 +163,9 @@ const AppRoutes = () => {
         <Route
           path="/projects/:id/tasks/:taskId/work-items"
           element={
-            <TableLayout>
-              <WorkItemsPage />
-            </TableLayout>
+              <TableLayout>
+                <WorkItemsPage />
+              </TableLayout>
           }
         />
       </Route>

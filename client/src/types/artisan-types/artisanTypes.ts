@@ -1,6 +1,6 @@
 //client\src\types\artisan-types\artisanTypes.ts
 export type Artisan = {
-  id?: string;
+  id: string;
   name: string;
   note?: string;
   number: string;
