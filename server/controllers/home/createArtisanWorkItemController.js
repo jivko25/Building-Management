@@ -5,12 +5,12 @@ const ApiError = require("../../utils/apiError");
 
 const createWorkItem = async (req, res, next) => {
   const taskId = req.params.taskId;
-  const { defaultPriceId, activity, end_date, finished_work, name, note, quantity, start_date, status } = req.body;
+  const { default_pricing, activity, end_date, finished_work, name, note, quantity, start_date, status } = req.body;
 
   try {
     // Намери defaultPrice на база defaultPriceId
     const defaultPrice = await DefaultPricing.findOne({
-      where: { id: defaultPriceId },
+      where: { id: default_pricing },
       include: [
         { model: Activity, as: "activity" },
         { model: Measure, as: "measure" }
@@ -59,6 +59,8 @@ const createWorkItem = async (req, res, next) => {
       workItem: newWorkItem
     });
   } catch (error) {
+    console.log(error.message);
+    
     if (error instanceof ApiError) {
       next(error);
     } else {
