@@ -28,7 +28,7 @@ function reducer(state: any, action: any) {
     case "SET_ARTISAN_ID":
       return { ...state, artisanId: action.payload };
     case "SET_ACTIVITY_MEASURE_ID":
-      return { ...state, activityId: action.payload, measure: state.defaultPricings.find(dp => dp.activity.id === action.payload)?.measure };
+      return { ...state, activityId: action.payload, measure: state.defaultPricings.find((dp: {activity: Activity}) => dp.activity.id === action.payload)?.measure };
     case "SET_MEASURE_ID":
       return { ...state, measureId: action.payload };
     case "SET_ACTIVITIES":
@@ -82,7 +82,7 @@ export const UserWorkitemProvider = ({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     if (!activityId || !measure) return;
-    const defaultPricing = defaultPricings.find(dp => dp.activity.id === activityId && dp.measure.id === measure.id);
+    const defaultPricing = defaultPricings.find((dp: {measure: Measure, activity: Activity}) => dp.activity.id === activityId && dp.measure.id === measure.id);
     if (defaultPricing) dispatch({ type: "SET_DEFAULT_PRICING_ID", payload: defaultPricing.id });
   }, [activityId, measure, defaultPricings]);
 
