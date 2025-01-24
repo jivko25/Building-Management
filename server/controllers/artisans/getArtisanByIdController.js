@@ -42,7 +42,7 @@ const getArtisansWorkItems = async (req, res, next) => {
               [Sequelize.literal('ROUND(total_artisan_price / quantity, 2)'), 'single_artisan_price'],
               [Sequelize.literal('ROUND(total_manager_price / quantity, 2)'), 'single_manager_price'] 
             ],
-            where: { creator_id: id },
+            where: { artisan_id: id },
             include: [
               {
                 model: Task,

@@ -18,4 +18,7 @@ export type TableFormSelectType = {
   placeholder?: string;
   defaultVal?: string;
   className?: string;
+  multiselect?: boolean;
+  artisan_id?: string;
+  selectValueKey?: string;
 };
