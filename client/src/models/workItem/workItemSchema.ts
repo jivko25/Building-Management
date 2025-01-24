@@ -17,9 +17,7 @@ export const workItemSchema = z
       .min(1, {
         message: "Please enter finished work.",
       }),
-    artisan: z.string().min(1, {
-      message: "Please select an artisan.",
-    }),
+    artisan: z.string().optional(),
     default_pricing: z
       .string()
       .optional(),

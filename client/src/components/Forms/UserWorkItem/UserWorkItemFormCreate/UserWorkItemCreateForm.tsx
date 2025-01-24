@@ -23,7 +23,7 @@ const UserWorkItemCreateForm = ({ handleSubmit, isPending }: UserWorkItemCreateF
   const { measure, defaultPricingId } = useUserWorkitem();
 
   useEffect(() => {
-      form.setValue("defaultPriceId", `${defaultPricingId}`);
+      form.setValue("default_pricing", `${defaultPricingId}`);
   }, [defaultPricingId, form]);
 
   return (
@@ -40,7 +40,7 @@ const UserWorkItemCreateForm = ({ handleSubmit, isPending }: UserWorkItemCreateF
             <FormFieldInput name="quantity" label="Quantity" type="number" className="pl-10" Icon={Calculator} />
             <p className="text-xs text-gray-500 text-wrap"> {measure?.name}</p>
           </div>
-          <input {...form.register("defaultPriceId")} type="hidden" name="defaultPriceId" value={defaultPricingId} />
+          <input {...form.register("default_pricing")} type="hidden" name="default_pricing" value={defaultPricingId} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2">

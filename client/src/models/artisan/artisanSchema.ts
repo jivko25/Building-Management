@@ -39,6 +39,7 @@ export const artisanSchema = z.object({
 });
 
 export const artisanDefaults: Artisan = {
+  id: "",
   name: "",
   note: "",
   email: "",
