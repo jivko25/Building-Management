@@ -38,11 +38,6 @@ export type DefaultPricingsActivityMeasureDto = {
   measures: Measure[];
 };
 
-export type DefaultPricingsActivityMeasureDto = {
-  activity: Activity;
-  measures: Measure[];
-};
-
 export interface PriceBodyTemplateProps {
   set: React.Dispatch<React.SetStateAction<number>>;
   price: number;
