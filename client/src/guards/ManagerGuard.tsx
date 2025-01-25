@@ -10,7 +10,7 @@ const ManagerGuard = () => {
     return <LoadingSpinner message="Verifying access, please wait..." />;
   }
 
-  if (user && (user.role === "manager" || user.role === "admin")) {
+  if (user && (user.role === "manager" || user.role === "admin" )) {
     return <Outlet />;
   } else if (user && user.role !== "manager") {
     return <Navigate to="/login" replace={true} />;
