@@ -34,6 +34,7 @@ import { InvoicesArtisanPage } from "./pages/Invoices/Artisan/InvoicesArtisanPag
 import { CreateArtisanInvoicePage } from "./pages/Invoices/Artisan/CreateArtisanInvoicePage";
 import { InvoiceArtisanDetailsPage } from "./pages/Invoices/Artisan/InvoiceArtisanDetailsPage";
 import { UpdateArtisanInvoicePage } from "./pages/Invoices/Artisan/UpdateArtisanInvoicePage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const AppRoutes = () => {
   const { t } = useTranslation();
@@ -163,9 +164,9 @@ const AppRoutes = () => {
         <Route
           path="/projects/:id/tasks/:taskId/work-items"
           element={
-              <TableLayout>
-                <WorkItemsPage />
-              </TableLayout>
+            <TableLayout>
+              <WorkItemsPage />
+            </TableLayout>
           }
         />
       </Route>
@@ -301,6 +302,9 @@ const AppRoutes = () => {
           }
         />
       </Route>
+
+      {/* 404 Route - This should be the last route */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };
