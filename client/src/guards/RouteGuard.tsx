@@ -5,7 +5,7 @@ import { Navigate, Outlet } from "react-router-dom";
 const RouteGuard = () => {
   const { user } = useAuth();
 
-  if (user && user?.role === "manager" || user?.role === "admin" || user?.role === "user") {
+  if (user && user?.role === "manager" || user?.role === "admin" || user?.role === "user" ||  user?.role === "accountant") {
     return <Outlet />;
   }
 

@@ -3,7 +3,7 @@ import { User, UserLoginFormData } from "@/types/user-types/userTypes";
 import { z } from "zod";
 
 export const userStatus = ["active", "inactive"] as const;
-export const userRoles = ["user"] as const;
+export const userRoles = ["user", "accountant"] as const;
 
 export const userSchema = z.object({
   full_name: z.string().min(7, {
@@ -18,7 +18,7 @@ export const userSchema = z.object({
   email: z.string().email({
     message: "Invalid email address"
   }),
-  role: z.enum(["user", "manager", "admin"], {
+  role: z.enum(["user", "manager", "admin", "accountant"], {
     message: "Please select role"
   }),
   status: z.enum(["active", "inactive"], {
@@ -36,7 +36,7 @@ export const editUserSchema = z.object({
   email: z.string().email({
     message: "Invalid email address"
   }),
-  role: z.enum(["user", "manager", "admin"], {
+  role: z.enum(["user", "manager", "admin", "accountant"], {
     message: "Please select role"
   }),
   status: z.enum(["active", "inactive"], {

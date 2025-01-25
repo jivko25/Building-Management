@@ -34,6 +34,7 @@ import { InvoicesArtisanPage } from "./pages/Invoices/Artisan/InvoicesArtisanPag
 import { CreateArtisanInvoicePage } from "./pages/Invoices/Artisan/CreateArtisanInvoicePage";
 import { InvoiceArtisanDetailsPage } from "./pages/Invoices/Artisan/InvoiceArtisanDetailsPage";
 import { UpdateArtisanInvoicePage } from "./pages/Invoices/Artisan/UpdateArtisanInvoicePage";
+import AccountantGuard from "./guards/AccountantGuard";
 
 const AppRoutes = () => {
   const { t } = useTranslation();
@@ -56,6 +57,28 @@ const AppRoutes = () => {
             </TableLayout>
           }
         />
+      </Route>
+
+      {/* Accountant Only Routes */}
+      <Route element={<AccountantGuard />}>
+        <Route path="/clients" element={<TableLayout> <ClientsTablePage /> </TableLayout>} />
+        <Route path="/artisans" element={<TableLayout> <ArtisansTablePage /> </TableLayout>} />
+        <Route path="/companies" element={<TableLayout> <CompaniesTablePage /> </TableLayout>} />
+        <Route path="/projects" element={<TableLayout> <ProjectsTablePage /> </TableLayout>} />
+        <Route path="/projects/:id/tasks" element={<TableLayout> <ProjectTasksPage /> </TableLayout>} />
+        <Route path="/projects/:id/tasks/:taskId/work-items" element={<TableLayout> <WorkItemsPage /> </TableLayout>} />
+        <Route path="/invoices-client" element={<TableLayout> <InvoicesClientPage /> </TableLayout>} />
+        <Route path="/invoices-client/create" element={<TableLayout> <CreateClientInvoicePage /> </TableLayout>} />
+        <Route path="/invoices-client/:id" element={<TableLayout> <InvoiceClientDetailsPage /> </TableLayout>} />
+        <Route path="/invoices-client/:id/edit" element={<TableLayout> <UpdateClientInvoicePage /> </TableLayout>} />
+        <Route path="/invoices-ar" element={<TableLayout> <InvoicesClientPage /> </TableLayout>} />
+        <Route path="/invoices-client/create" element={<TableLayout> <CreateClientInvoicePage /> </TableLayout>} />
+        <Route path="/invoices-client/:id" element={<TableLayout> <InvoiceClientDetailsPage /> </TableLayout>} />
+        <Route path="/invoices-client/:id/edit" element={<TableLayout> <UpdateClientInvoicePage /> </TableLayout>} />
+        <Route path="/invoices-artisan" element={<TableLayout> <InvoicesArtisanPage /> </TableLayout>} />
+        <Route path="/invoices-artisan/create" element={<TableLayout> <CreateArtisanInvoicePage /> </TableLayout>}
+        /><Route path="/invoices-artisan/:id" element={<TableLayout> <InvoiceArtisanDetailsPage /> </TableLayout>} />
+        <Route path="/invoices-artisan/:id/edit" element={<TableLayout> <UpdateArtisanInvoicePage /> </TableLayout>} />
       </Route>
 
       {/*Manager/admin only routes */}
@@ -163,9 +186,9 @@ const AppRoutes = () => {
         <Route
           path="/projects/:id/tasks/:taskId/work-items"
           element={
-              <TableLayout>
-                <WorkItemsPage />
-              </TableLayout>
+            <TableLayout>
+              <WorkItemsPage />
+            </TableLayout>
           }
         />
       </Route>

@@ -25,9 +25,18 @@ const SidebarLinks = ({ Component }: SidebarComponent) => {
     if (user?.role === "manager" && link.label !== "My projects") {
       return true;
     }
+    if (user?.role === "accountant"
+      && (link.label === "Projects"
+        || link.label === "Clients"
+        || link.label === "Companies"
+        || link.label === "Artisans"
+        || link.label === "Invoices")) {
+      return true;
+    }
     if (user?.role === "user" && link.label === "My projects") {
       return true;
     }
+
     return false;
   });
 
