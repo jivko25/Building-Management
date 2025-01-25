@@ -13,8 +13,9 @@ import { deleteEntity } from "@/api/apiCall";
 import { ResponseMessageType } from "@/types/response-message/responseMessageTypes";
 import ResponseMessage from "@/components/common/ResponseMessages/ResponseMessage";
 import { Project } from "@/types/project-types/projectTypes";
-
+import { useTranslation } from "react-i18next";
 export default function ManagerAllDefaultValuesTable() {
+  const { t } = useTranslation();
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [first, setFirst] = useState(0);
   const [rows] = useState(10);
@@ -95,7 +96,7 @@ export default function ManagerAllDefaultValuesTable() {
     <div className="flex justify-between items-center">
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
-        <InputText value={globalFilter} onChange={onGlobalFilterChange} placeholder="Search activity..." className="m-8 p-2" />
+        <InputText value={globalFilter} onChange={onGlobalFilterChange} placeholder={t("Search activity...")} className="m-8 p-2" />
       </span>
       <div className=" flex flex-col items-center justify-center gap-5">
         <ManagerAction type="create" artisanName={'test'} artisanId={'1'} refetch={refetch} />
@@ -107,11 +108,11 @@ export default function ManagerAllDefaultValuesTable() {
     console.log(defaultPriceId);
     try {
       await deleteEntity(`/default-pricing/${defaultPriceId}`, {});
-      setResponseMessage({ type: "success", message: "Values deleted successfully!" });
+      setResponseMessage({ type: "success", message: t("Values deleted successfully!") });
       refetch();
     } catch (error) {
       console.error(error);
-      setResponseMessage({ type: "error", message: "Something went wrong!" });
+      setResponseMessage({ type: "error", message: t("Something went wrong!") });
     }
   };
   const filteredData = globalFilter
@@ -124,11 +125,11 @@ export default function ManagerAllDefaultValuesTable() {
   return (
     <div className="w-full flex flex-col items-center overflow-auto">
       <DataTable value={filteredData} className="text-sm md:text-base max-w-full !overflow-hidden " style={{ width: "100%" }} paginator rows={rows} first={first} onPage={e => setFirst(e.first)} header={header} sortMode="multiple" removableSort>
-        <Column field="activity" header="Activity" body={activityBodyTemplate} className="text-sm md:text-base" />
-        <Column field="project" header="Project" body={projectBodyTemplate} className="text-sm md:text-base" />
-        <Column field="measure" header="Measure" body={measureBodyTemplate} className="text-sm md:text-base" />
-        <Column field="managerPrice" header="Price" body={managerPriceBodyTemplate} className="text-sm md:text-base text-wrap flex items-center justify-center" />
-        <Column field="action" header="Actions" body={actionBodyTemplate} className="text-sm md:text-base" />
+        <Column field="activity" header={t("Activity")} body={activityBodyTemplate} className="text-sm md:text-base" />
+        <Column field="project" header={t("Project")} body={projectBodyTemplate} className="text-sm md:text-base" />
+        <Column field="measure" header={t("Measure")} body={measureBodyTemplate} className="text-sm md:text-base" />
+        <Column field="managerPrice" header={t("Price")} body={managerPriceBodyTemplate} className="text-sm md:text-base text-wrap flex items-center justify-center" />
+        <Column field="action" header={t("Actions")} body={actionBodyTemplate} className="text-sm md:text-base" />
       </DataTable>
       {responseMessage && <ResponseMessage type={responseMessage.type} message={responseMessage.message} duration={2000} onHide={() => setResponseMessage(null)} />}
     </div>

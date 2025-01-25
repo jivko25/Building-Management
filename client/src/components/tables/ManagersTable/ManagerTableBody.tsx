@@ -101,7 +101,7 @@ const ManagersTableBody = () => {
           { label: t("Off"), value: false }
         ]}
         onChange={e => options.filterApplyCallback(e.value)}
-        placeholder="Select readonly"
+        placeholder={t("Select readonly")}
         className="p-column-filter"
         showClear
         style={{ minWidth: "12rem" }}

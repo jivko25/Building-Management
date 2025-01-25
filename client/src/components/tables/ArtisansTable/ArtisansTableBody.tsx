@@ -59,7 +59,7 @@ const ArtisansTableBody = () => {
           <Breadcrumb
             items={[
               {
-                label: "Artisans",
+                label: t("Artisans"),
                 href: "/artisans"
               }
             ]}
