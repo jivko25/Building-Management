@@ -46,13 +46,14 @@ const SidebarUserDropdown = () => {
   return (
     <PopoverContent className="w-[180px] p-0">
       <>
-        <div className="flex items-center py-2">
+        {/* Theme button is off */}
+        {/* <div className="flex items-center py-2">
           {theme === "dark" ? <Moon className="h-[1.2rem] w-[1.9rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" /> : <Sun className="h-[1.2rem] w-[1.9rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />}
           <span className="text-sm pl-1 pr-6">{theme === "dark" ? t("darkMode") : t("lightMode")}</span>
           <PopoverClose asChild>
             <Switch checked={isChecked} onCheckedChange={setIsChecked} onClick={themeToggleHandler} id="dark-mode" />
           </PopoverClose>
-        </div>
+        </div> */}
         <Separator />
         {sidebarUserItems.links.map((link, index) => (
           <PopoverClose key={index} asChild>
