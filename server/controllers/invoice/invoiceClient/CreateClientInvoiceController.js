@@ -43,10 +43,9 @@ const createClientInvoice = async (req, res, next) => {
 
   try {
     console.log("Creating invoice with data:", req.body);
-    const { company_id, client_company_id, due_date_weeks, project_ids, work_item_ids } = req.body;
+    const { company_id, client_company_id, project_ids, work_item_ids, custom_due_date } = req.body;
 
-    // Валидация на входните данни
-    if (!company_id || !client_company_id || !due_date_weeks || !project_ids || !work_item_ids) {
+    if (!company_id || !client_company_id || !project_ids || !work_item_ids) {
       throw new ApiError(400, "Missing required fields!");
     }
 
@@ -64,12 +63,44 @@ const createClientInvoice = async (req, res, next) => {
       throw new ApiError(404, `Company with ID ${company_id} not found`);
     }
 
-    // Проверка дали клиентът съществува
+    // Get client to access their default due_date
     const client = await Client.findByPk(client_company_id);
     if (!client) {
-      throw new ApiError(404, `Client with ID ${client_company_id} not found`);
+      throw new ApiError(404, "Client not found");
     }
-    console.log("Found client:", { id: client.id, email: client.client_emails });
+
+    console.log("Client due_date (days):", client.due_date);
+
+    const currentDate = new Date();
+    // Create a new date object for due_date to avoid modifying currentDate
+    const dueDate = new Date(currentDate);
+    // Use custom_due_date if provided, otherwise use client's default due_date
+    const dueDateDays = custom_due_date || client.due_date;
+    // Add days directly without multiplying by 7
+    dueDate.setDate(dueDate.getDate() + dueDateDays);
+
+    console.log("Current date:", currentDate);
+    console.log("Due date:", dueDate);
+    console.log("Due date days:", dueDateDays);
+
+    const { week, year } = getWeekNumber(currentDate);
+    const invoiceNumber = await generateUniqueInvoiceNumber(year, week);
+
+    const invoice = await Invoice.create(
+      {
+        invoice_number: invoiceNumber,
+        year,
+        week_number: week,
+        company_id,
+        client_id: client_company_id,
+        invoice_date: currentDate,
+        due_date: dueDate,
+        total_amount: 0,
+        paid: false,
+        is_artisan_invoice: false
+      },
+      { transaction: t }
+    );
 
     // Проверка дали проектите съществуват
     const projects = await Project.findAll({
@@ -134,27 +165,6 @@ const createClientInvoice = async (req, res, next) => {
       }
     });
 
-    // Генерираме номер на фактурата
-    const currentDate = new Date();
-    const { week, year } = getWeekNumber(currentDate);
-    const invoiceNumber = await generateUniqueInvoiceNumber(year, week);
-
-    // Създаваме фактурата
-    const invoice = await Invoice.create(
-      {
-        invoice_number: invoiceNumber,
-        year,
-        week_number: week,
-        company_id,
-        client_company_id,
-        invoice_date: currentDate,
-        due_date: new Date(currentDate.setDate(currentDate.getDate() + due_date_weeks * 7)),
-        total_amount: 0,
-        is_artisan_invoice: false
-      },
-      { transaction: t }
-    );
-
     // Създаваме елементите на фактурата
     let totalAmount = 0;
     for (const workItem of workItems) {
@@ -213,8 +223,18 @@ const createClientInvoice = async (req, res, next) => {
       message: "Invoice created successfully",
       data: {
         invoice_id: invoice.id,
-        invoice_number: invoiceNumber,
-        total_amount: totalAmount
+        invoice_number: invoice.invoice_number,
+        total_amount: totalAmount,
+        due_date: invoice.due_date,
+        invoice_date: invoice.invoice_date,
+        client_id: invoice.client_id,
+        company_id: invoice.company_id,
+        week_number: invoice.week_number,
+        year: invoice.year,
+        paid: invoice.paid,
+        is_artisan_invoice: invoice.is_artisan_invoice,
+        created_at: invoice.created_at,
+        updated_at: invoice.updated_at
       }
     });
   } catch (error) {

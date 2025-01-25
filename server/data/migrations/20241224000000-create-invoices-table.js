@@ -30,7 +30,7 @@ module.exports = {
           key: "id"
         }
       },
-      client_company_id: {
+      client_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
@@ -68,14 +68,6 @@ module.exports = {
         allowNull: true,
         references: {
           model: "tbl_artisans",
-          key: "id"
-        }
-      },
-      client_id: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: {
-          model: "tbl_clients",
           key: "id"
         }
       },
