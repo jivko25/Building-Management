@@ -45,6 +45,12 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
+      due_date: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 7,
+        comment: "Number of days for invoice due date"
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,

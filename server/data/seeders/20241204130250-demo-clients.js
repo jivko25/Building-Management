@@ -17,6 +17,7 @@ module.exports = {
           creator_id: 1,
           client_company_vat_number: "2252562636",
           invoice_language_id: 1, // English
+          due_date: 7,
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -31,6 +32,7 @@ module.exports = {
           creator_id: 2, // Manager's ID
           client_company_vat_number: "2252562636",
           invoice_language_id: 2, // Bulgarian
+          due_date: 7,
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -45,6 +47,7 @@ module.exports = {
           creator_id: 2, // Manager's ID
           client_company_vat_number: "2252562636",
           invoice_language_id: 3, // Romanian
+          due_date: 7,
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -59,6 +62,7 @@ module.exports = {
           creator_id: 2, // Manager's ID
           client_company_vat_number: "2252562636",
           invoice_language_id: 4, // Russian
+          due_date: 7,
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -73,6 +77,7 @@ module.exports = {
           creator_id: 2, // Manager's ID
           client_company_vat_number: "2252562636",
           invoice_language_id: 5, // Turkish
+          due_date: 7,
           created_at: new Date(),
           updated_at: new Date()
         }

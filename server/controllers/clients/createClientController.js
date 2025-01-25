@@ -4,7 +4,7 @@ const ApiError = require("../../utils/apiError");
 
 const createClient = async (req, res, next) => {
   console.log("Creating new client with data:", req.body);
-  const { client_company_name, client_name, client_company_address, client_company_iban, client_emails, status, client_company_vat_number, invoice_language_id } = req.body;
+  const { client_company_name, client_name, client_company_address, client_company_iban, client_emails, status, client_company_vat_number, invoice_language_id, due_date } = req.body;
 
   try {
     const existingClient = await Client.findOne({
@@ -27,7 +27,8 @@ const createClient = async (req, res, next) => {
       status,
       creator_id: req.user.id,
       client_company_vat_number,
-      invoice_language_id: invoice_language_id || 1
+      invoice_language_id: invoice_language_id || 1,
+      due_date: due_date || 30
     });
 
     console.log("Client created successfully:", newClient.id);
