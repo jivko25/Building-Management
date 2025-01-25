@@ -34,16 +34,24 @@ module.exports = (sequelize, DataTypes) => {
       },
       creator_id: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        comment: "ID of the user who created the client"
       },
       client_company_vat_number: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        comment: "VAT number of the client's company"
       },
       invoice_language_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 1
+      },
+      due_date: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 7,
+        comment: "Number of days for invoice due date"
       }
     },
     {

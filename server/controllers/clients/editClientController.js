@@ -5,7 +5,7 @@ const ApiError = require("../../utils/apiError");
 const editClient = async (req, res, next) => {
   console.log("Editing client with data:", req.body);
   const clientId = req.params.id;
-  const { client_company_name, client_name, client_company_address, client_company_iban, client_emails, status, client_company_vat_number, invoice_language_id } = req.body;
+  const { client_company_name, client_name, client_company_address, client_company_iban, client_emails, status, client_company_vat_number, invoice_language_id, due_date } = req.body;
 
   try {
     const client = await Client.findByPk(clientId);
@@ -22,7 +22,8 @@ const editClient = async (req, res, next) => {
       client_emails,
       status,
       client_company_vat_number,
-      invoice_language_id
+      invoice_language_id,
+      due_date
     });
 
     res.json({
