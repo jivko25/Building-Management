@@ -35,7 +35,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
         {
           model: Client,
           as: "client",
-          attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails", "client_company_vat_number"]
+          attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails", "client_company_vat_number", "due_date"]
         },
         {
           model: InvoiceItem,
@@ -101,6 +101,10 @@ const createInvoicePDF = async (invoiceId, languageId) => {
       nl: "nl-NL",
       de: "de-DE"
     };
+
+    // Calculate due date based on invoice date and client's due_date
+    const dueDate = new Date(invoice.invoice_date);
+    dueDate.setDate(dueDate.getDate() + invoice.client.due_date * 7);
 
     // Preparing the data for the template
     const data = {

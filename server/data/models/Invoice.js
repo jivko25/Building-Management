@@ -25,7 +25,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       client_id: {
         type: DataTypes.INTEGER,
-        allowNull: true
+        allowNull: true,
+        references: {
+          model: "tbl_clients",
+          key: "id"
+        }
       },
       invoice_date: {
         type: DataTypes.DATE,
@@ -71,7 +75,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Invoice.belongsTo(models.Client, {
-      foreignKey: "client_company_id",
+      foreignKey: "client_id",
       as: "client"
     });
 
