@@ -74,14 +74,15 @@ const createClientInvoice = async (req, res, next) => {
     const currentDate = new Date();
     // Create a new date object for due_date to avoid modifying currentDate
     const dueDate = new Date(currentDate);
-    // Use custom_due_date if provided, otherwise use client's default due_date
-    const dueDateDays = custom_due_date || client.due_date;
-    // Add days directly without multiplying by 7
+    // Convert custom_due_date from weeks to days if provided, otherwise use client's default due_date
+    const dueDateDays = custom_due_date ? custom_due_date * 7 : client.due_date;
+    // Add days
     dueDate.setDate(dueDate.getDate() + dueDateDays);
 
     console.log("Current date:", currentDate);
     console.log("Due date:", dueDate);
     console.log("Due date days:", dueDateDays);
+    console.log("Custom due date (weeks):", custom_due_date);
 
     const { week, year } = getWeekNumber(currentDate);
     const invoiceNumber = await generateUniqueInvoiceNumber(year, week);
@@ -97,7 +98,9 @@ const createClientInvoice = async (req, res, next) => {
         due_date: dueDate,
         total_amount: 0,
         paid: false,
-        is_artisan_invoice: false
+        is_artisan_invoice: false,
+        created_at: currentDate,
+        updated_at: currentDate
       },
       { transaction: t }
     );
@@ -192,7 +195,9 @@ const createClientInvoice = async (req, res, next) => {
           task_id: workItem.task.id,
           quantity: parseFloat(workItem.quantity),
           price_per_unit: parseFloat(defaultPricing.manager_price),
-          total_price: parseFloat(workItem.quantity) * parseFloat(defaultPricing.manager_price)
+          total_price: parseFloat(workItem.quantity) * parseFloat(defaultPricing.manager_price),
+          created_at: currentDate,
+          updated_at: currentDate
         },
         { transaction: t }
       );
@@ -225,8 +230,8 @@ const createClientInvoice = async (req, res, next) => {
         invoice_id: invoice.id,
         invoice_number: invoice.invoice_number,
         total_amount: totalAmount,
-        due_date: invoice.due_date,
         invoice_date: invoice.invoice_date,
+        due_date: invoice.due_date,
         client_id: invoice.client_id,
         company_id: invoice.company_id,
         week_number: invoice.week_number,
