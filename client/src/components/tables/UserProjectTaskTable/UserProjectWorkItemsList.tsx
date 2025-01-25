@@ -4,7 +4,7 @@ import { Column } from "primereact/column";
 import { WorkItem } from "@/types/work-item-types/workItem";
 import UserWorkItemEdit from "@/components/Forms/UserWorkItem/UserWorkItemFormEdit/UserWorkItemEdit";
 import { Button } from "primereact/button";
-import { confirmDialog } from "primereact/confirmdialog"; // Диалог за потвърждение
+// import { confirmDialog } from "primereact/confirmdialog"; // Диалог за потвърждение
 
 interface UserProjectWorkItemsTableProps {
   workItemsData: WorkItem[];
@@ -35,14 +35,14 @@ const UserProjectWorkItemsTable: React.FC<UserProjectWorkItemsTableProps> = ({
   };
 
   // Потвърждение за изтриване
-  const confirmDelete = (id: number) => {
-    confirmDialog({
-      message: "Are you sure you want to delete this work item?",
-      header: "Confirm Deletion",
-      icon: "pi pi-exclamation-triangle",
-      // accept: () => onDelete(id),
-    });
-  };
+  // const confirmDelete = (id: number) => {
+  //   confirmDialog({
+  //     message: "Are you sure you want to delete this work item?",
+  //     header: "Confirm Deletion",
+  //     icon: "pi pi-exclamation-triangle",
+  //     // accept: () => onDelete(id),
+  //   });
+  // };
 
   // Рендериране на бутоните за действие
   const actionsBodyTemplate = (data: WorkItem) => {

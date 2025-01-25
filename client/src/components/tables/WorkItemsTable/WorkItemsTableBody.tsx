@@ -1,6 +1,6 @@
 //client\src\components\tables\WorkItemsTable\WorkItemsTableBody.tsx
-import { useFetchDataQuery, useGetInfiniteData } from "@/hooks/useQueryHook";
-import { ChevronDown, CircleAlert, ClipboardList } from "lucide-react";
+import { useFetchDataQuery } from "@/hooks/useQueryHook";
+import { ChevronDown } from "lucide-react";
 import { useParams } from "react-router-dom";
 import WorkItemsBreadcrumb from "@/components/common/Breadcrumbs/WorkItemsBreadcrumb";
 import TaskItemCard from "@/components/tables/WorkItemsTable/TaskItemCard";
