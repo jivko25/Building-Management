@@ -9,8 +9,10 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function ManagerEditDefaultValuesTable({ editProps, refetch }: { editProps: EditDefaultValuesTableProps; refetch: () => void }) {
+  const { t } = useTranslation();
   const [managerPrice, setManagerPrice] = useState<number>(editProps.managerPrice);
   const [responseMessage, setResponseMessage] = useState<ResponseMessageType | null>(null);
 
@@ -28,11 +30,11 @@ export default function ManagerEditDefaultValuesTable({ editProps, refetch }: { 
 
     try {
       await editEntity(`/default-pricing/${editProps.defaultPricing.id}`, newDefaultPricing);
-      setResponseMessage({ type: "success", message: "Values changed successfully!" });
+      setResponseMessage({ type: "success", message: t("Values changed successfully!") });
       refetch();
     } catch (error) {
       console.error(error);
-      setResponseMessage({ type: "error", message: "Something went wrong!" });
+      setResponseMessage({ type: "error", message: t("Something went wrong!") });
     }
   };
 
@@ -48,14 +50,14 @@ export default function ManagerEditDefaultValuesTable({ editProps, refetch }: { 
   return (
     <div className="w-full flex flex-col justify-center items-center overflow-auto ">
       <DataTable value={tableData} className="text-sm md:text-base max-w-full !overflow-hidden  " style={{ width: "100%" }}>
-        <Column field="activity" header="Activity" body={activityBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
-        <Column field="measure" header="Measure" body={measuresBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
-        <Column field="price" header="Manger Price" body={() => priceBodyTemplate({ set: setManagerPrice, price: managerPrice })} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
+        <Column field="activity" header={t("Activity")} body={activityBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
+        <Column field="measure" header={t("Measure")} body={measuresBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
+        <Column field="price" header={t("Manager Price")} body={() => priceBodyTemplate({ set: setManagerPrice, price: managerPrice })} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
       </DataTable>
       <ConfirmDialog />
       <div className="flex flex-col justify-center items-center mt-4">
         <Button className="w-[150px] md:w-auto px-4 md:px-8 py-2" onClick={editDefaultPricing}>
-          Edit default pricing
+          {t("Edit default pricing")}
         </Button>
         {responseMessage && <ResponseMessage type={responseMessage.type} message={responseMessage.message} duration={2000} onHide={() => setResponseMessage(null)} />}
       </div>

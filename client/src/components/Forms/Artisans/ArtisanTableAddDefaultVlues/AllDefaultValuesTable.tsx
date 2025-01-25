@@ -13,8 +13,10 @@ import { deleteEntity } from "@/api/apiCall";
 import { ResponseMessageType } from "@/types/response-message/responseMessageTypes";
 import ResponseMessage from "@/components/common/ResponseMessages/ResponseMessage";
 import { Project } from "@/types/project-types/projectTypes";
+import { useTranslation } from "react-i18next";
 
 export default function AllDefaultValuesTable({ artisanId, artisanName }: { artisanId: string; artisanName: string }) {
+  const { t } = useTranslation();
   const [globalFilter, setGlobalFilter] = useState<string>("");
   const [first, setFirst] = useState(0);
   const [responseMessage, setResponseMessage] = useState<ResponseMessageType | null>(null);
@@ -99,10 +101,12 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
     <div className="flex justify-between items-center">
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
-        <InputText value={globalFilter} onChange={onGlobalFilterChange} placeholder="Search activity..." className="m-8 p-2" />
+        <InputText value={globalFilter} onChange={onGlobalFilterChange} placeholder={t("Search activity...")} className="m-8 p-2" />
       </span>
       <div className=" flex flex-col items-center justify-center gap-5">
-        <p className="font-semibold">{artisanName}</p>
+        <p className="font-semibold">
+          {t("Artisan")}: {artisanName}
+        </p>
         <ArtisanAction type="create" artisanName={artisanName} artisanId={artisanId} refetch={refetch} />
       </div>
     </div>
@@ -112,11 +116,11 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
     console.log(defaultPriceId);
     try {
       await deleteEntity(`/default-pricing/${defaultPriceId}`, {});
-      setResponseMessage({ type: "success", message: "Values deleted successfully!" });
+      setResponseMessage({ type: "success", message: t("Values deleted successfully!") });
       refetch();
     } catch (error) {
       console.error(error);
-      setResponseMessage({ type: "error", message: "Something went wrong!" });
+      setResponseMessage({ type: "error", message: t("Something went wrong!") });
     }
   };
   const filteredData = globalFilter
@@ -129,12 +133,12 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
   return (
     <div className="w-full flex flex-col justify-center items-center overflow-auto">
       <DataTable value={filteredData} className="text-sm md:text-base max-w-full !overflow-hidden " style={{ width: "100%" }} paginator rows={5} first={first} onPage={e => setFirst(e.first)} header={header} sortMode="multiple" removableSort>
-        <Column field="activity" header="Activity" body={activityBodyTemplate} className="text-sm md:text-base" sortable />
-        <Column field="project" header="Project" body={projectBodyTemplate} className="text-sm md:text-base" sortable />
-        <Column field="measure" header="Measure" body={measureBodyTemplate} className="text-sm md:text-base" sortable />
-        <Column field="price" header="Price" body={priceBodyTemplate} className="text-sm md:text-base" sortable />
-        <Column field="managerPrice" header="Manager Price" body={managerPriceBodyTemplate} className="text-sm md:text-base text-wrap flex items-center justify-center" sortable />
-        <Column field="action" header="Actions" body={actionBodyTemplate} className="text-sm md:text-base" />
+        <Column field="activity" header={t("Activity")} body={activityBodyTemplate} className="text-sm md:text-base" sortable />
+        <Column field="project" header={t("Project")} body={projectBodyTemplate} className="text-sm md:text-base" sortable />
+        <Column field="measure" header={t("Measure")} body={measureBodyTemplate} className="text-sm md:text-base" sortable />
+        <Column field="price" header={t("Price")} body={priceBodyTemplate} className="text-sm md:text-base" sortable />
+        <Column field="managerPrice" header={t("Manager Price")} body={managerPriceBodyTemplate} className="text-sm md:text-base text-wrap flex items-center justify-center" sortable />
+        <Column field="action" header={t("Actions")} body={actionBodyTemplate} className="text-sm md:text-base" />
       </DataTable>
       {responseMessage && <ResponseMessage type={responseMessage.type} message={responseMessage.message} duration={2000} onHide={() => setResponseMessage(null)} />}
     </div>

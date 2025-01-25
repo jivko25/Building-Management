@@ -14,8 +14,10 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function ManagerCreateDefaultValuesTable({ refetch }: { refetch: () => void }) {
+  const { t } = useTranslation();
   const [mangerPrice, setManagerPrice] = useState<number>(0);
   const [measure, setMeasure] = useState<Measure>();
   const [activity, setActivity] = useState<Activity>();
@@ -83,15 +85,15 @@ export default function ManagerCreateDefaultValuesTable({ refetch }: { refetch: 
   //Add default pricing (onSubmit)
   const addDefaultPricing = async () => {
     if (!activity?.id || !measure?.id) {
-      setResponseMessage({ type: "error", message: "Please select both activity and measure" });
+      setResponseMessage({ type: "error", message: t("Please select both activity and measure") });
       return;
     }
     if (!mangerPrice) {
-      setResponseMessage({ type: "error", message: "Please enter both artisan and manager prices" });
+      setResponseMessage({ type: "error", message: t("Please enter both artisan and manager prices") });
       return;
     }
     if (!project || !project.id) {
-      setResponseMessage({ type: "error", message: "Please select a project" });
+      setResponseMessage({ type: "error", message: t("Please select a project") });
       return;
     }
 
@@ -105,13 +107,13 @@ export default function ManagerCreateDefaultValuesTable({ refetch }: { refetch: 
     try {
       await createEntity(`/default-pricing`, defaultPricing);
       setIsAdding(false);
-      setResponseMessage({ type: "success", message: "Values added successfully!" });
+      setResponseMessage({ type: "success", message: t("Values added successfully!") });
       //this  is losing the dp Id
       //refetch(previous => [...previous, defaultPricing]);
       refetch();
     } catch (error) {
       console.error(error);
-      setResponseMessage({ type: "error", message: "Something went wrong!" });
+      setResponseMessage({ type: "error", message: t("Something went wrong!") });
     }
   };
 
@@ -119,11 +121,11 @@ export default function ManagerCreateDefaultValuesTable({ refetch }: { refetch: 
   const handleUnsavedChanges = (callback: () => void) => {
     if (isAdding) {
       confirmDialog({
-        message: "Would you like to add the current values as a default pricing?",
-        header: "Add Default Pricing",
+        message: t("Would you like to add the current values as a default pricing?"),
+        header: t("Add Default Pricing"),
         icon: "pi pi-exclamation-triangle",
-        acceptLabel: "Add Values",
-        rejectLabel: "Cancel",
+        acceptLabel: t("Add Values"),
+        rejectLabel: t("Cancel"),
         acceptClassName: "p-button-success mx-2",
         rejectClassName: "p-button-danger mx-2",
         accept: () => {
@@ -147,15 +149,15 @@ export default function ManagerCreateDefaultValuesTable({ refetch }: { refetch: 
   return (
     <div className="w-full flex flex-col justify-center items-center overflow-auto ">
       <DataTable value={artisan ? [artisan] : []} className="text-sm md:text-base max-w-full !overflow-hidden " style={{ width: "100%" }}>
-        <Column field="project" header="Project" body={projectBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
-        <Column field="activity" header="Activity" body={activityBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
-        <Column field="measure" header="Measure" body={measuresBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
-        <Column field="price" header="Manger Price" body={() => priceBodyTemplate({ set: setManagerPrice, price: mangerPrice, setIsAdding })} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
+        <Column field="project" header={t("Project")} body={projectBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
+        <Column field="activity" header={t("Activity")} body={activityBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
+        <Column field="measure" header={t("Measure")} body={measuresBodyTemplate} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
+        <Column field="price" header={t("Manager Price")} body={() => priceBodyTemplate({ set: setManagerPrice, price: mangerPrice, setIsAdding })} className="text-sm md:text-base [&>td]:!max-w-[400px]" />
       </DataTable>
       <ConfirmDialog />
       <div className="flex flex-col justify-center items-center mt-4">
         <Button className="w-[150px] md:w-auto px-4 md:px-8 py-2" onClick={addDefaultPricing}>
-          Add default pricings
+          {t("Add default pricings")}
         </Button>
         {responseMessage && <ResponseMessage type={responseMessage.type} message={responseMessage.message} duration={2000} onHide={() => setResponseMessage(null)} />}
       </div>

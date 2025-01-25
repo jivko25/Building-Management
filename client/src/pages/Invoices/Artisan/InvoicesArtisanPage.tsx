@@ -161,7 +161,7 @@ export const InvoicesArtisanPage = () => {
             </Button>
           </div>
 
-          <DataTable value={invoices} paginator rows={10} rowsPerPageOptions={[10, 20, 50]} filters={filters} globalFilterFields={["invoice_number", "artisan.name", "total_amount"]} header={renderHeader} emptyMessage="No invoices found" loading={isLoading} stripedRows showGridlines dataKey="id" sortMode="single" removableSort tableStyle={{ minWidth: "50rem" }} scrollable>
+          <DataTable value={invoices} paginator rows={10} rowsPerPageOptions={[10, 20, 50]} filters={filters} globalFilterFields={["invoice_number", "artisan.name", "total_amount"]} header={renderHeader} emptyMessage={t("No invoices found")} loading={isLoading} stripedRows showGridlines dataKey="id" sortMode="single" removableSort tableStyle={{ minWidth: "50rem" }} scrollable>
             <Column field="invoice_number" header={t("Number")} sortable filter filterPlaceholder={t("Search by number")} style={{ width: "15%" }} />
             <Column field="invoice_date" header={t("Date")} body={dateTemplate} sortable style={{ width: "15%" }} />
             <Column field="due_date" header={t("Due Date")} body={dueDateTemplate} sortable style={{ width: "15%" }} />
