@@ -8,9 +8,10 @@ module.exports = {
     await queryInterface.bulkInsert(
       "tbl_activities",
       [
-        { id: 1, name: "Шпакловка", status: "active", creator_id: 1 },
-        { id: 2, name: "Саниране", status: "active", creator_id: 2 },
-        { id: 3, name: "Лене на бетон", status: "active", creator_id: 2 }
+        { id: 1, name: "Hour", status: "active", creator_id: 1 },
+        { id: 2, name: "Шпакловка", status: "active", creator_id: 1 },
+        { id: 3, name: "Саниране", status: "active", creator_id: 2 },
+        { id: 4, name: "Лене на бетон", status: "active", creator_id: 2 }
       ],
       {}
     );

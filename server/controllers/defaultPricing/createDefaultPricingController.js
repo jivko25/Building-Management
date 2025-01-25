@@ -144,6 +144,7 @@ const createDefaultPricing = async (req, res, next) => {
       where: {
         artisan_id: artisan_id,
         activity_id: activity_id,
+        measure_id: measure_id,
         project_id: project_id
       }
     });

@@ -15,10 +15,6 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
       start_date: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -28,10 +24,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       note: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
-      finished_work: {
         type: DataTypes.TEXT,
         allowNull: true,
       },
@@ -78,6 +70,10 @@ module.exports = (sequelize, DataTypes) => {
       quantity: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
+      },
+      hours: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
       },
       project_id: {
         type: DataTypes.INTEGER,

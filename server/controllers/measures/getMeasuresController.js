@@ -8,10 +8,19 @@ const getMeasures = async (req, res, next) => {
     console.log("Getting measures for user:", req.user.id);
     const isAdmin = req.user.role === "admin";
 
+    const hourMeasure = await Measure.findOne({
+      where: {
+        name: "hour"
+      }
+    })
+
     if (isAdmin) {
       const measures = await Measure.findAll({
         order: [["name", "ASC"]]
       });
+      if(hourMeasure) {
+        measures.push(hourMeasure);
+      }
       console.log("Admin: Returning all measures");
       return res.json({
         success: true,
@@ -23,6 +32,10 @@ const getMeasures = async (req, res, next) => {
       creator_id: req.user.id,
       order: [["name", "ASC"]]
     });
+
+    if(hourMeasure) {
+      measures.push(hourMeasure);
+    }
 
     console.log(`Found ${measures.length} measures for user`);
     return res.json({

@@ -1,4 +1,5 @@
 //client\src\types\task-types\taskTypes.ts
+import { Project } from '../project-types/projectTypes';
 import { WorkItem } from '../work-item-types/workItem';
 
 export type Task = {
@@ -43,6 +44,8 @@ export type ProjectTask = {
         project_start_date?: string;
         project_end_date?: string;
         status?: 'active' | 'inactive';
+        project_id?: string;
     };
+    project?: Project;
     workItemsData?: WorkItem[];
 };

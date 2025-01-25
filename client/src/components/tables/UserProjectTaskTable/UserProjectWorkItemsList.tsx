@@ -1,45 +1,116 @@
-//client\src\components\tables\UserProjectTaskTable\UserProjectWorkItemsList.tsx
-import UserWorkItemEdit from "@/components/Forms/UserWorkItem/UserWorkItemFormEdit/UserWorkItemEdit";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import React, { useState, useEffect } from "react";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 import { WorkItem } from "@/types/work-item-types/workItem";
-import { format } from "date-fns";
+import UserWorkItemEdit from "@/components/Forms/UserWorkItem/UserWorkItemFormEdit/UserWorkItemEdit";
+import { Button } from "primereact/button";
+import { confirmDialog } from "primereact/confirmdialog"; // Диалог за потвърждение
 
-interface UserProjectWorkItemsListProps {
+interface UserProjectWorkItemsTableProps {
   workItemsData: WorkItem[];
+  // onDelete: (id: number) => void; // Функция за изтриване
 }
 
-const UserProjectWorkItemsList = ({ workItemsData }: UserProjectWorkItemsListProps) => {
+const UserProjectWorkItemsTable: React.FC<UserProjectWorkItemsTableProps> = ({
+  workItemsData,
+  // onDelete,
+}) => {
+  const [workItems, setWorkItems] = useState<WorkItem[]>([]);
+
+  useEffect(() => {
+    if (workItemsData) {
+      setWorkItems(workItemsData);
+    }
+  }, [workItemsData]);
+
+  // Функция за рендиране на цветен лейбъл за статус
+  const statusBodyTemplate = (data: WorkItem) => {
+    const status = data.status;
+    const labelClass =
+      status === "done"
+        ? "bg-green-500 text-white px-2 py-1 rounded-full text-xs"
+        : "bg-orange-500 text-white px-2 py-1 rounded-full text-xs";
+
+    return <span className={labelClass}>{status === "done" ? "Done" : "InProgress"}</span>;
+  };
+
+  // Потвърждение за изтриване
+  const confirmDelete = (id: number) => {
+    confirmDialog({
+      message: "Are you sure you want to delete this work item?",
+      header: "Confirm Deletion",
+      icon: "pi pi-exclamation-triangle",
+      // accept: () => onDelete(id),
+    });
+  };
+
+  // Рендериране на бутоните за действие
+  const actionsBodyTemplate = (data: WorkItem) => {
+    return (
+      <div className="flex gap-2">
+        <UserWorkItemEdit workItemId={data.id} />
+        <Button
+          icon="pi pi-trash"
+          className="p-button-danger p-button-rounded user-project-trash-icon"
+          // onClick={() => confirmDelete(data.id)}
+        />
+      </div>
+    );
+  };
+
   return (
-    <>
-      {workItemsData &&
-        workItemsData.map(workItem => (
-          <Card className="w-full sm:w-full md:w-full lg:max-w-[24rem] shadow-md shadow-slate-700/20 transition duration-300 ease-in-out hover:shadow-md dark:hover:shadow-slate-700/40 motion-preset-pop motion-duration-700" key={workItem.id}>
-            <CardHeader className="px-6 py-4">
-              <div className="flex items-center justify-between gap-4">
-                <CardTitle>{workItem.name}</CardTitle>
-                <Badge className={`${workItem.status === "done" ? "bg-green-500 hover:bg-green-700" : "bg-orange-500 hover:bg-orange-700"} text-white transition-colors duration-200 rounded-full`}>{workItem.status === "done" ? "Done" : "In progress"}</Badge>
-              </div>
-            </CardHeader>
-            <Separator />
-            <CardContent className="p-6">
-              <div className="flex flex-col lg:flex-row gap-2 justify-between text-sm text-muted-foreground">
-                <div className="">
-                  <div>Start: {format(new Date(workItem.start_date!), "PP")}</div>
-                  <div>End: {format(new Date(workItem.end_date!), "PP")}</div>
-                </div>
-                <div className="flex items-end"></div>
-              </div>
-            </CardContent>
-            <Separator />
-            <CardFooter className="flex flex-1 justify-evenly">
-              <UserWorkItemEdit workItemId={workItem.id} />
-            </CardFooter>
-          </Card>
-        ))}
-    </>
+    <div className="card w-full">
+      <DataTable value={workItems} paginator rows={10} tableStyle={{ minWidth: "50rem" }}>
+        <Column field="activity.name" header="Activity" sortable style={{ width: "20%" }}></Column>
+        <Column
+          field="artisan.name"
+          header="Artisan"
+          body={(data) => (data.artisan?.name ? data.artisan.name : "N/A")}
+          sortable
+          style={{ width: "20%" }}
+        ></Column>
+        <Column
+          field="quantity"
+          header="Quantity"
+          body={(data) => (data.quantity ? data.quantity : "N/A")}
+          sortable
+          style={{ width: "15%" }}
+        ></Column>
+        <Column
+          field="hours"
+          header="Hours"
+          body={(data) => (data.hours ? data.hours : "N/A")}
+          sortable
+          style={{ width: "15%" }}
+        ></Column>
+        <Column
+          field="start_date"
+          header="Start Date"
+          body={(data) => (data.start_date ? new Date(data.start_date).toLocaleDateString() : "N/A")}
+          sortable
+          style={{ width: "15%" }}
+        ></Column>
+        <Column
+          field="end_date"
+          header="End Date"
+          body={(data) => (data.end_date ? new Date(data.end_date).toLocaleDateString() : "N/A")}
+          sortable
+          style={{ width: "15%" }}
+        ></Column>
+        <Column
+          field="status"
+          header="Status"
+          body={statusBodyTemplate}
+          style={{ width: "10%" }}
+        ></Column>
+        <Column
+          header="Actions"
+          body={actionsBodyTemplate}
+          style={{ width: "15%" }}
+        ></Column>
+      </DataTable>
+    </div>
   );
 };
 
-export default UserProjectWorkItemsList;
+export default UserProjectWorkItemsTable;
