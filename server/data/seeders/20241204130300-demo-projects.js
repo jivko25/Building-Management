@@ -21,7 +21,7 @@ module.exports = {
           note: "Важен проект",
           status: "active",
           client_id: 1,
-          creator_id: 1
+          creator_id: 2
         },
         {
           id: 2,

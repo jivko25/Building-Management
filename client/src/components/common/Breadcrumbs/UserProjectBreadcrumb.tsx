@@ -4,8 +4,9 @@ import Breadcrumb from "./Breadcrumb";
 
 type UserProjectBreadcrumbProps = {
   taskId: string;
+  projectId: string;
 };
-const UserProjectBreadcrumb = ({ taskId }: UserProjectBreadcrumbProps) => {
+const UserProjectBreadcrumb = ({ taskId, projectId }: UserProjectBreadcrumbProps) => {
   return (
     <div className="fixed top-0 left-0 md:left-60 right-0 z-40 pt-5 mt-14 bg-transparent backdrop-blur-sm">
       <div className="my-4 mx-8 space-y-4">
@@ -23,7 +24,7 @@ const UserProjectBreadcrumb = ({ taskId }: UserProjectBreadcrumbProps) => {
         />
       </div>
       <div className="flex flex-col border rounded-lg mx-8 space-y-4 p-4 backdrop-blur-sm bg-slate-900/20">
-        <UserWorkItemCreate />
+        <UserWorkItemCreate projectId={projectId}/>
       </div>
     </div>
   );

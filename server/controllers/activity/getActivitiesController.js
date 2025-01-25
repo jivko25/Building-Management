@@ -54,17 +54,28 @@ const getPaginatedActivities = async (req, res, next) => {
       creator_id: req.user.id
     };
 
-    const { count: total, rows: data } = await Activity.findAndCountAll({
+    let { count: total, rows: data } = await Activity.findAndCountAll({
       where: whereClause,
       limit: parseInt(_limit),
       offset: offset
     });
 
-    if (data.length === 0) {
-      throw new ApiError(404, NO_ACTIVITIES_FOUND);
+    const hourActivity = await Activity.findOne({
+      where: {
+        name: "Hour"
+      }
+    });
+
+    if (hourActivity) {
+      total += 1;
+      data.push(hourActivity);
     }
 
-    console.log(`Found ${total} activities`);
+    // if (data.length === 0) {
+    //   throw new ApiError(404, NO_ACTIVITIES_FOUND);
+    // }
+
+    console.log(`Found ${total + 1} activities`);
     res.json({
       data,
       total,

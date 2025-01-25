@@ -1,14 +1,11 @@
 //server\controllers\workItems\getWorkItemsController.js
 const { Op } = require("sequelize");
 const db = require("../../data/index.js");
-const { WorkItem, Task, Artisan, Project } = db;
+const { WorkItem, Task, Artisan, Project, Activity, Measure } = db;
 const ApiError = require("../../utils/apiError");
 
 const getWorkItems = async (req, res, next) => {
   const { task_id } = req.params;
-  const { _page = 1, _limit = 4 } = req.query;
-
-  const offset = (_page - 1) * _limit;
   const isAdmin = req.user.role === "admin";
 
   try {
@@ -17,61 +14,71 @@ const getWorkItems = async (req, res, next) => {
         where: {
           task_id
         },
-        limit: parseInt(_limit),
-        offset: offset,
+        include: [
+          { model: Artisan, as: "artisan" }
+        ],
         order: [["id", "DESC"]]
       });
-      
+
+      const task = await Task.findOne({
+        where: {
+          id: task_id
+        }
+      })
+
       return res.json({
         workItems: workItems,
-        workItemsCount: workItems.count,
-        page: parseInt(_page),
-        limit: parseInt(_limit),
-        totalPages: Math.ceil(workItems.count / parseInt(_limit))
+        task
       });
     }
+    
     const projects = await Project.findAll({
       where: {
         creator_id: req.user.id,
         id: req.params.project_id
       },
-      
     });
+
     if (projects.length === 0) {
       throw new ApiError(404, "No projects found for current user");
     }
+
     const taskIds = projects.map(project => project.task_id);
     if (taskIds.length === 0) {
       throw new ApiError(404, "No tasks found for current user");
     }
 
-    const workItems = await WorkItem.findAndCountAll({
+    const workItems = await WorkItem.findAll({
       where: { task_id },
       include: [
         {
           model: Task,
           as: "task",
           attributes: ["name", "total_price", "total_work_in_selected_measure", "status"],
-          include: [
-            {
-              model: Artisan,
-              as: "artisans",
-              attributes: ["name"]
-            }
-          ]
-        }
+        },
+        { model: Activity, as: "activity" },
+        { model: Measure, as: "measure" },
+        { model: Artisan, as: "artisan" }
       ],
-      limit: parseInt(_limit),
-      offset: offset,
       order: [["id", "DESC"]]
     });
 
+    const task = await Task.findOne({
+      where: {
+        id: task_id
+      },
+      include: [
+        {
+          model: Artisan,
+          as: "artisans",
+          through: { attributes: [] }
+        },
+      ],
+    })
+
     res.json({
-      workItems: workItems.rows,
-      workItemsCount: workItems.count,
-      page: parseInt(_page),
-      limit: parseInt(_limit),
-      totalPages: Math.ceil(workItems.count / parseInt(_limit))
+      workItems: workItems,
+      task
     });
   } catch (error) {
     console.log(error);

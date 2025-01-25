@@ -10,9 +10,10 @@ import { useWorkItemFormHooks } from "@/hooks/forms/useWorkItemForm";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { WorkItemSchema } from "@/models/workItem/workItemSchema";
 import { DefaultPricingResponse } from "@/types/defaultPricingType/defaultPricingTypes";
-import { ClipboardList, Hammer, Calculator } from "lucide-react";
+import { Calculator, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FormProvider } from "react-hook-form";
+import { useParams } from "react-router-dom";
 
 type CreateWorkItemFormProps = {
   handleSubmit: (workItemData: WorkItemSchema) => void;
@@ -22,47 +23,48 @@ type CreateWorkItemFormProps = {
 const CreateWorkItemForm = ({ handleSubmit, isPending }: CreateWorkItemFormProps) => {
   const { useCreateWorkItemForm } = useWorkItemFormHooks();
   const form = useCreateWorkItemForm();
-  const [measureValue, setMeasureValue] = useState('');
+  const [measureValue, setMeasureValue] = useState("");
+  const params = useParams();
 
-  // Гледай за промени в artisan (ID)
+  // Watch for changes in artisan (ID)
   const artisanId = form.watch("artisan"); // Получаваме стойността директно от формата
   const defaultPricing = form.watch("default_pricing"); // Получаваме стойността директно от формата
 
-    const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
-      URL: artisanId ? `/default-pricing/${artisanId}` : `/default-pricing`,
-      queryKey: ["default-pricing"]
-    });
+  const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
+    URL: artisanId ? `/default-pricing/${artisanId}` : `/default-pricing`,
+    queryKey: ["default-pricing"],
+  });
 
-    useEffect(() => {
-      // Fetch default pricings for selected artisan on form change
-      if (artisanId) {
-        refetch();
-        const foundedDefaultPrice = defaultPricingsResponse?.defaultPricing.find((pricing: any) => {
-          console.log(pricing, defaultPricing);
-          
-          return pricing.id == defaultPricing
-        })
-        setMeasureValue(foundedDefaultPrice?.measure?.name || "")
+  useEffect(() => {    
+    // Fetch default pricings for selected artisan on form change
+    if (artisanId) {
+      refetch();
+      const foundedDefaultPrice = defaultPricingsResponse?.defaultPricing.find((pricing: any) => {
+        return pricing.id == defaultPricing;
+      });
+      if(foundedDefaultPrice?.measure?.name.toLocaleLowerCase() !== 'hour') {
+        setMeasureValue(foundedDefaultPrice?.measure?.name || "");
       }
-    }, [artisanId, defaultPricing])
+    }
+  }, [artisanId, defaultPricing]);
+
+  useEffect(() => {
+    form.setValue('project_id', params.id as string)
+  }, []);
 
 
   return (
     <FormProvider {...form}>
       <form id="task-item" onSubmit={form.handleSubmit(handleSubmit)}>
-        <div className="grid grid-cols-1 gap-2 mb-2">
-          <FormFieldInput className="pl-10" label="Work item name" name="name" type="text" Icon={ClipboardList} />
-          <FormFieldInput label="Finished work" name="finished_work" type="text" className="pl-10" Icon={Hammer} />
-        </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2 mb-2">
           <ArtisanSingleSelector name="artisan" label="Select artisan" />
-          {/* Предаваме artisanId директно */}
           <DefaultPricingSelector name="default_pricing" label="Activity" artisan_id={artisanId} />
           <div className="flex items-center justify-center content-center flex-col">
             <FormFieldInput name="quantity" label="Quantity" type="number" className="pl-10" Icon={Calculator} />
             <p className="text-xs text-gray-500 text-wrap">{measureValue}</p>
           </div>
+          <FormFieldInput name="hours" label="Hours" type="number" className="pl-10" Icon={Clock} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2">
@@ -74,7 +76,12 @@ const CreateWorkItemForm = ({ handleSubmit, isPending }: CreateWorkItemFormProps
           <TaskItemStatusSelector label="Status" name="status" />
         </div>
         <FormTextareaInput label="Note" name="note" type="text" className="pt-2" />
-        <DialogFooter disabled={!form.formState.isDirty || isPending} className="mt-6" formName="task-item" label="Submit" />
+        <DialogFooter
+          disabled={!form.formState.isDirty || isPending}
+          className="mt-6"
+          formName="task-item"
+          label="Submit"
+        />
       </form>
     </FormProvider>
   );

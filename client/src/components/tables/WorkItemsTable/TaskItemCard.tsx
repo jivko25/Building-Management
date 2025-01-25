@@ -1,61 +1,59 @@
-//client\src\components\tables\WorkItemsTable\TaskItemCard.tsx
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { PaginatedWorkItems } from "@/types/work-item-types/workItem";
 import { ClipboardList, DollarSign, Hammer, User } from "lucide-react";
 import { useMemo } from "react";
-import { useLocation } from "react-router-dom";
 
 type TaskItemCardProps = {
-  workItems: PaginatedWorkItems;
+  task: {
+    id: number;
+    project_id: number;
+    name: string;
+    activity_id: number;
+    measure_id: number;
+    total_price: string;
+    total_work_in_selected_measure: string;
+    start_date: string;
+    end_date: string;
+    note: string;
+    status: string;
+    artisans: Array<{
+      id: number;
+      name: string;
+      note: string;
+      number: string;
+      email: string;
+      company_id: number;
+      user_id: number;
+      status: string;
+      activity_id: number | null;
+      measure_id: number | null;
+      default_pricing_id: number | null;
+      creator_id: number;
+    }>;
+  };
 };
 
-const TaskItemCard = ({ workItems }: TaskItemCardProps) => {
-  const location = useLocation();
-  const { task } = location.state || {};
-
+const TaskItemCard = ({ task }: TaskItemCardProps) => {
   const taskDetails = useMemo(() => {
-
-    if (!workItems || !Array.isArray(workItems.pages)) {
-      console.error("Invalid workItems format:", workItems);
-      return null;
-    }
-
-    const workItemsPages = workItems?.pages.flatMap((page: any) => page.workItems || []);
-
-    if (!workItemsPages?.length) {
-      return {
-        taskName: task.name,
-        artisanName: task.artisans.map((artisan: { name: any; }) => artisan.name).join(", "),
-        measurePrice: task.price_per_measure,
-        totalPrice: task.total_price,
-        taskStatus: task.status,
-        totalWork: task.total_work_in_selected_measure
-      }
-    }
-
-    const taskNames = Array.from(new Set(workItemsPages.map(item => item.task?.name))).join(", ");
     const artisanNames = Array.from(
-      new Set(
-        workItemsPages.flatMap(item => item.task?.artisans.map((artisan: { name: any; }) => artisan.name))
-      )
+      new Set(task?.artisans.map(artisan => artisan.name))
     ).join(", ");
-    const measurePrices = Array.from(new Set(workItemsPages.map(item => item.task?.price_per_measure))).join(", ");
-    const totalWorks = Array.from(new Set(workItemsPages.map(item => item.task?.total_work_in_selected_measure))).join(", ");
-    const totalPrices = Array.from(new Set(workItemsPages.map(item => item.task?.total_price))).join(", ");
-    const taskStatuses = Array.from(new Set(workItemsPages.map(item => item.task?.status)));
+    const taskStatuses = task?.status;
 
     return {
-      taskName: taskNames,
+      taskName: task?.name,
       artisanName: artisanNames,
-      measurePrice: measurePrices,
-      totalPrice: totalPrices,
+      measurePrice: task?.total_price,
+      totalPrice: task?.total_price,
       taskStatus: taskStatuses,
-      totalWork: totalWorks,
+      totalWork: task?.total_work_in_selected_measure,
     };
-  }, [workItems]);
+  }, [task]);
+
+  console.log(task, 'task');
+  
 
   return (
     <>
@@ -120,7 +118,7 @@ const TaskItemCard = ({ workItems }: TaskItemCardProps) => {
               </Label>
               <Badge
                 className={`px-4 text-sm rounded-full 
-                                ${taskDetails.taskStatus.toString() === "active" ? "text-green-500" : "text-red-500"}`}
+                                ${taskDetails.taskStatus === "active" ? "text-green-500" : "text-red-500"}`}
                 variant="outline">
                 {taskDetails.taskStatus}
               </Badge>

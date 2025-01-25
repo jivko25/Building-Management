@@ -23,8 +23,8 @@ const UserProjectTaskTableBody = () => {
 
   return (
     <>
-      <UserProjectBreadcrumb taskId={taskId!} />
-      <ProjectInformationCard project={task!} />
+      <UserProjectBreadcrumb taskId={taskId!} projectId={task?.taskProjectData?.project_id as string}/>
+      <ProjectInformationCard project={task?.project! as any} />
       <TaskInformationCard project={task!} />
       <div className="flex flex-col items-center justify-center">
         <span className="text-2xl pt-5">Work items</span>

@@ -6,18 +6,7 @@ const ApiError = require("../../utils/apiError");
 
 const createWorkItem = async (req, res, next) => {
   const taskId = req.params.task_id;
-  const {
-    artisan,
-    default_pricing,
-    end_date,
-    finished_work,
-    name,
-    note,
-    quantity,
-    start_date,
-    status,
-  } = req.body;
-  
+  const { artisan, default_pricing, end_date, finished_work, name, note, quantity, start_date, status, hours, project_id } = req.body;
 
   try {
     // Намери default_pricing на база ID
@@ -25,8 +14,8 @@ const createWorkItem = async (req, res, next) => {
       where: { id: default_pricing },
       include: [
         { model: Activity, as: "activity" },
-        { model: Measure, as: "measure" },
-      ],
+        { model: Measure, as: "measure" }
+      ]
     });
 
     if (!defaultPrice) {
@@ -39,17 +28,39 @@ const createWorkItem = async (req, res, next) => {
         project_id: defaultPrice.project_id,
         activity_id: defaultPrice.activity_id,
         artisan_id: { [Op.is]: null },
-        artisan_price: { [Op.is]: null },
-      },
+        artisan_price: { [Op.is]: null }
+      }
     });
 
-    const single_artisan_price = defaultPrice.artisan_price;
-    const single_manager_price =
-      (managerDefaultPrice && managerDefaultPrice.manager_price) ||
-      defaultPrice.manager_price;
+    const hourDefaultPrice = await DefaultPricing.findOne({
+      where: {
+        project_id,
+        activity_id: 1,
+        measure_id: 1,
+        artisan_id: artisan
+      }
+    });
 
-    const total_artisan_price = single_artisan_price * quantity;
-    const total_manager_price = single_manager_price * quantity;
+    if (hours && !hourDefaultPrice?.id) {
+      throw new ApiError(404, "Hourly default pricing not found!");
+    }
+
+    let single_artisan_price;
+    let single_manager_price;
+
+    let total_artisan_price;
+    let total_manager_price;
+
+    if (hours) {
+      single_artisan_price = hourDefaultPrice.artisan_price;
+      total_artisan_price = single_artisan_price * hours;
+    } else {
+      single_artisan_price = defaultPrice.artisan_price;
+      total_artisan_price = single_artisan_price * quantity;
+    }
+
+    single_manager_price = (managerDefaultPrice && managerDefaultPrice.manager_price) || defaultPrice.manager_price;
+    total_manager_price = single_manager_price * quantity;
 
     // Създаване на нов WorkItem
     const newWorkItem = await WorkItem.create({
@@ -68,13 +79,16 @@ const createWorkItem = async (req, res, next) => {
       total_artisan_price,
       total_manager_price,
       creator_id: req.user.id,
+      hours
     });
 
     res.status(201).json({
       message: "Work item created successfully!",
-      workItem: newWorkItem,
+      workItem: newWorkItem
     });
   } catch (error) {
+    console.log(error.message);
+
     if (error instanceof ApiError) {
       next(error);
     } else {
@@ -82,7 +96,6 @@ const createWorkItem = async (req, res, next) => {
     }
   }
 };
-
 
 module.exports = {
   createWorkItem

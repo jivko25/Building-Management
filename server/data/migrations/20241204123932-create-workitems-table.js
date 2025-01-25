@@ -18,10 +18,6 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
       start_date: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -31,10 +27,6 @@ module.exports = {
         allowNull: true,
       },
       note: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
-      finished_work: {
         type: Sequelize.TEXT,
         allowNull: true,
       },
@@ -87,6 +79,10 @@ module.exports = {
       quantity: {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: false,
+      },
+      hours: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
       project_id: {
         type: Sequelize.INTEGER,
