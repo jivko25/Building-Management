@@ -27,8 +27,14 @@ export const clientSchema = z.object({
   }),
   invoice_language_id: z.number({
     required_error: "Please select a language",
+  }),
+  due_date: z.number({
+    required_error: "Please enter due date"
+  }).min(1, {
+    message: "Due date must be at least 1 week"
+  }).max(52, {
+    message: "Due date cannot exceed 52 weeks"
   })
-
 });
 
 export const clientDefaultValues: Client = {
@@ -39,7 +45,8 @@ export const clientDefaultValues: Client = {
   client_emails: [],
   status: "active",
   client_company_vat_number: "",
-  invoice_language_id: 1
+  invoice_language_id: 1,
+  due_date: 1
 };
 
 export type ClientSchema = z.infer<typeof clientSchema>;
