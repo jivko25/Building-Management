@@ -162,7 +162,7 @@ export const CreateArtisanInvoicePage = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("Building Company")}</FormLabel>
-                <Select onValueChange={handleCompanyChange} defaultValue={field.value.toString()}>
+                <Select onValueChange={handleCompanyChange} value={field.value ? field.value.toString() : ""}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder={t("Select company")} />
