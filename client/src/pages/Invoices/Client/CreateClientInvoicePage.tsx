@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { CreateClientInvoiceData } from "@/types/invoice/client.types";
 import { Loader2 } from "lucide-react";
+import axios from "axios";
 
 const createClientInvoiceSchema = z.object({
   company_id: z.number({
@@ -214,10 +215,22 @@ export const CreateClientInvoicePage = () => {
     }
   };
 
-  const handleClientCompanyChange = (clientId: number) => {
-    console.log("Selected client ID:", clientId);
-    if (clientId && clientId > 0) {
-      form.setValue("client_company_id", clientId);
+  const handleClientCompanyChange = async (clientCompanyId: number) => {
+    console.log("Selected client company ID:", clientCompanyId);
+    form.setValue("client_company_id", clientCompanyId);
+
+    try {
+      const clientData = await invoiceClientService.getClientById(clientCompanyId);
+      console.log("Client data:", clientData);
+
+      // Update the due_date_weeks field with the client's due_date
+      form.setValue("due_date_weeks", clientData.due_date);
+      console.log("Updated due_date_weeks to:", clientData.due_date);
+    } catch (error) {
+      console.error("Error fetching client details:", error);
+      toast.error("Грешка при зареждане на данните на клиента");
+      // Set a default value if there's an error
+      form.setValue("due_date_weeks", 1);
     }
   };
 

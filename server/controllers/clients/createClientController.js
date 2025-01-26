@@ -28,7 +28,7 @@ const createClient = async (req, res, next) => {
       creator_id: req.user.id,
       client_company_vat_number,
       invoice_language_id: invoice_language_id || 1,
-      due_date: due_date || 30
+      due_date: due_date || 1
     });
 
     console.log("Client created successfully:", newClient.id);

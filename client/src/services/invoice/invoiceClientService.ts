@@ -63,7 +63,9 @@ export const invoiceClientService = {
         url += `?${params.toString()}`;
       }
 
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        withCredentials: true
+      });
       console.log("📦 Work items response:", response.data);
 
       if (!response.data.data) {
@@ -74,6 +76,20 @@ export const invoiceClientService = {
       return response.data.data;
     } catch (error) {
       console.error("❌ Error fetching work items:", error);
+      throw error;
+    }
+  },
+
+  getClientById: async (id: number) => {
+    try {
+      console.log("Fetching client with ID:", id);
+      const response = await axios.get(`${API_URL}/clients/${id}`, {
+        withCredentials: true
+      });
+      console.log("Client data response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching client:", error);
       throw error;
     }
   }

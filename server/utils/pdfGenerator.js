@@ -102,15 +102,16 @@ const createInvoicePDF = async (invoiceId, languageId) => {
       de: "de-DE"
     };
 
-    // Calculate due date based on invoice date and client's due_date
+    // Calculate due date based on invoice date and due_date_weeks
     const dueDate = new Date(invoice.invoice_date);
-    dueDate.setDate(dueDate.getDate() + invoice.client.due_date * 7);
+    dueDate.setDate(dueDate.getDate() + invoice.due_date_weeks * 7);
 
     // Preparing the data for the template
     const data = {
       invoiceNumber: formattedInvoiceNumber,
       date: invoice.invoice_date.toLocaleDateString(dateLocaleMap[languageCode]),
-      dueDate: invoice.due_date.toLocaleDateString(dateLocaleMap[languageCode]),
+      dueDate: dueDate.toLocaleDateString(dateLocaleMap[languageCode]),
+      dueDateWeeks: invoice.due_date_weeks,
       companyName: invoice.company.name,
       companyAddress: invoice.company.address,
       companyVAT: invoice.company.vat_number,

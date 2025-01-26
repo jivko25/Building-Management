@@ -43,7 +43,7 @@ const createClientInvoice = async (req, res, next) => {
 
   try {
     console.log("Creating invoice with data:", req.body);
-    const { company_id, client_company_id, project_ids, work_item_ids, custom_due_date } = req.body;
+    const { company_id, client_company_id, project_ids, work_item_ids, due_date_weeks } = req.body;
 
     if (!company_id || !client_company_id || !project_ids || !work_item_ids) {
       throw new ApiError(400, "Missing required fields!");
@@ -69,20 +69,18 @@ const createClientInvoice = async (req, res, next) => {
       throw new ApiError(404, "Client not found");
     }
 
-    console.log("Client due_date (days):", client.due_date);
+    console.log("Client due_date (weeks):", client.due_date);
 
     const currentDate = new Date();
-    // Create a new date object for due_date to avoid modifying currentDate
     const dueDate = new Date(currentDate);
-    // Convert custom_due_date from weeks to days if provided, otherwise use client's default due_date
-    const dueDateDays = custom_due_date ? custom_due_date * 7 : client.due_date;
-    // Add days
-    dueDate.setDate(dueDate.getDate() + dueDateDays);
+    // Use due_date_weeks if provided, otherwise use client's default due_date
+    const weeksToAdd = due_date_weeks || client.due_date;
+    // Convert weeks to days and add to due date
+    dueDate.setDate(dueDate.getDate() + weeksToAdd * 7);
 
     console.log("Current date:", currentDate);
     console.log("Due date:", dueDate);
-    console.log("Due date days:", dueDateDays);
-    console.log("Custom due date (weeks):", custom_due_date);
+    console.log("Due date weeks:", weeksToAdd);
 
     const { week, year } = getWeekNumber(currentDate);
     const invoiceNumber = await generateUniqueInvoiceNumber(year, week);
@@ -95,6 +93,7 @@ const createClientInvoice = async (req, res, next) => {
         company_id,
         client_id: client_company_id,
         invoice_date: currentDate,
+        due_date_weeks: weeksToAdd,
         due_date: dueDate,
         total_amount: 0,
         paid: false,
