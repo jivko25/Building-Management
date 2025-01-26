@@ -14,6 +14,7 @@ import { useState } from "react";
 import { CreateClientInvoiceData } from "@/types/invoice/client.types";
 import { Loader2 } from "lucide-react";
 import { CustomCheckbox } from "@/components/ui/checkbox";
+import Pagination from "@/components/common/Pagination/Pagination";
 
 const createClientInvoiceSchema = z.object({
   company_id: z.number({
@@ -94,8 +95,11 @@ export const CreateClientInvoicePage = () => {
     }
   });
 
-  const { data: workItemsData = [] } = useQuery({
-    queryKey: ["workItems", form.watch("company_id"), form.watch("client_company_id"), form.watch("selected_projects")],
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const { data: workItemsResponse } = useQuery({
+    queryKey: ["workItems", form.watch("company_id"), form.watch("client_company_id"), form.watch("selected_projects"), currentPage, itemsPerPage],
     queryFn: async () => {
       const company_id = form.watch("company_id");
       const client_id = form.watch("client_company_id");
@@ -108,25 +112,28 @@ export const CreateClientInvoicePage = () => {
       });
 
       try {
-        // Ако има избрани проекти, правим отделни заявки за всеки проект
         if (selected_projects && selected_projects.length > 0) {
-          const projectPromises = selected_projects.map(project_id => invoiceClientService.getWorkItemsForInvoice(company_id || undefined, client_id || undefined, project_id));
+          const projectPromises = selected_projects.map(project_id => invoiceClientService.getWorkItemsForInvoice(company_id || undefined, client_id || undefined, project_id, currentPage, itemsPerPage));
 
           const projectResults = await Promise.all(projectPromises);
-          // Обединяваме резултатите
-          const combinedResults = projectResults.flat();
-          console.log("📦 Combined work items for selected projects:", combinedResults);
-          return combinedResults;
+          return {
+            data: projectResults.flatMap(r => r.data),
+            total: projectResults.reduce((sum, r) => sum + (r.total || 0), 0),
+            totalPages: Math.max(...projectResults.map(r => r.totalPages || 1))
+          };
         }
 
-        // Ако няма избрани проекти, взимаме всички работни елементи за компанията/клиента
-        const data = await invoiceClientService.getWorkItemsForInvoice(company_id || undefined, client_id || undefined);
-        console.log("📦 Received work items:", data);
-        return data;
+        const response = await invoiceClientService.getWorkItemsForInvoice(company_id || undefined, client_id || undefined, undefined, currentPage, itemsPerPage);
+
+        return {
+          data: response.data,
+          total: response.total,
+          totalPages: response.totalPages
+        };
       } catch (error) {
         console.error("❌ Error fetching work items:", error);
         toast.error("Error fetching work items");
-        return [];
+        return { data: [], total: 0, totalPages: 0 };
       }
     }
   });
@@ -184,7 +191,7 @@ export const CreateClientInvoicePage = () => {
       }
 
       // Събираме уникалните project_ids от избраните work items
-      const allWorkItems = workItemsData.reduce((acc: any[], group: any) => {
+      const allWorkItems = workItemsResponse?.data.reduce((acc: any[], group: any) => {
         return acc.concat(group.workItems || []);
       }, []);
 
@@ -381,24 +388,38 @@ export const CreateClientInvoicePage = () => {
             </div>
           )}
 
-          {workItemsData && workItemsData.length > 0 && (
+          {workItemsResponse && (
             <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">{t("Select Work Items")}</h2>
-              <div className="space-y-6">
-                {workItemsData.map((group: any) => (
-                  <div key={group.projectId} className="border rounded-lg p-4 bg-white shadow-sm">
-                    <div className="flex justify-between items-center mb-3">
-                      <h3 className="text-lg font-medium text-gray-900">{group.projectName}</h3>
-                      <span className="text-sm text-gray-500">{group.projectLocation}</span>
-                    </div>
-                    <div className="grid gap-3">
-                      {group.workItems.map((workItem: any) => (
-                        <CustomCheckbox key={workItem.id} id={`workItem-${workItem.id}`} value={workItem.id} label={workItem.name} sublabel={`${workItem.activity?.name} - ${workItem.measure?.name}`} rightText={`${workItem.quantity} ${workItem.measure?.name}`} checked={form.watch("selected_work_items")?.includes(workItem.id)} onChange={e => handleWorkItemChange(workItem.id, e.target.checked)} />
-                      ))}
-                    </div>
+              {workItemsResponse.data?.length > 0 && (
+                <>
+                  <h2 className="text-xl font-semibold mb-4">{t("Select Work Items")}</h2>
+                  <div className="space-y-6">
+                    {workItemsResponse?.data?.map((group: any) => (
+                      <div key={group.projectId} className="border rounded-lg p-4 bg-white shadow-sm">
+                        <div className="flex justify-between items-center mb-3">
+                          <h3 className="text-lg font-medium text-gray-900">{group.projectName}</h3>
+                          <span className="text-sm text-gray-500">{group.projectLocation}</span>
+                        </div>
+                        <div className="grid gap-3">
+                          {group.workItems.map((workItem: any) => (
+                            <CustomCheckbox key={workItem.id} id={`workItem-${workItem.id}`} value={workItem.id} label={workItem.name} sublabel={`${workItem.activity?.name} - ${workItem.measure?.name}`} rightText={`${workItem.quantity} ${workItem.measure?.name}`} checked={form.watch("selected_work_items")?.includes(workItem.id)} onChange={e => handleWorkItemChange(workItem.id, e.target.checked)} />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </>
+              )}
+
+              <Pagination
+                totalPages={workItemsResponse?.totalPages || 0}
+                page={currentPage}
+                setSearchParams={params => {
+                  const newPage = parseInt(params.get("page") || "1");
+                  console.log("Changing to page:", newPage);
+                  setCurrentPage(newPage);
+                }}
+              />
             </div>
           )}
 

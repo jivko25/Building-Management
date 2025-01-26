@@ -155,7 +155,7 @@ export const InvoicesClientPage = () => {
           <DataTable value={invoices} paginator rows={10} rowsPerPageOptions={[10, 20, 50]} filters={filters} globalFilterFields={["invoice_number", "client.client_name", "total_amount"]} header={renderHeader} emptyMessage={t("No invoices found")} loading={isLoading} stripedRows showGridlines dataKey="id" sortMode="single" removableSort tableStyle={{ minWidth: "50rem" }} scrollable>
             <Column field="invoice_number" header={t("Number")} sortable filter filterPlaceholder={t("Search by number")} style={{ width: "15%" }} />
             <Column field="invoice_date" header={t("Date")} body={dateTemplate} sortable style={{ width: "15%" }} />
-            <Column field="due_date" header={t("Due date")} body={dueDateTemplate} sortable style={{ width: "15%" }} />
+            <Column field="due_date" header={t("Due Date")} body={dueDateTemplate} sortable style={{ width: "15%" }} />
             <Column field="client.client_name" header={t("Client")} body={clientTemplate} sortable filter filterPlaceholder={t("Search by client")} style={{ width: "20%" }} />
             <Column field="total_amount" header={t("Amount")} body={amountTemplate} sortable filter filterPlaceholder={t("Search by amount")} style={{ width: "15%" }} />
             <Column field="paid" header={t("Paid")} body={paidTemplate} sortable style={{ width: "10%" }} />
