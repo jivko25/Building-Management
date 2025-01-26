@@ -67,6 +67,7 @@ const ClientForm = ({ form, onSubmit, defaultValues }: ClientFormProps) => {
         <FormEmailList control={form.control} name="client_emails" label={t("Email Addresses")} placeholder={t("Add email address")} />
         <FormSelect control={form.control} name="status" label={t("Status")} options={statusOptions} />
         <FormSelect control={form.control} name="invoice_language_id" label={t("Invoice Language")} options={languageOptions} />
+        <FormInput control={form.control} name="due_date" label={t("Due Date (weeks)")} placeholder={t("Enter due date in weeks")} type="number" />
         <Button type="submit" className="w-full">
           {defaultValues ? t("Update Client") : t("Create Client")}
         </Button>
