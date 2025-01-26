@@ -14,6 +14,7 @@ import { CreateArtisanInvoiceSchema } from "@/schemas/invoice/artisan.schema";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { CustomCheckbox } from "@/components/ui/checkbox";
+import Pagination from "@/components/common/Pagination/Pagination";
 
 export const CreateArtisanInvoicePage = () => {
   const navigate = useNavigate();
@@ -78,7 +79,7 @@ export const CreateArtisanInvoicePage = () => {
     console.log("📝 Form submitted with data:", data);
 
     // Извличаме уникалните project_ids от избраните работни елементи
-    const selectedWorkItems = workItemsData?.flatMap((artisanData: any) => artisanData.projects.flatMap((project: any) => project.workItems.filter((item: any) => data.work_item_ids?.includes(item.id)))) || [];
+    const selectedWorkItems = workItemsData?.data?.flatMap((artisanData: any) => artisanData.projects.flatMap((project: any) => project.workItems.filter((item: any) => data.work_item_ids?.includes(item.id)))) || [];
 
     const uniqueProjectIds = [...new Set(selectedWorkItems.map((item: any) => item.project_id))];
 
@@ -88,7 +89,7 @@ export const CreateArtisanInvoicePage = () => {
       due_date_weeks: data.due_date_weeks,
       project_ids: uniqueProjectIds as number[],
       work_item_ids: data.work_item_ids || [],
-      items: [] // Ако е нужно, можете да добавите items тук
+      items: []
     });
   };
 
@@ -122,6 +123,32 @@ export const CreateArtisanInvoicePage = () => {
 
     return !!(formData.company_id && formData.artisan_id && formData.due_date_weeks && Array.isArray(formData.work_item_ids) && formData.work_item_ids.length > 0);
   };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+
+  const { data: workItemsResponse } = useQuery({
+    queryKey: ["workItems", form.watch("company_id"), form.watch("artisan_id"), currentPage, itemsPerPage],
+    queryFn: async () => {
+      const company_id = form.watch("company_id");
+      const artisan_id = form.watch("artisan_id");
+
+      console.log("🔍 Fetching artisan work items with:", {
+        company_id,
+        artisan_id,
+        page: currentPage,
+        limit: itemsPerPage
+      });
+
+      try {
+        return await artisanInvoiceService.getWorkItemsForInvoice(company_id || undefined, artisan_id || undefined, currentPage, itemsPerPage);
+      } catch (error) {
+        console.error("Error fetching work items:", error);
+        toast.error(t("Failed to load work items"));
+        return { data: [], total: 0, totalPages: 1 };
+      }
+    }
+  });
 
   return (
     <div className="container mx-auto py-10">
@@ -215,10 +242,10 @@ export const CreateArtisanInvoicePage = () => {
             <div className="flex justify-center">
               <Loader2 className="h-6 w-6 animate-spin" />
             </div>
-          ) : workItemsData?.length > 0 ? (
+          ) : workItemsData?.data?.length > 0 ? (
             <div className="border rounded-lg p-4">
               <h2 className="text-lg font-semibold mb-4">{t("Work Items")}</h2>
-              {workItemsData.map((artisanData: any) => (
+              {workItemsData?.data?.map((artisanData: any) => (
                 <div key={artisanData.artisanId} className="mb-6">
                   <h3 className="font-medium mb-2">{artisanData.artisanName}</h3>
                   {artisanData.projects.map((project: any) => (
@@ -256,6 +283,19 @@ export const CreateArtisanInvoicePage = () => {
               ))}
             </div>
           ) : null}
+
+          {workItemsResponse && (
+            <div className="mt-8">
+              <Pagination
+                totalPages={workItemsResponse?.totalPages || 0}
+                page={currentPage}
+                setSearchParams={params => {
+                  const newPage = parseInt(params.get("page") || "1");
+                  setCurrentPage(newPage);
+                }}
+              />
+            </div>
+          )}
 
           <div className="flex justify-end gap-4">
             <Button type="submit" disabled={!isFormValid() || createInvoiceMutation.isPending} className={`${!isFormValid() || createInvoiceMutation.isPending ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-primary/90"}`}>
