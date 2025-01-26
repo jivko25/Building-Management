@@ -39,15 +39,15 @@ const ProjectsTableBody = () => {
   }
 
   return (
-    <div className="flex flex-col flex-1 py-8 items-center md:px-0">
-      <div className="flex flex-row justify-between w-full mb-4 md:w-2/3 gap-4">
+    <div className="flex flex-col flex-1 py-8 items-center">
+      <div className="flex flex-row justify-between w-full mb-4 px-4 xl:w-4/5 2xl:w-3/4 gap-4">
         <SearchBar handleSearch={handleSearch} placeholder={t("Search projects...")} search={search} />
         <CreateProject />
       </div>
 
-      <div className="w-full md:w-2/3">
-        <div className="border rounded-lg p-4 backdrop-blur-sm bg-slate-900/20">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="w-full px-4 xl:w-4/5 2xl:w-3/4">
+        <div className="border rounded-lg p-6 backdrop-blur-sm bg-slate-900/20 min-h-[600px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <ConditionalRenderer
               data={projects}
               renderData={projects => <ProjectsCard projects={projects as Project[]} />}
