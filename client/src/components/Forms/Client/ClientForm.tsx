@@ -9,7 +9,6 @@ import FormEmailList from "@/components/Forms/FormElements/FormEmailList";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { getEntityData } from "@/api/apiCall";
-import { useEffect } from "react";
 
 interface ClientFormProps {
   form: UseFormReturn<ClientSchema>;
@@ -41,20 +40,12 @@ const ClientForm = ({ form, onSubmit, defaultValues }: ClientFormProps) => {
   const handleSubmit = (data: ClientSchema) => {
     const formattedData = {
       ...data,
-      invoice_language_id: Number(data.invoice_language_id)
+      invoice_language_id: Number(data.invoice_language_id),
+      due_date: Number(data.due_date)
     };
     console.log("Submitting form with data:", formattedData);
     onSubmit(formattedData as Client);
   };
-
-  useEffect(() => {
-    const subscription = form.watch((value, { name }) => {
-      if (name === "invoice_language_id") {
-        form.setValue("invoice_language_id", Number(value.invoice_language_id));
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
 
   return (
     <Form {...form}>

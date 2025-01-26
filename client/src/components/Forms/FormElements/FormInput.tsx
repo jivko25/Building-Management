@@ -19,7 +19,16 @@ const FormInput = ({ control, name, label, placeholder, type = "text" }: FormInp
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input placeholder={placeholder} type={type} {...field} />
+            <Input
+              placeholder={placeholder}
+              type={type}
+              {...field}
+              value={field.value || ""}
+              onChange={e => {
+                const value = type === "number" ? (e.target.value === "" ? "" : Number(e.target.value)) : e.target.value;
+                field.onChange(value);
+              }}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
