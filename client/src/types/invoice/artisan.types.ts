@@ -15,6 +15,7 @@ export interface ArtisanInvoice extends BaseInvoice {
   };
   items: ArtisanInvoiceItem[];
   invoice_date: string;
+  due_date: string;
 }
 
 export interface ArtisanInvoiceItem extends BaseInvoiceItem {
