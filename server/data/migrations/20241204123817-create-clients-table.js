@@ -48,8 +48,8 @@ module.exports = {
       due_date: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 7,
-        comment: "Number of days for invoice due date"
+        defaultValue: 1,
+        comment: "Due date in weeks"
       },
       created_at: {
         type: Sequelize.DATE,

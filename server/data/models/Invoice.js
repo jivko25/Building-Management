@@ -60,6 +60,12 @@ module.exports = (sequelize, DataTypes) => {
           model: "tbl_artisans",
           key: "id"
         }
+      },
+      due_date_weeks: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1,
+        comment: "Due date in weeks"
       }
     },
     {

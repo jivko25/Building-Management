@@ -71,6 +71,12 @@ module.exports = {
           key: "id"
         }
       },
+      due_date_weeks: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 1,
+        comment: "Due date in weeks"
+      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
