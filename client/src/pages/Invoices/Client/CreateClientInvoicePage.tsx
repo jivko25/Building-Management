@@ -96,7 +96,7 @@ export const CreateClientInvoicePage = () => {
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
 
   const { data: workItemsResponse } = useQuery({
     queryKey: ["workItems", form.watch("company_id"), form.watch("client_company_id"), form.watch("selected_projects"), currentPage, itemsPerPage],
