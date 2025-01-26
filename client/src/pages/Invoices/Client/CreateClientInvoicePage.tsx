@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { CreateClientInvoiceData } from "@/types/invoice/client.types";
 import { Loader2 } from "lucide-react";
+import { CustomCheckbox } from "@/components/ui/checkbox";
 
 const createClientInvoiceSchema = z.object({
   company_id: z.number({
@@ -374,74 +375,8 @@ export const CreateClientInvoicePage = () => {
               <h2 className="text-xl font-semibold mb-4">{t("Select Projects")}</h2>
               <div className="grid grid-cols-3 gap-4 p-4 border rounded-lg bg-white shadow-sm">
                 {projects.map((project: any) => (
-                  <div key={project.id} className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 transition-colors duration-200 group relative">
-                    <div className="flex items-center min-w-0">
-                      <div className="relative inline-flex items-center">
-                        <input
-                          type="checkbox"
-                          id={`project-${project.id}`}
-                          className="
-                            peer
-                            appearance-none
-                            w-5 
-                            h-5 
-                            border-2 
-                            border-gray-300 
-                            rounded-md 
-                            bg-white
-                            checked:bg-blue-500 
-                            checked:border-blue-500
-                            transition-colors 
-                            duration-200
-                            cursor-pointer
-                            focus:outline-none 
-                            focus:ring-2 
-                            focus:ring-blue-500/30
-                          "
-                          checked={form.watch("selected_projects")?.includes(project.id)}
-                          onChange={e => handleProjectChange(project.id, e.target.checked)}
-                        />
-                        <svg
-                          className="
-                            absolute 
-                            w-4 
-                            h-4 
-                            text-white 
-                            left-0.5 
-                            top-0.5
-                            pointer-events-none 
-                            opacity-0 
-                            peer-checked:opacity-100 
-                            transition-opacity 
-                            duration-200
-                          "
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth="3">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <div className="ml-3 min-w-0">
-                        <label htmlFor={`project-${project.id}`} className="text-sm font-medium text-gray-900 cursor-pointer truncate block">
-                          {project.name}
-                        </label>
-                        <span className="text-xs text-gray-500 truncate block">{project.location}</span>
-                      </div>
-                    </div>
-                    <div className={`absolute top-2 right-2 w-2 h-2 rounded-full ${project.status === "active" ? "bg-green-500" : "bg-gray-300"}`} />
-                  </div>
+                  <CustomCheckbox key={project.id} id={`project-${project.id}`} value={project.id} label={project.name} sublabel={project.location} rightText={project.status === "active" ? t("Active") : t("Inactive")} checked={form.watch("selected_projects")?.includes(project.id)} onChange={e => handleProjectChange(project.id, e.target.checked)} containerClassName={`relative ${project.status === "active" ? "border-green-200" : "border-gray-200"}`} />
                 ))}
-              </div>
-              <div className="mt-4 text-sm text-gray-500 flex items-center justify-end space-x-2">
-                <span className="flex items-center">
-                  <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                  {t("Active")}
-                </span>
-                <span className="flex items-center ml-4">
-                  <span className="w-2 h-2 rounded-full bg-gray-300 mr-2"></span>
-                  {t("Inactive")}
-                </span>
               </div>
             </div>
           )}
@@ -458,33 +393,7 @@ export const CreateClientInvoicePage = () => {
                     </div>
                     <div className="grid gap-3">
                       {group.workItems.map((workItem: any) => (
-                        <div key={workItem.id} className="flex items-center justify-between p-3 border rounded-md hover:bg-gray-50">
-                          <div className="flex items-center min-w-0">
-                            <div className="relative inline-flex items-center">
-                              <input
-                                type="checkbox"
-                                id={`workItem-${workItem.id}`}
-                                className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-md bg-white
-                                         checked:bg-blue-500 checked:border-blue-500 transition-colors duration-200
-                                         cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                                checked={form.watch("selected_work_items")?.includes(workItem.id)}
-                                onChange={e => handleWorkItemChange(workItem.id, e.target.checked)}
-                              />
-                              {/* Checkmark icon */}
-                            </div>
-                            <div className="ml-3">
-                              <label htmlFor={`workItem-${workItem.id}`} className="text-sm font-medium text-gray-900">
-                                {workItem.name}
-                              </label>
-                              <div className="text-xs text-gray-500">
-                                {workItem.activity?.name} - {workItem.measure?.name}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {workItem.quantity} {workItem.measure?.name}
-                          </div>
-                        </div>
+                        <CustomCheckbox key={workItem.id} id={`workItem-${workItem.id}`} value={workItem.id} label={workItem.name} sublabel={`${workItem.activity?.name} - ${workItem.measure?.name}`} rightText={`${workItem.quantity} ${workItem.measure?.name}`} checked={form.watch("selected_work_items")?.includes(workItem.id)} onChange={e => handleWorkItemChange(workItem.id, e.target.checked)} />
                       ))}
                     </div>
                   </div>
@@ -494,16 +403,16 @@ export const CreateClientInvoicePage = () => {
           )}
 
           <div className="flex justify-end mt-4">
-            <button type="submit" disabled={!isFormValid() || createClientInvoiceMutation.isPending} className={`px-4 py-2 rounded-md text-white flex items-center gap-2 ${isFormValid() && !createClientInvoiceMutation.isPending ? "bg-indigo-600 hover:bg-indigo-700" : "bg-gray-400 cursor-not-allowed"}`}>
+            <Button type="submit" disabled={!isFormValid() || createClientInvoiceMutation.isPending} className={!isFormValid() || createClientInvoiceMutation.isPending ? "bg-gray-400" : ""}>
               {createClientInvoiceMutation.isPending ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   {t("Creating...")}
                 </>
               ) : (
                 t("Create invoice")
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </Form>

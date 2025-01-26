@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { CreateArtisanInvoiceSchema } from "@/schemas/invoice/artisan.schema";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { CustomCheckbox } from "@/components/ui/checkbox";
 
 export const CreateArtisanInvoicePage = () => {
   const navigate = useNavigate();
@@ -227,37 +228,26 @@ export const CreateArtisanInvoicePage = () => {
                       </h4>
                       <div className="space-y-2">
                         {project.workItems.map((workItem: any) => (
-                          <div key={workItem.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                            <div className="flex items-center">
-                              <input
-                                type="checkbox"
-                                id={`workItem-${workItem.id}`}
-                                value={workItem.id}
-                                onChange={e => {
-                                  const workItemId = parseInt(e.target.value);
-                                  const currentItems = form.getValues("work_item_ids") || [];
-                                  if (e.target.checked) {
-                                    form.setValue("work_item_ids", [...currentItems, workItemId]);
-                                  } else {
-                                    form.setValue(
-                                      "work_item_ids",
-                                      currentItems.filter(id => id !== workItemId)
-                                    );
-                                  }
-                                }}
-                                className="mr-2"
-                              />
-                              <div>
-                                <div className="text-sm font-medium">{workItem.name}</div>
-                                <div className="text-xs text-gray-500">
-                                  {workItem.activity?.name} - {workItem.measure?.name}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {workItem.quantity} {workItem.measure?.name}
-                            </div>
-                          </div>
+                          <CustomCheckbox
+                            key={workItem.id}
+                            id={`workItem-${workItem.id}`}
+                            value={workItem.id}
+                            label={workItem.name}
+                            sublabel={`${workItem.activity?.name} - ${workItem.measure?.name}`}
+                            rightText={`${workItem.quantity} ${workItem.measure?.name}`}
+                            onChange={e => {
+                              const workItemId = parseInt(e.target.value);
+                              const currentItems = form.getValues("work_item_ids") || [];
+                              if (e.target.checked) {
+                                form.setValue("work_item_ids", [...currentItems, workItemId]);
+                              } else {
+                                form.setValue(
+                                  "work_item_ids",
+                                  currentItems.filter(id => id !== workItemId)
+                                );
+                              }
+                            }}
+                          />
                         ))}
                       </div>
                     </div>
