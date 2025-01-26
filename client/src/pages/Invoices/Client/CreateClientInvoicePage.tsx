@@ -13,7 +13,6 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { CreateClientInvoiceData } from "@/types/invoice/client.types";
 import { Loader2 } from "lucide-react";
-import axios from "axios";
 
 const createClientInvoiceSchema = z.object({
   company_id: z.number({
