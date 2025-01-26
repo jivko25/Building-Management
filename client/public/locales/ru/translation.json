@@ -343,5 +343,6 @@
   "Project status": "статус проекта",
   "No start date available": "нет даты начала",
   "All default prices": "все цены по умолчанию",
-  "Manager Price": "цена менеджера"
+  "Manager Price": "цена менеджера",
+  "New Client Invoice": "новая клиентская фактура"
 }
