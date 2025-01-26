@@ -11,7 +11,6 @@ import useSearchHandler from "@/hooks/useSearchHandler";
 import useSearchParamsHook from "@/hooks/useSearchParamsHook";
 import CreateProject from "@/components/Forms/Projects/ProjectFormCreate/CreateProject";
 import { useTranslation } from "react-i18next";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
 const ProjectsTableBody = () => {
   const { t } = useTranslation();

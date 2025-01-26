@@ -14,7 +14,6 @@ import { useGetPaginatedData } from "@/hooks/useQueryHook";
 import ArtisansCard from "./ArtisansCard";
 import ArtisansHeader from "./ArtisansHeader";
 import { useTranslation } from "react-i18next";
-import Breadcrumb from "@/components/common/Breadcrumbs/Breadcrumb";
 interface ArtisanResponse {
   artisans: Artisan[];
   artisansCount: number;
