@@ -48,12 +48,21 @@ export const invoiceClientService = {
     return response.data.data;
   },
 
-  getWorkItemsForInvoice: async (company_id?: number, client_id?: number, project_id?: number) => {
+  getWorkItemsForInvoice: async (company_id?: number, client_id?: number, project_id?: number, page: number = 1, limit: number = 10) => {
     try {
-      console.log("🔍 Fetching work items for invoice with filters:", { company_id, client_id, project_id });
+      console.log("🔍 Fetching work items with pagination:", {
+        company_id,
+        client_id,
+        project_id,
+        page,
+        limit
+      });
 
       let url = `${API_URL}/invoices-client/work-items`;
-      const params = new URLSearchParams();
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString()
+      });
 
       if (company_id) params.append("company_id", company_id.toString());
       if (client_id) params.append("client_id", client_id.toString());
@@ -64,19 +73,23 @@ export const invoiceClientService = {
       }
 
       const response = await axios.get(url, {
-        withCredentials: true
+        withCredentials: true,
+        params
       });
-      console.log("📦 Work items response:", response.data);
 
-      if (!response.data.data) {
-        console.warn("⚠️ No work items found");
-        return [];
-      }
-
-      return response.data.data;
+      console.log("📦 Work items response with pagination:", response.data);
+      return {
+        data: response.data.data || [],
+        total: response.data.total || 0,
+        totalPages: response.data.totalPages || 1
+      };
     } catch (error) {
       console.error("❌ Error fetching work items:", error);
-      throw error;
+      return {
+        data: [],
+        total: 0,
+        totalPages: 1
+      };
     }
   },
 
