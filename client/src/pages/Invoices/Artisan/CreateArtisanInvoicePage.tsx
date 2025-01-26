@@ -53,7 +53,7 @@ export const CreateArtisanInvoicePage = () => {
     defaultValues: {
       company_id: 0,
       artisan_id: 0,
-      due_date_weeks: 2,
+      due_date_weeks: 1,
       project_ids: [],
       work_item_ids: [],
       items: []
