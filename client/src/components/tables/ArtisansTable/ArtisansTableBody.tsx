@@ -54,20 +54,11 @@ const ArtisansTableBody = () => {
 
   return (
     <div className="flex flex-col flex-1 py-8 items-center md:px-0">
-      <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
-        <div className="flex flex-col gap-5">
-          <Breadcrumb
-            items={[
-              {
-                label: t("Artisans"),
-                href: "/artisans"
-              }
-            ]}
-          />
-          <SearchBar handleSearch={handleSearch} placeholder={t("Search artisans...")} search={search} />
-        </div>
+      <div className="flex flex-row justify-between w-full mb-4 md:w-2/3 gap-4">
+        <SearchBar handleSearch={handleSearch} placeholder={t("Search artisans...")} search={search} />
         <CreateArtisan />
       </div>
+
       <Table className="w-full min-w-full">
         <ArtisansHeader />
         <TableBody>
