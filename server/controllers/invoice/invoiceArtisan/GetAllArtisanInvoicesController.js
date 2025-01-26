@@ -26,32 +26,38 @@ const getAllArtisanInvoices = async (req, res) => {
 
     console.log(`Found ${invoices.length} artisan invoices`);
 
-    const formattedInvoices = invoices.map(invoice => ({
-      id: invoice.id,
-      invoice_number: invoice.invoice_number,
-      artisan: invoice.artisan
-        ? {
-            id: invoice.artisan.id,
-            name: invoice.artisan.name,
-            email: invoice.artisan.email,
-            number: invoice.artisan.number
-          }
-        : null,
-      company: invoice.company
-        ? {
-            id: invoice.company.id,
-            name: invoice.company.name,
-            address: invoice.company.address,
-            email: invoice.company.email
-          }
-        : null,
-      total_amount: invoice.total_amount,
-      status: invoice.status,
-      due_date: invoice.due_date,
-      created_at: invoice.created_at
-    }));
+    const formattedInvoices = invoices.map(invoice => {
+      console.log("Raw invoice date:", invoice.invoice_date);
+      console.log("Raw due date:", invoice.due_date);
 
-    console.log("Formatted invoices:", JSON.stringify(formattedInvoices, null, 2));
+      return {
+        id: invoice.id,
+        invoice_number: invoice.invoice_number,
+        invoice_date: invoice.invoice_date,
+        due_date: invoice.due_date,
+        artisan: invoice.artisan
+          ? {
+              id: invoice.artisan.id,
+              name: invoice.artisan.name,
+              email: invoice.artisan.email,
+              number: invoice.artisan.number
+            }
+          : null,
+        company: invoice.company
+          ? {
+              id: invoice.company.id,
+              name: invoice.company.name,
+              address: invoice.company.address,
+              email: invoice.company.email
+            }
+          : null,
+        total_amount: invoice.total_amount,
+        paid: invoice.paid,
+        status: invoice.status
+      };
+    });
+
+    console.log("Sample formatted invoice:", JSON.stringify(formattedInvoices[0], null, 2));
 
     res.status(200).json({
       success: true,
