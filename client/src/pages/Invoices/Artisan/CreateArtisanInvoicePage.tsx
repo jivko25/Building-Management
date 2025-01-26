@@ -78,7 +78,6 @@ export const CreateArtisanInvoicePage = () => {
   const onSubmit = (data: CreateArtisanInvoiceSchema) => {
     console.log("📝 Form submitted with data:", data);
 
-    // Извличаме уникалните project_ids от избраните работни елементи
     const selectedWorkItems = workItemsData?.data?.flatMap((artisanData: any) => artisanData.projects.flatMap((project: any) => project.workItems.filter((item: any) => data.work_item_ids?.includes(item.id)))) || [];
 
     const uniqueProjectIds = [...new Set(selectedWorkItems.map((item: any) => item.project_id))];
@@ -116,7 +115,6 @@ export const CreateArtisanInvoicePage = () => {
     form.setValue("artisan_id", artisanId);
   };
 
-  // Опростяваме функцията за валидация
   const isFormValid = () => {
     const formData = form.getValues();
     console.log("Form data for validation:", formData);
