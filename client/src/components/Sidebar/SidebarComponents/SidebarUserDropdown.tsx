@@ -4,17 +4,16 @@ import { Link, useNavigate } from "react-router-dom";
 import SidebarButton from "./SidebarButton";
 import { sidebarUserItems } from "./sidebarItems";
 import { Separator } from "@/components/ui/separator";
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "@/context/ThemeContext";
-import { Switch } from "@/components/ui/switch";
+// import { useTheme } from "@/context/ThemeContext";
+// import { Switch } from "@/components/ui/switch";
 import { PopoverClose } from "@radix-ui/react-popover";
-import { useState } from "react";
+// import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
 const SidebarUserDropdown = () => {
-  const { theme, setTheme } = useTheme();
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+  // const { theme, setTheme } = useTheme();
+  // const [isChecked, setIsChecked] = useState<boolean>(false);
   const { logout } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -27,13 +26,13 @@ const SidebarUserDropdown = () => {
     await logout();
   };
 
-  const themeToggleHandler = () => {
-    if (theme === "dark") {
-      setTheme("light");
-    } else {
-      setTheme("dark");
-    }
-  };
+  // const themeToggleHandler = () => {
+  //   if (theme === "dark") {
+  //     setTheme("light");
+  //   } else {
+  //     setTheme("dark");
+  //   }
+  // };
 
   const handleItemClick = (label: string, href: string) => {
     if (label === t("signOut")) {
