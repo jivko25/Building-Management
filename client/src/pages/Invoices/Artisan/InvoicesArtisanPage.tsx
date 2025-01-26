@@ -62,12 +62,16 @@ export const InvoicesArtisanPage = () => {
   const renderHeader = () => {
     return (
       <div className="flex justify-between items-center">
-        <div>
+        <div className="flex items-center gap-4">
           <IconField iconPosition="left">
             <InputIcon className="pi pi-search" />
             <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={t("search...")} className="search-input" />
           </IconField>
         </div>
+        <Button onClick={() => navigate(`/invoices-${invoiceType}/create`)}>
+          <Plus className="mr-2 h-4 w-4" />
+          {t("New invoice")}
+        </Button>
       </div>
     );
   };
@@ -145,20 +149,14 @@ export const InvoicesArtisanPage = () => {
 
       <div className="flex-1">
         <div className="container mx-auto py-10">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-bold">{t("Invoices")}</h1>
-              <Tabs defaultValue="artisan" onValueChange={handleTabChange}>
-                <TabsList>
-                  <TabsTrigger value="client">{t("Clients")}</TabsTrigger>
-                  <TabsTrigger value="artisan">{t("Artisans")}</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-            <Button onClick={() => navigate(`/invoices-${invoiceType}/create`)}>
-              <Plus className="mr-2 h-4 w-4" />
-              {t("New invoice")}
-            </Button>
+          <div className="flex items-center gap-4 mb-6">
+            <h1 className="text-3xl font-bold">{t("Invoices")}</h1>
+            <Tabs defaultValue="artisan" onValueChange={handleTabChange}>
+              <TabsList>
+                <TabsTrigger value="client">{t("Clients")}</TabsTrigger>
+                <TabsTrigger value="artisan">{t("Artisans")}</TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
 
           <DataTable value={invoices} paginator rows={10} rowsPerPageOptions={[10, 20, 50]} filters={filters} globalFilterFields={["invoice_number", "artisan.name", "total_amount"]} header={renderHeader} emptyMessage={t("No invoices found")} loading={isLoading} stripedRows showGridlines dataKey="id" sortMode="single" removableSort tableStyle={{ minWidth: "50rem" }} scrollable>
