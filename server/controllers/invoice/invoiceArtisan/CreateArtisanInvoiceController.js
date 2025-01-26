@@ -188,7 +188,17 @@ const createArtisanInvoice = async (req, res, next) => {
       data: {
         invoice_id: invoice.id,
         invoice_number: invoiceNumber,
-        total_amount: totalAmount
+        total_amount: totalAmount,
+        due_date: due_date,
+        invoice_date: invoice_date,
+        artisan_id: artisan_id,
+        company_id: company_id,
+        client_company_id: null,
+        paid: false,
+        is_artisan_invoice: true,
+        week_number: week,
+        year: year,
+        invoice_language_id: 1,
       }
     });
   } catch (error) {
