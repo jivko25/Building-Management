@@ -5,11 +5,10 @@ import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
-import { DefaultPricingResponse } from "@/types/defaultPricingType/defaultPricingTypes";
+import { DefaultPricing, DefaultPricingResponse } from "@/types/defaultPricingType/defaultPricingTypes";
 
 const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_id }: TableFormSelectType) => {
-  const { control } = useFormContext();
-  
+  const { control, setValue } = useFormContext();
   const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
     URL: artisan_id ? `/default-pricing/${artisan_id}` : `/default-pricing`,
     queryKey: ["default-pricing"]
@@ -18,6 +17,13 @@ const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_
   useEffect(() => {
     refetch();
   }, [artisan_id]);
+
+  useEffect(() => {
+    if (defaultVal) {
+      const defaultPricing = defaultPricingsResponse?.defaultPricing.find((pricing: DefaultPricing) => pricing.activity_id === defaultVal);
+      setValue(name, defaultPricing?.id); // Set the ID in form state
+    }
+  }, [defaultVal, defaultPricingsResponse, name, setValue]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState(""); // Дебаунсната стойност
@@ -39,16 +45,14 @@ const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_
 
   // Филтриране на данните
   const defaultPricings = defaultPricingsResponse?.defaultPricing || [];
-  const filteredPricings = defaultPricings.filter((item) =>
-    `${item?.activity?.name || ""}/${item?.measure?.name || ""}`.toLowerCase().includes(debouncedQuery)
-  );
+  const filteredPricings = defaultPricings.filter(item => `${item?.activity?.name || ""}/${item?.measure?.name || ""}`.toLowerCase().includes(debouncedQuery));
 
   const formulateDefaultPricingLabel = (pricing: any) => {
-    if(pricing?.activity.name === undefined || pricing?.measure?.name === undefined) {
-        return ''
+    if (pricing?.activity.name === undefined || pricing?.measure?.name === undefined) {
+      return "";
     }
-    return `${pricing?.activity.name}/${pricing?.measure.name}`
-  }
+    return `${pricing?.activity.name}/${pricing?.measure.name}`;
+  };
 
   return (
     <FormField
@@ -57,27 +61,23 @@ const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_
       render={({ field }) => (
         <FormItem>
           <FormLabel className="font-semibold">{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={defaultVal}>
+          <Select onValueChange={field.onChange} value={field.value} defaultValue={defaultVal}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder={placeholder}>
-                {formulateDefaultPricingLabel(defaultPricings?.find(pricing => {
-                    console.log(pricing.id == field.value);
+                  {formulateDefaultPricingLabel(
+                    defaultPricings?.find(pricing => {
+                      console.log(pricing.id == field.value);
 
-                    return pricing.id == field.value;
-                  })) || placeholder}
+                      return pricing.id == field.value;
+                    })
+                  ) || placeholder}
                 </SelectValue>
               </SelectTrigger>
             </FormControl>
             <SelectContent>
               {/* Search Input Field */}
-              <Input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="p-2 border border-gray-300 rounded mb-2"
-              />
+              <Input type="text" placeholder="Search..." value={searchQuery} onChange={handleSearchChange} className="p-2 border border-gray-300 rounded mb-2" />
               {/* Филтрирани опции */}
               {filteredPricings.map((item: any) => (
                 <SelectItem key={item.id} value={item.id}>
