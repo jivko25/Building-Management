@@ -66,12 +66,20 @@ export const artisanInvoiceService = {
     });
   },
 
-  getWorkItemsForInvoice: async (company_id?: number, artisan_id?: number) => {
+  getWorkItemsForInvoice: async (company_id?: number, artisan_id?: number, page: number = 1, limit: number = 10) => {
     try {
-      console.log("🔍 Fetching work items for artisan invoice with filters:", { company_id, artisan_id });
+      console.log("🔍 Fetching work items for artisan invoice with pagination:", {
+        company_id,
+        artisan_id,
+        page,
+        limit
+      });
 
       let url = `${API_URL}/invoices-artisan/work-items`;
-      const params = new URLSearchParams();
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString()
+      });
 
       if (company_id) params.append("company_id", company_id.toString());
       if (artisan_id) params.append("artisan_id", artisan_id.toString());
@@ -80,18 +88,24 @@ export const artisanInvoiceService = {
         url += `?${params.toString()}`;
       }
 
-      const response = await axios.get(url, { withCredentials: true });
+      const response = await axios.get(url, {
+        withCredentials: true,
+        params
+      });
+
       console.log("📦 Work items response:", response.data);
-
-      if (!response.data.data) {
-        console.warn("⚠️ No work items found");
-        return [];
-      }
-
-      return response.data.data;
+      return {
+        data: response.data.data || [],
+        total: response.data.total || 0,
+        totalPages: response.data.totalPages || 1
+      };
     } catch (error) {
       console.error("❌ Error fetching work items:", error);
-      throw error;
+      return {
+        data: [],
+        total: 0,
+        totalPages: 1
+      };
     }
   }
 };
