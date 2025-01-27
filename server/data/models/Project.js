@@ -72,7 +72,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       tableName: "tbl_projects",
-      timestamps: false
+      timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at"
     }
   );
 

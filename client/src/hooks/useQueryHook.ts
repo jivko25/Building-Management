@@ -21,13 +21,31 @@ interface EntityOptions {
 
 export const useGetPaginatedData = <TData>({ URL, queryKey, limit, page, search }: UseGetPaginatedDataTypes): UseQueryResult<PaginatedDataResponse<TData>> => {
   console.log("Fetching paginated data:", { URL, page, limit, search });
+
   return useQuery({
-    queryKey: [...queryKey, page, limit, search],
-    queryFn: () => getPaginatedData<TData>(URL, page, limit!, search),
-    staleTime: 0,
-    refetchInterval: false,
-    refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData
+    queryKey,
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit?.toString() || "10"
+      });
+
+      if (search) {
+        params.append("q", search);
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}${URL}?${params}`, {
+        credentials: "include"
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log("Pagination response:", data);
+      return data;
+    }
   });
 };
 

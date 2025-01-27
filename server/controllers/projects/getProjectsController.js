@@ -22,7 +22,7 @@ const getProjects = async (req, res, next) => {
           {
             model: Client,
             as: "client",
-            attributes: ["client_company_name"],
+            attributes: ["client_company_name"]
           }
         ],
         attributes: ["id", "name", "company_id", "company_name", "email", "address", "location", "start_date", "end_date", "note", "status", "creator_id", "client_id"]
@@ -95,6 +95,47 @@ const getProjects = async (req, res, next) => {
   }
 };
 
+const getPaginatedProjects = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 10, q = "" } = req.query;
+    const offset = (page - 1) * limit;
+
+    const where = {
+      [Op.or]: [{ name: { [Op.like]: `%${q}%` } }, { address: { [Op.like]: `%${q}%` } }, { location: { [Op.like]: `%${q}%` } }, { company_name: { [Op.like]: `%${q}%` } }, { "$client.client_company_name$": { [Op.like]: `%${q}%` } }]
+    };
+
+    console.log("Executing paginated projects query with params:", { page, limit, q, offset });
+
+    const { count, rows: projects } = await Project.findAndCountAll({
+      where,
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+      include: [
+        {
+          model: Client,
+          as: "client",
+          attributes: ["client_company_name"],
+          required: false
+        }
+      ],
+      order: [["created_at", "DESC"]]
+    });
+
+    console.log("Query results:", { count, projectsCount: projects.length });
+
+    res.json({
+      data: projects,
+      total: count,
+      page: parseInt(page),
+      totalPages: Math.ceil(count / limit)
+    });
+  } catch (error) {
+    console.error("Error in getPaginatedProjects:", error);
+    next(new ApiError(500, "Грешка при взимане на проекти"));
+  }
+};
+
 module.exports = {
-  getProjects
+  getProjects,
+  getPaginatedProjects
 };
