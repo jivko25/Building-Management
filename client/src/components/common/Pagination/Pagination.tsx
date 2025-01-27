@@ -15,15 +15,27 @@ export type PaginatedData<T> = {
 };
 
 const Pagination = ({ totalPages, page, setSearchParams }: PaginationProps) => {
+  console.log("Pagination props:", { totalPages, page });
+
   const handlePreviousPage = (): void => {
-    setSearchParams(new URLSearchParams({ page: (page - 1).toString() }));
+    if (page <= 1) return;
+    const params = new URLSearchParams({
+      page: (page - 1).toString(),
+      q: new URLSearchParams(window.location.search).get("q") || ""
+    });
+    setSearchParams(params);
   };
 
   const handleNextPage = (): void => {
-    setSearchParams(new URLSearchParams({ page: (page + 1).toString() }));
+    if (page >= (totalPages || 1)) return;
+    const params = new URLSearchParams({
+      page: (page + 1).toString(),
+      q: new URLSearchParams(window.location.search).get("q") || ""
+    });
+    setSearchParams(params);
   };
 
-  const calculatedTotalPages = Math.max(totalPages || 0, 1);
+  const calculatedTotalPages = totalPages || 1;
 
   return (
     <div className="mt-4">
