@@ -1,9 +1,9 @@
 //client\src\hooks\useQueryHook.ts
-import { createEntity, editEntity, getEntityData, getInfiniteData, getPaginatedData } from "@/api/apiCall";
+import { createEntity, editEntity, getEntityData, getInfiniteData } from "@/api/apiCall";
 import { CachedDataOptions, FetchDataQueryOptions, FetchQueryOptions, PaginatedDataResponse, UseGetPaginatedDataTypes } from "@/types/query-data-types/paginatedDataTypes";
 import { ProjectTask } from "@/types/task-types/taskTypes";
 import { PaginatedWorkItems } from "@/types/work-item-types/workItem";
-import { keepPreviousData, useInfiniteQuery, UseInfiniteQueryResult, useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
+import { useInfiniteQuery, UseInfiniteQueryResult, useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 interface QueryConfig {
