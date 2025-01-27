@@ -13,6 +13,7 @@ type UserWorkitemContextType = {
   defaultPricingId: string;
   activityId: string;
   taskId: string;
+  getActivity: (activityId: string) => Activity | undefined;
 };
 const initialState = {
   artisanId: "",
@@ -28,7 +29,7 @@ function reducer(state: any, action: any) {
     case "SET_ARTISAN_ID":
       return { ...state, artisanId: action.payload };
     case "SET_ACTIVITY_MEASURE_ID":
-      return { ...state, activityId: action.payload, measure: state.defaultPricings.find((dp: {activity: Activity}) => dp.activity.id === action.payload)?.measure };
+      return { ...state, activityId: action.payload, measure: state.defaultPricings.find((dp: { activity: Activity }) => dp.activity.id === action.payload)?.measure };
     case "SET_MEASURE_ID":
       return { ...state, measureId: action.payload };
     case "SET_ACTIVITIES":
@@ -69,6 +70,10 @@ export const UserWorkitemProvider = ({ children }: { children: React.ReactNode }
     return defaultPricingsResponse?.defaultPricing || [];
   }, [defaultPricingsResponse]);
 
+  const getActivity = (activityId: string) => {
+    return activities.find((activity: Activity) => activity.id === activityId);
+  };
+
   useEffect(() => {
     if (defaultPricingsData.length > 0) {
       const transformPricingData = (data: DefaultPricingDto[]) => {
@@ -82,11 +87,11 @@ export const UserWorkitemProvider = ({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     if (!activityId || !measure) return;
-    const defaultPricing = defaultPricings.find((dp: {measure: Measure, activity: Activity}) => dp.activity.id === activityId && dp.measure.id === measure.id);
+    const defaultPricing = defaultPricings.find((dp: { measure: Measure; activity: Activity }) => dp.activity.id === activityId && dp.measure.id === measure.id);
     if (defaultPricing) dispatch({ type: "SET_DEFAULT_PRICING_ID", payload: defaultPricing.id });
   }, [activityId, measure, defaultPricings]);
 
-  return <UserWorkitemContext.Provider value={{ activities, artisanId, defaultPricings, dispatch, measure, activityId, defaultPricingId, taskId }}>{children}</UserWorkitemContext.Provider>;
+  return <UserWorkitemContext.Provider value={{ activities, artisanId, defaultPricings, dispatch, measure, activityId, defaultPricingId, taskId, getActivity }}>{children}</UserWorkitemContext.Provider>;
 };
 export const useUserWorkitem = () => {
   const context = useContext(UserWorkitemContext);

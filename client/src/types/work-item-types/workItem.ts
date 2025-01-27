@@ -14,6 +14,10 @@ export type WorkItem = {
   price_per_measure?: string;
   total_price?: string;
   total_work_in_selected_measure?: string;
+  artisan_id?: string;
+  measure_id?: string;
+  creator_id?: string;
+  activity_id?: string;
 };
 
 export interface PaginatedWorkItems {
