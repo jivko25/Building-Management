@@ -22,11 +22,15 @@ type EditActivityFormProps = {
 
 const EditActivityForm = ({ activityId, handleSubmit, isPending }: EditActivityFormProps) => {
   const { t } = useTranslation();
-  const { itemsLimit, page, searchParam } = useSearchParamsHook();
 
   const activity = useCachedData<Activity>({
-    queryKey: ["activities", page, itemsLimit, searchParam],
-    selectFn: data => findItemById<Activity>(data as PaginatedDataResponse<Activity>, activityId, activity => activity.id as string)
+    queryKey: ["activities"],
+    selectFn: data => {
+      console.log("Searching for activity ID:", activityId);
+      const found = findItemById<Activity>(data as PaginatedDataResponse<Activity>, activityId, activity => activity.id as string);
+      console.log("Found activity data:", found);
+      return found;
+    }
   });
 
   const { useEditActivityForm } = useActivityFormHooks();
