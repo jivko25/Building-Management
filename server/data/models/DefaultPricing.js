@@ -48,14 +48,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: true
       },
-      project_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: "tbl_projects",
-          key: "id"
-        }
-      },
       creator_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

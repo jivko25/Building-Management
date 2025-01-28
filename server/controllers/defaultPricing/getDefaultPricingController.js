@@ -8,25 +8,37 @@ const getDefaultPricing = async (req, res, next) => {
     const artisanId = req.params.id;
     const { id, role } = req.user;
 
-    let defaultPricing;
+    if (role !== "manager" && role !== "admin") {
+      return next(new ApiError(403, "Forbidden!"));
+    }
 
+    let defaultPricing;
 
     if (role === "manager" && !artisanId) {
       defaultPricing = await DefaultPricing.findAll({
         where: {
           creator_id: id,
-          artisan_id: { [Op.is]: null },
-          artisan_price: { [Op.is]: null },
+          artisan_id: { [Op.is]: null }
         },
         include: [
-          { model: Activity, as: "activity", attributes: ["name"] },
-          { model: Measure, as: "measure", attributes: ["name"] }
+          {
+            model: Activity,
+            as: "activity",
+            attributes: ["id", "name"],
+            required: true
+          },
+          {
+            model: Measure,
+            as: "measure",
+            attributes: ["id", "name"],
+            required: true
+          }
         ]
       });
     } else {
       defaultPricing = await DefaultPricing.findAll({
         where: {
-          artisan_id: artisanId,
+          artisan_id: artisanId
         },
         include: [
           { model: Activity, as: "activity", attributes: ["name"] },
@@ -36,15 +48,14 @@ const getDefaultPricing = async (req, res, next) => {
     }
 
     res.status(200).json({
+      success: true,
+      status: "success",
       message: "Default pricing fetched successfully!",
-      defaultPricing
+      data: defaultPricing
     });
   } catch (error) {
-    if (error instanceof ApiError) {
-      next(error);
-    } else {
-      next(new ApiError(500, "Internal server Error!"));
-    }
+    console.error("Error in getDefaultPricing:", error);
+    next(new ApiError(500, error.message || "Internal server Error!"));
   }
 };
 
