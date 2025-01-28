@@ -5,7 +5,7 @@ import { MeasureResponse } from "@/types/measure-types/measureTypes";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ManagerAction from "./ManagerAction";
 import { Button } from "@/components/ui/button";
 import { Trash2 as Trash } from "lucide-react";
@@ -35,13 +35,20 @@ export default function ManagerAllDefaultValuesTable() {
     queryKey: ["projects"]
   });
   const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
-    URL: `/default-pricing`,
+    URL: "/default-pricing",
     queryKey: ["default-pricing"]
   });
 
-  const defaultPricings = defaultPricingsResponse?.defaultPricing || [];
+  const defaultPricings = defaultPricingsResponse?.data || [];
   const activities = activitiesResponse?.data || [];
   const measures = measuresResponse?.data || [];
+
+  useEffect(() => {
+    console.log("DefaultPricings Response:", defaultPricingsResponse);
+    console.log("Processed DefaultPricings:", defaultPricings);
+    console.log("Activities:", activities);
+    console.log("Measures:", measures);
+  }, [defaultPricingsResponse, activities, measures]);
 
   const activityBodyTemplate = (rowData: DefaultPricing) => {
     const activity = activities.find(a => a.id === rowData.activity_id);
@@ -69,10 +76,10 @@ export default function ManagerAllDefaultValuesTable() {
       <div className="flex">
         <ManagerAction
           type="edit"
-          artisanId={'1'}
-          artisanName={'test'}
+          artisanId={"1"}
+          artisanName={"test"}
           editProps={{
-            artisanId: '1',
+            artisanId: "1",
             activity: activity?.name || "",
             measure: measure?.name || "",
             price: rowData.artisan_price,
@@ -99,15 +106,14 @@ export default function ManagerAllDefaultValuesTable() {
         <InputText value={globalFilter} onChange={onGlobalFilterChange} placeholder={t("Search activity...")} className="m-8 p-2" />
       </span>
       <div className=" flex flex-col items-center justify-center gap-5">
-        <ManagerAction type="create" artisanName={'test'} artisanId={'1'} refetch={refetch} />
+        <ManagerAction type="create" artisanName={"test"} artisanId={"1"} refetch={refetch} />
       </div>
     </div>
   );
   //Delete default pricing
   const deleteDefaultPricing = async (defaultPriceId: string) => {
-    console.log(defaultPriceId);
     try {
-      await deleteEntity(`/default-pricing/${defaultPriceId}`, {});
+      await deleteEntity("/default-pricing", { id: defaultPriceId });
       setResponseMessage({ type: "success", message: t("Values deleted successfully!") });
       refetch();
     } catch (error) {
@@ -124,7 +130,7 @@ export default function ManagerAllDefaultValuesTable() {
 
   return (
     <div className="w-full flex flex-col items-center overflow-auto">
-      <DataTable value={filteredData} className="text-sm md:text-base max-w-full !overflow-hidden " style={{ width: "100%" }} paginator rows={rows} first={first} onPage={e => setFirst(e.first)} header={header} sortMode="multiple" removableSort>
+      <DataTable value={filteredData} className="text-sm md:text-base max-w-full !overflow-hidden" style={{ width: "100%" }} paginator rows={rows} first={first} onPage={e => setFirst(e.first)} header={header} sortMode="multiple" removableSort emptyMessage={t("No default prices found")}>
         <Column field="activity" header={t("Activity")} body={activityBodyTemplate} className="text-sm md:text-base" />
         <Column field="project" header={t("Project")} body={projectBodyTemplate} className="text-sm md:text-base" />
         <Column field="measure" header={t("Measure")} body={measureBodyTemplate} className="text-sm md:text-base" />
