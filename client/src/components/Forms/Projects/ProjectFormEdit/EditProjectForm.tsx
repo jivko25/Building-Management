@@ -8,11 +8,8 @@ import CompanySelector from "@/components/common/FormElements/FormCompanySelecto
 import FormDatePicker from "@/components/common/FormElements/FormDatePicker";
 import { ClipboardList, Mail, MapPin } from "lucide-react";
 import { useProjectFormHook } from "@/hooks/forms/useProjectForm";
-import { Project } from "@/types/project-types/projectTypes";
 import { ProjectSchema } from "@/models/project/projectSchema";
-import { useCachedData } from "@/hooks/useQueryHook";
-import { findItemById } from "@/utils/helpers/findItemById";
-import { PaginatedDataResponse } from "@/types/query-data-types/paginatedDataTypes";
+import { useQuery } from "@tanstack/react-query";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 import FormClientSelector from "@/components/common/FormElements/FormClientSelector";
@@ -25,14 +22,35 @@ type EditProjectFormProps = {
 
 const EditProjectForm = ({ handleSubmit, isPending, projectId }: EditProjectFormProps) => {
   const { t } = useTranslation();
-  const project = useCachedData<Project>({
-    queryKey: ["projects"],
-    selectFn: data => findItemById<Project>(data as PaginatedDataResponse<Project>, projectId, project => project.id as string)
+  console.log("EditProjectForm - Starting with ID:", projectId);
+
+  const { data: projectData } = useQuery({
+    queryKey: ["projects", projectId],
+    queryFn: async () => {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}`, {
+        credentials: "include"
+      });
+      if (!response.ok) throw new Error("Failed to fetch project");
+      const data = await response.json();
+      console.log("EditProjectForm - Fetched project data:", data);
+      return data;
+    }
   });
 
-  const { useEditProjectForm } = useProjectFormHook();
+  console.log("EditProjectForm - Project data:", projectData);
 
-  const form = useEditProjectForm(project as Partial<Project>);
+  const { useEditProjectForm } = useProjectFormHook();
+  const form = useEditProjectForm(
+    projectData || {
+      name: "",
+      company_name: "",
+      email: "",
+      address: "",
+      location: "",
+      status: "active",
+      client_id: 0
+    }
+  );
 
   return (
     <FormProvider {...form}>
@@ -45,17 +63,17 @@ const EditProjectForm = ({ handleSubmit, isPending, projectId }: EditProjectForm
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2 mb-4">
-          <StatusSelector label={t("Status")} name="status" defaultVal={project && project.status} />
-          <CompanySelector label={t("Select company")} name="company_name" defaultVal={project && project.company_name} />
+          <StatusSelector label={t("Status")} name="status" defaultVal={projectData?.status} />
+          <CompanySelector label={t("Select company")} name="company_name" defaultVal={projectData?.company_name} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <FormClientSelector label={t("Select client")} name="client_id" defaultVal={project && project.client_id?.toString()} />
+          <FormClientSelector label={t("Select client")} name="client_id" defaultVal={projectData?.client_id?.toString()} />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1.5">
-          <FormDatePicker name="start_date" label={t("Select new start date")} selected={new Date(`${project && project.start_date}`).toLocaleDateString().slice(0, 10)} />
-          <FormDatePicker name="end_date" label={t("Select new end date")} selected={new Date(`${project && project.end_date}`).toLocaleDateString().slice(0, 10)} />
+          <FormDatePicker name="start_date" label={t("Select new start date")} selected={projectData?.start_date} />
+          <FormDatePicker name="end_date" label={t("Select new end date")} selected={projectData?.end_date} />
         </div>
         <Separator className="my-2" />
         <FormTextareaInput placeholder={t("Project notes...")} className="resize-none" name="note" type="text" label={t("Project note")} />

@@ -97,7 +97,7 @@ const getProjects = async (req, res, next) => {
 
 const getPaginatedProjects = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, q = "" } = req.query;
+    const { page = 1, limit = 12, q = "" } = req.query;
     const offset = (page - 1) * limit;
 
     const where = {

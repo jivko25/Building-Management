@@ -6,6 +6,7 @@ import { useMutationHook } from "@/hooks/useMutationHook";
 import DialogModal from "@/components/common/DialogElements/DialogModal";
 import EditArtisanForm from "./EditArtisanForm";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ArtisanFormProps = {
   artisanId: string;
@@ -14,6 +15,7 @@ type ArtisanFormProps = {
 const EditArtisan = ({ artisanId }: ArtisanFormProps) => {
   const { t } = useTranslation();
   const { isOpen, setIsOpen } = useDialogState();
+  const queryClient = useQueryClient();
 
   const { useEditEntity } = useMutationHook();
 
@@ -21,7 +23,11 @@ const EditArtisan = ({ artisanId }: ArtisanFormProps) => {
     URL: `/artisans/${artisanId}/edit`,
     queryKey: ["artisans"],
     successToast: t("Artisan updated successfully!"),
-    setIsOpen
+    setIsOpen,
+    onSuccessCallback: () => {
+      queryClient.invalidateQueries({ queryKey: ["artisan", artisanId] });
+      queryClient.invalidateQueries({ queryKey: ["artisans"] });
+    }
   });
 
   const handleSubmit = useSubmitHandler(mutate, artisanSchema);

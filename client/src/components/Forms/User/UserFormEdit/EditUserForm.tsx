@@ -7,9 +7,10 @@ import StatusSelector from "@/components/common/FormElements/FormStatusSelector"
 import { User as UserIcon } from "lucide-react";
 import { useUserFormHooks } from "@/hooks/forms/useUserForm";
 import { EditUserSchema } from "@/models/user/userSchema";
-import { useFetchDataQuery } from "@/hooks/useQueryHook";
+import { useQuery } from "@tanstack/react-query";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 type EditUserFormProps = {
   handleSubmit: (userData: EditUserSchema) => void;
@@ -19,34 +20,48 @@ type EditUserFormProps = {
 
 const EditUserForm = ({ handleSubmit, isPending, userId }: EditUserFormProps) => {
   const { t } = useTranslation();
-  const { data: user } = useFetchDataQuery<{
-    id: string;
-    full_name: string;
-    username: string;
-    role: "user" | "manager" | "admin";
-    status: "active" | "inactive";
-    email: string;
-    manager_id: number | null;
-  }>({
-    URL: `/users/${userId}`,
+
+  const { data: user, isLoading } = useQuery({
     queryKey: ["user", userId],
-    options: {
-      staleTime: Infinity
+    queryFn: async () => {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
+        credentials: "include"
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch user");
+      }
+      return response.json();
     }
   });
 
   console.log("👤 User data:", user);
+  console.log("Loading state:", isLoading);
 
   const { useEditUserForm } = useUserFormHooks();
 
   const form = useEditUserForm({
     full_name: user?.full_name || "",
     username: user?.username || "",
-    // password: "",
     role: (user?.role === "admin" ? "manager" : user?.role) || "user",
     status: user?.status || "active",
-    email: user?.email || "",
+    email: user?.email || ""
   });
+
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        full_name: user.full_name,
+        username: user.username,
+        role: user.role === "admin" ? "manager" : user.role,
+        status: user.status,
+        email: user.email
+      });
+    }
+  }, [user, form]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <FormProvider {...form}>
@@ -55,7 +70,6 @@ const EditUserForm = ({ handleSubmit, isPending, userId }: EditUserFormProps) =>
           <FormFieldInput type="text" label={t("Name, Surname")} name="full_name" className="pl-10" Icon={UserIcon} />
           <FormFieldInput type="text" label={t("Username")} name="username" className="pl-10" Icon={UserIcon} />
           <FormFieldInput type="text" label={t("Email")} name="email" className="pl-10" Icon={UserIcon} />
-          {/* <FormFieldInput type="password" label={t("Password")} name="password" className="pl-10" Icon={Lock} /> */}
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2">

@@ -12,7 +12,7 @@ const useSearchParamsHook = (): UseSearchParamsReturn => {
   const [searchParams, setSearchParams] = useSearchParams();
   const pageParam = searchParams.get("page");
   const page = pageParam && !Number.isNaN(Number(pageParam)) ? parseInt(pageParam, 10) : 1;
-  const itemsLimit: number = 10;
+  const itemsLimit: number = 12;
   const searchParam = searchParams.get("q") || "";
 
   return {
