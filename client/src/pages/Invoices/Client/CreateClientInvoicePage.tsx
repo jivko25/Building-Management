@@ -154,15 +154,15 @@ export const CreateClientInvoicePage = () => {
     };
 
     if (!data.company_id || data.company_id === 0) {
-      newErrors.company_id = "Моля, изберете строителна фирма";
+      newErrors.company_id = "Please select a building company";
     }
 
     if (!data.client_company_id || data.client_company_id === 0) {
-      newErrors.client_company_id = "Моля, изберете клиентска фирма";
+      newErrors.client_company_id = "Please select a client company";
     }
 
     if (!data.due_date_weeks || data.due_date_weeks < 0) {
-      newErrors.due_date_weeks = "Моля, въведете валиден срок за плащане";
+      newErrors.due_date_weeks = "Please enter a valid due date";
     }
 
     setErrors(newErrors);
@@ -172,11 +172,11 @@ export const CreateClientInvoicePage = () => {
   const createClientInvoiceMutation = useMutation({
     mutationFn: invoiceClientService.create,
     onSuccess: () => {
-      toast.success("Фактурата е създадена успешно");
+      toast.success("Invoice created successfully!");
       navigate("/invoices-client");
     },
     onError: error => {
-      toast.error("Грешка при създаване на фактура");
+      toast.error("Error creating invoice");
       console.error("Error creating invoice:", error);
     }
   });
@@ -190,7 +190,7 @@ export const CreateClientInvoicePage = () => {
         return;
       }
 
-      // Събираме уникалните project_ids от избраните work items
+      // Collect unique project_ids from selected work items
       const allWorkItems = workItemsResponse?.data.reduce((acc: any[], group: any) => {
         return acc.concat(group.workItems || []);
       }, []);
@@ -218,7 +218,7 @@ export const CreateClientInvoicePage = () => {
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Възникна грешка при създаване на фактурата");
+      toast.error("Error creating invoice");
     }
   };
 
@@ -235,7 +235,7 @@ export const CreateClientInvoicePage = () => {
       console.log("Updated due_date_weeks to:", clientData.due_date);
     } catch (error) {
       console.error("Error fetching client details:", error);
-      toast.error("Грешка при зареждане на данните на клиента");
+      toast.error("Error fetching client details");
       // Set a default value if there's an error
       form.setValue("due_date_weeks", 1);
     }
@@ -261,7 +261,7 @@ export const CreateClientInvoicePage = () => {
       );
     }
 
-    // Изчистваме избраните работни елементи при промяна на проектите
+    // Clear selected work items when changing projects
     form.setValue("selected_work_items", []);
   };
 

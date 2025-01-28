@@ -1,8 +1,6 @@
 //client\src\hooks\useQueryHook.ts
 import { createEntity, editEntity, getEntityData, getInfiniteData } from "@/api/apiCall";
 import { CachedDataOptions, FetchDataQueryOptions, FetchQueryOptions, PaginatedDataResponse, UseGetPaginatedDataTypes } from "@/types/query-data-types/paginatedDataTypes";
-import { ProjectTask } from "@/types/task-types/taskTypes";
-import { PaginatedWorkItems } from "@/types/work-item-types/workItem";
 import { useInfiniteQuery, UseInfiniteQueryResult, useMutation, useQuery, UseQueryResult, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -76,7 +74,7 @@ export const useCachedData = <TData>({ queryKey, selectFn }: CachedDataOptions<T
   const queryResult = useQuery({
     queryKey,
     enabled: queryKey.length > 0,
-    select: (data: PaginatedDataResponse<TData> | TData[] | PaginatedWorkItems | ProjectTask) => {
+    select: () => {
       console.log("useCachedData - QueryKey:", queryKey);
 
       const cachedQueries = queryClient.getQueriesData({ queryKey: ["projects"] });
