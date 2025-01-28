@@ -5,7 +5,7 @@ import { MeasureResponse } from "@/types/measure-types/measureTypes";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ArtisanAction from "./ArtisanAction";
 import { Button } from "@/components/ui/button";
 import { Trash2 as Trash } from "lucide-react";
@@ -37,12 +37,17 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
   });
   const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
     URL: `/default-pricing/${artisanId}`,
-    queryKey: ["default-pricing"]
+    queryKey: ["default-pricing", artisanId]
   });
 
-  const defaultPricings = defaultPricingsResponse?.defaultPricing || [];
+  const defaultPricings = defaultPricingsResponse?.data || [];
   const activities = activitiesResponse?.data || [];
   const measures = measuresResponse?.data || [];
+
+  useEffect(() => {
+    console.log("DefaultPricings Response:", defaultPricingsResponse);
+    console.log("Processed DefaultPricings:", defaultPricings);
+  }, [defaultPricingsResponse]);
 
   const activityBodyTemplate = (rowData: DefaultPricing) => {
     const activity = activities.find(a => a.id === rowData.activity_id);
@@ -115,7 +120,7 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
   const deleteDefaultPricing = async (defaultPriceId: string) => {
     console.log(defaultPriceId);
     try {
-      await deleteEntity(`/default-pricing/${defaultPriceId}`, {});
+      await deleteEntity(`/default-pricing/${defaultPriceId}`, { id: defaultPriceId });
       setResponseMessage({ type: "success", message: t("Values deleted successfully!") });
       refetch();
     } catch (error) {
@@ -132,7 +137,7 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
 
   return (
     <div className="w-full flex flex-col justify-center items-center overflow-auto">
-      <DataTable value={filteredData} className="text-sm md:text-base max-w-full !overflow-hidden " style={{ width: "100%" }} paginator rows={5} first={first} onPage={e => setFirst(e.first)} header={header} sortMode="multiple" removableSort>
+      <DataTable value={defaultPricings} showGridlines stripedRows paginator rows={10} tableStyle={{ minWidth: "50rem" }} emptyMessage="No default prices found">
         <Column field="activity" header={t("Activity")} body={activityBodyTemplate} className="text-sm md:text-base" sortable />
         <Column field="project" header={t("Project")} body={projectBodyTemplate} className="text-sm md:text-base" sortable />
         <Column field="measure" header={t("Measure")} body={measureBodyTemplate} className="text-sm md:text-base" sortable />

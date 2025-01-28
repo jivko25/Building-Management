@@ -52,8 +52,8 @@ export const editEntity = async <TData>(URL: string, entityData: TData): Promise
   return await apiCall(`${URL}`, "PUT", entityData);
 };
 
-export const deleteEntity = async <TData>(URL: string, entityData: TData): Promise<void> => {
-  return await apiCall(`${URL}`, "DELETE", entityData);
+export const deleteEntity = async <TData>(URL: string, entityData: { id: string }): Promise<void> => {
+  return await apiCall(`${URL}/${entityData.id}`, "DELETE");
 };
 
 export const putEntityData = async <TData>(url: string, data: TData): Promise<TData> => {
