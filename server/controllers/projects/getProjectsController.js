@@ -5,7 +5,7 @@ const ApiError = require("../../utils/apiError.js");
 
 const getProjects = async (req, res, next) => {
   try {
-    // Дефинираме whereClause в началото на функцията
+    // define whereClause in the beginning of the function
     let whereClause = {};
     const isAdmin = req.user.role === "admin";
 
@@ -36,7 +36,7 @@ const getProjects = async (req, res, next) => {
       return res.json(formattedProjects);
     }
 
-    // Добавяме проверка за търсене
+    // Add check for search
 
     whereClause.creator_id = req.user.id;
 
@@ -67,7 +67,7 @@ const getProjects = async (req, res, next) => {
     }
   }
 
-  // Ако потребителят е "user"
+  // If the user is "user"
   if (req.user.role === "user") {
     try {
       const artisan = await Artisan.findOne({
@@ -131,7 +131,7 @@ const getPaginatedProjects = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error in getPaginatedProjects:", error);
-    next(new ApiError(500, "Грешка при взимане на проекти"));
+    next(new ApiError(500, "Error fetching projects."));
   }
 };
 

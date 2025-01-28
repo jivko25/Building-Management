@@ -8,7 +8,6 @@ import { useActivityFormHooks } from "@/hooks/forms/useActivityForm";
 import { useCachedData } from "@/hooks/useQueryHook";
 import { Activity } from "@/types/activity-types/activityTypes";
 import { ActivitySchema } from "@/models/activity/activitySchema";
-import useSearchParamsHook from "@/hooks/useSearchParamsHook";
 import { findItemById } from "@/utils/helpers/findItemById";
 import { PaginatedDataResponse } from "@/types/query-data-types/paginatedDataTypes";
 import { Separator } from "@/components/ui/separator";
