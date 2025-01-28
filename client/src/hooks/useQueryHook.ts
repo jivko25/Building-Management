@@ -59,11 +59,15 @@ export const useGetInfiniteData = <TData>({ URL, queryKey }: FetchQueryOptions):
   });
 };
 
-export const useFetchDataQuery = <TData>({ URL, queryKey, options }: FetchDataQueryOptions<TData>): UseQueryResult<TData> => {
+export const useFetchDataQuery = <TData>({ URL, queryKey, options }: FetchDataQueryOptions<TData>) => {
   console.log("Fetching data query from:", URL);
   return useQuery({
     queryKey,
-    queryFn: () => getEntityData<TData>(URL),
+    queryFn: async () => {
+      const response = await getEntityData<TData>(URL);
+      console.log("Query response:", response);
+      return response;
+    },
     ...options
   });
 };

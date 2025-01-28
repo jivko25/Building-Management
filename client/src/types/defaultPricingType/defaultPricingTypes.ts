@@ -12,9 +12,12 @@ export type DefaultPricing = {
   activity?: Activity;
   measure?: Measure;
 };
+
 export type DefaultPricingResponse = {
+  success: boolean;
+  status: string;
   message: string;
-  defaultPricing: DefaultPricing[];
+  data: DefaultPricing[];
 };
 
 export type EditDefaultValuesTableProps = {
