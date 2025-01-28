@@ -23,13 +23,13 @@ const ProjectsTableBody = () => {
     isError
   } = useGetPaginatedData<Project[]>({
     URL: "/projects/paginated",
-    queryKey: ["projects", page, itemsLimit, debounceSearchTerm],
+    queryKey: ["projects"],
     page,
     limit: itemsLimit,
     search: debounceSearchTerm
   });
 
-  console.log("Projects response:", projectsResponse);
+  console.log("Projects table response:", projectsResponse);
 
   const projects = projectsResponse?.data || [];
   const totalPages = projectsResponse?.totalPages || 0;
