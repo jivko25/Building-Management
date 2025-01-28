@@ -6,6 +6,9 @@ import { useMutationHook } from "@/hooks/useMutationHook";
 import DialogModal from "@/components/common/DialogElements/DialogModal";
 import EditMeasureForm from "./EditMeasureForm";
 import { useTranslation } from "react-i18next";
+import { useCachedData } from "@/hooks/useQueryHook";
+import { findItemById } from "@/utils/helpers/findItemById";
+import { Measure } from "@/types/measure-types/measureTypes";
 
 type MeasureFormProps = {
   measureId: string;
@@ -16,6 +19,11 @@ const EditMeasure = ({ measureId }: MeasureFormProps) => {
   const { isOpen, setIsOpen } = useDialogState();
   const { useEditEntity } = useMutationHook();
 
+  const measure = useCachedData<Measure>({
+    queryKey: ["measures"],
+    selectFn: data => findItemById<Measure>(data as Measure[], measureId, measure => measure.id?.toString() || "")
+  });
+
   const { mutate, isPending } = useEditEntity<MeasureSchema>({
     URL: `/measures/${measureId}/edit`,
     queryKey: ["measures"],
@@ -25,7 +33,7 @@ const EditMeasure = ({ measureId }: MeasureFormProps) => {
 
   const handleSubmit = useSubmitHandler(mutate, measureSchema);
 
-  return <DialogModal Component={EditMeasureForm} props={{ handleSubmit, isPending, measureId }} isOpen={isOpen} setIsOpen={setIsOpen} title={t("Edit measure")} />;
+  return <DialogModal Component={EditMeasureForm} props={{ handleSubmit, isPending, measureId, initialData: measure }} isOpen={isOpen} setIsOpen={setIsOpen} title={t("Edit measure")} />;
 };
 
 export default EditMeasure;

@@ -14,23 +14,20 @@ type EditMeasureFormProps = {
   handleSubmit: (measureData: MeasureSchema) => void;
   measureId: string;
   isPending: boolean;
+  initialData?: Measure;
 };
 
-const EditMeasureForm = ({ handleSubmit, isPending, measureId }: EditMeasureFormProps) => {
+const EditMeasureForm = ({ handleSubmit, isPending, measureId, initialData }: EditMeasureFormProps) => {
   const { t } = useTranslation();
-  const measure = useCachedData<Measure>({
-    queryKey: ["measures"],
-    selectFn: data => findItemById<Measure>(data as Measure[], measureId, measure => measure.id as string)
-  });
 
   const { useEditMeasureForm } = useMeasureFormHooks();
-  const form = useEditMeasureForm(measure as Partial<Measure>);
+  const form = useEditMeasureForm(initialData as Partial<Measure>);
 
   return (
     <FormProvider {...form}>
       <form id="edit-measure" onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="grid grid-cols-1 gap-2 mb-2">
-          <FormFieldInput type="text" label={t("Type of measure")} name="name" className="pl-10" Icon={Ruler} />
+          <FormFieldInput type="text" label={t("Measure name")} name="name" className="pl-10" Icon={Ruler} />
         </div>
         <DialogFooter disabled={!form.formState.isDirty || isPending} isLoading={isPending} label={t("Submit changes")} formName="edit-measure" className="mt-6" />
       </form>

@@ -77,7 +77,7 @@ export const useCachedData = <TData>({ queryKey, selectFn }: CachedDataOptions<T
     select: () => {
       console.log("useCachedData - QueryKey:", queryKey);
 
-      const cachedQueries = queryClient.getQueriesData({ queryKey: ["projects"] });
+      const cachedQueries = queryClient.getQueriesData({ queryKey });
       console.log("All cached queries:", cachedQueries);
 
       const allData = cachedQueries.reduce((acc: TData[], [_, data]) => {
