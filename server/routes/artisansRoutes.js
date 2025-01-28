@@ -3,14 +3,17 @@ const express = require("express");
 const authenticateToken = require("../middlewares/authenticateToken");
 const { createArtisan } = require("../controllers/artisans/createArtisanController");
 const { editArtisan } = require("../controllers/artisans/editArtisanController");
-const { getArtisanById } = require("../controllers/artisans/getArtisanByIdController");
+const { getArtisanById, getArtisansWorkItems } = require("../controllers/artisans/getArtisanByIdController");
 const { getArtisans, getPaginatedArtisans } = require("../controllers/artisans/getArtisansController");
+const { getUserArtisanId } = require("../controllers/artisans/getUserArtisanIdController");
 
 const router = express.Router();
 
 router.get("/artisans", authenticateToken, getPaginatedArtisans);
 router.get("/artisans", authenticateToken, getArtisans);
 router.get("/artisans/:id", authenticateToken, getArtisanById);
+router.get("/artisans/:id/workitems", getArtisansWorkItems);
+router.get("/artisanId", authenticateToken, getUserArtisanId);
 router.post("/artisans/create", authenticateToken, createArtisan);
 router.put("/artisans/:id/edit", authenticateToken, editArtisan);
 

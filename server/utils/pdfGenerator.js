@@ -1,7 +1,7 @@
 //server/utils/pdfGenerator.js
 const puppeteer = require("puppeteer");
 const db = require("../data/index.js");
-const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client } = db;
+const { Invoice, Company, InvoiceItem, Activity, Measure, Project, Client, Task, Artisan, User } = db;
 const translations = require("./translations/invoiceTranslations");
 
 const getLanguageCode = languageId => {
@@ -21,12 +21,11 @@ const getLanguageCode = languageId => {
 };
 
 const createInvoicePDF = async (invoiceId, languageId) => {
-  console.log("Generating PDF for invoice:", invoiceId);
-  console.log("Using language ID:", languageId);
-
   let browser;
   try {
-    const invoice = await Invoice.findByPk(invoiceId, {
+    console.log("Starting PDF generation for invoice:", invoiceId);
+    const invoice = await Invoice.findOne({
+      where: { id: invoiceId },
       include: [
         {
           model: Company,
@@ -36,7 +35,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
         {
           model: Client,
           as: "client",
-          attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails", "client_company_vat_number"]
+          attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails", "client_company_vat_number", "due_date"]
         },
         {
           model: InvoiceItem,
@@ -44,18 +43,15 @@ const createInvoicePDF = async (invoiceId, languageId) => {
           include: [
             {
               model: Activity,
-              as: "activity",
-              attributes: ["id", "name", "status"]
+              as: "activity"
             },
             {
               model: Measure,
-              as: "measure",
-              attributes: ["id", "name"]
+              as: "measure"
             },
             {
               model: Project,
-              as: "project",
-              attributes: ["id", "name", "company_name", "email", "address", "location"]
+              as: "project"
             }
           ]
         }
@@ -63,28 +59,22 @@ const createInvoicePDF = async (invoiceId, languageId) => {
     });
 
     if (!invoice) {
+      console.error("Invoice not found with ID:", invoiceId);
       throw new Error("Invoice not found");
     }
 
-    console.log("Invoice data loaded successfully");
+    console.log("Found invoice:", {
+      id: invoice.id,
+      number: invoice.invoice_number,
+      itemsCount: invoice.items?.length
+    });
 
-    // Използваме новата функция за определяне на езика
+    // Get language code
     const languageCode = getLanguageCode(languageId);
+    console.log("Using language code:", languageCode);
+
+    // Get translations
     const t = translations[languageCode];
-
-    console.log("Using language:", languageCode);
-
-    // Форматираме датите според локала
-    const dateLocaleMap = {
-      bg: "bg-BG",
-      en: "en-US",
-      ro: "ro-RO",
-      ru: "ru-RU",
-      tr: "tr-TR",
-      pl: "pl-PL",
-      nl: "nl-NL",
-      de: "de-DE"
-    };
 
     // Formatting the invoice number
     const formatInvoiceNumber = invoiceNumber => {
@@ -100,11 +90,28 @@ const createInvoicePDF = async (invoiceId, languageId) => {
     const formattedInvoiceNumber = formatInvoiceNumber(invoice.invoice_number);
     console.log("Formatted invoice number:", formattedInvoiceNumber);
 
+    // Formatting the date
+    const dateLocaleMap = {
+      bg: "bg-BG",
+      en: "en-US",
+      ro: "ro-RO",
+      ru: "ru-RU",
+      tr: "tr-TR",
+      pl: "pl-PL",
+      nl: "nl-NL",
+      de: "de-DE"
+    };
+
+    // Calculate due date based on invoice date and due_date_weeks
+    const dueDate = new Date(invoice.invoice_date);
+    dueDate.setDate(dueDate.getDate() + invoice.due_date_weeks * 7);
+
     // Preparing the data for the template
     const data = {
       invoiceNumber: formattedInvoiceNumber,
       date: invoice.invoice_date.toLocaleDateString(dateLocaleMap[languageCode]),
-      dueDate: invoice.due_date.toLocaleDateString(dateLocaleMap[languageCode]),
+      dueDate: dueDate.toLocaleDateString(dateLocaleMap[languageCode]),
+      dueDateWeeks: invoice.due_date_weeks,
       companyName: invoice.company.name,
       companyAddress: invoice.company.address,
       companyVAT: invoice.company.vat_number,
@@ -312,6 +319,198 @@ const createInvoicePDF = async (invoiceId, languageId) => {
   }
 };
 
+const createArtisanInvoicePDF = async invoiceId => {
+  let browser;
+  try {
+    console.log("Starting PDF generation for artisan invoice:", invoiceId);
+    const invoice = await Invoice.findOne({
+      where: { id: invoiceId },
+      include: [
+        {
+          model: Company,
+          as: "company",
+          attributes: ["name", "address", "vat_number", "iban", "logo_url", "phone", "registration_number", "email", "mol"]
+        },
+        {
+          model: Artisan,
+          as: "artisan",
+          include: [
+            {
+              model: User,
+              as: "user",
+              attributes: ["full_name", "email"]
+            }
+          ],
+          attributes: ["name", "email", "number"]
+        },
+        {
+          model: InvoiceItem,
+          as: "items",
+          include: [
+            {
+              model: Activity,
+              as: "activity"
+            },
+            {
+              model: Measure,
+              as: "measure"
+            }
+          ]
+        }
+      ]
+    });
+
+    const formatPrice = price => {
+      const numPrice = typeof price === "string" ? parseFloat(price) : price;
+      return numPrice ? numPrice.toFixed(2) : "0.00";
+    };
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 20px;
+              color: #333;
+            }
+            .header {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 30px;
+            }
+            .logo {
+              max-width: 200px;
+              max-height: 100px;
+              order: 2;
+            }
+            .invoice-details {
+              margin-bottom: 30px;
+              order: 1;
+            }
+            .details-container {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 30px;
+            }
+            .recipient-info, .issuer-info {
+              width: 48%;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 30px;
+              clear: both;
+            }
+            th, td {
+              border: 1px solid #ddd;
+              padding: 8px;
+              text-align: left;
+            }
+            th {
+              background-color: #f5f5f5;
+            }
+            .total {
+              text-align: right;
+              font-weight: bold;
+              margin-top: 20px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="invoice-details">
+              <h2>Invoice № ${invoice.invoice_number}</h2>
+              <p>Date: ${new Date(invoice.invoice_date).toLocaleDateString("bg-BG")}</p>
+              <p>Due date: ${new Date(invoice.due_date).toLocaleDateString("bg-BG")}</p>
+            </div>
+            ${invoice.company.logo_url ? `<img src="${invoice.company.logo_url}" class="logo" />` : ""}
+          </div>
+
+          <div class="details-container">
+            <div class="recipient-info">
+              <h3>Recipient:</h3>
+              <p>Name: ${invoice.artisan.user.full_name}</p>
+              <p>Email: ${invoice.artisan.user.email}</p>
+            </div>
+
+            <div class="issuer-info">
+              <h3>Issuer:</h3>
+              <p>Name: ${invoice.artisan.name}</p>
+              <p>Email: ${invoice.artisan.email}</p>
+              <p>Phone: ${invoice.artisan.number || "N/A"}</p>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>№</th>
+                <th>Activity</th>
+                <th>Quantity</th>
+                <th>Unit price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${invoice.items
+                .map(
+                  (item, index) => `
+                <tr>
+                  <td>${index + 1}</td>
+                  <td>${item.activity?.name || "N/A"}</td>
+                  <td>${item.quantity} ${item.measure?.name || ""}</td>
+                  <td>${formatPrice(item.price_per_unit)} €</td>
+                  <td>${formatPrice(item.total_price)} €</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" style="text-align: right;"><strong>Total:</strong></td>
+                <td><strong>${formatPrice(invoice.total_amount)} €</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </body>
+      </html>
+    `;
+
+    browser = await puppeteer.launch({
+      headless: "new",
+      args: ["--no-sandbox"]
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(htmlContent);
+
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: {
+        top: "20px",
+        right: "20px",
+        bottom: "20px",
+        left: "20px"
+      }
+    });
+
+    return pdfBuffer;
+  } catch (error) {
+    console.error("Error generating artisan PDF:", error);
+    throw error;
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
+  }
+};
+
 module.exports = {
-  createInvoicePDF
+  createInvoicePDF,
+  createArtisanInvoicePDF
 };

@@ -6,6 +6,7 @@ import { useMutationHook } from "@/hooks/useMutationHook";
 import DialogModal from "@/components/common/DialogElements/DialogModal";
 import EditCompanyForm from "./EditCompanyForm";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 
 type CompanyFormProps = {
   company_id: string;
@@ -14,13 +15,19 @@ type CompanyFormProps = {
 const EditCompany = ({ company_id }: CompanyFormProps) => {
   const { t } = useTranslation();
   const { isOpen, setIsOpen } = useDialogState();
+  const queryClient = useQueryClient();
 
   const { useEditEntity } = useMutationHook();
+
   const { mutate, isPending } = useEditEntity<CompanySchema>({
     URL: `/companies/${company_id}/edit`,
     queryKey: ["companies"],
     successToast: t("Company updated successfully!"),
-    setIsOpen
+    setIsOpen,
+    onSuccessCallback: () => {
+      queryClient.invalidateQueries({ queryKey: ["company", company_id] });
+      queryClient.invalidateQueries({ queryKey: ["companies"] });
+    }
   });
 
   const handleSubmit = useSubmitHandler(mutate, companySchema);

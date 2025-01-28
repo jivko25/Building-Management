@@ -48,6 +48,9 @@ export const projectSchema = z
       .optional(),
     status: z.enum(["active", "inactive"], {
       message: "Please, select a status."
+    }),
+    client_id: z.number({
+      required_error: "Please select a client."
     })
   })
   .refine(data => data.end_date! >= data.start_date!, {
@@ -64,7 +67,8 @@ export const projectDefaults: Project = {
   address: "",
   location: "",
   note: "",
-  status: "active"
+  status: "active",
+  client_id: 0
 };
 
 export type ProjectSchema = z.infer<typeof projectSchema>;

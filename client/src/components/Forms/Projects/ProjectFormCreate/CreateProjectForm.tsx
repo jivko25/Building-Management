@@ -11,6 +11,7 @@ import { ProjectSchema } from "@/models/project/projectSchema";
 import { ClipboardList, Mail, MapPin } from "lucide-react";
 import { FormProvider } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import FormClientSelector from "@/components/common/FormElements/FormClientSelector";
 
 type CreateProjectFormProps = {
   handleSubmit: (projectData: ProjectSchema) => void;
@@ -35,6 +36,10 @@ const CreateProjectForm = ({ handleSubmit, isPending }: CreateProjectFormProps) 
         <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
           <StatusSelector label={t("Status")} name="status" defaultVal="active" />
           <CompanySelector label={t("Select company")} name="company_name" />
+        </div>
+        <Separator className="mt-4 mb-2" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <FormClientSelector label={t("Select client")} name="client_id" />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2">

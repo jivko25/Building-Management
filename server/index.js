@@ -15,7 +15,10 @@ const mailRoutes = require("./routes/emailRoutes.js");
 const imageRoutes = require("./routes/imageRoutes");
 const defaultPricingRoutes = require("./routes/defaultPricingRoutes");
 const invoiceRoutes = require("./routes/invoiceRoutes");
+const invoiceClientRoutes = require("./routes/invoiceClientRoutes");
+const invoiceArtisanRoutes = require("./routes/invoiceArtisanRoutes");
 const clientRoutes = require("./routes/clientRoutes");
+const accountantsRoutes = require("./routes/accountantsRoutes");
 const languageRoutes = require("./routes/languageRoutes");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -58,10 +61,13 @@ app.use("/", workItemRoutes);
 app.use("/", mailRoutes);
 app.use("/", imageRoutes);
 app.use("/", defaultPricingRoutes);
+app.use("/", accountantsRoutes);
 app.use("/invoices", invoiceRoutes);
 app.use("/clients", clientRoutes);
 app.use("/languages", languageRoutes);
-
+app.use("/invoices", invoiceRoutes);
+app.use("/invoices-client", invoiceClientRoutes);
+app.use("/invoices-artisan", invoiceArtisanRoutes);
 app.use(errorHandler);
 
 app.listen(port, () => {

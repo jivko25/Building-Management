@@ -33,7 +33,7 @@ const ActivitySelector = ({ label, name, placeholder, defaultVal }: TableFormSel
             </FormControl>
             <SelectContent>
               {activities &&
-                activities.data.map(activity => (
+                activities?.data?.map(activity => (
                   <SelectItem key={activity.id} value={activity.name}>
                     {activity.name}
                   </SelectItem>

@@ -44,6 +44,10 @@ const ProjectsCard = ({ projects }: CardFormProps) => {
               <span className="font-semibold pr-1">{t("Company:")} </span>
               <span>{project.company_name}</span>
             </CardDescription>
+            <CardDescription>
+              <span className="font-semibold pr-1">{t("Client:")} </span>
+              <span>{project.client_company_name}</span>
+            </CardDescription>
           </CardContent>
           <CardFooter className="p-1 justify-center items-center rounded-b-lg border-t">
             <EditProject projectId={project.id!} />

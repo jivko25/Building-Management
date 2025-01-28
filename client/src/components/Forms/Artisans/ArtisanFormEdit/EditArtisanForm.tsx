@@ -9,9 +9,10 @@ import UsersSelector from "@/components/common/FormElements/FormUserSelector";
 import { Mail, Phone, User } from "lucide-react";
 import { useArtisanFormHooks } from "@/hooks/forms/useArtisanForm";
 import { ArtisanSchema } from "@/models/artisan/artisanSchema";
-import { useFetchDataQuery } from "@/hooks/useQueryHook";
+import { useQuery } from "@tanstack/react-query";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 type EditArtisanFormProps = {
   handleSubmit: (artisanData: ArtisanSchema) => void;
@@ -21,24 +22,21 @@ type EditArtisanFormProps = {
 
 const EditArtisanForm = ({ artisanId, handleSubmit, isPending }: EditArtisanFormProps) => {
   const { t } = useTranslation();
-  const { data: artisan } = useFetchDataQuery<{
-    id: string;
-    name: string;
-    note: string;
-    number: string;
-    email: string;
-    status: "active" | "inactive";
-    company: { name: string };
-    user: { full_name: string };
-  }>({
-    URL: `/artisans/${artisanId}`,
+  const { data: artisan, isLoading } = useQuery({
     queryKey: ["artisan", artisanId],
-    options: {
-      staleTime: Infinity
+    queryFn: async () => {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/artisans/${artisanId}`, {
+        credentials: "include"
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch artisan");
+      }
+      return response.json();
     }
   });
 
   console.log("👷 Artisan data:", artisan);
+  console.log("Loading state:", isLoading);
 
   const { useEditArtisanForm } = useArtisanFormHooks();
 
@@ -51,6 +49,24 @@ const EditArtisanForm = ({ artisanId, handleSubmit, isPending }: EditArtisanForm
     company: artisan?.company?.name || "",
     artisanName: artisan?.user?.full_name || ""
   });
+
+  useEffect(() => {
+    if (artisan) {
+      form.reset({
+        name: artisan.name,
+        note: artisan.note || "",
+        number: artisan.number,
+        email: artisan.email,
+        status: artisan.status,
+        company: artisan.company?.name,
+        artisanName: artisan.user?.full_name
+      });
+    }
+  }, [artisan, form]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <FormProvider {...form}>

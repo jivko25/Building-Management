@@ -33,13 +33,12 @@ const EditTaskForm = ({ id, taskId, isPending, handleSubmit }: EditTaskFormProps
 
   const form = useEditTaskForm(task as Task);
 
-  const taskTransformed = task as any;
-  const artisanPlaceholder = taskTransformed.artisans.map((artisan: any) => artisan.name).join(", ")
+  const artisanPlaceholder = task?.artisans?.map((artisan: any) => artisan.name).join(", ") || "Select artisans";
 
   if (task) {
-    task.activity = taskTransformed.activity.name
-    task.measure = taskTransformed.measure.name;
-    task.artisans = [];
+    task.activity = task?.activity || "";
+    task.measure = task?.measure || "";
+    task.artisans = task?.artisans || [];
   }
 
   return (

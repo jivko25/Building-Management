@@ -1,8 +1,7 @@
-'use strict';
-
+"use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('tbl_default_pricing', {
+    await queryInterface.createTable("tbl_default_pricing", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,8 +12,8 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'tbl_activities',
-          key: 'id'
+          model: "tbl_activities",
+          key: "id"
         },
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
@@ -23,18 +22,8 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'tbl_measures',
-          key: 'id'
-        },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
-      },
-      artisan_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'tbl_artisans',
-          key: 'id'
+          model: "tbl_measures",
+          key: "id"
         },
         onUpdate: "CASCADE",
         onDelete: "CASCADE"
@@ -51,26 +40,35 @@ module.exports = {
       },
       creator_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "tbl_users",
           key: "id"
         },
         onUpdate: "CASCADE",
-        onDelete: "CASCADE"
+        onDelete: "SET NULL"
       },
       artisan_price: {
         type: Sequelize.FLOAT,
-        allowNull: false
+        allowNull: true
       },
       manager_price: {
         type: Sequelize.FLOAT,
         allowNull: false
+      },
+      artisan_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_artisans",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
       }
     });
   },
-
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('tbl_default_pricing');
+    await queryInterface.dropTable("tbl_default_pricing");
   }
 };

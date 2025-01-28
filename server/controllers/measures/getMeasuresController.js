@@ -1,32 +1,43 @@
 //server\controllers\measures\getMeasuresController.js\
 const ApiError = require("../../utils/apiError");
 const db = require("../../data/index.js");
-const { Measure, Project, Task } = db;
+const { Measure, Project, Task, Op } = db;
 
 const getMeasures = async (req, res, next) => {
+  try {
+    console.log("Getting measures for user:", req.user.id);
     const isAdmin = req.user.role === "admin";
 
-    if (isAdmin) {
-        const measures = await Measure.findAll({
-            order: [["name", "ASC"]]
-        });
+    // Get base query for all users
+    let whereClause = {};
+    let order = [["name", "ASC"]];
 
-        return res.json({
-            success: true,
-            data: measures
-        });
+    if (!isAdmin) {
+      whereClause = {
+        [Op.or]: [
+          { creator_id: req.user.id },
+          { name: "hour" } // Always include 'hour' measure
+        ]
+      };
     }
 
     const measures = await Measure.findAll({
-      order: [["name", "ASC"]]
+      where: whereClause,
+      order: order,
+      distinct: true // Prevent duplicates
     });
 
+    console.log(`Found ${measures.length} measures`);
     res.json({
-        success: true,
-        data: measures
+      success: true,
+      data: measures
     });
+  } catch (error) {
+    console.error("Error in getMeasures:", error);
+    next(error);
+  }
 };
 
 module.exports = {
-    getMeasures
+  getMeasures
 };

@@ -11,7 +11,18 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
+      },
+      creator_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_users",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL"
       }
     });
   },

@@ -3,13 +3,23 @@ import { PaginatedDataResponse } from "@/types/query-data-types/paginatedDataTyp
 import { ProjectTask } from "@/types/task-types/taskTypes";
 
 export const findItemById = <TData>(data: PaginatedDataResponse<TData> | TData[] | ProjectTask, id: string, getId: (item: TData) => string): TData | undefined => {
+  console.log("findItemById - Input data:", data);
+
+  // Handle numeric IDs comparison
+  const searchId = id.toString();
+
   if (Array.isArray(data)) {
-    return data.find(item => getId(item) === id) || undefined;
+    const found = data.find(item => getId(item) === searchId);
+    console.log("findItemById - Found in array:", found);
+    return found;
   }
 
-  if ("workItemsData" in data && Array.isArray(data.workItemsData)) {
-    return (data.workItemsData.find(item => getId(item as TData) === id) as TData) || undefined;
+  if ("data" in data && Array.isArray(data.data)) {
+    const found = data.data.find(item => getId(item) === searchId);
+    console.log("findItemById - Found in paginated data:", found);
+    return found;
   }
 
-  return (data as PaginatedDataResponse<TData>).data?.find(item => getId(item) === id) || undefined;
+  console.log("findItemById - No matching data structure found");
+  return undefined;
 };

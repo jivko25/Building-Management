@@ -1,6 +1,7 @@
+// client\src\pages\Invoices\Client\UpdateClientInvoicePage.tsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { invoiceService } from "@/services/invoiceService";
+import { invoiceClientService } from "@/services/invoice/invoiceClientService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
@@ -11,7 +12,7 @@ import { format } from "date-fns";
 import { bg } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 
-export const UpdateInvoicePage = () => {
+export const UpdateClientInvoicePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -20,15 +21,15 @@ export const UpdateInvoicePage = () => {
 
   const { data: invoice, isLoading } = useQuery({
     queryKey: ["invoice", id],
-    queryFn: () => invoiceService.getById(Number(id))
+    queryFn: () => invoiceClientService.getById(Number(id))
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: { id: number; paid: boolean }) => invoiceService.updateStatus(data.id, data.paid),
+    mutationFn: (data: { id: number; paid: boolean }) => invoiceClientService.updateStatus(data.id, data.paid),
     onSuccess: () => {
       console.log("✅ Invoice status updated successfully");
       toast.success("Invoice status updated successfully");
-      navigate(`/invoices/${id}`);
+      navigate(`/invoices-client/${id}`);
     },
     onError: error => {
       console.error("❌ Error updating invoice status:", error);
@@ -55,7 +56,7 @@ export const UpdateInvoicePage = () => {
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => navigate(`/invoices/${id}`)}>
+          <Button variant="outline" onClick={() => navigate(`/invoices-client/${id}`)}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             {t("Back")}
           </Button>

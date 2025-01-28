@@ -36,10 +36,6 @@ module.exports = (sequelize, DataTypes) => {
           key: "id"
         }
       },
-      price_per_measure: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: true
-      },
       total_price: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: true
@@ -97,6 +93,13 @@ module.exports = (sequelize, DataTypes) => {
     Task.hasMany(models.WorkItem, {
       foreignKey: "task_id",
       as: "workItems"
+    });
+
+    Task.belongsToMany(models.Accountant, {
+      through: "tbl_task_accountants",
+      foreignKey: "task_id",
+      otherKey: "accountant_id",
+      as: "accountants"
     });
   };
 

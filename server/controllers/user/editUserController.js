@@ -8,7 +8,7 @@ const ApiError = require("../../utils/apiError");
 const editUser = async (req, res, next) => {
   console.log("Editing user with ID:", req.params.id);
   const userId = req.params.id;
-  const { full_name, username, password, role, status } = req.body;
+  const { full_name, username, password, email, role, status } = req.body;
 
   try {
     const user = await User.findByPk(userId);
@@ -47,6 +47,10 @@ const editUser = async (req, res, next) => {
       user.role = role;
     }
 
+    if (email) {
+      user.email = email;
+    }
+
     if (status) {
       if (status === "active" || status === "inactive") {
         user.status = status;
@@ -63,6 +67,7 @@ const editUser = async (req, res, next) => {
         id: user.id,
         full_name: user.full_name,
         username: user.username,
+        email: user.email,
         role: user.role,
         status: user.status,
         manager_id: user.manager_id,

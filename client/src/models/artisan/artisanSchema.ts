@@ -2,43 +2,48 @@
 import { Artisan } from "@/types/artisan-types/artisanTypes";
 import { z } from "zod";
 import { phoneValidator } from "../company/companySchema";
+import i18next from "i18next";
+
+const t = i18next.t;
+
 
 export const artisanSchema = z.object({
   name: z
     .string()
     .min(3, {
-      message: "Artisan name must be at least 3 characters."
+      message: t("Artisan name must be at least 3 characters.")
     })
     .max(50),
   note: z
     .string()
     .min(0)
     .max(100, {
-      message: "Note cannot exceed 100 characters."
+      message: t("Note cannot exceed 100 characters.")
     })
     .optional(),
-  number: z.string().regex(phoneValidator, { message: "Invalid phone format" }),
+  number: z.string().regex(phoneValidator, { message: t("Invalid phone format") }),
   email: z
     .string()
     .min(5, {
-      message: "Email must be at least 5 characters long."
+      message: t("Email must be at least 5 characters long.")
     })
     .max(50, {
-      message: "Email cannot exceed 50 characters."
+      message: t("Email cannot exceed 50 characters.")
     })
-    .email("Please, enter a valid email."),
+    .email(t("Please, enter a valid email.")),
   company: z.string().min(1, {
-    message: "Please select company"
+    message: t("Please select company")
   }),
   artisanName: z.string().min(1, {
-    message: "Please select user"
+    message: t("Please select user")
   }),
   status: z.enum(["active", "inactive"], {
-    message: "Please, select a status"
+    message: t("Please, select a status") 
   })
 });
 
 export const artisanDefaults: Artisan = {
+  id: "",
   name: "",
   note: "",
   email: "",

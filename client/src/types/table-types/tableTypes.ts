@@ -9,6 +9,7 @@ export type FormInputType = {
   value?: string;
   className?: string;
   Icon?: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>;
+  text?: string;
 };
 
 export type TableFormSelectType = {
@@ -17,4 +18,7 @@ export type TableFormSelectType = {
   placeholder?: string;
   defaultVal?: string;
   className?: string;
+  multiselect?: boolean;
+  artisan_id?: string;
+  selectValueKey?: string;
 };

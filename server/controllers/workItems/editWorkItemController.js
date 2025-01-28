@@ -6,7 +6,7 @@ const ApiError = require("../../utils/apiError");
 const editWorkItem = async (req, res, next) => {
   const workItemId = req.params.id;
   const taskId = req.params.task_id;
-  const { name, start_date, end_date, note, finished_work, status } = req.body;
+  const { name, start_date, end_date, note, finished_work, status, is_client_invoiced } = req.body;
 
   try {
     const workItem = await WorkItem.findByPk(workItemId);
@@ -28,7 +28,8 @@ const editWorkItem = async (req, res, next) => {
       end_date,
       note,
       finished_work,
-      status
+      status,
+      is_client_invoiced
     });
 
     res.json({
@@ -44,6 +45,32 @@ const editWorkItem = async (req, res, next) => {
   }
 };
 
+const updateIsPaidWorkItem = async function (req, res, next) {
+  const workItemId = req.params.id;
+  const { is_paid } = req.body;
+
+  try {
+      const workItem = await WorkItem.findOne({
+          where: { id: workItemId }
+      });
+
+      if (!workItem) {
+          return res.status(404).json({ error: "Work item not found!" });
+      }
+
+      workItem.is_paid = is_paid;
+      await workItem.save();
+
+      return res.status(200).json({
+          message: "Work item updated successfully!",
+          data: workItem
+      });
+  } catch (error) {
+      next(error);
+  }
+};
+
 module.exports = {
-  editWorkItem
+  editWorkItem,
+  updateIsPaidWorkItem
 };

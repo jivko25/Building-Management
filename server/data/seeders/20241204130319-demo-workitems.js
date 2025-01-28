@@ -1,5 +1,17 @@
-//server\data\seeders\20241204130319-demo-workitems.js
 "use strict";
+
+function getRandomDateWithinLastMonth() {
+  const now = new Date(); // Текущата дата
+  const pastMonth = new Date(); // Създаваме копие на текущата дата
+  pastMonth.setMonth(now.getMonth() - 1); // Месец назад
+
+  // Генерираме произволна дата между pastMonth и сега
+  return new Date(pastMonth.getTime() + Math.random() * (now.getTime() - pastMonth.getTime()));
+}
+
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -8,19 +20,101 @@ module.exports = {
     await queryInterface.bulkInsert(
       "tbl_workitems",
       [
-        { id: 1, task_id: 1, name: "Работен елемент 1", start_date: new Date(), end_date: null, note: "Забележка1", finished_work: "Завършена работа", status: "in_progress" },
-        { id: 2, task_id: 2, name: "Работен елемент 2", start_date: new Date(), end_date: null, note: "Забележка2", finished_work: "Завършена работа", status: "done" },
-        { id: 3, task_id: 3, name: "Работен елемент 3", start_date: new Date(), end_date: null, note: "Забележка3", finished_work: "Завършена работа", status: "in_progress" },
-        { id: 4, task_id: 4, name: "Работен елемент 4", start_date: new Date(), end_date: null, note: "Забележка4", finished_work: "Завършена работа", status: "done" },
-        { id: 5, task_id: 5, name: "Работен елемент 5", start_date: new Date(), end_date: null, note: "Забележка5", finished_work: "Завършена работа", status: "in_progress" },
-        { id: 6, task_id: 1, name: "Работен елемент 6", start_date: new Date(), end_date: null, note: "Забележка6", finished_work: "Завършена работа", status: "done" },
-        { id: 7, task_id: 1, name: "Работен елемент 7", start_date: new Date(), end_date: null, note: "Забележка7", finished_work: "Завършена работа", status: "in_progress" },
-        { id: 8, task_id: 2, name: "Работен елемент 8", start_date: new Date(), end_date: null, note: "Забележка8", finished_work: "Завършена работа", status: "done" },
-        { id: 9, task_id: 3, name: "Работен елемент 9", start_date: new Date(), end_date: null, note: "Забележка9", finished_work: "Завършена работа", status: "in_progress" },
-        { id: 10, task_id: 10, name: "Работен елемент 10", start_date: new Date(), end_date: null, note: "Забележка10", finished_work: "Завършена работа", status: "done" },
-        { id: 11, task_id: 11, name: "Работен елемент 11", start_date: new Date(), end_date: null, note: "Забележка11", finished_work: "Завършена работа", status: "in_progress" },
-        { id: 12, task_id: 12, name: "Работен елемент 12", start_date: new Date(), end_date: null, note: "Забележка12", finished_work: "Завършена работа", status: "done" },
-        { id: 13, task_id: 13, name: "Работен елемент 13", start_date: new Date(), end_date: null, note: "Забележка13", finished_work: "Завършена работа", status: "in_progress" }
+        {
+          id: 1,
+          task_id: 1,
+          project_id: 1,
+          start_date: new Date(),
+          end_date: new Date(),
+          activity_id: 2,
+          measure_id: 2,
+          artisan_id: 1,
+          quantity: 10.0,
+          note: "Шпакловка стени",
+          status: "done",
+          is_client_invoiced: false,
+          is_artisan_invoiced: false,
+          creator_id: 2,
+          total_artisan_price: getRandomNumber(50, 150),
+          total_manager_price: getRandomNumber(50, 150),
+          created_at: getRandomDateWithinLastMonth(),
+        },
+        {
+          id: 2,
+          task_id: 1,
+          project_id: 1,
+          start_date: new Date(),
+          end_date: new Date(),
+          activity_id: 2,
+          measure_id: 2,
+          artisan_id: 1,
+          quantity: 15.0,
+          note: "Шпакловка таван",
+          status: "done",
+          is_client_invoiced: false,
+          is_artisan_invoiced: false,
+          creator_id: 2,
+          total_artisan_price: getRandomNumber(50, 150),
+          total_manager_price: getRandomNumber(50, 150),
+          created_at: getRandomDateWithinLastMonth(),
+        },
+        {
+          id: 3,
+          task_id: 2,
+          project_id: 2,
+          start_date: new Date(),
+          end_date: new Date(),
+          activity_id: 3,
+          measure_id: 2,
+          artisan_id: 2,
+          quantity: 30.0,
+          note: "Саниране фасада",
+          status: "done",
+          is_client_invoiced: false,
+          is_artisan_invoiced: false,
+          creator_id: 2,
+          total_artisan_price: getRandomNumber(50, 150),
+          total_manager_price: getRandomNumber(50, 150),
+          created_at: getRandomDateWithinLastMonth(),
+        },
+        {
+          id: 4,
+          task_id: 2,
+          project_id: 2,
+          start_date: new Date(),
+          end_date: new Date(),
+          activity_id: 3,
+          measure_id: 2,
+          artisan_id: 2,
+          quantity: 20.0,
+          note: "Саниране цокъл",
+          status: "done",
+          is_client_invoiced: false,
+          is_artisan_invoiced: false,
+          creator_id: 2,
+          total_artisan_price: getRandomNumber(50, 150),
+          total_manager_price: getRandomNumber(50, 150),
+          created_at: getRandomDateWithinLastMonth(),
+        },
+        {
+          id: 5,
+          task_id: 3,
+          project_id: 3,
+          start_date: new Date(),
+          end_date: null,
+          activity_id: 4,
+          measure_id: 3,
+          artisan_id: 3,
+          quantity: getRandomNumber(1, 50),
+          note: "Допълнителен запис",
+          status: "in_progress",
+          is_client_invoiced: true,
+          is_artisan_invoiced: true,
+          creator_id: 3,
+          total_artisan_price: getRandomNumber(50, 150),
+          total_manager_price: getRandomNumber(50, 150),
+          created_at: getRandomDateWithinLastMonth(),
+        },
       ],
       {}
     );
@@ -28,5 +122,5 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete("tbl_workitems", null, {});
-  }
+  },
 };

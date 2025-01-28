@@ -9,6 +9,7 @@ export type Client = {
   creator_id?: number;
   client_company_vat_number?: string;
   invoice_language_id: number;
+  due_date: number;
   creator?: {
     username: string;
   };

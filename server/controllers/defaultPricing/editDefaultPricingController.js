@@ -7,8 +7,8 @@ const editDefaultPricing = async (req, res, next) => {
     const defaultPricingId = req.params.id;
 
     const { artisan_price, manager_price, activity_id, measure_id, project_id } = req.body;
-    if (!artisan_price || !manager_price || !activity_id || !measure_id || !project_id) {
-      throw new ApiError(400, "Artisan price, manager price, activity id, measure id and project id are required!");
+    if (!manager_price || !activity_id || !measure_id || !project_id) {
+      throw new ApiError(400, "manager price, activity id, measure id and project id are required!");
     }
 
     const isMeasure = await Measure.findByPk(measure_id, {
@@ -37,13 +37,12 @@ const editDefaultPricing = async (req, res, next) => {
     if (!isProject) {
       throw new ApiError(404, "Project not found!");
     }
-
     const defaultPricing = await DefaultPricing.findByPk(defaultPricingId);
     if (!defaultPricing) {
       throw new ApiError(404, "Default pricing not found!");
     }
 
-    await defaultPricing.update({ artisan_price, manager_price, activity_id, measure_id, project_id });
+    await defaultPricing.update({ artisan_price: artisan_price || null, manager_price, activity_id, measure_id, project_id });
     res.status(200).json({ message: "Default pricing updated successfully!", defaultPricing });
   } catch (error) {
     if (error instanceof ApiError) {

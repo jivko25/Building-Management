@@ -15,7 +15,19 @@ module.exports = {
         references: {
           model: "tbl_invoices",
           key: "id"
-        }
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
+      },
+      work_item_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_workitems",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE"
       },
       activity_id: {
         type: Sequelize.INTEGER,

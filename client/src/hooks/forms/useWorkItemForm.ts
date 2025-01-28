@@ -3,7 +3,7 @@ import { workItemDefaults, workItemSchema, WorkItemSchema } from "@/models/workI
 import { useDynamicForm } from "./dynamicForm/useDynamicForm";
 
 export const useWorkItemFormHooks = () => {
-  const { useCreateForm, useEditForm } = useDynamicForm<WorkItemSchema>(workItemSchema as any, workItemDefaults);
+  const { useCreateForm, useEditForm } = useDynamicForm<WorkItemSchema>(workItemSchema as any, workItemDefaults as any);
 
   return {
     useCreateWorkItemForm: useCreateForm,

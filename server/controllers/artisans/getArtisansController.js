@@ -6,6 +6,7 @@ const { Op } = Sequelize;
 
 const getPaginatedArtisans = async (req, res, next) => {
   try {
+    console.log("Getting paginated artisans for user:", req.user.id);
     const { _page = 1, _limit = 10, q = "" } = req.query;
     const offset = (parseInt(_page) - 1) * parseInt(_limit);
     const isAdmin = req.user.role === "admin";
@@ -47,12 +48,7 @@ const getPaginatedArtisans = async (req, res, next) => {
       order: [["id", "DESC"]]
     });
 
-    // const artisans = rows.filter((artisan) => {
-    //   if (isAdmin) {
-    //     return true;
-    //   }
-    //   return artisan.user_id === req.user.id;
-    // });
+    const count = rows.length;
 
     res.json({
       artisans: rows,
@@ -62,15 +58,18 @@ const getPaginatedArtisans = async (req, res, next) => {
       totalPages: Math.ceil(rows.length / parseInt(_limit))
     });
   } catch (error) {
+    console.error("Error in getPaginatedArtisans:", error);
     if (error instanceof ApiError) {
       next(error);
+    } else {
+      next(new ApiError(500, "Internal server Error!"));
     }
-    next(new ApiError(500, "Internal server Error!"));
   }
 };
 
 const getArtisans = async (req, res, next) => {
   try {
+    console.log("Getting all artisans for user:", req.user.id);
     const isAdmin = req.user.role === "admin";
 
     const users = await User.findAll({
@@ -121,12 +120,15 @@ const getArtisans = async (req, res, next) => {
       });
     }
 
+    console.log(`Found ${artisans.length} total artisans`);
     res.json(artisans);
   } catch (error) {
+    console.error("Error in getArtisans:", error);
     if (error instanceof ApiError) {
       next(error);
+    } else {
+      next(new ApiError(500, "Internal server Error!"));
     }
-    next(new ApiError(500, "Internal server Error!"));
   }
 };
 

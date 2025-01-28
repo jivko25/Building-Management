@@ -7,10 +7,11 @@ import VatSelector from "@/components/common/FormElements/FormVatSelector";
 import { ClipboardList, FileDigit, Mail, MapPin, Phone, User } from "lucide-react";
 import { CompanySchema } from "@/models/company/companySchema";
 import { useCompanyFormHooks } from "@/hooks/forms/useCompanyForm";
-import { useFetchDataQuery } from "@/hooks/useQueryHook";
-import { Company } from "@/types/company-types/companyTypes";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+
 type EditCompanyFormProps = {
   handleSubmit: (companyData: CompanySchema) => void;
   company_id: string;
@@ -19,41 +20,66 @@ type EditCompanyFormProps = {
 
 const EditCompanyForm = ({ company_id, handleSubmit, isPending }: EditCompanyFormProps) => {
   const { t } = useTranslation();
-  const { data: company } = useFetchDataQuery<Company>({
-    URL: `/companies/${company_id}`,
+
+  const { data: company, isLoading } = useQuery({
     queryKey: ["company", company_id],
-    options: {
-      staleTime: Infinity
+    queryFn: async () => {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/companies/${company_id}`, {
+        credentials: "include"
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch company");
+      }
+      return response.json();
     }
   });
 
-  console.log("🏢 Fetched company data:", company);
+  console.log("🏢 Company data:", company);
+  console.log("Loading state:", isLoading);
 
   const { useEditCompanyForm } = useCompanyFormHooks();
-  const form = useEditCompanyForm(company || {});
 
-  const onSubmit = (data: CompanySchema) => {
-    console.log("✏️ Editing company with data:", {
-      id: company_id,
-      ...data,
-      formState: form.formState,
-      isDirty: form.formState.isDirty,
-      isValid: form.formState.isValid
-    });
-    handleSubmit(data);
-  };
-
-  console.log("🏢 Current form values:", form.watch());
-  console.log("🚦 Form state:", {
-    isDirty: form.formState.isDirty,
-    errors: form.formState.errors,
-    isSubmitting: form.formState.isSubmitting,
-    dirtyFields: form.formState.dirtyFields
+  const form = useEditCompanyForm({
+    name: company?.name || "",
+    location: company?.location || "",
+    address: company?.address || "",
+    mol: company?.mol || "",
+    email: company?.email || "",
+    iban: company?.iban || "",
+    vat_number: company?.vat_number || "",
+    registration_number: company?.registration_number || "",
+    phone: company?.phone || "",
+    status: company?.status || "active",
+    dds: company?.dds || "no",
+    logo_url: company?.logo_url || ""
   });
+
+  useEffect(() => {
+    if (company) {
+      form.reset({
+        name: company.name,
+        location: company.location,
+        address: company.address,
+        mol: company.mol,
+        email: company.email,
+        iban: company.iban,
+        vat_number: company.vat_number,
+        registration_number: company.registration_number,
+        phone: company.phone,
+        status: company.status,
+        dds: company.dds,
+        logo_url: company.logo_url
+      });
+    }
+  }, [company, form]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <FormProvider {...form}>
-      <form id="form-edit" onSubmit={form.handleSubmit(onSubmit)}>
+      <form id="form-edit" onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="grid grid-cols-1 gap-2 mb-2">
           <FormFieldInput type="text" label={t("Company name")} name="name" className="pl-10" Icon={ClipboardList} />
           <FormFieldInput type="text" label={t("Company location")} name="location" className="pl-10" Icon={MapPin} />

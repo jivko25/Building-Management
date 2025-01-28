@@ -16,6 +16,14 @@ module.exports = (sequelize, DataTypes) => {
           key: "id"
         }
       },
+      artisan_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_artisans",
+          key: "id"
+        }
+      },
       measure_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -24,13 +32,21 @@ module.exports = (sequelize, DataTypes) => {
           key: "id"
         }
       },
-      artisan_id: {
+      project_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "tbl_artisans",
+          model: "tbl_projects",
           key: "id"
         }
+      },
+      manager_price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false
+      },
+      artisan_price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true
       },
       project_id: {
         type: DataTypes.INTEGER,
@@ -47,23 +63,25 @@ module.exports = (sequelize, DataTypes) => {
           model: "tbl_users",
           key: "id"
         }
-      },
-      artisan_price: {
-        type: DataTypes.FLOAT,
-        allowNull: false
-      },
-      manager_price: {
-        type: DataTypes.FLOAT,
-        allowNull: false
       }
+      // artisan_price: {
+      //   type: DataTypes.FLOAT,
+      //   allowNull: false
+      // },
+      // manager_price: {
+      //   type: DataTypes.FLOAT,
+      //   allowNull: false
     },
     {
       tableName: "tbl_default_pricing",
       timestamps: false
     }
   );
-
   DefaultPricing.associate = models => {
+    DefaultPricing.belongsTo(models.Project, {
+      foreignKey: "project_id",
+      as: "project"
+    });
     DefaultPricing.belongsTo(models.Activity, {
       foreignKey: "activity_id",
       as: "activity"
@@ -71,10 +89,6 @@ module.exports = (sequelize, DataTypes) => {
     DefaultPricing.belongsTo(models.Measure, {
       foreignKey: "measure_id",
       as: "measure"
-    });
-    DefaultPricing.belongsTo(models.Artisan, {
-      foreignKey: "artisan_id",
-      as: "artisan"
     });
   };
 

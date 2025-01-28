@@ -19,19 +19,26 @@ import UserRegisterForm from "./components/Forms/User/userFormRegister/UserRegis
 import UserForgotPasswordForm from "./components/Forms/User/UserForgotPasswordForm/UserForgotPasswordForm";
 import UserResetPasswordForm from "./components/Forms/User/UserResetPasswordForm/UserResetPasswordForm";
 import ManagerTablePage from "./pages/ManagersTablePage";
-import { InvoicesPage } from "./pages/Invoices/InvoicesPage";
-import { CreateInvoicePage } from "./pages/Invoices/CreateInvoicePage";
-import { InvoiceDetailsPage } from "./pages/Invoices/InvoiceDetailsPage";
-import { UpdateInvoicePage } from "./pages/Invoices/UpdateInvoicePage";
 import ClientsTablePage from "./pages/ClientsTablePage";
 import AdminGuard from "./guards/AdminGuard";
+import { InvoicesClientPage } from "./pages/Invoices/Client/InvoicesClientPage";
+import { CreateClientInvoicePage } from "./pages/Invoices/Client/CreateClientInvoicePage";
+import { InvoiceClientDetailsPage } from "./pages/Invoices/Client/InvoiceClientDetailsPage";
+import { UpdateClientInvoicePage } from "./pages/Invoices/Client/UpdateClientInvoicePage";
 import { LanguageSettings } from "./pages/Settings/LanguageSettings";
 import { useTranslation } from "react-i18next";
+import { UserWorkitemProvider } from "./context/UserWorkitemContext";
+import ArtisansDetailsPage from "./pages/ArtisansDetailsPage";
+import ManagerDefaultPricesPage from "./pages/ManagerDefaultPricesPage";
+import { InvoicesArtisanPage } from "./pages/Invoices/Artisan/InvoicesArtisanPage";
+import { CreateArtisanInvoicePage } from "./pages/Invoices/Artisan/CreateArtisanInvoicePage";
+import { InvoiceArtisanDetailsPage } from "./pages/Invoices/Artisan/InvoiceArtisanDetailsPage";
+import { UpdateArtisanInvoicePage } from "./pages/Invoices/Artisan/UpdateArtisanInvoicePage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const AppRoutes = () => {
-
-const { t } = useTranslation();
-console.log("Current translations:", t("settings"));
+  const { t } = useTranslation();
+  console.log("Current translations:", t("settings"));
   return (
     <Routes>
       {/* Public routes */}
@@ -65,10 +72,30 @@ console.log("Current translations:", t("settings"));
       </Route>
       <Route element={<ManagerGuard />}>
         <Route
+          path="/default-prices"
+          element={
+            <TableLayout>
+              <ManagerDefaultPricesPage />
+            </TableLayout>
+          }
+        />
+      </Route>
+      <Route element={<ManagerGuard />}>
+        <Route
           path="/artisans"
           element={
             <TableLayout>
               <ArtisansTablePage />
+            </TableLayout>
+          }
+        />
+      </Route>
+      <Route element={<ManagerGuard />}>
+        <Route
+          path="/artisans/:id"
+          element={
+            <TableLayout>
+              <ArtisansDetailsPage />
             </TableLayout>
           }
         />
@@ -145,46 +172,6 @@ console.log("Current translations:", t("settings"));
       </Route>
       <Route element={<ManagerGuard />}>
         <Route
-          path="/invoices"
-          element={
-            <TableLayout>
-              <InvoicesPage />
-            </TableLayout>
-          }
-        />
-      </Route>
-      <Route element={<ManagerGuard />}>
-        <Route
-          path="/invoices/create"
-          element={
-            <TableLayout>
-              <CreateInvoicePage />
-            </TableLayout>
-          }
-        />
-      </Route>
-      <Route element={<ManagerGuard />}>
-        <Route
-          path="/invoices/:id"
-          element={
-            <TableLayout>
-              <InvoiceDetailsPage />
-            </TableLayout>
-          }
-        />
-      </Route>
-      <Route element={<ManagerGuard />}>
-        <Route
-          path="/invoices/:id/edit"
-          element={
-            <TableLayout>
-              <UpdateInvoicePage />
-            </TableLayout>
-          }
-        />
-      </Route>
-      <Route element={<ManagerGuard />}>
-        <Route
           path="/clients"
           element={
             <TableLayout>
@@ -210,9 +197,11 @@ console.log("Current translations:", t("settings"));
         <Route
           path="/my-projects/:taskId/task"
           element={
-            <TableLayout>
-              <UserProjectTaskPage />
-            </TableLayout>
+            <UserWorkitemProvider>
+              <TableLayout>
+                <UserProjectTaskPage />
+              </TableLayout>
+            </UserWorkitemProvider>
           }
         />
       </Route>
@@ -241,6 +230,81 @@ console.log("Current translations:", t("settings"));
           }
         />
       </Route>
+
+      {/* Client Invoice routes */}
+      <Route element={<ManagerGuard />}>
+        <Route
+          path="/invoices-client"
+          element={
+            <TableLayout>
+              <InvoicesClientPage />
+            </TableLayout>
+          }
+        />
+        <Route
+          path="/invoices-client/create"
+          element={
+            <TableLayout>
+              <CreateClientInvoicePage />
+            </TableLayout>
+          }
+        />
+        <Route
+          path="/invoices-client/:id"
+          element={
+            <TableLayout>
+              <InvoiceClientDetailsPage />
+            </TableLayout>
+          }
+        />
+        <Route
+          path="/invoices-client/:id/edit"
+          element={
+            <TableLayout>
+              <UpdateClientInvoicePage />
+            </TableLayout>
+          }
+        />
+      </Route>
+
+      {/* Artisan Invoice routes */}
+      <Route element={<ManagerGuard />}>
+        <Route
+          path="/invoices-artisan"
+          element={
+            <TableLayout>
+              <InvoicesArtisanPage />
+            </TableLayout>
+          }
+        />
+        <Route
+          path="/invoices-artisan/create"
+          element={
+            <TableLayout>
+              <CreateArtisanInvoicePage />
+            </TableLayout>
+          }
+        />
+        <Route
+          path="/invoices-artisan/:id"
+          element={
+            <TableLayout>
+              <InvoiceArtisanDetailsPage />
+            </TableLayout>
+          }
+        />
+        <Route
+          path="/invoices-artisan/:id/edit"
+          element={
+            <TableLayout>
+              <UpdateArtisanInvoicePage />
+            </TableLayout>
+          }
+        />
+      </Route>
+
+      {/* 404 Route - This should be the last route */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };

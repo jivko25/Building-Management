@@ -60,11 +60,21 @@ module.exports = (sequelize, DataTypes) => {
           model: "tbl_users",
           key: "id"
         }
+      },
+      client_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_clients",
+          key: "id"
+        }
       }
     },
     {
       tableName: "tbl_projects",
-      timestamps: false
+      timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at"
     }
   );
 
@@ -82,6 +92,16 @@ module.exports = (sequelize, DataTypes) => {
     Project.belongsTo(models.User, {
       foreignKey: "creator_id",
       as: "creator"
+    });
+
+    Project.belongsTo(models.Client, {
+      foreignKey: "client_id",
+      as: "client"
+    });
+
+    Project.hasMany(models.DefaultPricing, {
+      foreignKey: "project_id",
+      as: "defaultPricing"
     });
 
     Project.hasMany(models.ProjectImage, {

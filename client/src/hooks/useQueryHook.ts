@@ -1,9 +1,7 @@
 //client\src\hooks\useQueryHook.ts
-import { createEntity, editEntity, getEntityData, getInfiniteData, getPaginatedData } from "@/api/apiCall";
+import { createEntity, editEntity, getEntityData, getInfiniteData } from "@/api/apiCall";
 import { CachedDataOptions, FetchDataQueryOptions, FetchQueryOptions, PaginatedDataResponse, UseGetPaginatedDataTypes } from "@/types/query-data-types/paginatedDataTypes";
-import { ProjectTask } from "@/types/task-types/taskTypes";
-import { PaginatedWorkItems } from "@/types/work-item-types/workItem";
-import { keepPreviousData, useInfiniteQuery, UseInfiniteQueryResult, useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
+import { useInfiniteQuery, UseInfiniteQueryResult, useMutation, useQuery, UseQueryResult, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 interface QueryConfig {
@@ -21,13 +19,32 @@ interface EntityOptions {
 
 export const useGetPaginatedData = <TData>({ URL, queryKey, limit, page, search }: UseGetPaginatedDataTypes): UseQueryResult<PaginatedDataResponse<TData>> => {
   console.log("Fetching paginated data:", { URL, page, limit, search });
+
   return useQuery({
-    queryKey: [...queryKey, page, limit, search],
-    queryFn: () => getPaginatedData<TData>(URL, page, limit!, search),
-    staleTime: 0,
-    refetchInterval: false,
-    refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData
+    queryKey: [...queryKey, { page, limit, search }],
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit?.toString() || "12"
+      });
+
+      if (search) {
+        params.append("q", search);
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}${URL}?${params}`, {
+        credentials: "include"
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log("Pagination response:", data);
+      return data;
+    },
+    staleTime: 30000
   });
 };
 
@@ -52,10 +69,35 @@ export const useFetchDataQuery = <TData>({ URL, queryKey, options }: FetchDataQu
 };
 
 export const useCachedData = <TData>({ queryKey, selectFn }: CachedDataOptions<TData>) => {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const queryResult = useQuery({
     queryKey,
-    select: (data: PaginatedDataResponse<TData> | TData[] | PaginatedWorkItems | ProjectTask) => (data ? selectFn(data) : undefined)
-  }).data;
+    enabled: queryKey.length > 0,
+    select: () => {
+      console.log("useCachedData - QueryKey:", queryKey);
+
+      const cachedQueries = queryClient.getQueriesData({ queryKey });
+      console.log("All cached queries:", cachedQueries);
+
+      const allData = cachedQueries.reduce((acc: TData[], [_, data]) => {
+        if (data && typeof data === "object") {
+          if ("data" in data) {
+            return [...acc, ...(Array.isArray(data.data) ? data.data : [data.data])];
+          } else if (Array.isArray(data)) {
+            return [...acc, ...data];
+          }
+        }
+        return acc;
+      }, []);
+
+      console.log("Combined cached data:", allData);
+      return selectFn(allData);
+    },
+    staleTime: 30000
+  });
+
+  return queryResult.data;
 };
 
 export const useGetEntityData = <TData>({ URL, queryKey }: QueryConfig) => {

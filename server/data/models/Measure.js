@@ -11,6 +11,14 @@ module.exports = (sequelize, DataTypes) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      creator_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "tbl_users",
+          key: "id"
+        }
       }
     },
     {

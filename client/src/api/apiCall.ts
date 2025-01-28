@@ -1,6 +1,6 @@
 //client\src\api\apiCall.ts
 import { PaginatedDataResponse } from "@/types/query-data-types/paginatedDataTypes";
-
+import { Client } from "@/types/client-types/clientTypes";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const apiCall = async (endpoint: string, method: string, data?: unknown) => {
@@ -66,4 +66,9 @@ export const postEntityData = async <TData>(url: string, data: TData): Promise<T
   console.log("📤 Posting data to:", url, data);
   const response = await apiCall(`${url}`, "POST", data);
   return response;
+};
+
+export const fetchClients = async (): Promise<Client[]> => {
+  const data: Client[] = await apiCall(`/clients`, "GET");
+  return data;
 };

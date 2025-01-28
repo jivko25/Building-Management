@@ -1,6 +1,6 @@
 //client\src\components\Sidebar\SidebarComponents\sidebarItems.ts
 import { SidebarItems } from "@/types/sidebar-types/sidebarItems";
-import { Activity, BrickWall, Building2, ClipboardList, ContactRound, Home, LogOut, Ruler, Users, Receipt, UserRound, UserCog, Settings } from "lucide-react";
+import { Activity, BrickWall, Building2, ClipboardList, ContactRound, Home, LogOut, Ruler, Users, Receipt, UserRound, UserCog, Settings, CircleDollarSign } from "lucide-react";
 
 export const sidebarItems: SidebarItems = {
   links: [
@@ -12,7 +12,7 @@ export const sidebarItems: SidebarItems = {
     { label: "Artisans", href: "/artisans", icon: ContactRound },
     { label: "Companies", href: "/companies", icon: Building2 },
     { label: "Projects", href: "/projects", icon: BrickWall },
-    { label: "Invoices", href: "/invoices", icon: Receipt },
+    { label: "Invoices", href: "/invoices-client", icon: Receipt },
     { label: "My projects", href: "/my-projects", icon: ClipboardList },
     { label: "Clients", href: "/clients", icon: UserRound }
   ]
@@ -24,6 +24,11 @@ export const sidebarUserItems: SidebarItems = {
       label: "settings",
       href: "/settings",
       icon: Settings
+    },
+    {
+      label: "prices",
+      href: "/default-prices",
+      icon: CircleDollarSign
     },
     {
       label: "signOut",

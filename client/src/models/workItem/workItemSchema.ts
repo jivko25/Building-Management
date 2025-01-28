@@ -1,17 +1,33 @@
-//client\src\models\workItem\workItemSchema.ts
 import { format } from "date-fns";
 import { z } from "zod";
 
 export const workItemSchema = z
   .object({
-    name: z
-      .string()
-      .min(3, {
-        message: "Task name must be at least 3 characters long."
+    artisan: z.string().optional(),
+    default_pricing: z.string().optional(),
+    quantity: z
+      .number()
+      .positive({
+        message: "Quantity must be greater than 0."
       })
-      .max(50, {
-        message: "Task name cannot exceed 50 characters."
-      }),
+      .or(
+        z
+          .string()
+          .min(1, { message: "Quantity is required." })
+          .transform(val => parseFloat(val))
+      ),
+    hours: z
+      .union([
+        z.number().positive({ message: "Hours must be greater than 0." }),
+        z
+          .string()
+          .trim()
+          .refine(val => val === "" || !isNaN(parseFloat(val)), {
+            message: "Hours must be a valid number or empty."
+          })
+          .transform(val => (val === "" ? undefined : parseFloat(val)))
+      ])
+      .optional(),
     start_date: z.coerce
       .date()
       .transform(date => format(date, "yyyy-MM-dd"))
@@ -22,30 +38,33 @@ export const workItemSchema = z
       .optional(),
     note: z
       .string()
-      .min(0)
       .max(100, {
         message: "Note cannot exceed 100 characters."
       })
       .optional(),
-    finished_work: z.string().min(1, {
-      message: "Please enter finished work"
-    }),
     status: z.enum(["done", "in_progress"], {
-      message: "Please, select a status."
-    })
+      message: "Please select a status."
+    }),
+    project_id: z
+      .string()
+      .min(1, { message: "Error getting project id" })
+      .or(z.number().positive({ message: "Project ID must be a positive number" }))
   })
-  .refine(data => data.end_date! >= data.start_date!, {
+  .refine(data => !data.end_date || !data.start_date || data.end_date >= data.start_date, {
     message: "End date cannot be earlier than start date.",
     path: ["end_date"]
   });
 
 export const workItemDefaults = {
-  name: "",
+  artisan: "",
+  default_pricing: "",
+  quantity: "",
+  hours: undefined,
   start_date: "",
   end_date: "",
   note: "",
-  finished_work: "",
-  status: undefined
+  status: undefined,
+  project_id: ""
 };
 
 export type WorkItemSchema = z.infer<typeof workItemSchema>;
