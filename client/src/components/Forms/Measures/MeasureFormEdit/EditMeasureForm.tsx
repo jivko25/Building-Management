@@ -5,9 +5,7 @@ import DialogFooter from "@/components/common/DialogElements/DialogFooter";
 import { Ruler } from "lucide-react";
 import { useMeasureFormHooks } from "@/hooks/forms/useMeasureForm";
 import { MeasureSchema } from "@/models/measure/measureSchema";
-import { useCachedData } from "@/hooks/useQueryHook";
 import { Measure } from "@/types/measure-types/measureTypes";
-import { findItemById } from "@/utils/helpers/findItemById";
 import { useTranslation } from "react-i18next";
 
 type EditMeasureFormProps = {
@@ -17,7 +15,7 @@ type EditMeasureFormProps = {
   initialData?: Measure;
 };
 
-const EditMeasureForm = ({ handleSubmit, isPending, measureId, initialData }: EditMeasureFormProps) => {
+const EditMeasureForm = ({ handleSubmit, isPending, initialData }: EditMeasureFormProps) => {
   const { t } = useTranslation();
 
   const { useEditMeasureForm } = useMeasureFormHooks();

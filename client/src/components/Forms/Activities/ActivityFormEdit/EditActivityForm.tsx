@@ -18,7 +18,7 @@ type EditActivityFormProps = {
   initialData?: Activity;
 };
 
-const EditActivityForm = ({ activityId, handleSubmit, isPending, initialData }: EditActivityFormProps) => {
+const EditActivityForm = ({ handleSubmit, isPending, initialData }: EditActivityFormProps) => {
   const { t } = useTranslation();
   console.log("EditActivityForm - Initial Data:", initialData);
 
