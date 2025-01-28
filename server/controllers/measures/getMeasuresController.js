@@ -8,37 +8,27 @@ const getMeasures = async (req, res, next) => {
     console.log("Getting measures for user:", req.user.id);
     const isAdmin = req.user.role === "admin";
 
-    const hourMeasure = await Measure.findOne({
-      where: {
-        name: "hour"
-      }
-    })
+    // Get base query for all users
+    let whereClause = {};
+    let order = [["name", "ASC"]];
 
-    if (isAdmin) {
-      const measures = await Measure.findAll({
-        order: [["name", "ASC"]]
-      });
-      if(hourMeasure) {
-        measures.push(hourMeasure);
-      }
-      console.log("Admin: Returning all measures");
-      return res.json({
-        success: true,
-        data: measures
-      });
+    if (!isAdmin) {
+      whereClause = {
+        [Op.or]: [
+          { creator_id: req.user.id },
+          { name: "hour" } // Always include 'hour' measure
+        ]
+      };
     }
 
     const measures = await Measure.findAll({
-      creator_id: req.user.id,
-      order: [["name", "ASC"]]
+      where: whereClause,
+      order: order,
+      distinct: true // Prevent duplicates
     });
 
-    if(hourMeasure) {
-      measures.push(hourMeasure);
-    }
-
-    console.log(`Found ${measures.length} measures for user`);
-    return res.json({
+    console.log(`Found ${measures.length} measures`);
+    res.json({
       success: true,
       data: measures
     });
