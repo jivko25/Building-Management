@@ -116,10 +116,14 @@ export const CreateArtisanInvoicePage = () => {
   };
 
   const isFormValid = () => {
-    const formData = form.getValues();
-    console.log("Form data for validation:", formData);
+    const formData = {
+      company_id: form.watch("company_id"),
+      artisan_id: form.watch("artisan_id"),
+      due_date_weeks: form.watch("due_date_weeks"),
+      work_item_ids: form.watch("work_item_ids")
+    };
 
-    return !!(formData.company_id && formData.artisan_id && formData.due_date_weeks && Array.isArray(formData.work_item_ids) && formData.work_item_ids.length > 0);
+    return formData.company_id > 0 && formData.artisan_id > 0 && (formData.work_item_ids?.length || 0) > 0;
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -296,7 +300,7 @@ export const CreateArtisanInvoicePage = () => {
           )}
 
           <div className="flex justify-end gap-4">
-            <Button type="submit" disabled={!isFormValid() || createInvoiceMutation.isPending} className={`${!isFormValid() || createInvoiceMutation.isPending ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-primary/90"}`}>
+            <Button type="submit" disabled={!isFormValid() || createInvoiceMutation.isPending}>
               {createInvoiceMutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
