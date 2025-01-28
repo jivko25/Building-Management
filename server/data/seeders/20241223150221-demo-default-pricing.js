@@ -10,7 +10,7 @@ module.exports = {
           measure_id: 1,
           project_id: 1,
           manager_price: 100.0,
-          artisan_price: 50.0,
+          artisan_price: null,
           creator_id: 2,
           artisan_id: null
         },
@@ -20,7 +20,7 @@ module.exports = {
           measure_id: 1,
           project_id: 1,
           manager_price: 150.0,
-          artisan_price: 75.0,
+          artisan_price: null,
           creator_id: 2,
           artisan_id: null
         },
@@ -30,7 +30,7 @@ module.exports = {
           measure_id: 1,
           project_id: 1,
           manager_price: 200.0,
-          artisan_price: 100.0,
+          artisan_price: null,
           creator_id: 1,
           artisan_id: 1
         },
@@ -40,7 +40,7 @@ module.exports = {
           measure_id: 2,
           project_id: 1,
           manager_price: 250.0,
-          artisan_price: 125.0,
+          artisan_price: null,
           creator_id: 2,
           artisan_id: 1
         },
@@ -50,7 +50,7 @@ module.exports = {
           measure_id: 2,
           project_id: 1,
           manager_price: 300.0,
-          artisan_price: 150.0,
+          artisan_price: null,
           creator_id: 2,
           artisan_id: 2
         },
@@ -60,7 +60,7 @@ module.exports = {
           measure_id: 2,
           project_id: 1,
           manager_price: 350.0,
-          artisan_price: 175.0,
+          artisan_price: null,
           creator_id: 2,
           artisan_id: 2
         },
@@ -70,7 +70,7 @@ module.exports = {
           measure_id: 1,
           project_id: 1,
           manager_price: 220.0,
-          artisan_price: 110.0,
+          artisan_price: null,
           creator_id: 2,
           artisan_id: 2
         },
@@ -80,7 +80,7 @@ module.exports = {
           measure_id: 2,
           project_id: 1,
           manager_price: 280.0,
-          artisan_price: 140.0,
+          artisan_price: null,
           creator_id: 2,
           artisan_id: 2
         }
