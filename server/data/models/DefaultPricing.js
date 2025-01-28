@@ -56,13 +56,6 @@ module.exports = (sequelize, DataTypes) => {
           key: "id"
         }
       }
-      // artisan_price: {
-      //   type: DataTypes.FLOAT,
-      //   allowNull: false
-      // },
-      // manager_price: {
-      //   type: DataTypes.FLOAT,
-      //   allowNull: false
     },
     {
       tableName: "tbl_default_pricing",
