@@ -1,7 +1,8 @@
 //server\controllers\measures\getMeasuresController.js\
 const ApiError = require("../../utils/apiError");
 const db = require("../../data/index.js");
-const { Measure, Project, Task, Op } = db;
+const { Measure, Project, Task, Sequelize } = db;
+const { Op } = Sequelize;
 
 const getMeasures = async (req, res, next) => {
   try {

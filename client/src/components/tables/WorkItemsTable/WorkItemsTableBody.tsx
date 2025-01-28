@@ -20,7 +20,7 @@ const WorkItemsTableBody = () => {
   return (
     <>
       <WorkItemsBreadcrumb />
-      <TaskItemCard task={workItems.task as any} />
+      <TaskItemCard task={workItems?.task as any} />
       <div className="flex flex-col items-center justify-center mt-10">
         <span className="text-2xl pt-5">Work items</span>
         <ChevronDown className="motion-preset-oscillate motion-duration-2000 motion-loop-twice" />
