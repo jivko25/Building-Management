@@ -49,33 +49,28 @@ const getPaginatedActivities = async (req, res, next) => {
     const offset = (parseInt(_page) - 1) * parseInt(_limit);
     const isAdmin = req.user.role === "admin";
 
-    const whereClause = {
-      ...(q && { name: { [Op.like]: `%${q}%` } }),
-      creator_id: req.user.id
-    };
+    // Променяме where клаузата за да показва всички activities
+    const whereClause = isAdmin
+      ? { ...(q && { name: { [Op.like]: `%${q}%` } }) }
+      : {
+          ...(q && { name: { [Op.like]: `%${q}%` } }),
+          [Op.or]: [{ creator_id: req.user.id }, { id: { [Op.in]: await getActivityIdsFromTasks(req.user.id) } }]
+        };
 
     let { count: total, rows: data } = await Activity.findAndCountAll({
       where: whereClause,
       limit: parseInt(_limit),
-      offset: offset
+      offset: offset,
+      include: [
+        {
+          model: Task,
+          as: "tasks",
+          required: false
+        }
+      ]
     });
 
-    const hourActivity = await Activity.findOne({
-      where: {
-        name: "Hour"
-      }
-    });
-
-    if (hourActivity) {
-      total += 1;
-      data.push(hourActivity);
-    }
-
-    // if (data.length === 0) {
-    //   throw new ApiError(404, NO_ACTIVITIES_FOUND);
-    // }
-
-    console.log(`Found ${total + 1} activities`);
+    console.log(`Found ${total} activities`);
     res.json({
       data,
       total,
@@ -99,17 +94,39 @@ const getActivities = async (req, res, next) => {
     const isAdmin = req.user.role === "admin";
 
     if (isAdmin) {
-      const activities = await Activity.findAll();
+      const activities = await Activity.findAll({
+        include: [
+          {
+            model: Task,
+            as: "tasks",
+            required: false
+          }
+        ]
+      });
       return res.json(activities);
     }
 
     const tasks = await getTasks(req.user.id, isAdmin);
+
+    // Променяме логиката за филтриране
+    const activityIds = [...new Set(tasks.map(task => task.activity_id))];
+
     const activities = await Activity.findAll({
       where: {
-        id: {
-          [Op.in]: tasks.map(task => task.activity_id)
+        id: activityIds
+      },
+      include: [
+        {
+          model: Task,
+          as: "tasks",
+          required: false
+        },
+        {
+          model: Project,
+          as: "projects",
+          through: { attributes: [] }
         }
-      }
+      ]
     });
 
     if (activities.length === 0) {
@@ -127,6 +144,12 @@ const getActivities = async (req, res, next) => {
     }
   }
 };
+
+// Добавяме помощна функция
+async function getActivityIdsFromTasks(userId) {
+  const tasks = await getTasks(userId, false);
+  return [...new Set(tasks.map(task => task.activity_id))];
+}
 
 module.exports = {
   getPaginatedActivities,

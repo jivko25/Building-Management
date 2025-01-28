@@ -9,7 +9,7 @@ const { editActivity } = require("../controllers/activity/editActivitiyControlle
 const router = express.Router();
 
 router.get("/activities", authenticateToken, getPaginatedActivities);
-router.get("/activities", authenticateToken, getActivities);
+router.get("/activities/all", authenticateToken, getActivities);
 router.get("/activities/:id", authenticateToken, getActivityById);
 router.post("/activities/create", authenticateToken, createActivity);
 router.put("/activities/:id/edit", authenticateToken, editActivity);
