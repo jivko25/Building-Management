@@ -81,14 +81,18 @@ export const useCachedData = <TData>({ queryKey, selectFn }: CachedDataOptions<T
       console.log("All cached queries:", cachedQueries);
 
       const allData = cachedQueries.reduce((acc: TData[], [_, data]) => {
-        if (data && typeof data === "object" && "data" in data) {
-          return [...acc, ...(data.data as TData[])];
+        if (data && typeof data === "object") {
+          if ("data" in data) {
+            return [...acc, ...(Array.isArray(data.data) ? data.data : [data.data])];
+          } else if (Array.isArray(data)) {
+            return [...acc, ...data];
+          }
         }
         return acc;
       }, []);
 
       console.log("Combined cached data:", allData);
-      return selectFn({ data: allData } as PaginatedDataResponse<TData>);
+      return selectFn(allData);
     },
     staleTime: 30000
   });

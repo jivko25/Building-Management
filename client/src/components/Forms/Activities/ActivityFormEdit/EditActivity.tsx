@@ -6,6 +6,11 @@ import EditActivityForm from "./EditActivityForm";
 import DialogModal from "@/components/common/DialogElements/DialogModal";
 import useDialogState from "@/hooks/useDialogState";
 import { useTranslation } from "react-i18next";
+import { useCachedData } from "@/hooks/useQueryHook";
+import { Activity } from "@/types/activity-types/activityTypes";
+import { findItemById } from "@/utils/helpers/findItemById";
+import { useQuery } from "@tanstack/react-query";
+
 type ActivityFormProps = {
   activityId: string;
 };
@@ -14,6 +19,19 @@ const EditActivity = ({ activityId }: ActivityFormProps) => {
   const { isOpen, setIsOpen } = useDialogState();
   const { t } = useTranslation();
   const { useEditEntity } = useMutationHook();
+
+  // Add direct query for activity data
+  const { data: activityData } = useQuery({
+    queryKey: ["activities", activityId],
+    queryFn: async () => {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/activities/${activityId}`, {
+        credentials: "include"
+      });
+      return response.json();
+    }
+  });
+
+  console.log("EditActivity - Activity Data:", activityData);
 
   const { mutate, isPending } = useEditEntity<ActivitySchema>({
     URL: `/activities/${activityId}/edit`,
@@ -24,7 +42,20 @@ const EditActivity = ({ activityId }: ActivityFormProps) => {
 
   const handleSubmit = useSubmitHandler(mutate, activitySchema);
 
-  return <DialogModal Component={EditActivityForm} props={{ activityId, handleSubmit, isPending }} isOpen={isOpen} setIsOpen={setIsOpen} title={t("Edit activity")} />;
+  return (
+    <DialogModal
+      Component={EditActivityForm}
+      props={{
+        activityId,
+        handleSubmit,
+        isPending,
+        initialData: activityData // Use direct query data
+      }}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      title={t("Edit activity")}
+    />
+  );
 };
 
 export default EditActivity;
