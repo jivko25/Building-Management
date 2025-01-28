@@ -6,9 +6,6 @@ import EditActivityForm from "./EditActivityForm";
 import DialogModal from "@/components/common/DialogElements/DialogModal";
 import useDialogState from "@/hooks/useDialogState";
 import { useTranslation } from "react-i18next";
-import { useCachedData } from "@/hooks/useQueryHook";
-import { Activity } from "@/types/activity-types/activityTypes";
-import { findItemById } from "@/utils/helpers/findItemById";
 import { useQuery } from "@tanstack/react-query";
 
 type ActivityFormProps = {
