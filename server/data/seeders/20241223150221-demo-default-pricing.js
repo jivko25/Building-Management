@@ -26,7 +26,6 @@ module.exports = {
         },
         {
           id: 3,
-
           activity_id: 3,
           measure_id: 1,
           project_id: 1,
@@ -81,6 +80,16 @@ module.exports = {
           measure_id: 2,
           project_id: 1,
           manager_price: 280.0,
+          artisan_price: 180.0,
+          creator_id: 2,
+          artisan_id: 2
+        },
+        {
+          id: 9,
+          activity_id: 3,
+          measure_id: 2,
+          project_id: 2,
+          manager_price: 250.0,
           artisan_price: 180.0,
           creator_id: 2,
           artisan_id: 2
