@@ -129,6 +129,10 @@ const createArtisanInvoice = async (req, res, next) => {
         throw new Error(`Default pricing not found for project ${workItem.task.project.id}, activity ${workItem.activity.id}, measure ${workItem.measure.id}`);
       }
 
+      if (!defaultPricing?.artisan_price) {
+        throw new Error(`Artisan price not set for project ${workItem.task.project.id}, activity ${workItem.activity.id}, measure ${workItem.measure.id}`);
+      }
+
       const invoiceItem = await InvoiceItem.create(
         {
           invoice_id: invoice.id,
@@ -198,7 +202,7 @@ const createArtisanInvoice = async (req, res, next) => {
         is_artisan_invoice: true,
         week_number: week,
         year: year,
-        invoice_language_id: 1,
+        invoice_language_id: 1
       }
     });
   } catch (error) {
