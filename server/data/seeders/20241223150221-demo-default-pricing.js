@@ -10,9 +10,9 @@ module.exports = {
           measure_id: 1,
           project_id: 1,
           manager_price: 100.0,
-          artisan_price: null,
+          artisan_price: 150.0,
           creator_id: 2,
-          artisan_id: null
+          artisan_id: 1
         },
         {
           id: 2,
@@ -20,17 +20,18 @@ module.exports = {
           measure_id: 1,
           project_id: 1,
           manager_price: 150.0,
-          artisan_price: null,
+          artisan_price: 150.0,
           creator_id: 2,
-          artisan_id: null
+          artisan_id: 1
         },
         {
           id: 3,
+
           activity_id: 3,
           measure_id: 1,
           project_id: 1,
           manager_price: 200.0,
-          artisan_price: null,
+          artisan_price: 150.0,
           creator_id: 1,
           artisan_id: 1
         },
@@ -40,7 +41,7 @@ module.exports = {
           measure_id: 2,
           project_id: 1,
           manager_price: 250.0,
-          artisan_price: null,
+          artisan_price: 150.0,
           creator_id: 2,
           artisan_id: 1
         },
@@ -50,7 +51,7 @@ module.exports = {
           measure_id: 2,
           project_id: 1,
           manager_price: 300.0,
-          artisan_price: null,
+          artisan_price: 150.0,
           creator_id: 2,
           artisan_id: 2
         },
@@ -60,7 +61,7 @@ module.exports = {
           measure_id: 2,
           project_id: 1,
           manager_price: 350.0,
-          artisan_price: null,
+          artisan_price: 150.0,
           creator_id: 2,
           artisan_id: 2
         },
@@ -70,7 +71,7 @@ module.exports = {
           measure_id: 1,
           project_id: 1,
           manager_price: 220.0,
-          artisan_price: null,
+          artisan_price: 120.0,
           creator_id: 2,
           artisan_id: 2
         },
@@ -80,7 +81,7 @@ module.exports = {
           measure_id: 2,
           project_id: 1,
           manager_price: 280.0,
-          artisan_price: null,
+          artisan_price: 180.0,
           creator_id: 2,
           artisan_id: 2
         }
