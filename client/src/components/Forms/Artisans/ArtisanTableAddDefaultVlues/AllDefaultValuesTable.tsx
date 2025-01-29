@@ -17,8 +17,6 @@ import { useTranslation } from "react-i18next";
 
 export default function AllDefaultValuesTable({ artisanId, artisanName }: { artisanId: string; artisanName: string }) {
   const { t } = useTranslation();
-  const [globalFilter, setGlobalFilter] = useState<string>("");
-  const [first, setFirst] = useState(0);
   const [responseMessage, setResponseMessage] = useState<ResponseMessageType | null>(null);
   console.log(artisanId);
 
@@ -98,24 +96,6 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
     );
   };
 
-  const onGlobalFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setGlobalFilter(e.target.value);
-  };
-
-  const header = (
-    <div className="flex justify-between items-center">
-      <span className="p-input-icon-left">
-        <i className="pi pi-search" />
-        <InputText value={globalFilter} onChange={onGlobalFilterChange} placeholder={t("Search activity...")} className="m-8 p-2" />
-      </span>
-      <div className=" flex flex-col items-center justify-center gap-5">
-        <p className="font-semibold">
-          {t("Artisan")}: {artisanName}
-        </p>
-        <ArtisanAction type="create" artisanName={artisanName} artisanId={artisanId} refetch={refetch} />
-      </div>
-    </div>
-  );
   //Delete default pricing
   const deleteDefaultPricing = async (defaultPriceId: string) => {
     console.log(defaultPriceId);
@@ -128,12 +108,6 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
       setResponseMessage({ type: "error", message: t("Something went wrong!") });
     }
   };
-  const filteredData = globalFilter
-    ? defaultPricings.filter(pricing => {
-        const activity = activities.find(a => a.id === pricing.activity_id);
-        return activity?.name.toLowerCase().includes(globalFilter.toLowerCase());
-      })
-    : defaultPricings;
 
   return (
     <div className="w-full flex flex-col justify-center items-center overflow-auto">

@@ -39,7 +39,7 @@ const CreateWorkItemForm = ({ handleSubmit, isPending }: CreateWorkItemFormProps
     // Fetch default pricings for selected artisan on form change
     if (artisanId) {
       refetch();
-      const foundedDefaultPrice = defaultPricingsResponse?.defaultPricing.find((pricing: any) => {
+      const foundedDefaultPrice = defaultPricingsResponse?.data.find((pricing: any) => {
         return pricing.id == defaultPricing;
       });
       if(foundedDefaultPrice?.measure?.name.toLocaleLowerCase() !== 'hour') {

@@ -1,7 +1,4 @@
 //client\src\utils\helpers\findItemById.ts
-import { PaginatedDataResponse } from "@/types/query-data-types/paginatedDataTypes";
-import { ProjectTask } from "@/types/task-types/taskTypes";
-
 export const findItemById = <TData>(data: any, id: string, getId: (item: TData) => string): TData | undefined => {
   console.log("findItemById - Input data:", data);
 
