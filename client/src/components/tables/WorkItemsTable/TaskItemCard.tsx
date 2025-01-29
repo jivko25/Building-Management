@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Chart } from "primereact/chart";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";

@@ -71,13 +71,4 @@ const ProjectsTasksBody = () => {
   );
 };
 
-// Helper function to get current week number
-const getCurrentWeekNumber = () => {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 1);
-  const diff = now.getTime() - start.getTime();
-  const oneWeek = 1000 * 60 * 60 * 24 * 7;
-  return Math.ceil(diff / oneWeek);
-};
-
 export default ProjectsTasksBody;
