@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       artisan_price: {
         type: DataTypes.DECIMAL(10, 2),
-        allowNull: true
+        allowNull: false
       },
       creator_id: {
         type: DataTypes.INTEGER,
