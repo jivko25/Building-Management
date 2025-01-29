@@ -26,12 +26,20 @@ type EditTaskFormProps = {
 const EditTaskForm = ({ id, taskId, isPending, handleSubmit }: EditTaskFormProps) => {
   const task = useCachedData<Task>({
     queryKey: ["projects", id, "tasks"],
-    selectFn: data => findItemById<Task>(data as Task[], taskId, task => task.id as string)
+    selectFn: data => {
+      const foundTask = findItemById<Task>(data as Task[], taskId, task => task.id as string);
+      console.log("Found task in cache:", foundTask);
+      return foundTask;
+    }
   });
 
   const { useEditTaskForm } = useTaskFormHooks();
-
-  const form = useEditTaskForm(task as Task);
+  const form = useEditTaskForm({
+    ...task,
+    activity: task?.activity || "",
+    measure: task?.measure || "",
+    artisans: task?.artisans || []
+  });
 
   const artisanPlaceholder = task?.artisans?.map((artisan: any) => artisan.name).join(", ") || "Select artisans";
 
