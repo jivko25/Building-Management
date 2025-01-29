@@ -246,7 +246,6 @@ const createInvoicePDF = async (invoiceId, languageId) => {
               <th>${t.activity}</th>
               <th>${t.quantity}</th>
               <th>${t.pricePerUnit}</th>
-              <th>${t.total}</th>
             </tr>
           </thead>
           <tbody>
@@ -257,7 +256,6 @@ const createInvoicePDF = async (invoiceId, languageId) => {
                 <td>${t.location}: ${item.project_location} <br>${item.activity}</td>
                 <td style="text-align: right">${item.quantity.toFixed(2)}</td>
                 <td style="text-align: right">${item.price_per_unit.toFixed(2)} €</td>
-                <td style="text-align: right">${item.total.toFixed(2)} €</td>
               </tr>
             `
               )
@@ -265,20 +263,56 @@ const createInvoicePDF = async (invoiceId, languageId) => {
           </tbody>
         </table>
 
-        <div style="text-align: right">
-          <h3>Total Amount: ${data.totalAmount.toFixed(2)} €</h3>
-        </div>
+        <!-- Footer container -->
+        <div style="position: absolute; bottom: 0; width: 100%; padding: 20px 0; page-break-inside: avoid;">
+          <!-- VAT Breakdown Table -->
+          <div style="margin-top: 30px; text-align: left">
+            <table style="width: 60%; margin-left: 0; border: none; font-size: 10pt">
+              <tr>
+                <td style="border: none; text-align: left"><strong>Total excl. VAT</strong></td>
+                <td style="border: none; text-align: center"><strong>VAT%</strong></td>
+                <td style="border: none; text-align: center"><strong>Over</strong></td>
+                <td style="border: none; text-align: right">1.216,00</td>
+              </tr>
+              <tr>
+                <td style="border: none"></td>
+                <td style="border: none; text-align: center">0%</td>
+                <td style="border: none; text-align: center">-</td>
+                <td style="border: none; text-align: right">-</td>
+              </tr>
+              <tr>
+                <td style="border: none"></td>
+                <td style="border: none; text-align: center">9%</td>
+                <td style="border: none; text-align: center">-</td>
+                <td style="border: none; text-align: right">-</td>
+              </tr>
+              <tr>
+                <td style="border: none"></td>
+                <td style="border: none; text-align: center">21%</td>
+                <td style="border: none; text-align: center">-</td>
+                <td style="border: none; text-align: right">-</td>
+              </tr>
+              <tr class="total-row">
+                <td style="border: none"></td>
+                <td style="border: none; text-align: center">Shifted</td>
+                <td style="border: none; text-align: center">1.216,00</td>
+                <td style="border: none; text-align: right">-</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="border: none; text-align: right; border-top: 1px solid black">Total</td>
+                <td style="border: none; text-align: right; border-top: 1px solid black">${data.totalAmount.toFixed(2)} €</td>
+              </tr>
+            </table>
+          </div>
 
-        <!-- Payment instructions footer -->
-        <div style="text-align: left; margin-top: 50px; font-size: 10pt; position: absolute; bottom: 20px; width: 100%">
-          <p>* All prices include VAT.</p>
-          <p>* Please transfer the amount of ${data.totalAmount.toFixed(2)} € by date ${data.dueDate} to IBAN ${data.companyIBAN} </p>
-
-          <p style="margin-left: 10px;"> by specifying the invoice number.</p>
+          <!-- Payment instructions -->
+          <div style="text-align: left; margin-top: 20px; font-size: 10pt">
+            <p>* All prices include VAT.</p>
+            <p>* Please transfer the amount of ${data.totalAmount.toFixed(2)} € by date ${data.dueDate} to IBAN ${data.companyIBAN}</p>
+            <p style="margin-left: 10px;">by specifying the invoice number.</p>
+          </div>
         </div>
       </body>
-
-
     </html>
   `;
 
