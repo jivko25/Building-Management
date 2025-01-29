@@ -29,16 +29,19 @@ const EditTaskForm = ({ id, taskId, isPending, handleSubmit }: EditTaskFormProps
     selectFn: data => {
       const foundTask = findItemById<Task>(data as Task[], taskId, task => task.id as string);
       console.log("Found task in cache:", foundTask);
-      return foundTask;
+      return {
+        ...foundTask,
+        activity: foundTask?.activityName,
+        measure: foundTask?.measureName,
+        price_per_measure: foundTask?.price_per_measure
+      };
     }
   });
 
   const { useEditTaskForm } = useTaskFormHooks();
   const form = useEditTaskForm({
     ...task,
-    activity: task?.activity || "",
-    measure: task?.measure || "",
-    artisans: task?.artisans || []
+    artisans: task?.artisans?.map((a: any) => a.name) || []
   });
 
   const artisanPlaceholder = task?.artisans?.map((artisan: any) => artisan.name).join(", ") || "Select artisans";
