@@ -267,12 +267,12 @@ const createInvoicePDF = async (invoiceId, languageId) => {
         <div style="position: absolute; bottom: 0; width: 100%; padding: 20px 0; page-break-inside: avoid;">
           <!-- VAT Breakdown Table -->
           <div style="margin-top: 30px; text-align: left">
-            <table style="width: 60%; margin-left: 0; border: none; font-size: 10pt">
+            <table style="width: 95%; margin-left: 0; border: none; font-size: 10pt">
               <tr>
                 <td style="border: none; text-align: left"><strong>Total excl. VAT</strong></td>
                 <td style="border: none; text-align: center"><strong>VAT%</strong></td>
                 <td style="border: none; text-align: center"><strong>Over</strong></td>
-                <td style="border: none; text-align: right">1.216,00</td>
+                <td style="border: none; text-align: right">${data.totalAmount.toFixed(2)} €</td>
               </tr>
               <tr>
                 <td style="border: none"></td>
@@ -295,11 +295,11 @@ const createInvoicePDF = async (invoiceId, languageId) => {
               <tr class="total-row">
                 <td style="border: none"></td>
                 <td style="border: none; text-align: center">Shifted</td>
-                <td style="border: none; text-align: center">1.216,00</td>
+                <td style="border: none; text-align: center">${data.totalAmount.toFixed(2)} €</td>
                 <td style="border: none; text-align: right">-</td>
               </tr>
               <tr>
-                <td colspan="3" style="border: none; text-align: right; border-top: 1px solid black">Total</td>
+                <td colspan="3" style="border: none; text-align: left; border-top: 1px solid black">Total</td>
                 <td style="border: none; text-align: right; border-top: 1px solid black">${data.totalAmount.toFixed(2)} €</td>
               </tr>
             </table>
