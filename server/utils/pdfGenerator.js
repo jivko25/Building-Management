@@ -272,9 +272,13 @@ const createInvoicePDF = async (invoiceId, languageId) => {
         <!-- Payment instructions footer -->
         <div style="text-align: left; margin-top: 50px; font-size: 10pt; position: absolute; bottom: 20px; width: 100%">
           <p>* All prices include VAT.</p>
-          <p>* Please transfer the amount of ${data.totalAmount.toFixed(2)} € by date ${data.dueDate} to IBAN ${data.companyIBAN} by specifying the invoice number.</p>
+          <p>* Please transfer the amount of ${data.totalAmount.toFixed(2)} € by date ${data.dueDate} to IBAN ${data.companyIBAN} </p>
+
+          <p style="margin-left: 10px;"> by specifying the invoice number.</p>
         </div>
       </body>
+
+
     </html>
   `;
 
