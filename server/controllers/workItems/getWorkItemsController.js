@@ -74,11 +74,27 @@ const getWorkItems = async (req, res, next) => {
           through: { attributes: [] }
         },
       ],
-    })
+    });
+    
+    // Използваме toJSON, за да сериализираме обекта без кръговите референции
+    const taskJSON = task.toJSON();
+    
+    const completedWork = workItems.reduce((acc, workItem) => acc + +workItem.quantity, 0);
 
+    //Get total work per artisan
+    const totalWorkPerArtisan = workItems.reduce((acc, workItem) => {
+      const artisanId = workItem.artisan.name;
+      acc[artisanId] = (acc[artisanId] || 0) + +workItem.quantity;
+      return acc;
+    }, {});
+    
     res.json({
       workItems: workItems,
-      task
+      task: {
+        ...taskJSON,
+        completedWork,
+        totalWorkPerArtisan
+      }
     });
   } catch (error) {
     console.log(error);
