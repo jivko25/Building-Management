@@ -18,6 +18,7 @@ const getTaskById = async (req, res, next) => {
 	if (!task) {
 		return res.json([]);
 	}
+
 	res.json(task);
 };
 

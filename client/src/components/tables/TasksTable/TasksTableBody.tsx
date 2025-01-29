@@ -9,6 +9,7 @@ import TasksCard from "@/components/tables/TasksTable/TasksCard";
 import TasksBreadcrumbs from "@/components/common/Breadcrumbs/TasksBreadcrumb";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ProjectGallery from "../ProjectsTable/ProjectGalery";
+import { WeeklyReportTable } from "@/components/reports/WeeklyReportTable";
 
 const ProjectsTasksBody = () => {
   const { id } = useParams();
@@ -37,10 +38,11 @@ const ProjectsTasksBody = () => {
     <>
       <TasksBreadcrumbs />
       <div className="flex flex-col border rounded-lg mt-48 mb-28 mx-8 p-4 backdrop-blur-sm bg-slate-900/20">
-        <Tabs defaultValue="tasks">
+        <Tabs defaultValue="tasks" className="w-full">
           <TabsList>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
             <TabsTrigger value="images">Images</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
           <TabsContent value="tasks">
             <div className="flex flex-wrap sm:w-full gap-4">
@@ -58,10 +60,24 @@ const ProjectsTasksBody = () => {
           <TabsContent value="images">
             <ProjectGallery />
           </TabsContent>
+          <TabsContent value="reports">
+            <WeeklyReportTable 
+              projectId={id!} 
+            />
+          </TabsContent>
         </Tabs>
       </div>
     </>
   );
+};
+
+// Helper function to get current week number
+const getCurrentWeekNumber = () => {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 1);
+  const diff = now.getTime() - start.getTime();
+  const oneWeek = 1000 * 60 * 60 * 24 * 7;
+  return Math.ceil(diff / oneWeek);
 };
 
 export default ProjectsTasksBody;

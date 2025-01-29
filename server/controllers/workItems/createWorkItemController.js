@@ -1,7 +1,7 @@
 //server\controllers\workItems\createWorkItemController.js
 const { Op } = require("sequelize");
 const db = require("../../data/index.js");
-const { WorkItem, DefaultPricing, Measure, Activity } = db;
+const { WorkItem, DefaultPricing, Measure, Activity, Task } = db;
 const ApiError = require("../../utils/apiError");
 
 const createWorkItem = async (req, res, next) => {
