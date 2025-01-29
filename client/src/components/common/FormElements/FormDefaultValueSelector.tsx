@@ -9,7 +9,7 @@ import { DefaultPricingResponse } from "@/types/defaultPricingType/defaultPricin
 
 const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_id }: TableFormSelectType) => {
   const { control } = useFormContext();
-  
+
   const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
     URL: artisan_id ? `/default-pricing/${artisan_id}` : `/default-pricing`,
     queryKey: ["default-pricing"]
@@ -38,17 +38,15 @@ const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_
   };
 
   // Филтриране на данните
-  const defaultPricings = defaultPricingsResponse?.defaultPricing || [];
-  const filteredPricings = defaultPricings.filter((item) =>
-    `${item?.activity?.name || ""}/${item?.measure?.name || ""}`.toLowerCase().includes(debouncedQuery)
-  );
+  const defaultPricings = defaultPricingsResponse?.data || [];
+  const filteredPricings = defaultPricings.filter((item: any) => `${item?.activity?.name || ""}/${item?.measure?.name || ""}`.toLowerCase().includes(debouncedQuery));
 
   const formulateDefaultPricingLabel = (pricing: any) => {
-    if(pricing?.activity.name === undefined || pricing?.measure?.name === undefined) {
-        return ''
+    if (pricing?.activity.name === undefined || pricing?.measure?.name === undefined) {
+      return "";
     }
-    return `${pricing?.activity.name}/${pricing?.measure.name}`
-  }
+    return `${pricing?.activity.name}/${pricing?.measure.name}`;
+  };
 
   return (
     <FormField
@@ -61,23 +59,19 @@ const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder={placeholder}>
-                {formulateDefaultPricingLabel(defaultPricings?.find(pricing => {
-                    console.log(pricing.id == field.value);
+                  {formulateDefaultPricingLabel(
+                    defaultPricings?.find(pricing => {
+                      console.log(pricing.id == field.value);
 
-                    return pricing.id == field.value;
-                  })) || placeholder}
+                      return pricing.id == field.value;
+                    })
+                  ) || placeholder}
                 </SelectValue>
               </SelectTrigger>
             </FormControl>
             <SelectContent>
               {/* Search Input Field */}
-              <Input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="p-2 border border-gray-300 rounded mb-2"
-              />
+              <Input type="text" placeholder="Search..." value={searchQuery} onChange={handleSearchChange} className="p-2 border border-gray-300 rounded mb-2" />
               {/* Филтрирани опции */}
               {filteredPricings.map((item: any) => (
                 <SelectItem key={item.id} value={item.id}>
