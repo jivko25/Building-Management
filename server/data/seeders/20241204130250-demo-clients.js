@@ -11,7 +11,7 @@ module.exports = {
           client_company_name: "Клиентска Фирма А",
           client_name: "Клиент Иванов",
           client_company_address: "ул. Клиентска 1",
-          client_company_iban: "BG98RZBB91550123456789",
+          client_company_iban: "BG987654321",
           client_emails: JSON.stringify(["gogata1905@gmail.com", "gogata1905@abv.bg"]),
           status: "active",
           creator_id: 1,
