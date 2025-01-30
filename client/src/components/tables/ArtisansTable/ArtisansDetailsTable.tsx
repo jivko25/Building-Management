@@ -217,7 +217,7 @@ const ArtisansDetailsTable: React.FC<{ data: WorkItem[]; artisanName: string }> 
         <Column field="created_at" header="Day" dataType="date" body={dateBodyTemplate} filter filterElement={dateFilterTemplate} style={{ minWidth: "14rem" }} />
         <Column field="task.project.name" header="Project" body={projectLinkTemplate} filter filterPlaceholder="Search by project" style={{ minWidth: "14rem" }} />
         <Column field="task.name" header="Task" body={taskLinkTemplate} filter filterPlaceholder="Search by task" style={{ minWidth: "14rem" }} />
-        <Column field="task.activity.name" header="Activity" style={{ minWidth: "14rem" }} />
+        <Column field="activity.name" header="Activity" style={{ minWidth: "14rem" }} />
         <Column field="quantity" header="Quantity" style={{ minWidth: "8rem" }} />
         <Column field="single_artisan_price" header="Price" style={{ minWidth: "8rem" }} />
         <Column field="total_artisan_price" header="Total" style={{ minWidth: "12rem", padding: "6px 0" }} footer={`Total: ${calculateTotal()}`} />
