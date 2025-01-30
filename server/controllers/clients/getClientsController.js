@@ -1,5 +1,6 @@
 const db = require("../../data/index.js");
 const { Client, User, InvoiceLanguage } = db;
+const { Op } = require("sequelize");
 
 const getClients = async (req, res, next) => {
   try {
@@ -24,9 +25,6 @@ const getClients = async (req, res, next) => {
       });
     } else {
       clients = await Client.findAll({
-        where: {
-          creator_id: req.user.id
-        },
         include: includeOptions,
         order: [["id", "DESC"]]
       });
