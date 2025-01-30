@@ -35,6 +35,7 @@ import { CreateArtisanInvoicePage } from "./pages/Invoices/Artisan/CreateArtisan
 import { InvoiceArtisanDetailsPage } from "./pages/Invoices/Artisan/InvoiceArtisanDetailsPage";
 import { UpdateArtisanInvoicePage } from "./pages/Invoices/Artisan/UpdateArtisanInvoicePage";
 import NotFoundPage from "./pages/NotFoundPage";
+import ManagerReportsPage from "./pages/ManagerReports";
 
 const AppRoutes = () => {
   const { t } = useTranslation();
@@ -298,6 +299,18 @@ const AppRoutes = () => {
           element={
             <TableLayout>
               <UpdateArtisanInvoicePage />
+            </TableLayout>
+          }
+        />
+      </Route>
+
+      {/* Manager Reports route */}
+      <Route element={<ManagerGuard />}>
+        <Route
+          path="/manager-reports"
+          element={
+            <TableLayout>
+              <ManagerReportsPage />
             </TableLayout>
           }
         />
