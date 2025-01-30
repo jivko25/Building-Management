@@ -33,7 +33,6 @@ const getArtisansWorkItems = async (req, res, next) => {
         const workItems = await WorkItem.findAll({
             attributes: [
               "id", 
-              "name", 
               "total_artisan_price", 
               "total_manager_price", 
               "quantity",
@@ -60,6 +59,10 @@ const getArtisansWorkItems = async (req, res, next) => {
                     attributes: ["id", "name"]
                   }
                 ]
+              },
+              {
+                model: Activity,
+                as: "activity",
               }
             ],
             order: [["created_at", "DESC"]]
