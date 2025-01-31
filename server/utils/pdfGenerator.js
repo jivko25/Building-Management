@@ -106,6 +106,18 @@ const createInvoicePDF = async (invoiceId, languageId) => {
     const dueDate = new Date(invoice.invoice_date);
     dueDate.setDate(dueDate.getDate() + invoice.due_date_weeks * 7);
 
+    // Функция за изчисляване на номера на седмицата от дата
+    const getWeekNumber = (date) => {
+      const currentDate = new Date(date);
+      const startDate = new Date(currentDate.getFullYear(), 0, 1);
+      const days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
+      
+      const weekNumber = Math.ceil((days + startDate.getDay() + 1) / 7);
+      
+      // Връщаме числото директно, без водеща нула
+      return weekNumber;
+    };
+
     // Preparing the data for the template
     const data = {
       invoiceNumber: formattedInvoiceNumber,
@@ -129,12 +141,47 @@ const createInvoicePDF = async (invoiceId, languageId) => {
         activity: item.activity.name,
         project_location: item.project.location,
         project_address: item.project.address,
+        project_name: item.project.name,
         measure: item.measure.name,
         quantity: parseFloat(item.quantity),
         price_per_unit: parseFloat(item.price_per_unit),
         total: parseFloat(item.total_price)
       })),
       totalAmount: parseFloat(invoice.total_amount)
+    };
+
+    const groupItemsByProjectAndActivity = (items) => {
+      return items.reduce((groups, item) => {
+        // Създаваме уникален ключ за проекта
+        const projectKey = `${item.project_location} - ${item.project_name}`;
+        
+        if (!groups[projectKey]) {
+          groups[projectKey] = {
+            location: item.project_location,
+            name: item.project_name,
+            activities: {}
+          };
+        }
+        
+        // Групираме по име на активност
+        if (!groups[projectKey].activities[item.activity]) {
+          groups[projectKey].activities[item.activity] = {
+            name: item.activity,
+            quantity: 0,
+            price_per_unit: item.price_per_unit,
+            total: 0
+          };
+        }
+        
+        // Сумираме количествата
+        groups[projectKey].activities[item.activity].quantity += item.quantity;
+        // Преизчисляваме общата сума
+        groups[projectKey].activities[item.activity].total = 
+          groups[projectKey].activities[item.activity].quantity * 
+          groups[projectKey].activities[item.activity].price_per_unit;
+        
+        return groups;
+      }, {});
     };
 
     const htmlContent = `
@@ -186,57 +233,178 @@ const createInvoicePDF = async (invoiceId, languageId) => {
           .info-container {
             display: flex;
             justify-content: space-between;
-            gap: 40px;
             margin-bottom: 30px;
+            font-size: 10pt;
+          }
+          .client-info {
+            flex: 1;
+            text-align: left;
+          }
+          .company-info {
+            flex: 1;
+            text-align: right;
+          }
+          .info-row {
+            margin-bottom: 4px;
+            line-height: 1.2;
+          }
+          .info-label {
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 8px;
+          }
+          .reference-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
           }
           .company-info, .client-info {
-            flex: 1;
-            padding: 20px;
-            border: 1px solid #eee;
-            border-radius: 4px;
+            padding: 0;
+            border: none;
+            border-radius: 0;
           }
           table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
-            font-size: 9pt;
+            font-size: 10pt;
+          }
+          table tr {
+            border-bottom: 2px solid #e0e0e0;
+            line-height: 1.2;
+          }
+          table tr:last-child {
+            border-bottom: none;
           }
           th, td {
-            border: 1px solid black;
-            padding: 8px;
+            border: none;
+            padding: 6px 8px;
             text-align: left;
+            vertical-align: middle;
+          }
+          td.amount, th.amount {
+            text-align: right;
+          }
+          /* Специален стил за клетки с две линии текст */
+          td.multiline {
+            line-height: 1.4;
+            padding: 8px;
+          }
+          .header-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+          }
+          .company-main-info {
+            text-align: left;
+          }
+          .company-main-info .name {
+            font-weight: bold;
+            margin-bottom: 4px;
+          }
+
+          .bolded {
+            font-weight: bold;
+          }
+
+          .vat-info {
+            margin: 20px 0;
+          }
+
+          .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+          }
+          .invoice-left {
+            text-align: left;
+          }
+          .invoice-right {
+            text-align: right;
+          }
+          .project-header {
+            font-weight: bold;
+            padding-top: 16px;
+          }
+          .activity-row {
+            padding-left: 20px;
+          }
+          tr:first-child .project-header {
+            padding-top: 8px;
+          }
+          /* Премахваме абсолютното позициониране на футъра */
+          .footer-container {
+            width: 100%;
+            margin-top: 40px; /* Разстояние от таблицата */
+            padding: 20px 0;
+          }
+          /* Стилове за VAT таблицата */
+          .vat-table {
+            width: 95%;
+            margin-left: 0;
+            border: none;
             font-size: 10pt;
+          }
+          .vat-table td {
+            border: none;
+            padding: 4px 8px;
+          }
+          .vat-table .total-row td {
+            border-top: 1px solid black;
+          }
+          /* Стилове за текста под таблицата */
+          .payment-instructions {
+            margin-top: 20px;
+            font-size: 10pt;
+          }
+          .payment-instructions p {
+            margin: 4px 0;
+          }
+          .width-full {
+            width: 100%;
           }
         </style>
       </head>
       <body>
-        <div class="header">
-          <div class="invoice-info">
-            <h1>${t.invoice} ${data.invoiceNumber}</h1>
-            <p>${t.dateOfIssue}: ${data.date}</p>
-            <p>${t.dueDate}: ${data.dueDate}</p>
+
+        <div class="header-section">
+          <div class="company-main-info">
+            <div class="name">${data.clientCompanyName}</div>
+            <div class="info-row">${data.clientAddress}</div>
+            <div class="info-row">VAT Number ${data.clientVATNumber}</div>
+            <div class="info-row">
+              <span class="info-label">${t.vatNumber}</span>
+              <span>${data.companyVAT}</span>
+            </div>
           </div>
           <div class="company-logo">
             ${data.companyLogo ? `<img class="logo" src="${data.companyLogo}" alt="Company Logo">` : ""}
           </div>
         </div>
-        
-        <div class="info-container">
-          <div class="client-info">
-            <p>${t.clientCompany}: ${data.clientCompanyName || "No"}</p>
-            <p>${t.address}: ${data.clientAddress || "No"}</p>
-            <p>${t.vatNumber}: ${data.clientVATNumber || "No"}</p>
+
+        <div class="invoice-details">
+          <div class="invoice-left">
+            <div class="info-row">
+              <span class="info-label">${t.invoice}: ${data.invoiceNumber}</span> 
+            </div>
+            <div class="info-row">
+              <span class="info-label">${t.dateOfIssue}:</span> ${data.date}
+            </div>
+            <div class="info-row">
+              <span class="info-label">${t.dueDate}:</span> ${data.dueDate}
+            </div>
+            <div class="info-row">
+              <span class="info-label">${t.reference}:</span> Week ${getWeekNumber(data.date)}
+            </div>
           </div>
 
-          <div class="company-info">
-            <p>${t.company}: ${data.companyName}</p>
-            <p>${t.address}: ${data.companyAddress}</p>
-            <p>${t.regNumber}: ${data.companyRegNumber || "No"}</p>
-            <p>${t.vatNumber}: ${data.companyVAT || "No"}</p>
-            <p>${t.phone}: ${data.companyPhone || "No"}</p>
-            <p>${t.email}: ${data.companyEmail || "No"}</p>
-            <p>${t.iban}: ${data.companyIBAN || "No"}</p>
-            <p>${t.forContact}: ${data.companyMol || "No"}</p>
+          <div class="invoice-right">
+            <div class="info-row bolded">${data.companyName}</div>
+            <div class="info-row">${data.companyAddress}</div>
+            <div class="info-row">${data.companyPhone}</div>
+            <div class="info-row">${data.companyRegNumber}</div>
+            <div class="info-row">${data.companyVAT}</div>
+            <div class="info-row">${data.companyIBAN}</div>
           </div>
         </div>
 
@@ -244,71 +412,80 @@ const createInvoicePDF = async (invoiceId, languageId) => {
           <thead>
             <tr>
               <th>${t.activity}</th>
-              <th>${t.quantity}</th>
-              <th>${t.pricePerUnit}</th>
+              <th class="amount">${t.quantity}</th>
+              <th class="amount">${t.pricePerUnit}</th>
+              <th class="amount">Total</th>
             </tr>
           </thead>
           <tbody>
-            ${data.items
-              .map(
-                item => `
-              <tr>
-                <td>${t.location}: ${item.project_location} <br>${item.activity}</td>
-                <td style="text-align: right">${item.quantity.toFixed(2)}</td>
-                <td style="text-align: right">${item.price_per_unit.toFixed(2)} €</td>
-              </tr>
-            `
-              )
+            ${Object.entries(groupItemsByProjectAndActivity(data.items))
+              .map(([projectKey, project]) => `
+                <tr>
+                  <td class="project-header">
+                    ${t.location}: ${projectKey}
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                ${Object.values(project.activities)
+                  .map(activity => `
+                    <tr>
+                      <td class="activity-row">${activity.name}</td>
+                      <td class="amount">${activity.quantity.toFixed(2)}</td>
+                      <td class="amount">${activity.price_per_unit.toFixed(2)} €</td>
+                      <td class="amount">${activity.total.toFixed(2)} €</td>
+                    </tr>
+                  `)
+                  .join("")}
+              `)
               .join("")}
           </tbody>
         </table>
 
         <!-- Footer container -->
-        <div style="position: absolute; bottom: 0; width: 100%; padding: 20px 0; page-break-inside: avoid;">
+        <div class="footer-container width-full">
           <!-- VAT Breakdown Table -->
-          <div style="margin-top: 30px; text-align: left">
-            <table style="width: 95%; margin-left: 0; border: none; font-size: 10pt">
-              <tr>
-                <td style="border: none; text-align: left"><strong>Total excl. VAT</strong></td>
-                <td style="border: none; text-align: center"><strong>VAT%</strong></td>
-                <td style="border: none; text-align: center"><strong>Over</strong></td>
-                <td style="border: none; text-align: right">${data.totalAmount.toFixed(2)} €</td>
-              </tr>
-              <tr>
-                <td style="border: none"></td>
-                <td style="border: none; text-align: center">0%</td>
-                <td style="border: none; text-align: center">-</td>
-                <td style="border: none; text-align: right">-</td>
-              </tr>
-              <tr>
-                <td style="border: none"></td>
-                <td style="border: none; text-align: center">9%</td>
-                <td style="border: none; text-align: center">-</td>
-                <td style="border: none; text-align: right">-</td>
-              </tr>
-              <tr>
-                <td style="border: none"></td>
-                <td style="border: none; text-align: center">21%</td>
-                <td style="border: none; text-align: center">-</td>
-                <td style="border: none; text-align: right">-</td>
-              </tr>
-              <tr class="total-row">
-                <td style="border: none"></td>
-                <td style="border: none; text-align: center">Shifted</td>
-                <td style="border: none; text-align: center">${data.totalAmount.toFixed(2)} €</td>
-                <td style="border: none; text-align: right">-</td>
-              </tr>
-              <tr>
-                <td colspan="3" style="border: none; text-align: left; border-top: 1px solid black">Total</td>
-                <td style="border: none; text-align: right; border-top: 1px solid black">${data.totalAmount.toFixed(2)} €</td>
-              </tr>
-            </table>
-          </div>
+          <table class="vat-table width-full">
+            <tr>
+              <td style="text-align: left"><strong>Total excl. VAT</strong></td>
+              <td style="text-align: center"><strong>VAT%</strong></td>
+              <td style="text-align: center"><strong>Over</strong></td>
+              <td style="text-align: right">${data.totalAmount.toFixed(2)} €</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td style="text-align: center">0%</td>
+              <td style="text-align: center">-</td>
+              <td style="text-align: right">-</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td style="text-align: center">9%</td>
+              <td style="text-align: center">-</td>
+              <td style="text-align: right">-</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td style="text-align: center">21%</td>
+              <td style="text-align: center">-</td>
+              <td style="text-align: right">-</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td style="text-align: center">Shifted</td>
+              <td style="text-align: center">${data.totalAmount.toFixed(2)} €</td>
+              <td style="text-align: right">-</td>
+            </tr>
+            <tr class="total-row">
+              <td colspan="3" style="text-align: left">Total</td>
+              <td style="text-align: right">${data.totalAmount.toFixed(2)} €</td>
+            </tr>
+          </table>
 
           <!-- Payment instructions -->
-          <div style="text-align: left; margin-top: 20px; font-size: 10pt">
-            <p>* All prices include VAT.</p>
-            <p>* Please transfer the amount of ${data.totalAmount.toFixed(2)} € by date ${data.dueDate} to IBAN ${data.companyIBAN}</p>
+          <div class="payment-instructions">
+            <p>* Please transfer the amount of <span class="bolded">${data.totalAmount.toFixed(2)} €</span> by date <span class="bolded">${data.dueDate}</span> to IBAN <span class="bolded">${data.companyIBAN}</span></p>
             <p style="margin-left: 10px;">by specifying the invoice number.</p>
           </div>
         </div>
@@ -363,7 +540,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
   }
 };
 
-const createArtisanInvoicePDF = async invoiceId => {
+const createArtisanInvoicePDF = async (invoiceId) => {
   let browser;
   try {
     console.log("Starting PDF generation for artisan invoice:", invoiceId);
@@ -409,114 +586,217 @@ const createArtisanInvoicePDF = async invoiceId => {
       return numPrice ? numPrice.toFixed(2) : "0.00";
     };
 
+    const groupItemsByProjectAndActivity = (items) => {
+      return items.reduce((groups, item) => {
+        // Създаваме уникален ключ за проекта
+        const projectKey = `${item.project_location} - ${item.project_name}`;
+        
+        if (!groups[projectKey]) {
+          groups[projectKey] = {
+            location: item.project_location,
+            name: item.project_name,
+            activities: {}
+          };
+        }
+        
+        // Групираме по име на активност
+        if (!groups[projectKey].activities[item.activity]) {
+          groups[projectKey].activities[item.activity] = {
+            name: item.activity,
+            quantity: 0,
+            price_per_unit: item.price_per_unit,
+            total: 0
+          };
+        }
+        
+        // Сумираме количествата
+        groups[projectKey].activities[item.activity].quantity += item.quantity;
+        // Преизчисляваме общата сума
+        groups[projectKey].activities[item.activity].total = 
+          groups[projectKey].activities[item.activity].quantity * 
+          groups[projectKey].activities[item.activity].price_per_unit;
+        
+        return groups;
+      }, {});
+    };
+
     const htmlContent = `
       <!DOCTYPE html>
       <html>
         <head>
-          <meta charset="utf-8">
           <style>
-            body {
+            * {
+              margin: 0;
+              padding: 0;
+              text-indent: 0;
               font-family: Arial, sans-serif;
-              margin: 20px;
-              color: #333;
             }
-            .header {
+            
+            body { 
+              padding: 40px;
+              font-size: 10pt;
+            }
+
+            .header-section {
               display: flex;
               justify-content: space-between;
-              margin-bottom: 30px;
+              margin-bottom: 40px;
             }
-            .logo {
-              max-width: 200px;
-              max-height: 100px;
-              order: 2;
+
+            .company-main-info {
+              text-align: left;
             }
+
+            .company-main-info .name {
+              font-weight: bold;
+              margin-bottom: 4px;
+            }
+
             .invoice-details {
-              margin-bottom: 30px;
-              order: 1;
-            }
-            .details-container {
               display: flex;
               justify-content: space-between;
-              margin-bottom: 30px;
+              margin: 30px 0;
+              gap: 100px;
             }
-            .recipient-info, .issuer-info {
-              width: 48%;
+
+            .invoice-left {
+              flex: 1;
+              text-align: left;
             }
+
+            .invoice-right {
+              flex: 1;
+              text-align: right;
+            }
+
+            .info-row {
+              margin-bottom: 4px;
+              line-height: 1.2;
+            }
+
+            .info-label {
+              font-weight: bold;
+              margin-right: 8px;
+            }
+
             table {
               width: 100%;
               border-collapse: collapse;
-              margin-bottom: 30px;
-              clear: both;
+              margin: 20px 0;
+              font-size: 9pt;  /* намален размер на шрифта */
             }
+
+            table tr {
+              border-bottom: 2px solid #e0e0e0;
+            }
+
+            table tr:last-child {
+              border-bottom: none;
+            }
+
             th, td {
-              border: 1px solid #ddd;
-              padding: 8px;
+              border: none;  /* премахнати всички бордери */
+              padding: 6px 8px;
               text-align: left;
+              vertical-align: middle;
             }
-            th {
-              background-color: #f5f5f5;
-            }
-            .total {
+
+            td.amount, th.amount {
               text-align: right;
+            }
+
+            .project-header {
               font-weight: bold;
-              margin-top: 20px;
+              padding-top: 16px;
+            }
+
+            .activity-row {
+              padding-left: 20px;
+            }
+
+            tr:first-child .project-header {
+              padding-top: 8px;
+            }
+
+            tfoot tr {
+              border-top: 2px solid #e0e0e0;  /* добавен бордер за total реда */
+              border-bottom: none;
+            }
+
+            tfoot td {
+              padding-top: 12px;
             }
           </style>
         </head>
         <body>
-          <div class="header">
-            <div class="invoice-details">
-              <h2>Invoice № ${invoice.invoice_number}</h2>
-              <p>Date: ${new Date(invoice.invoice_date).toLocaleDateString("bg-BG")}</p>
-              <p>Due date: ${new Date(invoice.due_date).toLocaleDateString("bg-BG")}</p>
+          <div class="header-section">
+            <div class="company-main-info">
+              <div class="name">${invoice.artisan.name}</div>
+              <div class="info-row">${invoice.artisan.address || ''}</div>
             </div>
-            ${invoice.company.logo_url ? `<img src="${invoice.company.logo_url}" class="logo" />` : ""}
           </div>
 
-          <div class="details-container">
-            <div class="recipient-info">
-              <h3>Recipient:</h3>
-              <p>Name: ${invoice.artisan.user.full_name}</p>
-              <p>Email: ${invoice.artisan.user.email}</p>
+          <div class="invoice-details">
+            <div class="invoice-left">
+              <div class="info-row">
+                <span class="info-label">Invoice</span> ${invoice.invoice_number}
+              </div>
+              <div class="info-row">
+                <span class="info-label">Date of issue:</span> ${invoice.date}
+              </div>
+              <div class="info-row">
+                <span class="info-label">Due date:</span> ${invoice.due_date}
+              </div>
             </div>
 
-            <div class="issuer-info">
-              <h3>Issuer:</h3>
-              <p>Name: ${invoice.artisan.name}</p>
-              <p>Email: ${invoice.artisan.email}</p>
-              <p>Phone: ${invoice.artisan.number || "N/A"}</p>
+            <div class="invoice-right">
+              <div class="info-row">${invoice.artisan.user.full_name}</div>
+              <div class="info-row">${invoice.artisan.email}</div>
+              <div class="info-row">${invoice.artisan.number || ''}</div>
             </div>
           </div>
 
           <table>
             <thead>
               <tr>
-                <th>№</th>
                 <th>Activity</th>
-                <th>Quantity</th>
-                <th>Unit price</th>
-                <th>Total</th>
+                <th class="amount">Quantity</th>
+                <th class="amount">Price per unit</th>
+                <th class="amount">Total</th>
               </tr>
             </thead>
             <tbody>
-              ${invoice.items
+              ${Object.values(groupItemsByProjectAndActivity(invoice.items))
                 .map(
-                  (item, index) => `
-                <tr>
-                  <td>${index + 1}</td>
-                  <td>${item.activity?.name || "N/A"}</td>
-                  <td>${item.quantity} ${item.measure?.name || ""}</td>
-                  <td>${formatPrice(item.price_per_unit)} €</td>
-                  <td>${formatPrice(item.total_price)} €</td>
-                </tr>
-              `
+                  project => `
+                    <tr>
+                      <td class="project-header">
+                        Location: ${project.location} - ${project.name}
+                      </td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                    ${Object.values(project.activities)
+                      .map(
+                        activity => `
+                          <tr>
+                            <td class="activity-row">${activity.name}</td>
+                            <td class="amount">${activity.quantity.toFixed(2)}</td>
+                            <td class="amount">${activity.price_per_unit.toFixed(2)} €</td>
+                            <td class="amount">${activity.total.toFixed(2)} €</td>
+                          </tr>
+                        `
+                      )
+                      .join("")}
+                  `
                 )
                 .join("")}
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="4" style="text-align: right;"><strong>Total:</strong></td>
-                <td><strong>${formatPrice(invoice.total_amount)} €</strong></td>
+                <td colspan="3" style="text-align: right; font-weight: bold;">Total:</td>
+                <td class="amount" style="font-weight: bold;">${invoice.total_amount.toFixed(2)} €</td>
               </tr>
             </tfoot>
           </table>
