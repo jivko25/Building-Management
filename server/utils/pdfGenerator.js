@@ -107,13 +107,13 @@ const createInvoicePDF = async (invoiceId, languageId) => {
     dueDate.setDate(dueDate.getDate() + invoice.due_date_weeks * 7);
 
     // Функция за изчисляване на номера на седмицата от дата
-    const getWeekNumber = (date) => {
+    const getWeekNumber = date => {
       const currentDate = new Date(date);
       const startDate = new Date(currentDate.getFullYear(), 0, 1);
       const days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
-      
+
       const weekNumber = Math.ceil((days + startDate.getDay() + 1) / 7);
-      
+
       // Връщаме числото директно, без водеща нула
       return weekNumber;
     };
@@ -150,11 +150,11 @@ const createInvoicePDF = async (invoiceId, languageId) => {
       totalAmount: parseFloat(invoice.total_amount)
     };
 
-    const groupItemsByProjectAndActivity = (items) => {
+    const groupItemsByProjectAndActivity = items => {
       return items.reduce((groups, item) => {
         // Създаваме уникален ключ за проекта
         const projectKey = `${item.project_location} - ${item.project_name}`;
-        
+
         if (!groups[projectKey]) {
           groups[projectKey] = {
             location: item.project_location,
@@ -162,7 +162,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
             activities: {}
           };
         }
-        
+
         // Групираме по име на активност
         if (!groups[projectKey].activities[item.activity]) {
           groups[projectKey].activities[item.activity] = {
@@ -172,14 +172,12 @@ const createInvoicePDF = async (invoiceId, languageId) => {
             total: 0
           };
         }
-        
+
         // Сумираме количествата
         groups[projectKey].activities[item.activity].quantity += item.quantity;
         // Преизчисляваме общата сума
-        groups[projectKey].activities[item.activity].total = 
-          groups[projectKey].activities[item.activity].quantity * 
-          groups[projectKey].activities[item.activity].price_per_unit;
-        
+        groups[projectKey].activities[item.activity].total = groups[projectKey].activities[item.activity].quantity * groups[projectKey].activities[item.activity].price_per_unit;
+
         return groups;
       }, {});
     };
@@ -419,7 +417,8 @@ const createInvoicePDF = async (invoiceId, languageId) => {
           </thead>
           <tbody>
             ${Object.entries(groupItemsByProjectAndActivity(data.items))
-              .map(([projectKey, project]) => `
+              .map(
+                ([projectKey, project]) => `
                 <tr>
                   <td class="project-header">
                     ${t.location}: ${projectKey}
@@ -429,16 +428,19 @@ const createInvoicePDF = async (invoiceId, languageId) => {
                   <td></td>
                 </tr>
                 ${Object.values(project.activities)
-                  .map(activity => `
+                  .map(
+                    activity => `
                     <tr>
                       <td class="activity-row">${activity.name}</td>
                       <td class="amount">${activity.quantity.toFixed(2)}</td>
                       <td class="amount">${activity.price_per_unit.toFixed(2)} €</td>
                       <td class="amount">${activity.total.toFixed(2)} €</td>
                     </tr>
-                  `)
+                  `
+                  )
                   .join("")}
-              `)
+              `
+              )
               .join("")}
           </tbody>
         </table>
@@ -540,7 +542,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
   }
 };
 
-const createArtisanInvoicePDF = async (invoiceId) => {
+const createArtisanInvoicePDF = async invoiceId => {
   let browser;
   try {
     console.log("Starting PDF generation for artisan invoice:", invoiceId);
@@ -575,49 +577,59 @@ const createArtisanInvoicePDF = async (invoiceId) => {
             {
               model: Measure,
               as: "measure"
+            },
+            {
+              model: Project,
+              as: "project",
+              attributes: ["name", "location"]
             }
           ]
         }
       ]
     });
 
+    if (!invoice) throw new Error("Invoice not found");
+    if (!invoice.items || invoice.items.length === 0) throw new Error("No items in invoice");
+
     const formatPrice = price => {
       const numPrice = typeof price === "string" ? parseFloat(price) : price;
       return numPrice ? numPrice.toFixed(2) : "0.00";
     };
 
-    const groupItemsByProjectAndActivity = (items) => {
+    const groupItemsByProjectAndActivity = items => {
       return items.reduce((groups, item) => {
-        // Създаваме уникален ключ за проекта
-        const projectKey = `${item.project_location} - ${item.project_name}`;
-        
+        const project = item.project || {};
+        const projectKey = `${project.location || "N/A"} - ${project.name || "N/A"}`;
+
         if (!groups[projectKey]) {
           groups[projectKey] = {
-            location: item.project_location,
-            name: item.project_name,
+            location: project.location,
+            name: project.name,
             activities: {}
           };
         }
-        
-        // Групираме по име на активност
-        if (!groups[projectKey].activities[item.activity]) {
-          groups[projectKey].activities[item.activity] = {
-            name: item.activity,
+
+        const activityName = item.activity?.name || "Unknown Activity";
+        if (!groups[projectKey].activities[activityName]) {
+          groups[projectKey].activities[activityName] = {
+            name: activityName,
             quantity: 0,
-            price_per_unit: item.price_per_unit,
+            price_per_unit: item.price_per_unit || 0,
             total: 0
           };
         }
-        
-        // Сумираме количествата
-        groups[projectKey].activities[item.activity].quantity += item.quantity;
-        // Преизчисляваме общата сума
-        groups[projectKey].activities[item.activity].total = 
-          groups[projectKey].activities[item.activity].quantity * 
-          groups[projectKey].activities[item.activity].price_per_unit;
-        
+
+        groups[projectKey].activities[activityName].quantity += parseFloat(item.quantity) || 0;
+        groups[projectKey].activities[activityName].total = groups[projectKey].activities[activityName].quantity * (parseFloat(groups[projectKey].activities[activityName].price_per_unit) || 0);
+
         return groups;
       }, {});
+    };
+
+    const formatDate = dateString => {
+      if (!dateString) return "N/A";
+      const date = new Date(dateString);
+      return isNaN(date) ? "Invalid Date" : date.toLocaleDateString("en-GB");
     };
 
     const htmlContent = `
@@ -732,7 +744,7 @@ const createArtisanInvoicePDF = async (invoiceId) => {
           <div class="header-section">
             <div class="company-main-info">
               <div class="name">${invoice.artisan.name}</div>
-              <div class="info-row">${invoice.artisan.address || ''}</div>
+              <div class="info-row">${invoice.artisan.address || ""}</div>
             </div>
           </div>
 
@@ -742,17 +754,17 @@ const createArtisanInvoicePDF = async (invoiceId) => {
                 <span class="info-label">Invoice</span> ${invoice.invoice_number}
               </div>
               <div class="info-row">
-                <span class="info-label">Date of issue:</span> ${invoice.date}
+                <span class="info-label">Date of issue:</span> ${formatDate(invoice.invoice_date)}
               </div>
               <div class="info-row">
-                <span class="info-label">Due date:</span> ${invoice.due_date}
+                <span class="info-label">Due date:</span> ${formatDate(invoice.due_date)}
               </div>
             </div>
 
             <div class="invoice-right">
-              <div class="info-row">${invoice.artisan.user.full_name}</div>
-              <div class="info-row">${invoice.artisan.email}</div>
-              <div class="info-row">${invoice.artisan.number || ''}</div>
+              <div class="info-row">${invoice.artisan.user?.full_name || ""}</div>
+              <div class="info-row">${invoice.artisan.email || ""}</div>
+              <div class="info-row">${invoice.artisan.number || ""}</div>
             </div>
           </div>
 
@@ -771,7 +783,7 @@ const createArtisanInvoicePDF = async (invoiceId) => {
                   project => `
                     <tr>
                       <td class="project-header">
-                        Location: ${project.location} - ${project.name}
+                        Location: ${project.location || "N/A"} - ${project.name || "N/A"}
                       </td>
                       <td></td>
                       <td></td>
@@ -782,9 +794,9 @@ const createArtisanInvoicePDF = async (invoiceId) => {
                         activity => `
                           <tr>
                             <td class="activity-row">${activity.name}</td>
-                            <td class="amount">${activity.quantity.toFixed(2)}</td>
-                            <td class="amount">${activity.price_per_unit.toFixed(2)} €</td>
-                            <td class="amount">${activity.total.toFixed(2)} €</td>
+                            <td class="amount">${parseFloat(activity.quantity).toFixed(2)}</td>
+                            <td class="amount">${parseFloat(activity.price_per_unit).toFixed(2)} €</td>
+                            <td class="amount">${parseFloat(activity.total).toFixed(2)} €</td>
                           </tr>
                         `
                       )
@@ -796,7 +808,7 @@ const createArtisanInvoicePDF = async (invoiceId) => {
             <tfoot>
               <tr>
                 <td colspan="3" style="text-align: right; font-weight: bold;">Total:</td>
-                <td class="amount" style="font-weight: bold;">${invoice.total_amount.toFixed(2)} €</td>
+                <td class="amount" style="font-weight: bold;">${parseFloat(invoice.total_amount).toFixed(2)} €</td>
               </tr>
             </tfoot>
           </table>
