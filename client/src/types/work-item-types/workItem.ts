@@ -18,6 +18,7 @@ export type WorkItem = {
   measure_id?: string;
   creator_id?: string;
   activity_id?: string;
+  hours?: number | undefined;
 };
 
 export interface PaginatedWorkItems {

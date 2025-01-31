@@ -6,6 +6,7 @@ import EditWorkItemForm from "./EditWorkItemForm";
 import { workItemSchema, WorkItemSchema } from "@/models/workItem/workItemSchema";
 import DialogModal from "@/components/common/DialogElements/DialogModal";
 import { useParams } from "react-router-dom";
+import UserWorkItemEditForm from "../../UserWorkItem/UserWorkItemFormEdit/UserWorkItemEditForm";
 
 type EditWorkItemProps = {
   workItemId: string;
@@ -27,7 +28,7 @@ const EditWorkItem = ({ workItemId }: EditWorkItemProps) => {
 
   const handleSubmit = useSubmitHandler(mutate, workItemSchema);
 
-  return <DialogModal Component={EditWorkItemForm} props={{ handleSubmit, isPending, id, taskId, workItemId }} isOpen={isOpen} setIsOpen={setIsOpen} title="Edit work item" />;
+  return <DialogModal Component={UserWorkItemEditForm} props={{ handleSubmit, isPending, id, taskId, workItemId }} isOpen={isOpen} setIsOpen={setIsOpen} title="Edit work item" />;
 };
 
 export default EditWorkItem;

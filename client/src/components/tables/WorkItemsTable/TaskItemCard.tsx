@@ -37,9 +37,7 @@ type TaskItemCardProps = {
 
 const TaskItemCard = ({ task }: TaskItemCardProps) => {
   const taskDetails = useMemo(() => {
-    const artisanNames = Array.from(
-      new Set(task?.artisans.map(artisan => artisan.name))
-    ).join(", ");
+    const artisanNames = Array.from(new Set(task?.artisans?.map(artisan => artisan.name))).join(", ");
     const taskStatuses = task?.status;
 
     return {
@@ -48,12 +46,11 @@ const TaskItemCard = ({ task }: TaskItemCardProps) => {
       measurePrice: task?.total_price,
       totalPrice: task?.total_price,
       taskStatus: taskStatuses,
-      totalWork: task?.total_work_in_selected_measure,
+      totalWork: task?.total_work_in_selected_measure
     };
   }, [task]);
 
-  console.log(task, 'task');
-  
+  console.log(task, "task");
 
   return (
     <>

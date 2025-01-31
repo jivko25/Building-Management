@@ -24,7 +24,7 @@ const UserWorkItemEdit = ({ workItemId }: UserWorkItemEditProps) => {
     successToast: "Work item updated successfully!",
     setIsOpen
   });
-
+  console.log(workItemSchema);
   const handleSubmit = useSubmitHandler(mutate, workItemSchema);
 
   return <DialogModal Component={UserWorkItemEditForm} props={{ handleSubmit, isPending, taskId, workItemId }} isOpen={isOpen} setIsOpen={setIsOpen} title="Edit work item" />;

@@ -6,7 +6,7 @@ import { useFormContext } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
-const FormFieldInput = ({ label, name, type, className, Icon, text }: FormInputType) => {
+const FormFieldInput = ({ label, name, type, className, Icon, text, disabled }: FormInputType) => {
   const { control } = useFormContext();
 
   return (
@@ -20,7 +20,7 @@ const FormFieldInput = ({ label, name, type, className, Icon, text }: FormInputT
             <div className="relative">
               {Icon && <Icon size={15} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500" />}
               <Separator className="absolute left-8 top-1/2 transform -translate-y-1/2" orientation="vertical" />
-              <Input {...field} type={type} className={cn("", className)} />
+              <Input {...field} type={type} className={cn("", className)} disabled={disabled} />
               <Separator className="absolute left-8 top-1/2 transform -translate-y-1/2" orientation="vertical" />
               {text && <s className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">{text}</s>}
             </div>

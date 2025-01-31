@@ -31,14 +31,22 @@ const UserWorkItemEditForm = ({ handleSubmit, taskId, workItemId, isPending }: U
     queryKey: ["artisanTasks", taskId],
     selectFn: data => findItemById<WorkItem>(data as ProjectTask, workItemId as string, item => item.id as string)
   });
+  console.log(userWorkItem);
 
   const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
     URL: userWorkItem?.artisan_id ? `/default-pricing/${userWorkItem.artisan_id}` : `/default-pricing`,
     queryKey: ["default-pricing"]
   });
   const { useEditWorkItemForm } = useWorkItemFormHooks();
-  const form = useEditWorkItemForm(userWorkItem as Partial<WorkItem>);
+  const form = useEditWorkItemForm({
+    ...(userWorkItem as Partial<WorkItem>),
+    hours: userWorkItem?.hours ?? 0
+  });
   const defaultPrinceId = form.watch("default_pricing");
+
+  const onError = (errors: any) => {
+    console.log("❌ Form Errors:", errors); // Check if there are validation errors
+  };
   useEffect(() => {
     if (defaultPrinceId) {
       refetch();
@@ -48,7 +56,7 @@ const UserWorkItemEditForm = ({ handleSubmit, taskId, workItemId, isPending }: U
   }, [defaultPrinceId, defaultPricingsResponse]);
   return (
     <FormProvider {...form}>
-      <form id="user-work-item-edit" onSubmit={form.handleSubmit(handleSubmit)}>
+      <form id="user-work-item-edit" onSubmit={form.handleSubmit(handleSubmit, onError)}>
         <Separator className="mt-4 mb-2" />
         <DefaultPricingSelector name="default_pricing" label="Activity" artisan_id={userWorkItem?.artisan_id} defaultVal={userWorkItem?.activity_id} />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2 mb-2">

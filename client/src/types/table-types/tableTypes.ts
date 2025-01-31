@@ -10,6 +10,7 @@ export type FormInputType = {
   className?: string;
   Icon?: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>;
   text?: string;
+  disabled?: boolean;
 };
 
 export type TableFormSelectType = {

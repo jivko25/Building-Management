@@ -1,5 +1,6 @@
 import DialogFooter from "@/components/common/DialogElements/DialogFooter";
 import FormDatePicker from "@/components/common/FormElements/FormDatePicker";
+import DefaultPricingSelector from "@/components/common/FormElements/FormDefaultValueSelector";
 import FormFieldInput from "@/components/common/FormElements/FormFieldInput";
 import FormTextareaInput from "@/components/common/FormElements/FormTextareaInput";
 import WorkItemActiviySelector from "@/components/common/FormElements/FormWorkitemActivitySelector";
@@ -8,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useUserWorkitem } from "@/context/UserWorkitemContext";
 import { useWorkItemFormHooks } from "@/hooks/forms/useWorkItemForm";
 import { WorkItemSchema } from "@/models/workItem/workItemSchema";
-import {  Calculator, Clock } from "lucide-react";
+import { Calculator, Clock } from "lucide-react";
 import { useEffect } from "react";
 import { FormProvider } from "react-hook-form";
 
@@ -28,15 +29,15 @@ const UserWorkItemCreateForm = ({ handleSubmit, isPending, projectId }: UserWork
   }, [defaultPricingId, form]);
 
   useEffect(() => {
-    form.setValue("project_id", projectId)
-  }, [])
+    form.setValue("project_id", projectId);
+  }, []);
 
   return (
     <FormProvider {...form}>
       <form id="task-item" onSubmit={form.handleSubmit(handleSubmit)}>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2 mb-2">
-          <WorkItemActiviySelector label="Select activity" name="activity" />
+          <DefaultPricingSelector name="default_pricing" label="Activity" />
           <div className="flex items-center justify-center content-center flex-col">
             <FormFieldInput name="quantity" label="Quantity" type="number" className="pl-10" Icon={Calculator} />
             <p className="text-xs text-gray-500 text-wrap">{measure?.name}</p>
@@ -54,12 +55,7 @@ const UserWorkItemCreateForm = ({ handleSubmit, isPending, projectId }: UserWork
           <TaskItemStatusSelector label="Status" name="status" />
         </div>
         <FormTextareaInput label="Note" name="note" type="text" className="pt-2" />
-        <DialogFooter
-          disabled={!form.formState.isDirty || isPending}
-          className="mt-6"
-          formName="task-item"
-          label="Submit"
-        />
+        <DialogFooter disabled={!form.formState.isDirty || isPending} className="mt-6" formName="task-item" label="Submit" />
       </form>
     </FormProvider>
   );
