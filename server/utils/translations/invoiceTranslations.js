@@ -24,7 +24,15 @@ const translations = {
     total: "Total",
     totalAmount: "Total Amount",
     emailSubject: "Invoice",
-    emailBody: "Dear client,\n\nAttached is invoice {invoiceNumber}.\n\nBest regards,\nYour team"
+    emailBody: "Dear client,\n\nAttached is invoice {invoiceNumber}.\n\nBest regards,\nYour team",
+    generatedOn: "Generated on",
+    page: "Page",
+    of: "of",
+    currency: "Currency",
+    signature: "Signature",
+    stamp: "Stamp",
+    reference: "Reference",
+    week: "Week"
   },
   bg: {
     invoice: "Фактура",
@@ -51,7 +59,15 @@ const translations = {
     total: "Общо",
     totalAmount: "Обща сума",
     emailSubject: "Фактура",
-    emailBody: "Уважаеми клиент,\n\nПрилагаме фактура {invoiceNumber}.\n\nПоздрави,\nВашият екип"
+    emailBody: "Уважаеми клиент,\n\nПрилагаме фактура {invoiceNumber}.\n\nПоздрави,\nВашият екип",
+    generatedOn: "Генерирано на",
+    page: "Страница",
+    of: "от",
+    currency: "Валута",
+    signature: "Подпис",
+    stamp: "Печат",
+    reference: "Референция",
+    week: "Седмица"
   },
   // Romanian translations
   ro: {
@@ -79,7 +95,15 @@ const translations = {
     total: "Total",
     totalAmount: "Total suma",
     emailSubject: "Factura",
-    emailBody: "Draga client,\n\nAnexata este factura {invoiceNumber}.\n\nCu stima,\nEchipa noastra"
+    emailBody: "Draga client,\n\nAnexata este factura {invoiceNumber}.\n\nCu stima,\nEchipa noastra",
+    generatedOn: "Generat la",
+    page: "Pagina",
+    of: "din",
+    currency: "Valută",
+    signature: "Semnătură",
+    stamp: "Ștampilă",
+    reference: "Referință",
+    week: "Săptămână"
   },
   // Russian translations
   ru: {
@@ -107,7 +131,15 @@ const translations = {
     total: "итого",
     totalAmount: "итоговая сумма",
     emailSubject: "счет",
-    emailBody: "Уважаемый клиент,\n\nПрилагаем счет {invoiceNumber}.\n\nС уважением,\nНаша команда"
+    emailBody: "Уважаемый клиент,\n\nПрилагаем счет {invoiceNumber}.\n\nС уважением,\nНаша команда",
+    generatedOn: "Сгенерировано",
+    page: "Страница",
+    of: "из",
+    currency: "Валюта",
+    signature: "Подпись",
+    stamp: "Печать",
+    reference: "Референция",
+    week: "Седмица"
   },
   //   turkish
   tr: {
@@ -135,7 +167,15 @@ const translations = {
     total: "Toplam",
     totalAmount: "Toplam Tutar",
     emailSubject: "Fatura",
-    emailBody: "Saygılı müşterimiz,\n\nEkteki fatura {invoiceNumber}.\n\nSaygılar,\nEkibimiz"
+    emailBody: "Saygılı müşterimiz,\n\nEkteki fatura {invoiceNumber}.\n\nSaygılar,\nEkibimiz",
+    generatedOn: "Oluşturulma tarihi",
+    page: "Sayfa",
+    of: "/",
+    currency: "Para birimi",
+    signature: "İmza",
+    stamp: "Kaşe",
+    reference: "Referință",
+    week: "Săptămână"
   },
   //polish
   pl: {
@@ -163,7 +203,15 @@ const translations = {
     total: "Łączna suma",
     totalAmount: "Łączna kwota",
     emailSubject: "Faktura",
-    emailBody: "Uwazny klient,\n\nZałączona jest faktura {invoiceNumber}.\n\nPozdrawiamy,\nNasza ekipa"
+    emailBody: "Uwazny klient,\n\nZałączona jest faktura {invoiceNumber}.\n\nPozdrawiamy,\nNasza ekipa",
+    generatedOn: "Wygenerowano",
+    page: "Strona",
+    of: "z",
+    currency: "Waluta",
+    signature: "Podpis",
+    stamp: "Pieczątka",
+    reference: "Referencja",
+    week: "Tydzień"
   },
   //dutch
   nl: {
@@ -191,7 +239,15 @@ const translations = {
     total: "Totaal",
     totalAmount: "Totaalbedrag",
     emailSubject: "Factuur",
-    emailBody: "Geachte klant,\n\nBijgevoegd is de factuur {invoiceNumber}.\n\nMet vriendelijke groeten,\nOns team"
+    emailBody: "Geachte klant,\n\nBijgevoegd is de factuur {invoiceNumber}.\n\nMet vriendelijke groeten,\nOns team",
+    generatedOn: "Gegenereerd op",
+    page: "Pagina",
+    of: "van",
+    currency: "Valuta",
+    signature: "Handtekening",
+    stamp: "Stempel",
+    reference: "Referencja",
+    week: "Tydzień"
   },
   // german
   de: {
@@ -219,7 +275,15 @@ const translations = {
     total: "Gesamt",
     totalAmount: "Gesamtbetrag",
     emailSubject: "Rechnung",
-    emailBody: "Sehr geehrte Kundin,\n\nAnbei finden Sie die Rechnung {invoiceNumber}.\n\nMit freundlichen Grüßen,\nIhr Team"
+    emailBody: "Sehr geehrte Kundin,\n\nAnbei finden Sie die Rechnung {invoiceNumber}.\n\nMit freundlichen Grüßen,\nIhr Team",
+    generatedOn: "Generiert am",
+    page: "Seite",
+    of: "von",
+    currency: "Währung",
+    signature: "Unterschrift",
+    stamp: "Stempel",
+    reference: "Referencja",
+    week: "Woche"
   }
 };
 
