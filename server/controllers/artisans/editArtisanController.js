@@ -13,10 +13,11 @@ const editArtisan = async (req, res, next) => {
       throw new ApiError(404, "Artisan not found!");
     }
 
-    const [companyRecord, userRecord] = await Promise.all([Company.findOne({ where: { name: company } }), User.findOne({ where: { full_name: artisanName } })]);
+    const [companyRecord, userRecord] = await Promise.all([Company.findOne({ where: { name: company } }), User.findOne({ where: { full_name: artisanName || '' } })]);
 
     if (!companyRecord) throw new ApiError(404, "Company not found!");
-    if (!userRecord) throw new ApiError(404, "User not found!");
+    if (artisanName && !userRecord) throw new ApiError(404, "User not found!");
+
 
     const updatedArtisan = await artisan.update({
       name,
@@ -24,7 +25,7 @@ const editArtisan = async (req, res, next) => {
       number,
       email,
       company_id: companyRecord.id,
-      user_id: userRecord.id,
+      user_id: userRecord?.id,
       status,
       activity_id,
       measure_id
@@ -35,6 +36,8 @@ const editArtisan = async (req, res, next) => {
       artisan: updatedArtisan
     });
   } catch (error) {
+    console.log(error, 'error');
+    
     if (error instanceof ApiError) {
       next(error);
     } else {
