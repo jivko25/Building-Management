@@ -129,98 +129,129 @@ export const InvoiceClientDetailsPage = () => {
       </div>
 
       {showPdfPreview && (
-        <div className="mb-6 bg-white p-6 rounded-lg shadow-lg">
+        <div className="mb-6 bg-white p-6 rounded-lg shadow-lg" style={{ fontFamily: 'Calibri, sans-serif' }}>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">{t("PDF Preview")}</h2>
             <Button variant="ghost" size="icon" onClick={() => setShowPdfPreview(false)}>
               <X className="h-4 w-4" />
             </Button>
           </div>
-          <div className="border rounded-lg p-8" style={{ fontFamily: "Calibri, sans-serif" }}>
+
+          <div className="border rounded-lg p-8">
+            {/* Header Section */}
             <div className="flex justify-between mb-8">
-              <div className="invoice-info">
-                <h1 className="text-xl font-bold mb-2">
-                  {t("Invoice")} {invoice.invoice_number}
-                </h1>
-                <p>
-                  {t("Date of issue")}: {format(new Date(invoice.invoice_date), "dd.MM.yyyy", { locale: bg })}
-                </p>
-                <p>
-                  {t("Due date")}: {format(new Date(invoice.due_date), "dd.MM.yyyy", { locale: bg })}
-                </p>
+              <div>
+                <div className="text-lg font-bold mb-2">{invoice.client?.client_company_name}</div>
+                <div className="text-sm">{invoice.client?.client_company_address}</div>
+                <div className="text-sm">VAT Number {invoice.client?.client_company_vat_number}</div>
               </div>
-              <div className="text-right">{invoice.company?.logo_url && <img src={invoice.company.logo_url} alt="Company Logo" className="max-w-[226px] max-h-[98px]" />}</div>
+              {invoice.company?.logo_url && (
+                <img 
+                  src={invoice.company.logo_url} 
+                  alt="Company Logo" 
+                  className="max-w-[226px] max-h-[98px] object-contain" 
+                />
+              )}
             </div>
 
-            <div className="grid grid-cols-2 gap-10 mb-8">
-              <div className="border p-5 rounded">
-                <p>
-                  {t("Company")}: {invoice.client?.client_company_name || "No"}
-                </p>
-                <p>
-                  {t("Address")}: {invoice.client?.client_company_address || "No"}
-                </p>
-                <p>
-                  {t("VAT number")}: {invoice.client?.client_company_vat_number || "No"}
-                </p>
+            {/* Invoice Details */}
+            <div className="flex justify-between mb-8 gap-4">
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <span className="font-semibold">{t("Invoice")}:</span>
+                  <span>{invoice.invoice_number}</span>
+                </div>
+                <div>
+                  <span className="font-semibold">{t("Date of issue")}:</span>{' '}
+                  {format(new Date(invoice.invoice_date), 'dd.MM.yyyy', { locale: bg })}
+                </div>
+                <div>
+                  <span className="font-semibold">{t("Due date")}:</span>{' '}
+                  {format(new Date(invoice.due_date), 'dd.MM.yyyy', { locale: bg })}
+                </div>
               </div>
 
-              <div className="border p-5 rounded">
-                <p>
-                  {t("Company")}: {invoice.company?.name}
-                </p>
-                <p>
-                  {t("Address")}: {invoice.company?.address}
-                </p>
-                <p>
-                  {t("Reg. number")}: {invoice.company?.registration_number || "No"}
-                </p>
-                <p>
-                  {t("VAT number")}: {invoice.company?.vat_number || "No"}
-                </p>
-                <p>
-                  {t("Phone")}: {invoice.company?.phone || "No"}
-                </p>
-                <p>
-                  {t("Email")}: {invoice.company?.email || "No"}
-                </p>
-                <p>
-                  {t("IBAN")}: {invoice.company?.iban || "No"}
-                </p>
-                <p>
-                  {t("For Contact")}: {invoice.client?.client_name || "No"}
-                </p>
+              <div className="text-right space-y-2">
+                <div className="font-semibold">{invoice.company?.name}</div>
+                <div>{invoice.company?.address}</div>
+                <div>{invoice.company?.phone}</div>
+                <div>{invoice.company?.registration_number}</div>
+                <div>{invoice.company?.vat_number}</div>
+                <div>{invoice.company?.iban}</div>
               </div>
             </div>
 
-            <table className="w-full mb-8 text-sm">
+            {/* Items Table */}
+            <table className="w-full mb-8">
               <thead>
-                <tr className="border">
-                  <th className="border p-2 text-left">{t("Activity")} </th>
-                  <th className="border p-2 text-right">{t("Quantity")}</th>
-                  <th className="border p-2 text-right">{t("Price")}</th>
-                  <th className="border p-2 text-right">{t("Total")}</th>
+                <tr className="border-b-2 border-gray-200">
+                  <th className="text-left pb-2">{t("Activity")}</th>
+                  <th className="text-right pb-2">{t("Quantity")}</th>
+                  <th className="text-right pb-2">{t("Price per unit")}</th>
+                  <th className="text-right pb-2">{t("Total")}</th>
                 </tr>
               </thead>
               <tbody>
-                {invoice.items.map(item => (
-                  <tr key={item.id} className="border">
-                    <td className="border p-2">
-                      {t("Location")}: {item.project?.location} <br />
-                      {item.activity.name}
+                {invoice.items.map((item, index) => (
+                  <tr key={index} className="border-b border-gray-200">
+                    <td className="py-2">
+                      {item.project?.location && `${t("Location")}: ${item.project.location}`}
+                      <br />
+                      {item.activity?.name}
                     </td>
-                    <td className="border p-2 text-right">{parseFloat(item.quantity).toFixed(2)}</td>
-                    <td className="border p-2 text-right">{parseFloat(item.price_per_unit).toFixed(2)} €</td>
-                    <td className="border p-2 text-right">{parseFloat(item.total_price).toFixed(2)} €</td>
+                    <td className="text-right py-2">{parseFloat(item.quantity).toFixed(2)}</td>
+                    <td className="text-right py-2">{parseFloat(item.price_per_unit).toFixed(2)} €</td>
+                    <td className="text-right py-2">{parseFloat(item.total_price).toFixed(2)} €</td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            <div className="text-right">
-              <h3 className="font-bold">
-                {t("Total amount")}: {parseFloat(invoice.total_amount).toFixed(2)} €
-              </h3>
+            {/* VAT Table */}
+            <table className="w-full mb-4">
+              <tbody>
+                <tr>
+                  <td className="text-left font-semibold">Total excl. VAT</td>
+                  <td className="text-center font-semibold">VAT%</td>
+                  <td className="text-center font-semibold">Over</td>
+                  <td className="text-right">{parseFloat(invoice.total_amount).toFixed(2)} €</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td className="text-center">21%</td>
+                  <td className="text-center">-</td>
+                  <td className="text-right">-</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td className="text-center">Shifted</td>
+                  <td className="text-center">{parseFloat(invoice.total_amount).toFixed(2)} €</td>
+                  <td className="text-right">-</td>
+                </tr>
+                <tr className="border-t border-black">
+                  <td colSpan={3} className="text-left font-semibold pt-2">Total</td>
+                  <td className="text-right font-semibold pt-2">
+                    {parseFloat(invoice.total_amount).toFixed(2)} €
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            {/* Payment Instructions */}
+            <div className="text-sm space-y-2">
+              <p>
+                * {t("Please transfer the amount of")}{' '}
+                <span className="font-semibold">
+                  {parseFloat(invoice.total_amount).toFixed(2)} €
+                </span>{' '}
+                {t("by date")}{' '}
+                <span className="font-semibold">
+                  {format(new Date(invoice.due_date), 'dd.MM.yyyy', { locale: bg })}
+                </span>{' '}
+                {t("to IBAN")}{' '}
+                <span className="font-semibold">{invoice.company?.iban}</span>
+              </p>
+              <p className="ml-4">{t("by specifying the invoice number")}.</p>
             </div>
           </div>
         </div>
