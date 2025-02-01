@@ -15,7 +15,7 @@ const createMeasure = async (req, res, next) => {
       throw new ApiError(400, `Measure with name "${name}" already exists`);
     }
 
-    const newMeasure = await Measure.create({ name });
+    const newMeasure = await Measure.create({ name, creator_id: req.user.id });
 
     res.status(201).json({
       success: true,
