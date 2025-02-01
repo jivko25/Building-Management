@@ -112,7 +112,7 @@ const ArtisansDetailsTable: React.FC<{ data: WorkItem[]; artisanName: string }> 
   };
 
   const onFilter = (event: any) => {
-    setFilteredData(event || []); // Актуализиране на филтрираните данни
+    setFilteredData(event || []);
   };
 
   const updateIsPaidStatus = async (id: number, isPaid: boolean) => {
