@@ -23,10 +23,6 @@ const createArtisan = async (req, res, next) => {
       console.log("Company not found:", company);
       throw new ApiError(404, "Company not found!");
     }
-    if (!userRecord) {
-      console.log("User not found:", artisanName);
-      throw new ApiError(404, "User not found!");
-    }
 
     // Създаване на новия артисан
     const newArtisan = await Artisan.create({
@@ -35,7 +31,7 @@ const createArtisan = async (req, res, next) => {
       number,
       email,
       company_id: companyRecord.id,
-      user_id: userRecord.id,
+      user_id: userRecord?.id,
       status,
       creator_id: req.user.id
     });
