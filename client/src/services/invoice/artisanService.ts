@@ -61,7 +61,7 @@ export const artisanInvoiceService = {
 
   deleteInvoice: async (id: number): Promise<void> => {
     console.log("Deleting artisan invoice:", id);
-    await axios.delete(`${API_URL}/invoices-artisan/${id}`, {
+    await axios.delete(`${API_URL}/invoices/${id}`, {
       withCredentials: true
     });
   },
