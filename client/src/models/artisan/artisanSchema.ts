@@ -34,9 +34,7 @@ export const artisanSchema = z.object({
   company: z.string().min(1, {
     message: t("Please select company")
   }),
-  artisanName: z.string().min(1, {
-    message: t("Please select user")
-  }),
+  artisanName: z.string().optional(),
   status: z.enum(["active", "inactive"], {
     message: t("Please, select a status") 
   })
