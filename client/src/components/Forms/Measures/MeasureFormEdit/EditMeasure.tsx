@@ -21,12 +21,7 @@ const EditMeasure = ({ measureId }: MeasureFormProps) => {
   const { isOpen, setIsOpen } = useDialogState();
   const { useEditEntity } = useMutationHook();
 
-  // const measure = useCachedData<Measure>({
-  //   queryKey: ["measures"],
-  //   selectFn: data => findItemById<Measure>(data as Measure[], measureId, measure => measure.id?.toString() || "")
-  // });
-
-  const measure = useQuery<Measure>({
+  const measure = useQuery<any>({
     queryKey: ["measures", measureId],
     queryFn: () => apiClient.get(`/measures/${measureId}`)
   });
