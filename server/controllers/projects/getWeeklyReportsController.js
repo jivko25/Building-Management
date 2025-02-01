@@ -120,7 +120,7 @@ const getWeekEndDate = (weekNumber) => {
 
 const getWeekNumber = (date) => {
   const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-  return Math.ceil((((date - firstDayOfYear) / 86400000) + firstDayOfYear.getDay() + 1) / 7);
+  return Math.ceil((((date - firstDayOfYear) / 86400000) + firstDayOfYear.getDay() + 1) / 7) - 1;
 };
 
 module.exports = {
