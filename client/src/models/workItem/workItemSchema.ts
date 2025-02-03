@@ -4,7 +4,7 @@ import { z } from "zod";
 export const workItemSchema = z
   .object({
     artisan: z.string().optional(),
-    default_pricing: z.string().optional(),
+    default_pricing: z.union([z.string(), z.number()]).optional(),
     quantity: z
       .number()
       .positive({
@@ -19,15 +19,14 @@ export const workItemSchema = z
     hours: z
       .union([
         z.number().positive({ message: "Hours must be greater than 0." }),
-        z
-          .string()
-          .trim()
-          .refine(val => val === "" || !isNaN(parseFloat(val)), {
-            message: "Hours must be a valid number or empty."
-          })
-          .transform(val => (val === "" ? undefined : parseFloat(val)))
+        z.string().trim(),
+        z.null()
       ])
-      .optional(),
+      .optional()
+      .transform(val => {
+        if (!val || val === "") return null;
+        return typeof val === "string" ? parseFloat(val) : val;
+      }),
     start_date: z.coerce
       .date()
       .transform(date => format(date, "yyyy-MM-dd"))

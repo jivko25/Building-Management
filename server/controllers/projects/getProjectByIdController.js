@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 
 const getProjectById = async (req, res, next) => {
   const isAdmin = req.user.role === "admin";
+
   if (isAdmin) {
     const project = await Project.findByPk(req.params.id, {
       include: [
@@ -29,7 +30,7 @@ const getProjectById = async (req, res, next) => {
   }
 
   const artisan = await Artisan.findOne({ where: { user_id: req.user.id } });
-  if (artisan) {
+  if (artisan && req.user.role === "user") {
     const tasksArtisan = await TasksArtisan.findAll({ where: { artisan_id: artisan.id } });
     if (tasksArtisan.length === 0) {
       return res.json([]);
@@ -54,6 +55,9 @@ const getProjectById = async (req, res, next) => {
       }
     ]
   });
+
+  console.log(project, 'project');
+  
 
   if (!project) {
     return res.json([]);
