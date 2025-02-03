@@ -30,7 +30,7 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
     queryKey: ["measures"]
   });
   const { data: projects } = useFetchDataQuery<Project[]>({
-    URL: `/projects-for-manager`,
+    URL: `/projects`,
     queryKey: ["projects"]
   });
   const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
@@ -46,6 +46,17 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
     console.log("DefaultPricings Response:", defaultPricingsResponse);
     console.log("Processed DefaultPricings:", defaultPricings);
   }, [defaultPricingsResponse]);
+
+  const header = (
+    <div className="flex justify-between items-center">
+      <div className=" flex flex-col items-center justify-center gap-5">
+        <p className="font-semibold">
+          {t("Artisan")}: {artisanName}
+        </p>
+        <ArtisanAction type="create" artisanName={artisanName} artisanId={artisanId} refetch={refetch} />
+      </div>
+    </div>
+  );
 
   const activityBodyTemplate = (rowData: DefaultPricing) => {
     const activity = activities.find(a => a.id === rowData.activity_id);
@@ -111,7 +122,16 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
 
   return (
     <div className="w-full flex flex-col justify-center items-center overflow-auto">
-      <DataTable value={defaultPricings} showGridlines stripedRows paginator rows={10} tableStyle={{ minWidth: "50rem" }} emptyMessage="No default prices found">
+      <DataTable 
+        value={defaultPricings} 
+        header={header}
+        showGridlines 
+        stripedRows 
+        paginator 
+        rows={10} 
+        tableStyle={{ minWidth: "50rem" }} 
+        emptyMessage="No default prices found"
+      >
         <Column field="activity" header={t("Activity")} body={activityBodyTemplate} className="text-sm md:text-base" sortable />
         <Column field="project" header={t("Project")} body={projectBodyTemplate} className="text-sm md:text-base" sortable />
         <Column field="measure" header={t("Measure")} body={measureBodyTemplate} className="text-sm md:text-base" sortable />
