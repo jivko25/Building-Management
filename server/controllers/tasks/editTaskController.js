@@ -21,8 +21,8 @@ const editTask = async (req, res, next) => {
       throw new ApiError(404, "Task not found!");
     }
 
-    // Проверка за дублирано име
-    if (task.name !== name) {
+    // Проверка за дублирано име само ако името е променено
+    if (name && task.name !== name) {
       const existingTask = await Task.findOne({
         where: {
           name,
@@ -35,12 +35,7 @@ const editTask = async (req, res, next) => {
     }
 
     // Проверка на артисаните
-    if (artisans) {
-      if (!Array.isArray(artisans)) {
-        throw new ApiError(400, "Artisans must be an array!");
-      }
-
-      // Намиране на артисаните
+    if (artisans && artisans.length > 0) {
       const foundArtisans = await Artisan.findAll({
         where: { name: artisans }
       });
@@ -50,39 +45,46 @@ const editTask = async (req, res, next) => {
         foundArtisans.map(a => a.name)
       );
 
-      // Проверка дали всички артисани са намерени
       const missingArtisans = artisans.filter(artisanName => !foundArtisans.some(found => found.name === artisanName));
 
       if (missingArtisans.length > 0) {
         throw new ApiError(404, `Artisans not found: ${missingArtisans.join(", ")}`);
       }
 
-      // Обновяване на връзките с артисани
       await task.setArtisans(foundArtisans);
     }
 
     // Намиране на дейност и мярка
-    const [activityRecord, measureRecord] = await Promise.all([Activity.findOne({ where: { name: activity } }), Measure.findOne({ where: { name: measure } })]);
-
-    if (!activityRecord) {
-      throw new ApiError(404, `Activity "${activity}" not found!`);
+    let activityRecord, measureRecord;
+    
+    if (activity) {
+      activityRecord = await Activity.findOne({ where: { name: activity } });
+      if (!activityRecord) {
+        throw new ApiError(404, `Activity "${activity}" not found!`);
+      }
     }
-    if (!measureRecord) {
-      throw new ApiError(404, `Measure "${measure}" not found!`);
+
+    if (measure) {
+      measureRecord = await Measure.findOne({ where: { name: measure } });
+      if (!measureRecord) {
+        throw new ApiError(404, `Measure "${measure}" not found!`);
+      }
     }
 
     // Обновяване на основната информация за задачата
-    const updatedTask = await task.update({
-      name,
-      activity_id: activityRecord.id,
-      measure_id: measureRecord.id,
-      total_price,
-      total_work_in_selected_measure,
-      start_date,
-      end_date,
-      note,
-      status
-    });
+    const updateData = {
+      ...(name && { name }),
+      ...(activityRecord && { activity_id: activityRecord.id }),
+      ...(measureRecord && { measure_id: measureRecord.id }),
+      ...(total_price && { total_price }),
+      ...(total_work_in_selected_measure && { total_work_in_selected_measure }),
+      ...(start_date && { start_date }),
+      ...(end_date && { end_date }),
+      ...(note !== undefined && { note }),
+      ...(status && { status })
+    };
+
+    const updatedTask = await task.update(updateData);
 
     console.log("Task updated:", updatedTask.id);
 

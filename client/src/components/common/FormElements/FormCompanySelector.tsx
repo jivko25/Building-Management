@@ -5,9 +5,15 @@ import { Company } from "@/types/company-types/companyTypes";
 import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
+import { useEffect } from "react";
 
 const CompanySelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
+
+  useEffect(() => {
+    setValue(name, defaultVal);
+  }, [defaultVal]);
+
 
   const { data: companiesResponse } = useFetchDataQuery<{
     companies: Company[];
@@ -35,10 +41,13 @@ const CompanySelector = ({ label, name, placeholder, defaultVal }: TableFormSele
           <Select onValueChange={field.onChange} defaultValue={defaultVal}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={placeholder} />
+                <SelectValue placeholder={field.value || placeholder} >
+                  {field.value}
+                </SelectValue>
               </SelectTrigger>
             </FormControl>
             <SelectContent>
+
               {companiesResponse?.companies
                 ?.filter(company => company.status === "active")
                 .map(company => (

@@ -12,14 +12,11 @@ export const taskSchema = z
       .max(50, {
         message: "Project name cannot exceed 50 characters."
       }),
-    price_per_measure: z.coerce.number().gte(1, {
-      message: "Please enter a valid price."
-    }),
     total_price: z.coerce.number().gte(1, {
       message: "Please enter a valid price."
     }),
     total_work_in_selected_measure: z.coerce.number().gte(1, {
-      message: "Please enter a valid price."
+      message: "Please enter a valid quantity."
     }),
     artisans: z
       .string()
@@ -71,19 +68,18 @@ export const editTaskSchema = z
       .max(50, {
         message: "Project name cannot exceed 50 characters."
       }),
-    price_per_measure: z.coerce.number().gte(1, {
-      message: "Please enter a valid price."
-    }),
     total_price: z.coerce.number().gte(1, {
       message: "Please enter a valid price."
     }),
     total_work_in_selected_measure: z.coerce.number().gte(1, {
-      message: "Please enter a valid price."
+      message: "Please enter a valid quantity."
     }),
     artisans: z.string().array().optional(),
     activity: z
       .string()
-
+      .min(1, {
+        message: "Please select activity."
+      })
       .optional(),
     measure: z.string().optional(),
     start_date: z.coerce
@@ -112,7 +108,6 @@ export const editTaskSchema = z
 
 export const taskDefaults = {
   name: "",
-  price_per_measure: 0,
   total_price: 0,
   total_work_in_selected_measure: 0,
   artisans: [],

@@ -8,7 +8,7 @@ import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { DefaultPricingResponse } from "@/types/defaultPricingType/defaultPricingTypes";
 
 const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_id }: TableFormSelectType) => {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
 
   const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
     URL: artisan_id ? `/default-pricing/${artisan_id}` : `/default-pricing`,
@@ -18,6 +18,12 @@ const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_
   useEffect(() => {
     refetch();
   }, [artisan_id]);
+
+  useEffect(() => {
+    if (defaultVal) {
+      setValue(name, defaultVal);
+    }
+  }, [defaultVal]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState(""); // Дебаунсната стойност
