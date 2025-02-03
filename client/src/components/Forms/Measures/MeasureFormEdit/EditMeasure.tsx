@@ -6,9 +6,6 @@ import { useMutationHook } from "@/hooks/useMutationHook";
 import DialogModal from "@/components/common/DialogElements/DialogModal";
 import EditMeasureForm from "./EditMeasureForm";
 import { useTranslation } from "react-i18next";
-import { useCachedData } from "@/hooks/useQueryHook";
-import { findItemById } from "@/utils/helpers/findItemById";
-import { Measure } from "@/types/measure-types/measureTypes";
 import apiClient from "@/api/axiosConfig";
 import { useQuery } from "@tanstack/react-query";
 
