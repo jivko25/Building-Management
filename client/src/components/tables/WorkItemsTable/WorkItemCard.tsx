@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { WorkItem } from "@/types/work-item-types/workItem";
-import UserWorkItemEdit from "@/components/Forms/UserWorkItem/UserWorkItemFormEdit/UserWorkItemEdit";
 import { Button } from "primereact/button";
-// import { confirmDialog } from "primereact/confirmdialog"; // Диалог за потвърждение
+import EditWorkItem from "@/components/Forms/WorkItems/WorkItemFormEdit/EditWorkItem";
+import apiClient from "@/api/axiosConfig";
 
 interface UserProjectWorkItemsTableProps {
   workItemsData: any;
@@ -36,25 +36,25 @@ const WorkItemCard: React.FC<UserProjectWorkItemsTableProps> = ({
     return <span className={labelClass}>{status === "done" ? "Done" : "InProgress"}</span>;
   };
 
-  // Потвърждение за изтриване
-  // const confirmDelete = (id: number) => {
-  //   confirmDialog({
-  //     message: "Are you sure you want to delete this work item?",
-  //     header: "Confirm Deletion",
-  //     icon: "pi pi-exclamation-triangle",
-  //     // accept: () => onDelete(id),
-  //   });
-  // };
+  const handleDelete = async (data: WorkItem) => {
+    try {
+      await apiClient.delete(`/projects/${data.project_id}/tasks/${data.task_id}/work-items/${data.id}`);
+      const updatedWorkItems = workItems.filter(item => item.id !== data.id);
+      setWorkItems(updatedWorkItems);
+    } catch (error) {
+      console.error("Error deleting work item:", error);
+    }
+  };
 
   // Рендериране на бутоните за действие
   const actionsBodyTemplate = (data: WorkItem) => {
     return (
       <div className="flex gap-2">
-        <UserWorkItemEdit workItemId={data.id} />
+        <EditWorkItem workItemId={data.id as any} />
         <Button
           icon="pi pi-trash"
           className="p-button-danger p-button-rounded user-project-trash-icon"
-          // onClick={() => confirmDelete(data.id)}
+          onClick={() => handleDelete(data)}
         />
       </div>
     );

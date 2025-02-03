@@ -9,10 +9,12 @@ import FormDatePicker from "@/components/common/FormElements/FormDatePicker";
 import { ClipboardList, Mail, MapPin } from "lucide-react";
 import { useProjectFormHook } from "@/hooks/forms/useProjectForm";
 import { ProjectSchema } from "@/models/project/projectSchema";
-import { useQuery } from "@tanstack/react-query";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 import FormClientSelector from "@/components/common/FormElements/FormClientSelector";
+import { useEffect, useState } from "react";
+import apiClient from "@/api/axiosConfig";
+import { Project } from "@/types/project-types/projectTypes";
 
 type EditProjectFormProps = {
   handleSubmit: (projectData: ProjectSchema) => void;
@@ -22,35 +24,49 @@ type EditProjectFormProps = {
 
 const EditProjectForm = ({ handleSubmit, isPending, projectId }: EditProjectFormProps) => {
   const { t } = useTranslation();
-  console.log("EditProjectForm - Starting with ID:", projectId);
+  const [projectData, setProjectData] = useState<Project | null>(null);
+  const { useEditProjectForm } = useProjectFormHook();
 
-  const { data: projectData } = useQuery({
-    queryKey: ["projects", projectId],
-    queryFn: async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}`, {
-        credentials: "include"
-      });
-      if (!response.ok) throw new Error("Failed to fetch project");
-      const data = await response.json();
-      console.log("EditProjectForm - Fetched project data:", data);
-      return data;
-    }
+  const form = useEditProjectForm({
+    name: "",
+    company_name: "",
+    email: "",
+    address: "",
+    location: "",
+    status: "active",
+    client_id: 0
   });
 
-  console.log("EditProjectForm - Project data:", projectData);
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const response = await apiClient.get<Project>(`/projects/${projectId}`);
+        setProjectData(response.data);
+        
+        form.reset({
+          name: response.data.name,
+          company_name: response.data.company_name,
+          email: response.data.email,
+          address: response.data.address,
+          location: response.data.location,
+          status: response.data.status,
+          client_id: response.data.client_id,
+          start_date: response.data.start_date,
+          end_date: response.data.end_date,
+          note: response.data.note
+        });
+      } catch (error) {
+        console.error("Error fetching project:", error);
+      }
+    };
 
-  const { useEditProjectForm } = useProjectFormHook();
-  const form = useEditProjectForm(
-    projectData || {
-      name: "",
-      company_name: "",
-      email: "",
-      address: "",
-      location: "",
-      status: "active",
-      client_id: 0
+    if (projectId) {
+      fetchProject();
     }
-  );
+  }, [projectId]);
+
+  console.log(projectData?.status, 'projectData');
+  
 
   return (
     <FormProvider {...form}>
