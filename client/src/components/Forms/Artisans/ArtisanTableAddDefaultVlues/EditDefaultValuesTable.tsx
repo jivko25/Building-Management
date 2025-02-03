@@ -11,7 +11,7 @@ import { InputText } from "primereact/inputtext";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function EditDefaultValuesTable({ editProps, refetch }: { editProps: EditDefaultValuesTableProps; refetch: () => void }) {
+export default function EditDefaultValuesTable({ editProps, refetch, setIsOpen }: { editProps: EditDefaultValuesTableProps; refetch: () => void; setIsOpen: (value: boolean) => void }) {
   const { t } = useTranslation();
   const [price, setPrice] = useState<any>(editProps.price);
   const [managerPrice, setManagerPrice] = useState<number>(editProps.managerPrice);
@@ -33,6 +33,10 @@ export default function EditDefaultValuesTable({ editProps, refetch }: { editPro
       await editEntity(`/default-pricing/${editProps.defaultPricing.id}`, newDefaultPricing);
       setResponseMessage({ type: "success", message: t("Values changed successfully!") });
       refetch();
+      // Затваряме модала след кратко забавяне
+      setTimeout(() => {
+        setIsOpen(false);
+      }, 1000);
     } catch (error) {
       console.error(error);
       setResponseMessage({ type: "error", message: t("Something went wrong!") });

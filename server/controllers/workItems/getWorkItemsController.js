@@ -32,21 +32,21 @@ const getWorkItems = async (req, res, next) => {
       });
     }
     
-    const projects = await Project.findAll({
-      where: {
-        creator_id: req.user.id,
-        id: req.params.project_id
-      },
-    });
+    // const projects = await Project.findAll({
+    //   where: {
+    //     creator_id: req.user.id,
+    //     id: req.params.project_id
+    //   },
+    // });
 
-    if (projects.length === 0) {
-      throw new ApiError(404, "No projects found for current user");
-    }
+    // if (projects.length === 0) {
+    //   throw new ApiError(404, "No projects found for current user");
+    // }
 
-    const taskIds = projects.map(project => project.task_id);
-    if (taskIds.length === 0) {
-      throw new ApiError(404, "No tasks found for current user");
-    }
+    // const taskIds = projects.map(project => project.task_id);
+    // if (taskIds.length === 0) {
+    //   throw new ApiError(404, "No tasks found for current user");
+    // }
 
     const workItems = await WorkItem.findAll({
       where: { task_id },

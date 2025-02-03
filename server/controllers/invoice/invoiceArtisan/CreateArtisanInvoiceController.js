@@ -54,21 +54,13 @@ const createArtisanInvoice = async (req, res, next) => {
       where: {
         id: work_item_ids,
         artisan_id: artisan_id,
-        is_artisan_invoiced: false
+        is_artisan_invoiced: false,
+        project_id: project_ids
       },
       include: [
         {
           model: Task,
-          as: "task",
-          include: [
-            {
-              model: Project,
-              as: "project",
-              where: {
-                id: project_ids
-              }
-            }
-          ]
+          as: "task"
         },
         {
           model: Activity,
@@ -116,28 +108,31 @@ const createArtisanInvoice = async (req, res, next) => {
 
     // Create invoice items
     for (const workItem of workItems) {
+      console.log(workItem, 'workitem');
       const defaultPricing = await DefaultPricing.findOne({
         attributes: ["id", "activity_id", "measure_id", "project_id", "manager_price", "artisan_price"],
         where: {
-          project_id: workItem.task.project.id,
+          project_id: workItem.project_id,
           activity_id: workItem.activity.id,
           measure_id: workItem.measure.id
         }
       });
 
       if (!defaultPricing) {
-        throw new Error(`Default pricing not found for project ${workItem.task.project.id}, activity ${workItem.activity.id}, measure ${workItem.measure.id}`);
+        throw new Error(`Default pricing not found for project ${workItem.project_id}, activity ${workItem.activity.id}, measure ${workItem.measure.id}`);
       }
 
       if (!defaultPricing?.artisan_price) {
-        throw new Error(`Artisan price not set for project ${workItem.task.project.id}, activity ${workItem.activity.id}, measure ${workItem.measure.id}`);
+        throw new Error(`Artisan price not set for project ${workItem.project_id}, activity ${workItem.activity.id}, measure ${workItem.measure.id}`);
       }
+
+      
 
       const invoiceItem = await InvoiceItem.create(
         {
           invoice_id: invoice.id,
           work_item_id: workItem.id,
-          project_id: workItem.task.project.id,
+          project_id: workItem.project_id,
           task_id: workItem.task.id,
           activity_id: workItem.activity.id,
           measure_id: workItem.measure.id,

@@ -103,7 +103,7 @@ export const CreateClientInvoicePage = () => {
     queryFn: async () => {
       const company_id = form.watch("company_id");
       const client_id = form.watch("client_company_id");
-      const selected_projects = form.watch("selected_projects");
+      const selected_projects = form.watch("selected_projects") || [];
 
       console.log("🔍 Fetching work items with filters:", {
         company_id,
@@ -113,23 +113,26 @@ export const CreateClientInvoicePage = () => {
 
       try {
         if (selected_projects && selected_projects.length > 0) {
-          const projectPromises = selected_projects.map(project_id => invoiceClientService.getWorkItemsForInvoice(company_id || undefined, client_id || undefined, project_id, currentPage, itemsPerPage));
-
-          const projectResults = await Promise.all(projectPromises);
-          return {
-            data: projectResults.flatMap(r => r.data),
-            total: projectResults.reduce((sum, r) => sum + (r.total || 0), 0),
-            totalPages: Math.max(...projectResults.map(r => r.totalPages || 1))
-          };
+          const response = await invoiceClientService.getWorkItemsForInvoice(
+            company_id,
+            client_id,
+            selected_projects[0],
+            currentPage,
+            itemsPerPage
+          );
+          return response;
         }
 
-        const response = await invoiceClientService.getWorkItemsForInvoice(company_id || undefined, client_id || undefined, undefined, currentPage, itemsPerPage);
+        const response = await invoiceClientService.getWorkItemsForInvoice(
+          company_id,
+          client_id,
+          undefined,
+          currentPage,
+          itemsPerPage
+        );
 
-        return {
-          data: response.data,
-          total: response.total,
-          totalPages: response.totalPages
-        };
+        console.log("📦 Work items response:", response);
+        return response;
       } catch (error) {
         console.error("❌ Error fetching work items:", error);
         toast.error("Error fetching work items");
@@ -292,6 +295,75 @@ export const CreateClientInvoicePage = () => {
     return formData.company_id > 0 && formData.client_company_id > 0 && formData.due_date_weeks >= 0 && (formData.selected_work_items?.length || 0) > 0;
   };
 
+  // Функция за групиране на work items по проект и след това по task
+  const groupWorkItemsByProjectAndTask = (data: any) => {
+    console.log("🔄 Grouping work items:", data);
+    if (!data || !Array.isArray(data)) {
+      console.warn("❌ Invalid data structure:", data);
+      return {};
+    }
+
+    return data.reduce((projectGroups: any, project: any) => {
+      if (!project.workItems) return projectGroups;
+
+      projectGroups[project.projectId] = {
+        projectId: project.projectId,
+        projectName: project.projectName,
+        projectLocation: project.projectLocation,
+        tasks: project.workItems.reduce((taskGroups: any, item: any) => {
+          const taskId = item.task_id;
+          
+          if (!taskGroups[taskId]) {
+            taskGroups[taskId] = {
+              taskId,
+              taskName: `Task ${taskId}`,
+              workItems: []
+            };
+          }
+          taskGroups[taskId].workItems.push(item);
+          return taskGroups;
+        }, {})
+      };
+      
+      return projectGroups;
+    }, {});
+  };
+
+  // Функция за селектиране на всички work items в проект
+  const handleSelectAllProjectItems = (project: any, isChecked: boolean) => {
+    const allProjectWorkItems = Object.values(project.tasks).flatMap((task: any) => 
+      task.workItems.map((item: any) => item.id)
+    );
+    
+    const currentSelected = form.watch("selected_work_items") || [];
+    
+    if (isChecked) {
+      const newSelected = [...new Set([...currentSelected, ...allProjectWorkItems])];
+      form.setValue("selected_work_items", newSelected);
+    } else {
+      form.setValue(
+        "selected_work_items",
+        currentSelected.filter((id: number) => !allProjectWorkItems.includes(id))
+      );
+    }
+  };
+
+  // Функция за селектиране на всички work items в task
+  const handleSelectAllTaskItems = (task: any, isChecked: boolean) => {
+    const taskWorkItemIds = task.workItems.map((item: any) => item.id);
+    const currentSelected = form.watch("selected_work_items") || [];
+    
+    if (isChecked) {
+      const newSelected = [...new Set([...currentSelected, ...taskWorkItemIds])];
+      form.setValue("selected_work_items", newSelected);
+    } else {
+      form.setValue(
+        "selected_work_items",
+        currentSelected.filter((id: number) => !taskWorkItemIds.includes(id))
+      );
+    }
+  };
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
@@ -388,35 +460,81 @@ export const CreateClientInvoicePage = () => {
             </div>
           )}
 
-          {workItemsResponse && (
+          {workItemsResponse && workItemsResponse.data && (
             <div className="mt-8">
-              {workItemsResponse.data?.length > 0 && (
+              {workItemsResponse.data.length > 0 && (
                 <>
                   <h2 className="text-xl font-semibold mb-4">{t("Select Work Items")}</h2>
-                  <div className="space-y-6">
-                    {workItemsResponse?.data?.map((group: any) => (
-                      <div key={group.projectId} className="border rounded-lg p-4 bg-white shadow-sm">
-                        <div className="flex justify-between items-center mb-3">
-                          <h3 className="text-lg font-medium text-gray-900">{group.projectName}</h3>
-                          <span className="text-sm text-gray-500">{group.projectLocation}</span>
+                  <div className="space-y-8">
+                    {Object.values(groupWorkItemsByProjectAndTask(workItemsResponse.data)).map((project: any) => {
+                      const projectWorkItems = Object.values(project.tasks).flatMap((task: any) => 
+                        task.workItems.map((item: any) => item.id)
+                      );
+                      const isProjectFullySelected = projectWorkItems.every(id => 
+                        form.watch("selected_work_items")?.includes(id)
+                      );
+
+                      return (
+                        <div key={project.projectId} className="space-y-4">
+                          <div className="flex justify-between items-center">
+                            <h3 className="text-xl font-semibold">
+                              {project.projectName} - {project.projectLocation}
+                            </h3>
+                            <CustomCheckbox
+                              id={`project-${project.projectId}`}
+                              label="Select all project items"
+                              checked={isProjectFullySelected}
+                              onChange={e => handleSelectAllProjectItems(project, e.target.checked)}
+                            />
+                          </div>
+                          <div className="space-y-4">
+                            {Object.values(project.tasks).map((task: any) => {
+                              const isTaskFullySelected = task.workItems.every((item: any) => 
+                                form.watch("selected_work_items")?.includes(item.id)
+                              );
+
+                              return (
+                                <div key={task.taskId} className="border rounded-lg p-4 bg-white shadow-sm">
+                                  <div className="flex justify-between items-center mb-3">
+                                    <h4 className="text-lg font-medium text-gray-900">
+                                      Task {task.taskId}
+                                    </h4>
+                                    <CustomCheckbox
+                                      id={`task-${task.taskId}`}
+                                      label="Select all task items"
+                                      checked={isTaskFullySelected}
+                                      onChange={e => handleSelectAllTaskItems(task, e.target.checked)}
+                                    />
+                                  </div>
+                                  <div className="grid gap-3">
+                                    {task.workItems.map((workItem: any) => (
+                                      <CustomCheckbox
+                                        key={workItem.id}
+                                        id={`workItem-${workItem.id}`}
+                                        value={workItem.id}
+                                        label={`${workItem.activity.name || 'No description'}`}
+                                        sublabel={`Task ${workItem.task_id}`}
+                                        rightText={`${workItem.start_date ? new Date(workItem.start_date).toLocaleDateString() : 'No date'}`}
+                                        checked={form.watch("selected_work_items")?.includes(workItem.id)}
+                                        onChange={e => handleWorkItemChange(workItem.id, e.target.checked)}
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
-                        <div className="grid gap-3">
-                          {group.workItems.map((workItem: any) => (
-                            <CustomCheckbox key={workItem.id} id={`workItem-${workItem.id}`} value={workItem.id} label={workItem.name} sublabel={`${workItem.activity?.name} - ${workItem.measure?.name}`} rightText={`${workItem.quantity} ${workItem.measure?.name}`} checked={form.watch("selected_work_items")?.includes(workItem.id)} onChange={e => handleWorkItemChange(workItem.id, e.target.checked)} />
-                          ))}
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </>
               )}
-
               <Pagination
                 totalPages={workItemsResponse?.totalPages || 0}
                 page={currentPage}
                 setSearchParams={params => {
                   const newPage = parseInt(params.get("page") || "1");
-                  console.log("Changing to page:", newPage);
                   setCurrentPage(newPage);
                 }}
               />
