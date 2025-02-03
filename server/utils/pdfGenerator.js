@@ -84,7 +84,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
       const [yearWeek, sequencePart] = parts;
       const [year, week] = yearWeek.split("-");
 
-      return `${year}-week-${week}/${week}`;
+      return `${year}-${week}`;
     };
 
     const formattedInvoiceNumber = formatInvoiceNumber(invoice.invoice_number);
@@ -369,10 +369,9 @@ const createInvoicePDF = async (invoiceId, languageId) => {
           <div class="company-main-info">
             <div class="name">${data.clientCompanyName}</div>
             <div class="info-row">${data.clientAddress}</div>
-            <div class="info-row">VAT Number ${data.clientVATNumber}</div>
             <div class="info-row">
               <span class="info-label">${t.vatNumber}</span>
-              <span>${data.companyVAT}</span>
+              <span>${data.clientVATNumber}</span>
             </div>
           </div>
           <div class="company-logo">
@@ -409,7 +408,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
         <table>
           <thead>
             <tr>
-              <th>${t.activity}</th>
+              <th>${t.description}</th>
               <th class="amount">${t.quantity}</th>
               <th class="amount">${t.pricePerUnit}</th>
               <th class="amount">Total</th>

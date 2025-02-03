@@ -16,7 +16,7 @@ import { Dropdown } from "primereact/dropdown";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function CreateDefaultValuesTable({ artisanId, refetch }: { artisanId: string; refetch: () => void }) {
+export default function CreateDefaultValuesTable({ artisanId, refetch, setIsOpen }: { artisanId: string; refetch: () => void; setIsOpen: (value: boolean) => void }) {
   const { t } = useTranslation();
   const [price, setPrice] = useState<number>(0);
   const [mangerPrice, setManagerPrice] = useState<number>(0);
@@ -34,7 +34,7 @@ export default function CreateDefaultValuesTable({ artisanId, refetch }: { artis
     queryKey: ["activities"]
   });
   const { data: projects } = useFetchDataQuery<Project[]>({
-    URL: `/projects-for-manager`,
+    URL: `/projects`,
     queryKey: ["projects"]
   });
   const activities: Activity[] = activitiesResponse?.data || [];
@@ -110,9 +110,10 @@ export default function CreateDefaultValuesTable({ artisanId, refetch }: { artis
       await createEntity(`/default-pricing/${artisanId}`, defaultPricing);
       setIsAdding(false);
       setResponseMessage({ type: "success", message: t("Values added successfully!") });
-      //this  is losing the dp Id
-      //refetch(previous => [...previous, defaultPricing]);
       refetch();
+      setTimeout(() => {
+        setIsOpen(false);
+      }, 1000);
     } catch (error) {
       console.error(error);
       setResponseMessage({ type: "error", message: t("Something went wrong!") });

@@ -1,5 +1,5 @@
 const db = require("../../data/index.js");
-const { WorkItem, Project, Activity, Measure } = db;
+const { WorkItem, Project, Activity, Measure, Task } = db;
 const ApiError = require("../../utils/apiError");
 const { Op } = require("sequelize");
 
@@ -37,6 +37,7 @@ const getWorkItemsForClientInvoice = async (req, res, next) => {
     const projectIds = projects.map(project => project.id);
 
     // Намираме всички работни елементи за тези проекти
+
     const workItems = await WorkItem.findAll({
       where: {
         project_id: { [Op.in]: projectIds },
@@ -58,9 +59,15 @@ const getWorkItemsForClientInvoice = async (req, res, next) => {
           model: Measure,
           as: "measure",
           attributes: ["id", "name"]
+        },
+        {
+          model: Task,
+          as: "task",
+          attributes: ["id", "name"]
         }
       ],
       order: [
+
         ["project_id", "ASC"],
         ["id", "ASC"]
       ]

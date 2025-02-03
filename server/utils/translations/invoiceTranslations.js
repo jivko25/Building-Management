@@ -32,10 +32,12 @@ const translations = {
     signature: "Signature",
     stamp: "Stamp",
     reference: "Reference",
-    week: "Week"
+    week: "Week",
+    description: "Description"
   },
   bg: {
     invoice: "Фактура",
+
     dateOfIssue: "Дата на издаване",
     dueDate: "Краен срок",
     company: "Фирма",
@@ -67,9 +69,11 @@ const translations = {
     signature: "Подпис",
     stamp: "Печат",
     reference: "Референция",
-    week: "Седмица"
+    week: "Седмица",
+    description: "Описание"
   },
   // Romanian translations
+
   ro: {
     invoice: "Factura",
     dateOfIssue: "Data de emitere",
@@ -103,9 +107,11 @@ const translations = {
     signature: "Semnătură",
     stamp: "Ștampilă",
     reference: "Referință",
-    week: "Săptămână"
+    week: "Săptămână",
+    description: "Descriere"
   },
   // Russian translations
+
   ru: {
     invoice: "счет",
     dateOfIssue: "дата выпуска",
@@ -139,9 +145,11 @@ const translations = {
     signature: "Подпись",
     stamp: "Печать",
     reference: "Референция",
-    week: "Седмица"
+    week: "Седмица",
+    description: "Описание"
   },
   //   turkish
+
   tr: {
     invoice: "Fatura",
     dateOfIssue: "Fatura tarihi",
@@ -175,9 +183,11 @@ const translations = {
     signature: "İmza",
     stamp: "Kaşe",
     reference: "Referință",
-    week: "Săptămână"
+    week: "Săptămână",
+    description: "Descriere"
   },
   //polish
+
   pl: {
     invoice: "Faktura",
     dateOfIssue: "Data wystawienia",
@@ -211,9 +221,11 @@ const translations = {
     signature: "Podpis",
     stamp: "Pieczątka",
     reference: "Referencja",
-    week: "Tydzień"
+    week: "Tydzień",
+    description: "Opis"
   },
   //dutch
+
   nl: {
     invoice: "Factuur",
     dateOfIssue: "Datum van uitgifte",
@@ -247,9 +259,11 @@ const translations = {
     signature: "Handtekening",
     stamp: "Stempel",
     reference: "Referencja",
-    week: "Tydzień"
+    week: "Tydzień",
+    description: "Opis"
   },
   // german
+
   de: {
     invoice: "Rechnung",
     dateOfIssue: "Ausstellungsdatum",
@@ -283,8 +297,10 @@ const translations = {
     signature: "Unterschrift",
     stamp: "Stempel",
     reference: "Referencja",
-    week: "Woche"
+    week: "Woche",
+    description: "Beschreibung"
   }
 };
+
 
 module.exports = translations;

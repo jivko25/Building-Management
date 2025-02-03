@@ -38,6 +38,9 @@ const getProjects = async (req, res, next) => {
 
     // Add check for search
 
+    console.log("🔄 User role:", req.user.id);
+    
+
     whereClause.creator_id = req.user.id;
 
     const projects = await Project.findAll({
@@ -101,10 +104,21 @@ const getPaginatedProjects = async (req, res, next) => {
     const offset = (page - 1) * limit;
 
     const where = {
-      [Op.or]: [{ name: { [Op.like]: `%${q}%` } }, { address: { [Op.like]: `%${q}%` } }, { location: { [Op.like]: `%${q}%` } }, { company_name: { [Op.like]: `%${q}%` } }, { "$client.client_company_name$": { [Op.like]: `%${q}%` } }]
+      [Op.or]: [
+        { name: { [Op.like]: `%${q}%` } },
+        { address: { [Op.like]: `%${q}%` } },
+        { location: { [Op.like]: `%${q}%` } },
+        { company_name: { [Op.like]: `%${q}%` } },
+        { "$client.client_company_name$": { [Op.like]: `%${q}%` } },
+      ]
     };
 
+    if(req.user.role === "manager"){
+      where.creator_id = req.user.id;
+    }
+
     console.log("Executing paginated projects query with params:", { page, limit, q, offset });
+
 
     const { count, rows: projects } = await Project.findAndCountAll({
       where,
