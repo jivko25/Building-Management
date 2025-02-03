@@ -27,7 +27,7 @@ const UserWorkItemEdit = ({ workItemId }: UserWorkItemEditProps) => {
 
   const handleSubmit = useSubmitHandler(mutate, workItemSchema);
 
-  return <DialogModal Component={UserWorkItemEditForm} props={{ handleSubmit, isPending, taskId, workItemId }} isOpen={isOpen} setIsOpen={setIsOpen} title="Edit work item" />;
+  return <DialogModal Component={UserWorkItemEditForm} props={{ handleSubmit, isPending, taskId, workItemId: workItemId as any }} isOpen={isOpen} setIsOpen={setIsOpen} title="Edit work item" />;
 };
 
 export default UserWorkItemEdit;

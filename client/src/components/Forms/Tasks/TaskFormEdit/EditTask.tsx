@@ -9,10 +9,9 @@ import DialogModal from "@/components/common/DialogElements/DialogModal";
 type EditTaskFormProps = {
   id: string;
   taskId: string;
-  workItemId?: string;
 };
 
-const EditTask = ({ id, taskId, workItemId }: EditTaskFormProps) => {
+const EditTask = ({ id, taskId }: EditTaskFormProps) => {
   const { isOpen, setIsOpen } = useDialogState();
 
   const { useEditEntity } = useMutationHook();
