@@ -18,10 +18,10 @@ export default function ArtisanAction({ artisanId, type, editProps, artisanName,
       case "edit":
         setTitle(`Edit default price for ${artisanName}`);
         if (!editProps) throw new Error("Edit props are required for edit action");
-        return <EditDefaultValuesTable editProps={editProps} refetch={refetch!} />;
+        return <EditDefaultValuesTable editProps={editProps} refetch={refetch!} setIsOpen={setIsOpen} />;
       case "create":
         setTitle(t("Add default price for") + " " + artisanName);
-        return <CreateDefaultValuesTable artisanId={artisanId} refetch={refetch!} />;
+        return <CreateDefaultValuesTable artisanId={artisanId} refetch={refetch!} setIsOpen={setIsOpen} />;
       case "all":
         setTitle(t("All default prices"));
         return <AllDefaultValuesTable artisanId={artisanId} artisanName={artisanName!} />;
