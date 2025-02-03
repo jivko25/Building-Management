@@ -28,10 +28,14 @@ const FormClientSelector = ({ label, name, defaultVal }: FormClientSelectorProps
           <Select onValueChange={value => field.onChange(Number(value))} defaultValue={defaultVal || field.value?.toString()}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder="Select client company name" />
+                <SelectValue placeholder={field.value || "Select client company name"} >
+                  {clients?.filter(client => client.id === Number(field.value))[0]?.client_company_name}
+                </SelectValue>
               </SelectTrigger>
             </FormControl>
+
             <SelectContent>
+
               {clients?.map(client => (
                 <SelectItem key={client.id} value={client.id?.toString() || ""}>
                   {client.client_company_name}

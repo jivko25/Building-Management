@@ -27,8 +27,7 @@ const CreateTaskForm = ({ handleSubmit, isPending }: CreateTaskFormProps) => {
       <form id="task-form" onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="grid grid-cols-2 md:grid-cols-1 gap-2 mb-2">
           <FormFieldInput type="text" label="Task name" name="name" className="pl-10" Icon={ClipboardList} />
-          <FormFieldInput type="text" label="Price per measure" name="price_per_measure" className="pl-10" Icon={DollarSign} />
-          <FormFieldInput type="text" label="Total work in measure" name="total_work_in_selected_measure" className="pl-10" Icon={Hammer} />
+          <FormFieldInput type="number" label="Total work in measure" name="total_work_in_selected_measure" className="pl-10" Icon={Hammer} />
           <FormFieldInput type="text" label="Total price" name="total_price" className="pl-10" Icon={DollarSign} />
         </div>
         <Separator className="mt-4 mb-2" />

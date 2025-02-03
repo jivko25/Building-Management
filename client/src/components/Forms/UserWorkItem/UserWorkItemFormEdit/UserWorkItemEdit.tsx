@@ -12,17 +12,17 @@ type UserWorkItemEditProps = {
 };
 
 const UserWorkItemEdit = ({ workItemId }: UserWorkItemEditProps) => {
-  const { taskId } = useParams();
-
+  const { id: projectId, taskId } = useParams();
   const { isOpen, setIsOpen } = useDialogState();
 
   const { useEditEntity } = useMutationHook();
 
   const { mutate, isPending } = useEditEntity<WorkItemSchema>({
-    URL: `/my-projects/${taskId}/task/${workItemId}/edit`,
+    URL: `/projects/${projectId}/tasks/${taskId}/work-items/${workItemId}/edit`,
     queryKey: ["artisanTasks", taskId],
     successToast: "Work item updated successfully!",
     setIsOpen
+
   });
 
   const handleSubmit = useSubmitHandler(mutate, workItemSchema);

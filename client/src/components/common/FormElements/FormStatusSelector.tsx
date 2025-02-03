@@ -4,9 +4,15 @@ import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/for
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
+import { useEffect } from "react";
 
 const StatusSelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
-  const { control } = useFormContext();
+  const { control, setValue } = useFormContext();
+
+  useEffect(() => {
+    setValue(name, defaultVal);
+  }, [defaultVal]);
+
 
   return (
     <FormField
@@ -18,10 +24,13 @@ const StatusSelector = ({ label, name, placeholder, defaultVal }: TableFormSelec
           <Select onValueChange={field.onChange} defaultValue={defaultVal}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={placeholder} />
+                <SelectValue placeholder={field.value || placeholder} >
+                  {field.value}
+                </SelectValue>
               </SelectTrigger>
             </FormControl>
             <SelectContent>
+
               {userStatus.map((role, index: number) => (
                 <SelectItem key={index} value={role}>
                   {role}
