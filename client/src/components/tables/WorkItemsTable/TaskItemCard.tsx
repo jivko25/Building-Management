@@ -90,7 +90,7 @@ const TaskItemCard = ({ task }: TaskItemCardProps) => {
   return (
     <>
       {taskDetails && (
-        <div className="flex flex-col mt-44 border rounded-lg mx-8 space-y-4 p-4 backdrop-blur-sm bg-slate-900/20">
+        <div className="flex flex-col mt-44 border rounded-lg mx-8 space-y-4 p-4 backdrop-blur-sm project-cards-wrapper">
           <h1 className="text-2xl font-bold mb-4 text-foreground text-center motion-preset-shrink motion-duration-1000">
             {taskDetails.taskName}
           </h1>

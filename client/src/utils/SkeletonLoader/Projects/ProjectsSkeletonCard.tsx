@@ -11,7 +11,7 @@ const ProjectsSkeletonCard = ({ projects }: ProjectTypeProps) => {
   const projectsCardCount = projects?.length || 4;
 
   return (
-    <div className="flex flex-col border rounded-lg mt-8 mb-24 md:mt-0 mx-8 p-4 backdrop-blur-sm bg-slate-900/20">
+    <div className="flex flex-col border rounded-lg mt-8 mb-24 md:mt-0 mx-8 p-4 backdrop-blur-sm project-cards-wrapper">
       <div className="flex flex-wrap sm:w-full gap-4">
         {Array.from({ length: projectsCardCount }).map((_, index) => (
           <Card className="w-[21rem]" key={index}>
