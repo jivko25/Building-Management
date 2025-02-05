@@ -99,13 +99,30 @@ export default function ManagerAllDefaultValuesTable() {
     setGlobalFilter(e.target.value);
   };
 
+  const filteredData = globalFilter
+    ? defaultPricings.filter(pricing => {
+        const activity = activities.find(a => a.id === pricing.activity_id);
+        const project = projects?.find(p => p.id === pricing.project_id);
+        
+        return (
+          activity?.name.toLowerCase().includes(globalFilter.toLowerCase()) ||
+          project?.name.toLowerCase().includes(globalFilter.toLowerCase())
+        );
+      })
+    : defaultPricings;
+
   const header = (
     <div className="flex justify-between items-center">
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
-        <InputText value={globalFilter} onChange={onGlobalFilterChange} placeholder={t("Search activity...")} className="m-8 p-2" />
+        <InputText 
+          value={globalFilter} 
+          onChange={onGlobalFilterChange} 
+          placeholder={t("Search by activity or project...")} 
+          className="m-8 p-2" 
+        />
       </span>
-      <div className=" flex flex-col items-center justify-center gap-5">
+      <div className="flex flex-col items-center justify-center gap-5">
         <ManagerAction type="create" artisanName={"test"} artisanId={"1"} refetch={refetch} />
       </div>
     </div>
@@ -121,12 +138,6 @@ export default function ManagerAllDefaultValuesTable() {
       setResponseMessage({ type: "error", message: t("Something went wrong!") });
     }
   };
-  const filteredData = globalFilter
-    ? defaultPricings.filter(pricing => {
-        const activity = activities.find(a => a.id === pricing.activity_id);
-        return activity?.name.toLowerCase().includes(globalFilter.toLowerCase());
-      })
-    : defaultPricings;
 
   return (
     <div className="w-full flex flex-col items-center overflow-auto">
