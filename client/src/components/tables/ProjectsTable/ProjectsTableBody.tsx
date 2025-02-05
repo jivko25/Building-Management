@@ -12,6 +12,7 @@ import useSearchParamsHook from "@/hooks/useSearchParamsHook";
 import CreateProject from "@/components/Forms/Projects/ProjectFormCreate/CreateProject";
 import { useTranslation } from "react-i18next";
 import Pagination from "@/components/common/Pagination/Pagination";
+
 const ProjectsTableBody = () => {
   const { t } = useTranslation();
   const { setSearchParams, page, itemsLimit } = useSearchParamsHook();
