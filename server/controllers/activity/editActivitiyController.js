@@ -15,7 +15,7 @@ const editActivity = async (req, res, next) => {
     }
 
     if (activity.name !== name) {
-      const existingActivity = await Activity.findOne({ where: { name } });
+      const existingActivity = await Activity.findOne({ where: { name, creator_id: req.user.id } });
       if (existingActivity) {
         throw new ApiError(404, `${name} already exists!`);
       }

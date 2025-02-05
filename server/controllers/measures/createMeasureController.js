@@ -8,7 +8,7 @@ const createMeasure = async (req, res, next) => {
     const { name } = req.body;
 
     const existingMeasure = await Measure.findOne({
-      where: { name }
+      where: { name, creator_id: req.user.id }
     });
 
     if (existingMeasure) {

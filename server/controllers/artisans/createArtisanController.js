@@ -9,11 +9,12 @@ const createArtisan = async (req, res, next) => {
 
   try {
     // Проверка за съществуващ артисан
-    const existingArtisan = await Artisan.findOne({ where: { name } });
+    const existingArtisan = await Artisan.findOne({ where: { name, creator_id: req.user.id } });
     if (existingArtisan) {
       console.log("Artisan already exists:", name);
       throw new ApiError(400, `${name} already exists!`);
     }
+
 
     // Намиране на всички необходими записи едновременно
     const [companyRecord, userRecord] = await Promise.all([Company.findOne({ where: { name: company } }), User.findOne({ where: { full_name: artisanName } })]);
