@@ -9,7 +9,7 @@ import CreateDefaultValuesTable from "./ManagerCreateDefaultValuesTable";
 import { useTranslation } from "react-i18next";
 type artisanActionType = "edit" | "all" | "create";
 
-export default function ManagerAction({ artisanId, type, editProps, artisanName, refetch }: { artisanId: string; type: artisanActionType; editProps?: EditDefaultValuesTableProps; artisanName?: string; refetch?: () => void }) {
+export default function ManagerAction({ artisanId, type, editProps, refetch }: { artisanId: string; type: artisanActionType; editProps?: EditDefaultValuesTableProps; artisanName?: string; refetch?: () => void }) {
   const { t } = useTranslation();
   const { isOpen, setIsOpen } = useDialogState();
   const [title, setTitle] = useState<string>("");
