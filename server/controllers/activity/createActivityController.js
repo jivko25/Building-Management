@@ -8,7 +8,7 @@ const createActivity = async (req, res, next) => {
     const { name, status } = req.body;
 
     const existingActivity = await Activity.findOne({
-      where: { name }
+      where: { name, creator_id: req.user.id }
     });
 
     if (existingActivity) {

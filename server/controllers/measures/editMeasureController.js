@@ -16,7 +16,7 @@ const editMeasure = async (req, res, next) => {
 
     if (name && name !== measure.name) {
       const existingMeasure = await Measure.findOne({
-        where: { name }
+        where: { name, creator_id: req.user.id }
       });
 
       if (existingMeasure) {
