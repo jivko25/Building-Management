@@ -13,8 +13,14 @@ const apiCall = async (endpoint: string, method: string, data?: unknown) => {
     credentials: "include"
   });
 
+  const responseData = await response.json();
+
   if (!response.ok) {
-    throw new Error("Something wrong happened");
+    throw {
+      message: responseData.message || "Something went wrong",
+      status: response.status,
+      response: { data: responseData }
+    };
   }
 
   const editEndpointPattern: RegExp = /^\/users\/\d+\/edit$/;
@@ -23,7 +29,7 @@ const apiCall = async (endpoint: string, method: string, data?: unknown) => {
     return;
   }
 
-  return response.json();
+  return responseData;
 };
 
 export const getPaginatedData = async <TData>(URL: string, page: number, limit: number, search?: string): Promise<PaginatedDataResponse<TData>> => {

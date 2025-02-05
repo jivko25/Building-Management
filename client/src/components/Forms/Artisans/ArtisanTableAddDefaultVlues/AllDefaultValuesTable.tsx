@@ -50,7 +50,7 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
   const header = (
     <div className="flex justify-between items-center">
       <div className=" flex flex-col items-center justify-center gap-5">
-        <p className="font-semibold">
+        <p className="font-semibold text-black">
           {t("Artisan")}: {artisanName}
         </p>
         <ArtisanAction type="create" artisanName={artisanName} artisanId={artisanId} refetch={refetch} />
