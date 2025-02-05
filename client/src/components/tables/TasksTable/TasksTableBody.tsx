@@ -37,7 +37,7 @@ const ProjectsTasksBody = () => {
   return (
     <>
       <TasksBreadcrumbs />
-      <div className="flex flex-col border rounded-lg mt-48 mb-28 mx-8 p-4 backdrop-blur-sm bg-slate-900/20">
+      <div className="flex flex-col border rounded-lg mt-48 mb-28 mx-8 p-4 backdrop-blur-sm project-cards-wrapper">
         <Tabs defaultValue="tasks" className="w-full">
           <TabsList>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>

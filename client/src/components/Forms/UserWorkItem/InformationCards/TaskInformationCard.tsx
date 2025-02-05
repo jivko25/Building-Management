@@ -11,7 +11,7 @@ const TaskInformationCard = ({ project }: { project: ProjectTask }) => {
   return (
     <>
       {project && (
-        <div className="flex flex-col mt-10 border rounded-lg mx-8 space-y-4 p-4 backdrop-blur-sm bg-slate-900/20">
+        <div className="flex flex-col mt-10 border rounded-lg mx-8 space-y-4 p-4 backdrop-blur-sm project-cards-wrapper">
           <h1 className="text-2xl font-bold mb-2 text-foreground text-center motion-preset-shrink motion-duration-1000">
             Task name <br />
             {project.taskProjectData.name}

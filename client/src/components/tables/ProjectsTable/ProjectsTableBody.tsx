@@ -50,7 +50,7 @@ const ProjectsTableBody = () => {
       </div>
 
       <div className="w-full px-4 xl:w-4/5 2xl:w-3/4">
-        <div className="border rounded-lg p-6 backdrop-blur-sm bg-slate-900/20 min-h-[600px]">
+        <div className="border rounded-lg p-6 backdrop-blur-sm min-h-[600px] project-cards-wrapper">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <ConditionalRenderer
               data={projects}

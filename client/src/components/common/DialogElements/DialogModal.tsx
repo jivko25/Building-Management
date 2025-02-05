@@ -23,7 +23,7 @@ const DialogModal = <T extends {}>({ Component, props, createButtonTitle, title,
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {CreateButtonModal ? (
-          <Button className={cn("w-full lg:max-w-[12rem]", className)} variant="outline">
+          <Button className={cn("w-full lg:max-w-[12rem]", className)}>
             <Plus className="mr-2 h-4 w-4" />
             <span className="font-bold">{createButtonTitle}</span>
           </Button>
