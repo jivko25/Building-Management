@@ -51,10 +51,18 @@ const getPaginatedActivities = async (req, res, next) => {
 
     // Променяме where клаузата за да показва всички activities
     const whereClause = isAdmin
-      ? { ...(q && { name: { [Op.like]: `%${q}%` } }) }
+      ? { 
+          [Op.or]: [
+            { id: 1 }, // Винаги включваме activity с id=1
+            ...(q ? [{ name: { [Op.like]: `%${q}%` } }] : [])
+          ]
+        }
       : {
-          ...(q && { name: { [Op.like]: `%${q}%` } }),
-          [Op.or]: [{ creator_id: req.user.id }, { id: { [Op.in]: await getActivityIdsFromTasks(req.user.id) } }]
+          [Op.or]: [
+            { id: 1 }, // Винаги включваме activity с id=1
+            { creator_id: req.user.id },
+            { id: { [Op.in]: await getActivityIdsFromTasks(req.user.id) } }
+          ]
         };
 
     let { count: total, rows: data } = await Activity.findAndCountAll({
@@ -70,7 +78,6 @@ const getPaginatedActivities = async (req, res, next) => {
       ]
     });
 
-    console.log(`Found ${total} activities`);
     res.json({
       data,
       total,

@@ -17,10 +17,6 @@ const getPaginatedArtisans = async (req, res, next) => {
       }
     });
 
-    if (users.length === 0) {
-      throw new ApiError(404, "You are not authorized to access this resource");
-    }
-
     const whereClause = q
       ? {
         name: {

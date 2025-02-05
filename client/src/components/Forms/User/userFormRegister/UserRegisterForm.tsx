@@ -27,10 +27,10 @@ const UserRegisterForm = () => {
                   form.handleSubmit(onSubmit)(e);
                 }}
                 className="grid gap-4">
-                <FormFieldInput name="username" label="Username" type="text" className="pl-10" Icon={User} />
-                <FormFieldInput name="password" label="Password" type="password" className="pl-10" Icon={Lock} />
-                <FormFieldInput name="full_name" label="Full Name" type="text" className="pl-10" Icon={User} />
-                <FormFieldInput name="email" label="Email" type="text" className="pl-10" Icon={User} />
+                <FormFieldInput name="username" label="Username" type="text" className="pl-10 text-white" Icon={User} />
+                <FormFieldInput name="password" label="Password" type="password" className="pl-10 text-white" Icon={Lock} />
+                <FormFieldInput name="full_name" label="Full Name" type="text" className="pl-10 text-white" Icon={User} />
+                <FormFieldInput name="email" label="Email" type="text" className="pl-10 text-white" Icon={User} />
                 <DialogFooter disabled={!form.formState.isDirty || isLoading} label="Submit" formName="register-form" className="mt-6" />
                 <FormErrors error={error} />
               </form>
