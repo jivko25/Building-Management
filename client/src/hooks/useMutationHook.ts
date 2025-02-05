@@ -26,8 +26,8 @@ export const useMutationHook = () => {
         fireSuccessToast(successToast);
         setIsOpen && setIsOpen(false);
       },
-      onError: () => {
-        fireErrorToast("Something went wrong. Please try again.");
+      onError: (error: any) => {
+        fireErrorToast(error.message || "Something went wrong. Please try again.");
       }
     });
   };
@@ -43,8 +43,8 @@ export const useMutationHook = () => {
         setIsOpen && setIsOpen(false);
         onSuccessCallback && onSuccessCallback(data);
       },
-      onError: () => {
-        fireErrorToast("Something went wrong. Please try again.");
+      onError: (error: any) => {
+        fireErrorToast(error.message || "Something went wrong. Please try again.");
       }
     });
   };

@@ -7,17 +7,13 @@ import { Input } from "@/components/ui/input";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { DefaultPricingResponse } from "@/types/defaultPricingType/defaultPricingTypes";
 
-const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_id }: TableFormSelectType) => {
+const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_id, project_id }: TableFormSelectType) => {
   const { control, setValue } = useFormContext();
 
-  const { data: defaultPricingsResponse, refetch } = useFetchDataQuery<DefaultPricingResponse>({
-    URL: artisan_id ? `/default-pricing/${artisan_id}` : `/default-pricing`,
-    queryKey: ["default-pricing"]
+  const { data: defaultPricingsResponse } = useFetchDataQuery<DefaultPricingResponse>({
+    URL: artisan_id ? `/default-pricing/${artisan_id}${project_id ? `?project_id=${project_id}` : ""}` : `/default-pricing`,
+    queryKey: ["default-pricing", artisan_id, project_id]
   });
-
-  useEffect(() => {
-    refetch();
-  }, [artisan_id]);
 
   useEffect(() => {
     if (defaultVal) {
@@ -45,7 +41,15 @@ const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_
 
   // Филтриране на данните
   const defaultPricings = defaultPricingsResponse?.data || [];
-  const filteredPricings = defaultPricings.filter((item: any) => `${item?.activity?.name || ""}/${item?.measure?.name || ""}`.toLowerCase().includes(debouncedQuery));
+  const filteredPricings = Array.from(
+    new Map(
+      defaultPricings
+        .filter((item: any) => 
+          `${item?.activity?.name || ""}/${item?.measure?.name || ""}`.toLowerCase().includes(debouncedQuery)
+        )
+        .map(item => [`${item.activity_id}-${item.measure_id}`, item])
+    ).values()
+  );
 
   const formulateDefaultPricingLabel = (pricing: any) => {
     if (pricing?.activity.name === undefined || pricing?.measure?.name === undefined) {

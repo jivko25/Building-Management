@@ -7,19 +7,26 @@ const getDefaultPricing = async (req, res, next) => {
   try {
     const artisanId = req.params.id;
     const { id, role } = req.user;
+    const { project_id } = req.query;
 
     if (role !== "manager" && role !== "admin") {
       return next(new ApiError(403, "Forbidden!"));
     }
 
+    let whereClause = {};
     let defaultPricing;
 
     if (role === "manager" && !artisanId) {
+      whereClause = {
+        creator_id: id,
+        artisan_id: { [Op.is]: null }
+      };
+      if (project_id) {
+        whereClause.project_id = project_id;
+      }
+
       defaultPricing = await DefaultPricing.findAll({
-        where: {
-          creator_id: id,
-          artisan_id: { [Op.is]: null }
-        },
+        where: whereClause,
         include: [
           {
             model: Activity,
@@ -36,10 +43,15 @@ const getDefaultPricing = async (req, res, next) => {
         ]
       });
     } else {
+      whereClause = {
+        artisan_id: artisanId
+      };
+      if (project_id) {
+        whereClause.project_id = project_id;
+      }
+
       defaultPricing = await DefaultPricing.findAll({
-        where: {
-          artisan_id: artisanId
-        },
+        where: whereClause,
         include: [
           { model: Activity, as: "activity", attributes: ["name"] },
           { model: Measure, as: "measure", attributes: ["name"] }

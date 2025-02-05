@@ -21,4 +21,5 @@ export type TableFormSelectType = {
   multiselect?: boolean;
   artisan_id?: string;
   selectValueKey?: string;
+  project_id?: string;
 };
