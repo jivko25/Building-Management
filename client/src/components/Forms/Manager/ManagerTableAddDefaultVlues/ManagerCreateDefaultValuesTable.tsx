@@ -16,7 +16,12 @@ import { Dropdown } from "primereact/dropdown";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function ManagerCreateDefaultValuesTable({ refetch }: { refetch: () => void }) {
+type CreateDefaultValuesTableProps = {
+  refetch: () => void;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const CreateDefaultValuesTable = ({ refetch, setIsOpen }: CreateDefaultValuesTableProps) => {
   const { t } = useTranslation();
   const [mangerPrice, setManagerPrice] = useState<number>(0);
   const [measure, setMeasure] = useState<Measure>();
@@ -104,6 +109,7 @@ export default function ManagerCreateDefaultValuesTable({ refetch }: { refetch: 
       manager_price: mangerPrice,
       project_id: project.id
     };
+    
     try {
       await createEntity(`/default-pricing`, defaultPricing);
       setIsAdding(false);
@@ -141,6 +147,13 @@ export default function ManagerCreateDefaultValuesTable({ refetch }: { refetch: 
     }
   };
 
+  useEffect(() => {
+    if(responseMessage?.type === "success"){
+      setIsOpen(false);
+    }
+  }, [responseMessage]);
+
+
   //Set the artisan
   useEffect(() => {
     setArtisan(artisanResponse);
@@ -163,4 +176,6 @@ export default function ManagerCreateDefaultValuesTable({ refetch }: { refetch: 
       </div>
     </div>
   );
-}
+};
+
+export default CreateDefaultValuesTable;

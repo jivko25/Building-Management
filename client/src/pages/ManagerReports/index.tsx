@@ -117,7 +117,7 @@ export default function ManagerReportsPage() {
     fetchReportsWithDateRange();
   };
 
-  const priceTemplate = (value: string) => `${value} лв.`;
+  const priceTemplate = (value: string) => `${value} €.`;
 
   if (error) return <div className="text-red-500">{error}</div>;
 
@@ -179,19 +179,19 @@ export default function ManagerReportsPage() {
               </div>
               <div className="bg-primary/10 p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground">Цена мениджър</p>
-                <p className="text-2xl font-bold">{calculateTotal().managerPrice.toFixed(2)} лв.</p>
+                <p className="text-2xl font-bold">{calculateTotal().managerPrice.toFixed(2)} €.</p>
               </div>
               <div className="bg-primary/10 p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground">Цена майстор</p>
-                <p className="text-2xl font-bold">{calculateTotal().artisanPrice.toFixed(2)} лв.</p>
+                <p className="text-2xl font-bold">{calculateTotal().artisanPrice.toFixed(2)} €.</p>
               </div>
               <div className="bg-primary/10 p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground">Платено на майстор</p>
-                <p className="text-2xl font-bold">{calculateTotal().artisanPricePaid.toFixed(2)} лв.</p>
+                <p className="text-2xl font-bold">{calculateTotal().artisanPricePaid.toFixed(2)} €.</p>
               </div>
               <div className="bg-primary/10 p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground">Общ профит</p>
-                <p className="text-2xl font-bold">{calculateTotal().profit.toFixed(2)} лв.</p>
+                <p className="text-2xl font-bold">{calculateTotal().profit.toFixed(2)} €.</p>
               </div>
             </div>
 
@@ -226,7 +226,7 @@ export default function ManagerReportsPage() {
                 filterElement={projectFilter}
                 showFilterMenu={false}
               />
-              <Column field="totalQuantity" header="Количество" sortable align="right" />
+              <Column field="totalQuantity" header="Количество" sortable align="right" body={rowData => rowData.totalQuantity.toFixed(2)}/>
               <Column field="totalManagerPrice" header="Цена мениджър" body={rowData => priceTemplate(rowData.totalManagerPrice)} sortable align="right" />
               <Column field="totalArtisanPrice" header="Цена майстор" body={rowData => priceTemplate(rowData.totalArtisanPrice)} sortable align="right" />
               <Column field="totalArtisanPricePaid" header="Платено на майстор" body={rowData => priceTemplate(rowData.totalArtisanPricePaid)} sortable align="right" />

@@ -54,13 +54,20 @@ const createWorkItem = async (req, res, next) => {
     if (hours) {
       single_artisan_price = hourDefaultPrice.artisan_price;
       total_artisan_price = single_artisan_price * hours;
+      if (!managerDefaultPrice) {
+        single_manager_price = hourDefaultPrice.manager_price;
+        total_manager_price = single_manager_price * hours;
+      }
     } else {
       single_artisan_price = defaultPrice.artisan_price;
       total_artisan_price = single_artisan_price * quantity;
     }
 
-    single_manager_price = (managerDefaultPrice && managerDefaultPrice.manager_price) || defaultPrice.manager_price;
-    total_manager_price = single_manager_price * quantity;
+    if (!single_manager_price) {
+      single_manager_price = (managerDefaultPrice && managerDefaultPrice.manager_price) || defaultPrice.manager_price;
+      total_manager_price = single_manager_price * quantity;
+    }
+
 
     // Създаване на нов WorkItem
     const newWorkItem = await WorkItem.create({

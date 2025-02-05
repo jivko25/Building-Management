@@ -167,6 +167,7 @@ const createDefaultPricing = async (req, res, next) => {
       defaultPricing
     });
   } catch (error) {
+    console.log(error);
     if (error instanceof ApiError) {
       next(error);
     } else {

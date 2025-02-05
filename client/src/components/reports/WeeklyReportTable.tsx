@@ -181,7 +181,7 @@ export const WeeklyReportTable = ({ projectId }: { projectId: string }) => {
                     </span>
                   </p>
                   <p className="text-xs sm:text-sm">
-                    Total Price: <span className="font-medium">${summary.totalPrice.toFixed(2)}</span>
+                    Total Price: <span className="font-medium">€{summary.totalPrice.toFixed(2)}</span>
                   </p>
                 </div>
               </div>
@@ -232,7 +232,7 @@ export const WeeklyReportTable = ({ projectId }: { projectId: string }) => {
                     </span>
                   </p>
                   <p className="text-xs sm:text-sm">
-                    Total Price: <span className="font-medium">${summary.totalPrice.toFixed(2)}</span>
+                    Total Price: <span className="font-medium">€{summary.totalPrice.toFixed(2)}</span>
                   </p>
                 </div>
               </div>

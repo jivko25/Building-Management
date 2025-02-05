@@ -51,7 +51,7 @@ const TaskItemCard = ({ task }: TaskItemCardProps) => {
       totalPrice: task?.total_price,
       taskStatus: taskStatuses,
       totalWork: Math.ceil(+task?.total_work_in_selected_measure || 0),
-      completedWork: Math.ceil(+task?.completedWork || 0),
+      completedWork: (+task?.completedWork || 0).toFixed(2),
     };
   }, [task]);
 
@@ -60,7 +60,7 @@ const TaskItemCard = ({ task }: TaskItemCardProps) => {
 
   useEffect(() => {
     const documentStyle = getComputedStyle(document.documentElement);
-    const remainingWork = taskDetails.totalWork - taskDetails.completedWork;
+    const remainingWork = taskDetails.totalWork - +taskDetails.completedWork;
 
     const data = {
       labels: ["Completed Work", "Remaining Work"],
