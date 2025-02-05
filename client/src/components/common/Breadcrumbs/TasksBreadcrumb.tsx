@@ -50,7 +50,7 @@ const TasksBreadcrumbs = () => {
           ]}
         />
       </div>
-      <div className="flex flex-row items-center border rounded-lg mx-8 p-4 backdrop-blur-sm bg-slate-900/20 gap-3">
+      <div className="flex flex-row items-center border rounded-lg mx-8 p-4 backdrop-blur-sm project-cards-wrapper gap-3">
         <CreateTask />
         <Button variant="outline" onClick={handleButtonClick}>
           <i className="pi pi-upload mr-3" style={{ color: "white", fontSize: "12px" }}></i>

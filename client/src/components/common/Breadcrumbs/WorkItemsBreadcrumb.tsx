@@ -28,7 +28,7 @@ const WorkItemsBreadcrumb = ({}: WorkItemsBreadcrumbProps) => {
           ]}
         />
       </div>
-      <div className="flex flex-col border rounded-lg mx-8 space-y-4 p-4 backdrop-blur-sm bg-slate-900/20">
+      <div className="flex flex-col border rounded-lg mx-8 space-y-4 p-4 backdrop-blur-sm project-cards-wrapper">
         <CreateWorkItem />
       </div>
     </div>

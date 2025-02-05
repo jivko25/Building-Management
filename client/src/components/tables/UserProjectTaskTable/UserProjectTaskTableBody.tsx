@@ -30,7 +30,7 @@ const UserProjectTaskTableBody = () => {
         <span className="text-2xl pt-5">Work items</span>
         <ChevronDown className="motion-preset-oscillate motion-duration-2000 motion-loop-twice" />
       </div>
-      <div className="flex flex-col border rounded-lg mb-20 mt-5 md:mt-0 mx-8 p-4 backdrop-blur-sm bg-slate-900/20">
+      <div className="flex flex-col border rounded-lg mb-20 mt-5 md:mt-0 mx-8 p-4 backdrop-blur-sm project-cards-wrapper">
         <div className="flex flex-wrap sm:w-full gap-4">
           <ConditionalRenderer
             data={task?.workItemsData}

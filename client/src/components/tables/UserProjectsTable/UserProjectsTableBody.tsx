@@ -32,7 +32,7 @@ const UserProjectsTableBody = () => {
   return (
     <>
       <UserBreadcrumb />
-      <div className="flex flex-col border rounded-lg mt-20 mx-8 p-4 backdrop-blur-sm bg-slate-900/20">
+      <div className="flex flex-col border rounded-lg mt-20 mx-8 p-4 backdrop-blur-sm project-cards-wrapper">
         <div className="flex flex-wrap sm:w-full gap-4">
           <ConditionalRenderer
             data={tasks}
