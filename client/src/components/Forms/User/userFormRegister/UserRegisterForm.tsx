@@ -6,12 +6,24 @@ import register_image from "@/assets/login_image.jpg";
 import useRegisterUser from "@/hooks/useRegisterUser";
 import { Lock, User } from "lucide-react";
 import FormErrors from "../../../common/FormElements/FormErrors";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "primereact/checkbox";
+import { useState } from 'react';
+import TermsAndConditionsModal from './TermsAndConditionsModal';
+import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 const UserRegisterForm = () => {
   const { form, onSubmit, error, isLoading } = useRegisterUser();
+  const [termsModalVisible, setTermsModalVisible] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <FormProvider {...form}>
+      <TermsAndConditionsModal 
+        visible={termsModalVisible} 
+        onHide={() => setTermsModalVisible(false)} 
+      />
       <div className="grid min-h-screen lg:grid-cols-2">
         <div className="bg-slate-950 flex flex-col justify-center px-8 py-12 lg:px-16">
           <div className="mx-auto w-full max-w-md">
@@ -31,7 +43,30 @@ const UserRegisterForm = () => {
                 <FormFieldInput name="password" label="Password" type="password" className="pl-10 text-white" Icon={Lock} />
                 <FormFieldInput name="full_name" label="Full Name" type="text" className="pl-10 text-white" Icon={User} />
                 <FormFieldInput name="email" label="Email" type="text" className="pl-10 text-white" Icon={User} />
-                <DialogFooter disabled={!form.formState.isDirty || isLoading} label="Submit" formName="register-form" className="mt-6" />
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="terms"
+                    checked={form.watch("terms") || false}
+                    onChange={e => form.setValue("terms", e.checked as boolean)}
+                    name="terms"
+                  />
+                  <Label htmlFor="terms" className="text-sm text-gray-300">
+                    {t("I accept the")} {" "}
+                    <Button 
+                      variant="link" 
+                      className="p-0 text-blue-500 hover:underline"
+                      onClick={() => setTermsModalVisible(true)}
+                    >
+                      {t("terms and conditions")}
+                    </Button>
+                  </Label>
+                </div>
+                <DialogFooter 
+                  disabled={!form.formState.isDirty || isLoading || !form.watch("terms")} 
+                  label="Submit" 
+                  formName="register-form" 
+                  className="mt-6" 
+                />
                 <FormErrors error={error} />
               </form>
               <div className="text-center mt-4">

@@ -55,6 +55,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true, 
         defaultValue: false 
       },
+      terms: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false
+      }
     },
     {
       tableName: "tbl_users",
