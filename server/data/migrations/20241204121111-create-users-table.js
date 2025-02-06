@@ -39,9 +39,15 @@ module.exports = {
         },
         onUpdate: "CASCADE",
         onDelete: "SET NULL"
+      },
+      terms: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+        defaultValue: false
       }
     });
   },
+
 
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("tbl_users");
