@@ -32,7 +32,7 @@ const usePasswordManagement = () => {
   };
 
   const onResetSubmit: SubmitHandler<PasswordResetFormData> = async (data: PasswordResetFormData) => {
-    const isSuccess = await resetPassword(token, data.newPassword);
+    const isSuccess = await resetPassword(token as string, data.newPassword);
 
     if (isSuccess) {
       console.log("Password reset successful");
