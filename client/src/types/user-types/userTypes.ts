@@ -10,6 +10,7 @@ export type UserRegisterFormData = {
   full_name: string;
   creator_id?: string;
   email: string;
+  terms: boolean;
 };
 
 export type User = {

@@ -61,9 +61,10 @@ const login = async (req, res, next) => {
 
 // Registration function
 const register = async (req, res, next) => {
-  const { username, password, full_name, creator_id, email } = req.body;
+  const { username, password, full_name, creator_id, email, terms } = req.body;
 
-  if (!username || !password || !full_name || !email) {
+
+  if (!username || !password || !full_name || !email || !terms) {
     throw new ApiError(400, "All fields are required");
   }
   
@@ -89,7 +90,8 @@ const register = async (req, res, next) => {
       role: 'manager',
       status: "active",
       creator_id: creator_id || null,
-      email: email
+      email: email,
+      terms: terms
     });
   
     generateTokenSetCookie(res, newUser);
