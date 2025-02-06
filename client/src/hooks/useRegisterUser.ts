@@ -39,9 +39,19 @@ const useRegisterUser = () => {
   };
 
   const onSubmit: SubmitHandler<UserRegisterFormData> = async (userData: UserRegisterFormData) => {
-    console.log("Form submitted with data:", userData);
-    const isSuccess = await register(userData.username, userData.password, userData.full_name, userData.email, userData.creator_id);
+    const { terms, ...registerData } = userData;
+    console.log("Form submitted with data:", registerData);
+    const isSuccess = await register(
+      registerData.username, 
+      registerData.password, 
+      registerData.full_name, 
+      registerData.email,
+      terms,
+      registerData.creator_id
+    );
     console.log("Registration attempt result:", isSuccess);
+
+
 
     const storagedUser = JSON.parse(sessionStorage.getItem("user") || "");
 

@@ -55,19 +55,16 @@ export const loginFormSchema = z.object({
 });
 
 export const registerFormSchema = z.object({
-  full_name: z.string().min(7, {
-    message: "Name must be at least 7 characters"
-  }),
-  username: z.string().min(5, {
-    message: "Username must be at least 5 characters"
-  }),
-  password: z.string().min(5, {
-    message: "Password must be at least 5 characters"
-  }),
-  email: z.string().email({
-    message: "Invalid email address"
-  }),
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  full_name: z.string().min(1, "Full name is required"),
+  email: z.string().email("Invalid email address"),
+  creator_id: z.string().optional(),
+  terms: z.boolean().refine(val => val === true, {
+    message: "You must accept the terms and conditions"
+  })
 });
+
 
 export const loginDefaultValues: UserLoginFormData = {
   username: "",
@@ -75,11 +72,14 @@ export const loginDefaultValues: UserLoginFormData = {
 };
 
 export const registerDefaultValues = {
-  full_name: "",
   username: "",
   password: "",
-  email: ""
-}
+  full_name: "",
+  email: "",
+  creator_id: "",
+  terms: false
+};
+
 
 export const userDefaultValues: User = {
   full_name: "",

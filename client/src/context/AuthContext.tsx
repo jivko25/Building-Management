@@ -72,7 +72,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const register = async (username: string, password: string, full_name: string, email: string, creator_id?: string): Promise<boolean> => {
+  const register = async (
+    username: string, 
+    password: string, 
+    full_name: string, 
+    email: string,
+    terms: boolean,
+    creator_id?: string
+  ): Promise<boolean> => {
     dispatch({
       type: AuthActionType.REGISTER_REQUEST
     });
@@ -88,10 +95,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           password,
           full_name,
           creator_id,
-          email
+          email,
+          terms
         }),
         credentials: "include"
       });
+
 
       const userData: { user: User } = await response.json();
 
