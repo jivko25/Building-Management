@@ -2,7 +2,6 @@
 import DialogFooter from "@/components/common/DialogElements/DialogFooter";
 import FormFieldInput from "@/components/common/FormElements/FormFieldInput";
 import StatusSelector from "@/components/common/FormElements/FormStatusSelector";
-import VatSelector from "@/components/common/FormElements/FormVatSelector";
 import { Separator } from "@/components/ui/separator";
 import { useCompanyFormHooks } from "@/hooks/forms/useCompanyForm";
 import { CompanySchema } from "@/models/company/companySchema";
