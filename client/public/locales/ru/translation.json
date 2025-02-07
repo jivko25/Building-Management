@@ -344,5 +344,16 @@
   "No start date available": "нет даты начала",
   "All default prices": "все цены по умолчанию",
   "Manager Price": "цена менеджера",
-  "New Client Invoice": "новая клиентская фактура"
+  "New Client Invoice": "новая клиентская фактура",
+  "Total profit": "общий профит",
+  "Total artisan price": "общая цена специалиста",
+  "Total artisan price paid": "общая оплаченная цена специалиста",
+  "Total manager price": "общая цена менеджера",
+  "Total quantity": "общее количество",
+  "Total hours": "общее количество часов",
+  "Total income": "общий доход",
+  "Total unpaid to artisan": "общее количество не оплаченных специалистов",
+  "Total paid to artisan": "общее количество оплаченных специалистов",
+  "Profit": "профит",
+  "Income by activity": "доход по активности"
 }

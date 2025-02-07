@@ -15,7 +15,18 @@ const getManagerReports = async (req, res) => {
       } : {})
     };
 
-    const workItems = await WorkItem.findAll({
+    const projects = await Project.findAll({
+      where: {
+        creator_id: req.user.id
+      }
+    });
+
+    if(projects.length === 0) {
+      return res.json([])
+    }
+    
+
+    const workItemsResponse = await WorkItem.findAll({
       where: whereClause,
       include: [
         {
@@ -28,7 +39,7 @@ const getManagerReports = async (req, res) => {
             },
             {
               model: Project,
-              as: 'project'
+              as: 'project',
             }
           ]
         },
@@ -38,6 +49,8 @@ const getManagerReports = async (req, res) => {
         }
       ]
     });
+
+    const workItems = workItemsResponse.filter(workItem => projects.some(project => project.id === workItem.task.project.id));
 
     // Групиране по проект и активити
     const reportsByActivity = workItems.reduce((acc, workItem) => {
@@ -52,6 +65,7 @@ const getManagerReports = async (req, res) => {
           project_id: projectId,
           project_name: projectName,
           totalQuantity: 0,
+          totalHours: 0,
           totalManagerPrice: 0,
           totalArtisanPriceUnpaid: 0,
           totalArtisanPricePaid: 0,
@@ -60,6 +74,7 @@ const getManagerReports = async (req, res) => {
       }
 
       acc[key].totalQuantity += parseFloat(workItem.quantity || 0);
+      acc[key].totalHours += parseInt(workItem.hours || 0);
       acc[key].totalManagerPrice += parseFloat(workItem.total_manager_price || 0);
       
       if (workItem.is_paid) {
@@ -77,6 +92,7 @@ const getManagerReports = async (req, res) => {
       project_id: report.project_id,
       project_name: report.project_name,
       totalQuantity: report.totalQuantity,
+      totalHours: report.totalHours,
       totalManagerPrice: report.totalManagerPrice.toFixed(2),
       totalArtisanPrice: report.totalArtisanPriceUnpaid.toFixed(2),
       totalArtisanPricePaid: report.totalArtisanPricePaid.toFixed(2),
@@ -85,6 +101,8 @@ const getManagerReports = async (req, res) => {
 
     res.json(reports);
   } catch (error) {
+    console.log(error, 'error');
+    
     res.status(500).json({ error: error.message });
   }
 };
