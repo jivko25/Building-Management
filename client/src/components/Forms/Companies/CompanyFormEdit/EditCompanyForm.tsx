@@ -3,7 +3,6 @@ import { FormProvider } from "react-hook-form";
 import FormFieldInput from "@/components/common/FormElements/FormFieldInput";
 import DialogFooter from "@/components/common/DialogElements/DialogFooter";
 import StatusSelector from "@/components/common/FormElements/FormStatusSelector";
-import VatSelector from "@/components/common/FormElements/FormVatSelector";
 import { ClipboardList, FileDigit, Mail, MapPin, Phone, User } from "lucide-react";
 import { CompanySchema } from "@/models/company/companySchema";
 import { useCompanyFormHooks } from "@/hooks/forms/useCompanyForm";
