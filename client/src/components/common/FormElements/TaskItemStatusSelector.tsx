@@ -8,7 +8,7 @@ import { useEffect } from "react";
 const taskStatus = ["done", "in_progress"] as const;
 
 const TaskItemStatusSelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
-  const { control, setValue, getValues } = useFormContext();
+  const { control, setValue } = useFormContext();
 
   useEffect(() => {
     if (defaultVal) {
