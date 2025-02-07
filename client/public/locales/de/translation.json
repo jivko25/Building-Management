@@ -346,5 +346,14 @@
   "No start date available": "Kein Startdatum verfügbar",
   "All default prices": "Alle Standardpreise",
   "Manager Price": "Managerpreis",
-  "New Client Invoice": "Neue Kundenrechnung"
+  "New Client Invoice": "Neue Kundenrechnung",
+  "Total profit": "Gesamtgewinn",
+  "Total quantity": "Gesamtmenge",
+  "Total income": "Gesamt Einnahmen",
+  "Total unpaid to artisan": "Gesamt unbezahlter Handwerker",
+  "Total paid to artisan": "Gesamt bezahlter Handwerker",
+  "Profit": "Gewinn",
+  "Income by activity": "Einnahmen nach Aktivität",
+  "Unpaid to artisan": "Unbezahlter Handwerker",
+  "Paid to artisan": "Bezahlter Handwerker"
 }

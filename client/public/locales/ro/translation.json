@@ -344,5 +344,16 @@
   "No start date available": "Nu există data începerii",
   "All default prices": "Toate prețurile standard",
   "Manager Price": "Preț manager",
-  "New Client Invoice": "Nouă factură client"
+  "New Client Invoice": "Nouă factură client",
+  "Total profit": "Profit total",
+  "Total artisan price": "Preț artizan",
+  "Total artisan price paid": "Preț artizan plătit",
+  "Total manager price": "Preț manager",
+  "Total quantity": "Cantitate totală",
+  "Total hours": "Total ore",
+  "Total income": "Total venit",
+  "Total unpaid to artisan": "Total neplătit artizan",
+  "Total paid to artisan": "Total plătit artizan",
+  "Profit": "Profit",
+  "Income by activity": "Venit după activitate"
 }

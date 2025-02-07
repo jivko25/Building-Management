@@ -9,6 +9,7 @@ import Sidebar from "@/components/Sidebar/Sidebar";
 import { Calendar } from "primereact/calendar";
 import { Button } from "@/components/ui/button";
 import { Nullable } from "primereact/ts-helpers";
+import { useTranslation } from "react-i18next";
 
 interface ManagerReport {
   activity: string;
@@ -19,9 +20,11 @@ interface ManagerReport {
   totalArtisanPrice: string;
   totalArtisanPricePaid: string;
   totalProfit: string;
+  totalHours: number;
 }
 
 export default function ManagerReportsPage() {
+  const { t } = useTranslation();
   const [reports, setReports] = useState<ManagerReport[]>([]);
   const [filteredData, setFilteredData] = useState<ManagerReport[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,7 +74,7 @@ export default function ManagerReportsPage() {
 
   const calculateTotal = () => {
     return {
-      quantity: filteredData.reduce((sum, item) => sum + item.totalQuantity, 0),
+      quantity: filteredData.reduce((sum, item) => sum + item.totalQuantity + item.totalHours, 0),
       managerPrice: filteredData.reduce((sum, item) => sum + parseFloat(item.totalManagerPrice), 0),
       artisanPrice: filteredData.reduce((sum, item) => sum + parseFloat(item.totalArtisanPrice), 0),
       artisanPricePaid: filteredData.reduce((sum, item) => sum + parseFloat(item.totalArtisanPricePaid), 0),
@@ -174,26 +177,31 @@ export default function ManagerReportsPage() {
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
               <div className="bg-primary/10 p-4 rounded-lg">
-                <p className="text-sm text-muted-foreground">Общо количество</p>
+                <p className="text-sm text-muted-foreground">{t('Total quantity')}</p>
                 <p className="text-2xl font-bold">{calculateTotal().quantity}</p>
               </div>
               <div className="bg-primary/10 p-4 rounded-lg">
-                <p className="text-sm text-muted-foreground">Цена мениджър</p>
+
+                <p className="text-sm text-muted-foreground">{t('Total income')}</p>
                 <p className="text-2xl font-bold">{calculateTotal().managerPrice.toFixed(2)} €.</p>
               </div>
               <div className="bg-primary/10 p-4 rounded-lg">
-                <p className="text-sm text-muted-foreground">Цена майстор</p>
+
+                <p className="text-sm text-muted-foreground">{t('Total unpaid to artisan')}</p>
                 <p className="text-2xl font-bold">{calculateTotal().artisanPrice.toFixed(2)} €.</p>
               </div>
               <div className="bg-primary/10 p-4 rounded-lg">
-                <p className="text-sm text-muted-foreground">Платено на майстор</p>
+
+                <p className="text-sm text-muted-foreground">{t('Total paid to artisan')}</p>
                 <p className="text-2xl font-bold">{calculateTotal().artisanPricePaid.toFixed(2)} €.</p>
               </div>
               <div className="bg-primary/10 p-4 rounded-lg">
-                <p className="text-sm text-muted-foreground">Общ профит</p>
+
+                <p className="text-sm text-muted-foreground">{t('Total profit')}</p>
                 <p className="text-2xl font-bold">{calculateTotal().profit.toFixed(2)} €.</p>
               </div>
             </div>
+
 
             <DataTable 
               value={reports} 
@@ -212,27 +220,30 @@ export default function ManagerReportsPage() {
             >
               <Column 
                 field="activity" 
-                header="Дейност" 
+                header={t('Activity')} 
                 sortable 
                 filter 
                 filterElement={activityFilter}
                 showFilterMenu={false}
+
               />
               <Column 
                 field="project_name" 
-                header="Проект" 
+                header={t('Project')} 
                 sortable 
                 filter
                 filterElement={projectFilter}
                 showFilterMenu={false}
+
               />
-              <Column field="totalQuantity" header="Количество" sortable align="right" body={rowData => rowData.totalQuantity.toFixed(2)}/>
-              <Column field="totalManagerPrice" header="Цена мениджър" body={rowData => priceTemplate(rowData.totalManagerPrice)} sortable align="right" />
-              <Column field="totalArtisanPrice" header="Цена майстор" body={rowData => priceTemplate(rowData.totalArtisanPrice)} sortable align="right" />
-              <Column field="totalArtisanPricePaid" header="Платено на майстор" body={rowData => priceTemplate(rowData.totalArtisanPricePaid)} sortable align="right" />
-              <Column field="totalProfit" header="Общ профит" body={rowData => priceTemplate(rowData.totalProfit)} sortable align="right" />
+              <Column field="totalQuantity" header={t('Quantity')} sortable align="right" body={rowData => rowData.totalQuantity === 0 ? rowData.totalHours : (rowData.totalQuantity + rowData.totalHours).toFixed(2)}/>
+              <Column field="totalManagerPrice" header={t('Income by activity')} body={rowData => priceTemplate(rowData.totalManagerPrice)} sortable align="right" />
+              <Column field="totalArtisanPrice" header={t('Unpaid to artisan')} body={rowData => priceTemplate(rowData.totalArtisanPrice)} sortable align="right" />
+              <Column field="totalArtisanPricePaid" header={t('Paid to artisan')} body={rowData => priceTemplate(rowData.totalArtisanPricePaid)} sortable align="right" />
+              <Column field="totalProfit" header={t('Profit')} body={rowData => priceTemplate(rowData.totalProfit)} sortable align="right" />
             </DataTable>
           </CardContent>
+
         </Card>
       </div>
     </div>

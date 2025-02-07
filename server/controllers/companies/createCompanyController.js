@@ -7,7 +7,7 @@ const createCompany = async (req, res, next) => {
   const { name, registration_number, location, address, mol, email, phone, status, logo_url, vat_number, iban } = req.body;
 
   try {
-    const existingCompany = await Company.findOne({ where: { name } });
+    const existingCompany = await Company.findOne({ where: { name, creator_id: req.user.id } });
     if (existingCompany) {
       throw new ApiError(400, `${name} already exists!`);
     }
