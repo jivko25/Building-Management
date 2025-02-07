@@ -344,5 +344,12 @@
   "No start date available": "Brak daty początkowej",
   "All default prices": "Wszystkie ceny standardowe",
   "Manager Price": "Cena menadżera",
-  "New Client Invoice": "Nowa faktura klienta"
+  "New Client Invoice": "Nowa faktura klienta",
+  "Total profit": "Łączny zysk",
+  "Total quantity": "Łączna ilość",
+  "Total income": "Łączny przychód",
+  "Total unpaid to artisan": "Łączna nieopłacona cena szkolenia",
+  "Total paid to artisan": "Łączna opłacona cena szkolenia",
+  "Profit": "Zysk",
+  "Income by activity": "Przychód po działaniu"
 }

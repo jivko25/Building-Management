@@ -346,5 +346,15 @@
   "No start date available": "Geen startdatum beschikbaar",
   "All default prices": "Alle standaardprijzen",
   "Manager Price": "Managerprijs",
-  "New Client Invoice": "Nieuwe klantfactuur"
+  "New Client Invoice": "Nieuwe klantfactuur",
+  "Total profit": "Gesamt winst",
+  "Total quantity": "Gesamt aantal",
+  "Total income": "Gesamt inkomsten",
+  "Total unpaid to artisan": "Gesamt onbetaalde schilder",
+  "Total paid to artisan": "Gesamt betaalde schilder",
+  "Profit": "Winst",
+  "Income by activity": "Inkomsten per activiteit",
+  "Unpaid to artisan": "Onbetaald aan schilder",
+  "Paid to artisan": "Betaald aan schilder"
+
 }
