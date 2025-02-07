@@ -40,41 +40,35 @@ export default function ManagerReportsPage() {
   const projects = [...new Set(reports.map(report => report.project_name))];
 
   // Компоненти за филтриране
-  const activityFilter = (
-    <Dropdown
-      value={filters.activity.value}
-      options={activities}
-      onChange={(e) => {
-        setFilters({
-          ...filters,
-          activity: { value: e.value, matchMode: FilterMatchMode.EQUALS }
-        });
-      }}
-      placeholder="Избери дейност"
-      className="p-column-filter"
-      showClear
-    />
-  );
+  const activityFilter = (options: any) => {
+    return (
+      <Dropdown
+        value={options.value}
+        options={activities}
+        onChange={(e) => options.filterApplyCallback(e.value)}
+        placeholder="Избери дейност"
+        className="p-column-filter"
+        showClear
+      />
+    );
+  };
 
-  const projectFilter = (
-    <Dropdown
-      value={filters.project_name.value}
-      options={projects}
-      onChange={(e) => {
-        setFilters({
-          ...filters,
-          project_name: { value: e.value, matchMode: FilterMatchMode.EQUALS }
-        });
-      }}
-      placeholder="Избери проект"
-      className="p-column-filter"
-      showClear
-    />
-  );
+  const projectFilter = (options: any) => {
+    return (
+      <Dropdown
+        value={options.value}
+        options={projects}
+        onChange={(e) => options.filterApplyCallback(e.value)}
+        placeholder="Избери проект"
+        className="p-column-filter"
+        showClear
+      />
+    );
+  };
 
   const calculateTotal = () => {
     return {
-      quantity: filteredData.reduce((sum, item) => sum + item.totalQuantity + item.totalHours, 0),
+      quantity: filteredData.reduce((sum, item) => sum + (item.totalQuantity === 0 ? item.totalHours : item.totalQuantity), 0),
       managerPrice: filteredData.reduce((sum, item) => sum + parseFloat(item.totalManagerPrice), 0),
       artisanPrice: filteredData.reduce((sum, item) => sum + parseFloat(item.totalArtisanPrice), 0),
       artisanPricePaid: filteredData.reduce((sum, item) => sum + parseFloat(item.totalArtisanPricePaid), 0),
@@ -225,7 +219,6 @@ export default function ManagerReportsPage() {
                 filter 
                 filterElement={activityFilter}
                 showFilterMenu={false}
-
               />
               <Column 
                 field="project_name" 
@@ -234,9 +227,8 @@ export default function ManagerReportsPage() {
                 filter
                 filterElement={projectFilter}
                 showFilterMenu={false}
-
               />
-              <Column field="totalQuantity" header={t('Quantity')} sortable align="right" body={rowData => rowData.totalQuantity === 0 ? rowData.totalHours : (rowData.totalQuantity + rowData.totalHours).toFixed(2)}/>
+              <Column field="totalQuantity" header={t('Quantity')} sortable align="right" body={rowData => rowData.totalQuantity === 0 ? rowData.totalHours : (rowData.totalQuantity).toFixed(2)}/>
               <Column field="totalManagerPrice" header={t('Income by activity')} body={rowData => priceTemplate(rowData.totalManagerPrice)} sortable align="right" />
               <Column field="totalArtisanPrice" header={t('Unpaid to artisan')} body={rowData => priceTemplate(rowData.totalArtisanPrice)} sortable align="right" />
               <Column field="totalArtisanPricePaid" header={t('Paid to artisan')} body={rowData => priceTemplate(rowData.totalArtisanPricePaid)} sortable align="right" />
