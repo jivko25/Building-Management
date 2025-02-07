@@ -8,7 +8,6 @@ export type Company = {
   mol: string;
   email: string;
   phone: string;
-  dds: "yes" | "no";
   status: "active" | "inactive";
   logo_url: string;
   vat_number: string;
