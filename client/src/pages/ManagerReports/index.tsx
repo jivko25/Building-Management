@@ -29,7 +29,7 @@ export default function ManagerReportsPage() {
   const [filteredData, setFilteredData] = useState<ManagerReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState({
+  const [filters] = useState({
     activity: { value: null, matchMode: FilterMatchMode.EQUALS },
     project_name: { value: null, matchMode: FilterMatchMode.EQUALS }
   });
