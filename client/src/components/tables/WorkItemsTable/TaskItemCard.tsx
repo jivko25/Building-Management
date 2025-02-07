@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ClipboardList, DollarSign, Hammer, User } from "lucide-react";
+import { ClipboardList, Hammer, User } from "lucide-react";
 
 type TaskItemCardProps = {
   task: {
