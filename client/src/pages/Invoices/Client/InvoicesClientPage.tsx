@@ -17,6 +17,7 @@ import { IconField } from "primereact/iconfield";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tag } from "primereact/tag";
 
 export const InvoicesClientPage = () => {
   const navigate = useNavigate();
@@ -117,7 +118,9 @@ export const InvoicesClientPage = () => {
   };
 
   const paidTemplate = (rowData: Invoice) => {
-    return rowData.paid ? "Yes" : "No";
+    return (
+      <Tag value={rowData.paid ? "Yes" : "No"} severity={rowData.paid ? "success" : "danger"} />
+    );
   };
 
   const actionTemplate = (rowData: Invoice) => {
@@ -146,10 +149,6 @@ export const InvoicesClientPage = () => {
                 </TabsList>
               </Tabs>
             </div>
-            {/* <Button onClick={() => navigate(`/invoices-${invoiceType}/create`)}>
-              <Plus className="mr-2 h-4 w-4" />
-              {t("New invoice")}
-            </Button> */}
           </div>
 
           <DataTable value={invoices} paginator rows={10} filters={filters} globalFilterFields={["invoice_number", "client.client_name", "total_amount"]} header={renderHeader} emptyMessage={t("No invoices found")} loading={isLoading} stripedRows showGridlines dataKey="id" sortMode="single" removableSort tableStyle={{ minWidth: "50rem" }} scrollable>
