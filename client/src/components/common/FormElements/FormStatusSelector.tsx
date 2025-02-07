@@ -24,9 +24,7 @@ const StatusSelector = ({ label, name, placeholder, defaultVal }: TableFormSelec
           <Select onValueChange={field.onChange} defaultValue={defaultVal}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={field.value || placeholder} >
-                  {field.value}
-                </SelectValue>
+                <SelectValue placeholder={field.value || placeholder} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>

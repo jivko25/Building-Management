@@ -3,6 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery } from "@tanstack/react-query";
 import { useFormContext } from "react-hook-form";
 import { fetchClients } from "@/api/apiCall";
+import { useState, useEffect } from "react";
 
 type FormClientSelectorProps = {
   label: string;
@@ -12,11 +13,25 @@ type FormClientSelectorProps = {
 
 const FormClientSelector = ({ label, name, defaultVal }: FormClientSelectorProps) => {
   const { control } = useFormContext();
+  const [selectedValue, setSelectedValue] = useState(defaultVal || "");
+  const [selectedClient, setSelectedClient] = useState<any>(null);
 
   const { data: clients } = useQuery({
     queryKey: ["clients"],
     queryFn: () => fetchClients()
   });
+
+  useEffect(() => {
+    if (defaultVal) {
+      setSelectedValue(defaultVal);
+    }
+  }, [defaultVal]);
+
+  useEffect(() => {
+    if (clients) {
+      setSelectedClient(clients.find(client => client.id === +selectedValue)?.client_company_name);
+    }
+  }, [selectedValue, clients]);
 
   return (
     <FormField
@@ -25,17 +40,19 @@ const FormClientSelector = ({ label, name, defaultVal }: FormClientSelectorProps
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <Select onValueChange={value => field.onChange(Number(value))} defaultValue={defaultVal || field.value?.toString()}>
+          <Select onValueChange={value => {
+            setSelectedValue(value as any);
+            field.onChange(+value);
+          }} defaultValue={selectedValue}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={field.value || "Select client company name"} >
-                  {clients?.filter(client => client.id === Number(field.value))[0]?.client_company_name}
+                <SelectValue placeholder={selectedClient || "Select client company name"} >
+                  {selectedClient?.client_company_name}
                 </SelectValue>
               </SelectTrigger>
             </FormControl>
 
             <SelectContent>
-
               {clients?.map(client => (
                 <SelectItem key={client.id} value={client.id?.toString() || ""}>
                   {client.client_company_name}

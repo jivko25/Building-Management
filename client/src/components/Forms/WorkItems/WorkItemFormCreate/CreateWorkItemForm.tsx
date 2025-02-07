@@ -24,6 +24,7 @@ const CreateWorkItemForm = ({ handleSubmit, isPending }: CreateWorkItemFormProps
   const { useCreateWorkItemForm } = useWorkItemFormHooks();
   const form = useCreateWorkItemForm();
   const [measureValue, setMeasureValue] = useState("");
+  const [showQuantity, setShowQuantity] = useState(true);
   const params = useParams();
 
   // Watch for changes in artisan (ID)
@@ -42,28 +43,38 @@ const CreateWorkItemForm = ({ handleSubmit, isPending }: CreateWorkItemFormProps
       const foundedDefaultPrice = defaultPricingsResponse?.data.find((pricing: any) => {
         return pricing.id == defaultPricing;
       });
-      if(foundedDefaultPrice?.measure?.name.toLocaleLowerCase() !== 'hour') {
-        setMeasureValue(foundedDefaultPrice?.measure?.name || "");
+      if (foundedDefaultPrice) {
+        const measureName = foundedDefaultPrice?.measure?.name.toLocaleLowerCase();
+        setMeasureValue(measureName || "");
+        setShowQuantity(measureName !== 'hour');
       }
     }
-  }, [artisanId, defaultPricing]);
+  }, [artisanId, defaultPricing, defaultPricingsResponse]);
 
   useEffect(() => {
     form.setValue('project_id', params.id as string)
   }, []);
 
+  useEffect(() => {
+    if(!showQuantity) {
+      form.setValue('quantity', 0);
+    }
+  }, [showQuantity]);  
 
   return (
     <FormProvider {...form}>
+
       <form id="task-item" onSubmit={form.handleSubmit(handleSubmit)}>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2 mb-2">
           <ArtisanSingleSelector name="artisan" label="Select artisan" />
           <DefaultPricingSelector name="default_pricing" label="Activity" artisan_id={artisanId} />
-          <div className="flex items-center justify-center content-center flex-col">
-            <FormFieldInput name="quantity" label="Quantity" type="number" className="pl-10" Icon={Calculator} />
-            <p className="text-xs text-gray-500 text-wrap">{measureValue}</p>
-          </div>
+          {showQuantity && (
+            <div className="flex items-center justify-center content-center flex-col">
+              <FormFieldInput name="quantity" label="Quantity" type="number" className="pl-10" Icon={Calculator} />
+              <p className="text-xs text-gray-500 text-wrap">{measureValue}</p>
+            </div>
+          )}
           <FormFieldInput name="hours" label="Hours" type="number" className="pl-10" Icon={Clock} />
         </div>
         <Separator className="mt-4 mb-2" />

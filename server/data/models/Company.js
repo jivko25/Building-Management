@@ -55,12 +55,17 @@ module.exports = (sequelize, DataTypes) => {
       logo_url: {
         type: DataTypes.STRING,
         allowNull: true
+      },
+      creator_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
       }
     },
     {
       tableName: "tbl_companies",
       timestamps: false
     }
+
   );
 
   Company.associate = models => {
