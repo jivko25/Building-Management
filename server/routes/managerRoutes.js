@@ -5,6 +5,6 @@ const { getManagerReports } = require("../controllers/managers/getManagerReports
 
 const router = express.Router();
 
-router.get("/managers/getReports/", getManagerReports);
+router.get("/managers/getReports/", authenticateToken, getManagerReports);
 
 module.exports = router;

@@ -59,7 +59,7 @@
   "Off": "Изкл",
   "Remove": "Премахни",
   "Add": "Добави",
-  "Activity": "Активност",
+  "Activity": "Дейност",
   "Add new activity": "Добави нова активност",
   "New activity": "Нова активност",
   "Search activities": "Търсене на активност",
@@ -345,5 +345,14 @@
   "No start date available": "Няма дата на начало",
   "All default prices": "Всички стандартни цени",
   "Manager Price": "Цена на мениджър",
-  "New Client Invoice": "Нова клиентска фактура"
+  "New Client Invoice": "Нова клиентска фактура",
+  "Total profit": "Общ профит",
+  "Total quantity": "Общо количество",
+  "Total income": "Общ приход",
+  "Total unpaid to artisan": "Общо неплатено на майстор",
+  "Total paid to artisan": "Общо платено на майстор",
+  "Profit": "Профит",
+  "Income by activity": "Приход по дейност",
+  "Unpaid to artisan": "Неплатено на майстор",
+  "Paid to artisan": "Платено на майстор"
 }
