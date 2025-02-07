@@ -79,7 +79,6 @@ const CreateCompanyForm = ({ handleSubmit, isPending }: CreateCompanyFormProps) 
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2">
           <StatusSelector label={t("Status")} name="status" placeholder={t("active")} />
-          <VatSelector label={t("DDS")} name="dds" placeholder={t("no")} />
         </div>
         <DialogFooter disabled={!form.formState.isDirty || isPending} label={t("Submit")} formName="company-form" className="mt-6" />
       </form>

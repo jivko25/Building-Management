@@ -50,7 +50,6 @@ const EditCompanyForm = ({ company_id, handleSubmit, isPending }: EditCompanyFor
     registration_number: company?.registration_number || "",
     phone: company?.phone || "",
     status: company?.status || "active",
-    dds: company?.dds || "no",
     logo_url: company?.logo_url || ""
   });
 
@@ -67,7 +66,6 @@ const EditCompanyForm = ({ company_id, handleSubmit, isPending }: EditCompanyFor
         registration_number: company.registration_number,
         phone: company.phone,
         status: company.status,
-        dds: company.dds,
         logo_url: company.logo_url
       });
     }
@@ -100,7 +98,6 @@ const EditCompanyForm = ({ company_id, handleSubmit, isPending }: EditCompanyFor
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2">
           <StatusSelector label={t("Status")} name="status" placeholder={t("active")} defaultVal={company?.status} />
-          <VatSelector label={t("DDS")} name="dds" defaultVal={company?.dds} />
         </div>
         <DialogFooter disabled={!form.formState.isDirty || isPending} label={t("Submit")} formName="form-edit" className="mt-6" />
       </form>
