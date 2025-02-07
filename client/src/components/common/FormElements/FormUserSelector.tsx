@@ -5,11 +5,11 @@ import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { User } from "@/types/user-types/userTypes";
 import { useFormContext } from "react-hook-form";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
-
+import { useEffect } from "react";
 const UsersSelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
   const { control } = useFormContext();
 
-  const { data: usersResponse } = useFetchDataQuery<{
+  const { data: usersResponse, refetch } = useFetchDataQuery<{
     users: User[];
     usersCount: number;
     page: number;
@@ -23,7 +23,12 @@ const UsersSelector = ({ label, name, placeholder, defaultVal }: TableFormSelect
     }
   });
 
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
   console.log("👥 Users response:", usersResponse);
+
 
   return (
     <FormField

@@ -15,7 +15,7 @@ const CompanySelector = ({ label, name, placeholder, defaultVal }: TableFormSele
   }, [defaultVal]);
 
 
-  const { data: companiesResponse } = useFetchDataQuery<{
+  const { data: companiesResponse, refetch } = useFetchDataQuery<{
     companies: Company[];
     companiesCount: number;
     page: number;
@@ -29,7 +29,14 @@ const CompanySelector = ({ label, name, placeholder, defaultVal }: TableFormSele
     }
   });
 
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+
   console.log("🏢 Companies response:", companiesResponse);
+
+
 
   return (
     <FormField

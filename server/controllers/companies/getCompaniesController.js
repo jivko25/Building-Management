@@ -50,6 +50,8 @@ const getPaginatedCompanies = async (req, res, next) => {
       }
     : {};
 
+  whereClause.creator_id = req.user.id;
+
   const { count, rows } = await Company.findAndCountAll({
     where: whereClause,
     limit: parseInt(_limit),
