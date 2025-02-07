@@ -6,7 +6,7 @@ const ApiError = require("../../utils/apiError");
 
 const editCompany = async (req, res, next) => {
   const company_id = req.params.id;
-  const { name, registration_number, location, address, mol, email, phone, dds, status, logo_url, vat_number, iban } = req.body;
+  const { name, registration_number, location, address, mol, email, phone, status, logo_url, vat_number, iban } = req.body;
 
   try {
     const company = await Company.findByPk(company_id);
@@ -30,7 +30,6 @@ const editCompany = async (req, res, next) => {
       mol,
       email,
       phone,
-      dds,
       status,
       logo_url,
       vat_number,
