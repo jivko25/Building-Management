@@ -22,10 +22,12 @@ module.exports = {
           status: "active",
           logo_url: "https://i.imgur.com/rMsgj7l.png",
           vat_number: "BG123456789",
-          iban: "BG123456789"
+          iban: "BG123456789",
+          creator_id: 2
         },
         {
           id: 2,
+
           name: "Строителна фирма Б",
           registration_number: "BG987654321",
           location: "Благоевград",
@@ -37,10 +39,12 @@ module.exports = {
           status: "inactive",
           logo_url: "https://i.imgur.com/hOXnDc6.png",
           vat_number: "BG123456789",
-          iban: "BG123456789"
+          iban: "BG123456789",
+          creator_id: 2
         },
         {
           id: 3,
+
           name: "Строителна фирма В",
           registration_number: "BG123456789",
           location: "Пловдив",
@@ -52,7 +56,8 @@ module.exports = {
           status: "active",
           logo_url: "https://i.imgur.com/rMsgj7l.png",
           vat_number: "BG123456789",
-          iban: "BG123456789"
+          iban: "BG123456789",
+          creator_id: 2
         },
         {
           id: 4,
@@ -67,7 +72,8 @@ module.exports = {
           status: "active",
           logo_url: "https://i.imgur.com/hOXnDc6.png",
           vat_number: "BG123456789",
-          iban: "BG123456789"
+          iban: "BG123456789",
+          creator_id: 2
         },
         {
           id: 5,
@@ -82,7 +88,8 @@ module.exports = {
           status: "active",
           logo_url: "https://i.imgur.com/rMsgj7l.png",
           vat_number: "BG123456789",
-          iban: "BG123456789"
+          iban: "BG123456789",
+          creator_id: 1
         }
       ],
       {}

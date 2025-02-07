@@ -56,9 +56,14 @@ module.exports = {
       logo_url: {
         type: Sequelize.STRING,
         allowNull: true
+      },
+      creator_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false
       }
     });
   },
+
 
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("tbl_companies");

@@ -139,12 +139,13 @@ export const WeeklyReportTable = ({ projectId }: { projectId: string }) => {
   };
 
   const priceBodyTemplate = (rowData: Activity) => {
-    return `$${rowData.price.toFixed(2)}`;
+    return `$${rowData.price?.toFixed(2)}`;
   };
 
   const totalBodyTemplate = (rowData: Activity) => {
-    return `$${rowData.total.toFixed(2)}`;
+    return `$${rowData.total?.toFixed(2)}`;
   };
+
 
   const listBodyTemplate = (list: string[]) => {
     return list.join(", ");
@@ -181,7 +182,7 @@ export const WeeklyReportTable = ({ projectId }: { projectId: string }) => {
                     </span>
                   </p>
                   <p className="text-xs sm:text-sm">
-                    Total Price: <span className="font-medium">€{summary.totalPrice.toFixed(2)}</span>
+                    Total Price: <span className="font-medium">€{summary.totalPrice?.toFixed(2)}</span>
                   </p>
                 </div>
               </div>
@@ -232,7 +233,7 @@ export const WeeklyReportTable = ({ projectId }: { projectId: string }) => {
                     </span>
                   </p>
                   <p className="text-xs sm:text-sm">
-                    Total Price: <span className="font-medium">€{summary.totalPrice.toFixed(2)}</span>
+                    Total Price: <span className="font-medium">€{summary?.totalPrice?.toFixed(2)}</span>
                   </p>
                 </div>
               </div>
@@ -250,7 +251,7 @@ export const WeeklyReportTable = ({ projectId }: { projectId: string }) => {
             showGridlines 
             stripedRows
             tableStyle={{ width: '100%' }}
-            footer={`Total Price: $${(report?.totalPrice || 0).toFixed(2)}`}
+            footer={`Total Price: $${(report?.totalPrice || 0)?.toFixed(2)}`}
             className="text-xs sm:text-sm"
             scrollable
             scrollHeight="500px"

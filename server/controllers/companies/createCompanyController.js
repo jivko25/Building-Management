@@ -24,7 +24,8 @@ const createCompany = async (req, res, next) => {
       status,
       logo_url,
       vat_number,
-      iban
+      iban,
+      creator_id: req.user.id
     });
 
     res.status(201).json({

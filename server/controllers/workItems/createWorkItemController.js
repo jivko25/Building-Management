@@ -41,6 +41,7 @@ const createWorkItem = async (req, res, next) => {
       }
     });
 
+
     if (hours && !hourDefaultPrice?.id) {
       throw new ApiError(404, "Hourly default pricing not found!");
     }

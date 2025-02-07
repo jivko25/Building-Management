@@ -6,16 +6,16 @@ export const workItemSchema = z
     artisan: z.string().optional(),
     default_pricing: z.union([z.string(), z.number()]).optional(),
     quantity: z
-      .number()
-      .positive({
-        message: "Quantity must be greater than 0."
-      })
-      .or(
-        z
-          .string()
-          .min(1, { message: "Quantity is required." })
-          .transform(val => parseFloat(val))
-      ),
+      .union([
+        z.number().nonnegative({ message: "Quantity must be 0 or greater." }),
+        z.string().trim(),
+        z.null()
+      ])
+      .optional()
+      .transform(val => {
+        if (!val || val === "") return 0;
+        return typeof val === "string" ? parseFloat(val) : val;
+      }),
     hours: z
       .union([
         z.number().positive({ message: "Hours must be greater than 0." }),
@@ -57,7 +57,7 @@ export const workItemSchema = z
 export const workItemDefaults = {
   artisan: "",
   default_pricing: "",
-  quantity: "",
+  quantity: 0,
   hours: undefined,
   start_date: "",
   end_date: "",
