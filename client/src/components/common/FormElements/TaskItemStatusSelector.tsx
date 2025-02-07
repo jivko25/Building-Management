@@ -8,15 +8,14 @@ import { useEffect } from "react";
 const taskStatus = ["done", "in_progress"] as const;
 
 const TaskItemStatusSelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
-  const { control, setValue } = useFormContext();
+  const { control, setValue, getValues } = useFormContext();
 
-  
   useEffect(() => {
     if (defaultVal) {
       console.log(defaultVal, 'defaultVal');
       setValue(name, defaultVal);
     }
-  }, [defaultVal]);
+  }, [defaultVal, name, setValue]);
 
   return (
     <FormField
@@ -25,16 +24,17 @@ const TaskItemStatusSelector = ({ label, name, placeholder, defaultVal }: TableF
       render={({ field }) => (
         <FormItem>
           <FormLabel className="font-semibold">{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={defaultVal || field.value}>
+          <Select onValueChange={value => {
+            console.log("Selected status:", value);
+            field.onChange(value);
+            setValue(name, value);
+          }} defaultValue={defaultVal || field.value}>
             <FormControl>
               <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder={placeholder} >
-                  {field.value}
-                </SelectValue>
+                <SelectValue placeholder={placeholder}/>
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-
               {taskStatus.map((status, index: number) => (
                 <SelectItem key={index} value={status}>
                   {status}

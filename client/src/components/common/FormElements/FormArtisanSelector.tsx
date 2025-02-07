@@ -4,11 +4,12 @@ import { Artisan } from "@/types/artisan-types/artisanTypes";
 import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
+import { useEffect } from "react";
 
 const ArtisanSelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
   const { control } = useFormContext();
 
-  const { data: artisansArray } = useFetchDataQuery<any>({
+  const { data: artisansArray, refetch } = useFetchDataQuery<any>({
     URL: "/artisans",
     queryKey: ["artisans"],
     options: {
@@ -16,7 +17,12 @@ const ArtisanSelector = ({ label, name, placeholder, defaultVal }: TableFormSele
     }
   });
 
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
   const artisans: Artisan[] = artisansArray?.artisans;
+
 
   return (
     <FormField

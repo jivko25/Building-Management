@@ -79,7 +79,13 @@ const getWorkItems = async (req, res, next) => {
     // Използваме toJSON, за да сериализираме обекта без кръговите референции
     const taskJSON = task.toJSON();
     
-    const completedWork = workItems.reduce((acc, workItem) => acc + +workItem.quantity, 0);
+    const completedWork = workItems.reduce((acc, workItem) => {
+      if(+workItem.quantity === 0) {
+        return acc + +workItem.hours
+      }
+      return acc + +workItem.quantity
+
+    }, 0);
 
     //Get total work per artisan
     const totalWorkPerArtisan = workItems.reduce((acc, workItem) => {

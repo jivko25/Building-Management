@@ -25,8 +25,12 @@ const getClients = async (req, res, next) => {
       });
     } else {
       clients = await Client.findAll({
+        where: {
+          creator_id: req.user.id
+        },
         include: includeOptions,
         order: [["id", "DESC"]]
+
       });
     }
 

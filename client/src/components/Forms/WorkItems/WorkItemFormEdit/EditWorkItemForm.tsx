@@ -26,6 +26,7 @@ type EditWorkItemFormProps = {
 
 const EditWorkItemForm = ({ handleSubmit, isPending, workItemId }: EditWorkItemFormProps) => {
   const [measureValue, setMeasureValue] = useState("");
+  const [showQuantity, setShowQuantity] = useState(true);
   const [userWorkItem, setUserWorkItem] = useState<WorkItem | null>(null);
   const [artisanIdValue, setArtisanIdValue] = useState<string | null>(null);
   const [defaultPricingValue, setDefaultPricingValue] = useState<string | null>(null);
@@ -42,7 +43,6 @@ const EditWorkItemForm = ({ handleSubmit, isPending, workItemId }: EditWorkItemF
     note: "",
     status: "pending" as any,
     project_id: projectId || ""
-
   });
 
   // Watch for changes in artisan and default pricing
@@ -94,11 +94,13 @@ const EditWorkItemForm = ({ handleSubmit, isPending, workItemId }: EditWorkItemF
       const foundedDefaultPrice = defaultPricingsResponse?.data.find((pricing: any) => {
         return pricing.id == defaultPricing;
       });
-      if (foundedDefaultPrice?.measure?.name.toLocaleLowerCase() !== "hour") {
-        setMeasureValue(foundedDefaultPrice?.measure?.name || "");
+      if (foundedDefaultPrice) {
+        const measureName = foundedDefaultPrice?.measure?.name.toLocaleLowerCase();
+        setMeasureValue(measureName || "");
+        setShowQuantity(measureName !== 'hour');
       }
     }
-  }, [artisanId, defaultPricing]);
+  }, [artisanId, defaultPricing, defaultPricingsResponse]);
 
   // Инициализация на measureValue при зареждане
   useEffect(() => {
@@ -106,6 +108,12 @@ const EditWorkItemForm = ({ handleSubmit, isPending, workItemId }: EditWorkItemF
       setMeasureValue(userWorkItem?.measure?.name || "");
     }
   }, [userWorkItem]);
+
+  useEffect(() => {
+    if(!showQuantity) {
+      form.setValue('quantity', 0);
+    }
+  }, [showQuantity]);
 
   // // Ако данните все още не са заредени, показваме loading или нищо
   // if (!userWorkItem) {
@@ -122,11 +130,12 @@ const EditWorkItemForm = ({ handleSubmit, isPending, workItemId }: EditWorkItemF
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2 mb-2">
           <ArtisanSingleSelector name="artisan" label="Select artisan" defaultVal={userWorkItem?.artisan_id?.toString()} />
             <DefaultPricingSelector name="default_pricing" label="Activity" artisan_id={artisanId as any || artisanIdValue} defaultVal={defaultPricingValue as any} />
-          <div className="flex items-center justify-center content-center flex-col">
-
-            <FormFieldInput name="quantity" label="Quantity" type="number" className="pl-10" Icon={Calculator} />
-            <p className="text-xs text-gray-500 text-wrap">{measureValue}</p>
-          </div>
+          {showQuantity && (
+            <div className="flex items-center justify-center content-center flex-col">
+              <FormFieldInput name="quantity" label="Quantity" type="number" className="pl-10" Icon={Calculator} />
+              <p className="text-xs text-gray-500 text-wrap">{measureValue}</p>
+            </div>
+          )}
           <FormFieldInput name="hours" label="Hours" type="number" className="pl-10" Icon={Clock} />
         </div>
         <Separator className="mt-4 mb-2" />
