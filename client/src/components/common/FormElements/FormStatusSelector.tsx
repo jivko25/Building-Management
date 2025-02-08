@@ -6,7 +6,7 @@ import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
 import { useEffect } from "react";
 
-const StatusSelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
+const StatusSelector = ({ label, name, defaultVal }: TableFormSelectType) => {
   const { control, setValue } = useFormContext();
 
   useEffect(() => {
@@ -24,11 +24,10 @@ const StatusSelector = ({ label, name, placeholder, defaultVal }: TableFormSelec
           <Select onValueChange={field.onChange} defaultValue={defaultVal}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={field.value || placeholder} />
+                <SelectValue placeholder={"Select status"} defaultValue={defaultVal} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-
               {userStatus.map((role, index: number) => (
                 <SelectItem key={index} value={role}>
                   {role}

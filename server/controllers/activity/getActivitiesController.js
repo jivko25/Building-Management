@@ -49,19 +49,32 @@ const getPaginatedActivities = async (req, res, next) => {
     const offset = (parseInt(_page) - 1) * parseInt(_limit);
     const isAdmin = req.user.role === "admin";
 
+    console.log(q, "q");
+    
+
     // Променяме where клаузата за да показва всички activities
+
     const whereClause = isAdmin
       ? { 
-          [Op.or]: [
-            { id: 1 }, // Винаги включваме activity с id=1
-            ...(q ? [{ name: { [Op.like]: `%${q}%` } }] : [])
+          [Op.and]: [
+            {
+              [Op.or]: [
+                { id: 1 }, // Винаги включваме activity с id=1
+                ...(q ? [{ name: { [Op.like]: `%${q}%` } }] : [])
+              ]
+            }
           ]
         }
       : {
-          [Op.or]: [
-            { id: 1 }, // Винаги включваме activity с id=1
-            { creator_id: req.user.id },
-            { id: { [Op.in]: await getActivityIdsFromTasks(req.user.id) } }
+          [Op.and]: [
+            {
+              [Op.or]: [
+                { id: 1 }, // Винаги включваме activity с id=1
+                { creator_id: req.user.id },
+                { id: { [Op.in]: await getActivityIdsFromTasks(req.user.id) } }
+              ]
+            },
+            ...(q ? [{ name: { [Op.like]: `%${q}%` } }] : [])
           ]
         };
 
