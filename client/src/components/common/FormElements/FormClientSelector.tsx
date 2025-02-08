@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useFormContext } from "react-hook-form";
 import { fetchClients } from "@/api/apiCall";
 import { useState, useEffect } from "react";
+import { t } from "i18next";
 
 type FormClientSelectorProps = {
   label: string;
@@ -46,10 +47,11 @@ const FormClientSelector = ({ label, name, defaultVal }: FormClientSelectorProps
           }} defaultValue={selectedValue}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={selectedClient || "Select client company name"} >
+                <SelectValue placeholder={selectedClient || t("Select client")} >
                   {selectedClient?.client_company_name}
                 </SelectValue>
               </SelectTrigger>
+
             </FormControl>
 
             <SelectContent>
