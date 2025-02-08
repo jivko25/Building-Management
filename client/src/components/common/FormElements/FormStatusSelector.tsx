@@ -4,14 +4,19 @@ import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/for
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
-import { useEffect } from "react";
-
-const StatusSelector = ({ label, name, defaultVal }: TableFormSelectType) => {
+import { useEffect, useState } from "react";
+import { t } from "i18next";
+const StatusSelector = ({ label, name, defaultVal = "active" }: TableFormSelectType) => {
   const { control, setValue } = useFormContext();
+  const [selectedStatus, setSelectedStatus] = useState(defaultVal);
 
   useEffect(() => {
-    setValue(name, defaultVal);
+    if (defaultVal) {
+      setSelectedStatus(defaultVal);
+      setValue(name, defaultVal);
+    }
   }, [defaultVal]);
+
 
 
   return (
@@ -21,12 +26,15 @@ const StatusSelector = ({ label, name, defaultVal }: TableFormSelectType) => {
       render={({ field }) => (
         <FormItem>
           <FormLabel className="font-semibold">{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={defaultVal}>
+          <Select onValueChange={field.onChange} defaultValue={selectedStatus}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={"Select status"} defaultValue={defaultVal} />
+                <SelectValue placeholder={selectedStatus || t("Select status")} >
+                  {selectedStatus}
+                </SelectValue>
               </SelectTrigger>
             </FormControl>
+
             <SelectContent>
               {userStatus.map((role, index: number) => (
                 <SelectItem key={index} value={role}>

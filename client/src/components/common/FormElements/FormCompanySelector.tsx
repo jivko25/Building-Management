@@ -6,14 +6,14 @@ import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { useEffect } from "react";
+import { t } from "i18next";
 
-const CompanySelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
+const CompanySelector = ({ label, name, defaultVal }: TableFormSelectType) => {
   const { control, setValue } = useFormContext();
 
   useEffect(() => {
     setValue(name, defaultVal);
   }, [defaultVal]);
-
 
   const { data: companiesResponse, refetch } = useFetchDataQuery<{
     companies: Company[];
@@ -33,9 +33,7 @@ const CompanySelector = ({ label, name, placeholder, defaultVal }: TableFormSele
     refetch();
   }, [refetch]);
 
-
   console.log("🏢 Companies response:", companiesResponse);
-
 
 
   return (
@@ -48,10 +46,11 @@ const CompanySelector = ({ label, name, placeholder, defaultVal }: TableFormSele
           <Select onValueChange={field.onChange} defaultValue={defaultVal}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={field.value || placeholder} >
+                <SelectValue placeholder={field.value || t('Select company')} >
                   {field.value}
-                </SelectValue>
+                </SelectValue>  
               </SelectTrigger>
+
             </FormControl>
             <SelectContent>
 
