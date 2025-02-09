@@ -3,16 +3,18 @@ import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/for
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
-import { useEffect } from "react";
-
+import { useEffect, useState } from "react";
+import { t } from "i18next";
 const taskStatus = ["done", "in_progress"] as const;
 
-const TaskItemStatusSelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
+
+const TaskItemStatusSelector = ({ label, name, defaultVal }: TableFormSelectType) => {
   const { control, setValue } = useFormContext();
+  const [selectedStatus, setSelectedStatus] = useState(defaultVal);
 
   useEffect(() => {
     if (defaultVal) {
-      console.log(defaultVal, 'defaultVal');
+      setSelectedStatus(defaultVal);
       setValue(name, defaultVal);
     }
   }, [defaultVal, name, setValue]);
@@ -28,13 +30,16 @@ const TaskItemStatusSelector = ({ label, name, placeholder, defaultVal }: TableF
             console.log("Selected status:", value);
             field.onChange(value);
             setValue(name, value);
-          }} defaultValue={defaultVal || field.value}>
+          }} defaultValue={selectedStatus}>
             <FormControl>
               <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder={placeholder}/>
+                <SelectValue placeholder={selectedStatus || t("Select status")}>
+                  {selectedStatus}
+                </SelectValue>
               </SelectTrigger>
             </FormControl>
             <SelectContent>
+
               {taskStatus.map((status, index: number) => (
                 <SelectItem key={index} value={status}>
                   {status}

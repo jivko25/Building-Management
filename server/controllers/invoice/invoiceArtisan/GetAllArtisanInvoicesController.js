@@ -1,13 +1,15 @@
 const db = require("../../../data/index.js");
 const { Invoice, Artisan, Company } = db;
 
-const getAllArtisanInvoices = async (req, res) => {
+const getAllArtisanInvoices = async (req, res, next) => {
   try {
     console.log("Fetching all artisan invoices...");
 
+
     const invoices = await Invoice.findAll({
       where: {
-        is_artisan_invoice: true
+        is_artisan_invoice: true,
+        creator_id: req.user.id
       },
       include: [
         {
@@ -69,6 +71,7 @@ const getAllArtisanInvoices = async (req, res) => {
       success: false,
       message: error.message
     });
+    next(error);
   }
 };
 
