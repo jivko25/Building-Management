@@ -33,7 +33,10 @@ const translations = {
     stamp: "Stamp",
     reference: "Reference",
     week: "Week",
-    description: "Description"
+    description: "Description",
+    paymentInstructions: "Please transfer the amount of",
+    byDate: "by date",
+    specifyInvoiceNumber: "by specifying the invoice number."
   },
   bg: {
     invoice: "Фактура",
@@ -70,7 +73,10 @@ const translations = {
     stamp: "Печат",
     reference: "Референция",
     week: "Седмица",
-    description: "Описание"
+    description: "Описание",
+    paymentInstructions: "Моля преведете сумата от",
+    byDate: "до дата",
+    specifyInvoiceNumber: "като посочите номера на фактурата."
   },
   // Romanian translations
 

@@ -3,12 +3,14 @@ const { Invoice, Company, Client, InvoiceItem, Activity, Measure, Project } = db
 
 const getAllClientInvoices = async (req, res, next) => {
   console.log("Fetching all client invoices...");
+
+  
   try {
     const page = req.query.page ? parseInt(req.query.page) : null;
     const limit = req.query.limit ? parseInt(req.query.limit) : null;
 
     const options = {
-      where: { is_artisan_invoice: false },
+      where: { is_artisan_invoice: false, creator_id: req.user.id },
       include: [
         {
           model: Company,

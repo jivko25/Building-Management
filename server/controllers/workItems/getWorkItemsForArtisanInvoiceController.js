@@ -1,5 +1,5 @@
 const db = require("../../data/index.js");
-const { WorkItem, Project, Activity, Measure, Artisan } = db;
+const { WorkItem, Project, Activity, Measure, Artisan, Task } = db;
 const ApiError = require("../../utils/apiError");
 const { Op } = require("sequelize");
 
@@ -20,6 +20,8 @@ const getWorkItemsForArtisanInvoice = async (req, res, next) => {
     // Условия за Project
     const projectWhere = {};
     if (company_id) projectWhere.company_id = parseInt(company_id);
+
+    if (!company_id) projectWhere.creator_id = req.user.id;
 
     console.log("📋 Constructed where clauses:", { workItemWhere, projectWhere });
 
@@ -48,6 +50,11 @@ const getWorkItemsForArtisanInvoice = async (req, res, next) => {
           model: Artisan,
           as: "artisan",
           attributes: ["id", "name", "email"]
+        },
+        {
+          model: Task,
+          as: "task",
+          attributes: ["id", "name"]
         }
       ],
       order: [
@@ -55,6 +62,7 @@ const getWorkItemsForArtisanInvoice = async (req, res, next) => {
         ["project_id", "ASC"],
         ["id", "ASC"]
       ]
+
     });
 
     console.log(`📦 Found ${workItems.length} work items`);

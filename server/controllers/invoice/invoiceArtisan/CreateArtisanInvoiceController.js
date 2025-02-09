@@ -99,7 +99,8 @@ const createArtisanInvoice = async (req, res, next) => {
         total_amount: 0,
         paid: false,
         is_artisan_invoice: true,
-        artisan_id
+        artisan_id,
+        creator_id: req.user.id
       },
       { transaction: t }
     );
@@ -138,7 +139,8 @@ const createArtisanInvoice = async (req, res, next) => {
           measure_id: workItem.measure.id,
           quantity: workItem.quantity,
           price_per_unit: defaultPricing.artisan_price,
-          total_price: workItem.quantity * defaultPricing.artisan_price
+          total_price: workItem.quantity * defaultPricing.artisan_price,
+          creator_id: req.user.id
         },
         { transaction: t }
       );

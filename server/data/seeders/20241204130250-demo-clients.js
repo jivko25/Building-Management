@@ -14,7 +14,7 @@ module.exports = {
           client_company_iban: "BG987654321",
           client_emails: JSON.stringify(["gogata1905@gmail.com", "gogata1905@abv.bg"]),
           status: "active",
-          creator_id: 1,
+          creator_id: 2,
           client_company_vat_number: "2252562636",
           invoice_language_id: 1, // English
           due_date: 1,
@@ -29,7 +29,7 @@ module.exports = {
           client_company_iban: "BG987654321",
           client_emails: JSON.stringify(["gogata1905@gmail.com", "gogata1905@abv.bg"]),
           status: "active",
-          creator_id: 2, // Manager's ID
+          creator_id: 1, // Manager's ID
           client_company_vat_number: "2252562636",
           invoice_language_id: 2, // Bulgarian
           due_date: 2,

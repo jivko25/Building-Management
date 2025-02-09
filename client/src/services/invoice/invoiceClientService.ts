@@ -7,7 +7,9 @@ const API_URL = import.meta.env.VITE_API_URL;
 export const invoiceClientService = {
   getAll: async (): Promise<ClientInvoice[]> => {
     try {
-      const response = await axios.get(`${API_URL}/invoices-client`);
+      const response = await axios.get(`${API_URL}/invoices-client`, {
+        withCredentials: true
+      });
       console.log("🔄 Response data:", response.data);
       if (!response.data.data || !Array.isArray(response.data.data)) {
         console.error("❌ Invalid response format:", response.data);
