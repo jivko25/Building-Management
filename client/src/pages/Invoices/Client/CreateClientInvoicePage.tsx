@@ -15,7 +15,7 @@ import { CreateClientInvoiceData } from "@/types/invoice/client.types";
 import { Loader2 } from "lucide-react";
 import { CustomCheckbox } from "@/components/ui/checkbox";
 import Pagination from "@/components/common/Pagination/Pagination";
-
+import Sidebar from "@/components/Sidebar/Sidebar";
 const createClientInvoiceSchema = z.object({
   company_id: z.number({
     required_error: "Please select a company"
@@ -311,12 +311,12 @@ export const CreateClientInvoicePage = () => {
         projectName: project.projectName,
         projectLocation: project.projectLocation,
         tasks: project.workItems.reduce((taskGroups: any, item: any) => {
-          const taskId = item.task_id;
+          const taskId = item.task.id;
           
           if (!taskGroups[taskId]) {
             taskGroups[taskId] = {
               taskId,
-              taskName: `Task ${taskId}`,
+              task: item.task,
               workItems: []
             };
           }
@@ -365,6 +365,8 @@ export const CreateClientInvoicePage = () => {
   };
 
   return (
+    <div className="flex md:gap-60 min-h-screen">
+      <Sidebar />
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{t("New Client Invoice")}</h1>
@@ -497,7 +499,7 @@ export const CreateClientInvoicePage = () => {
                                 <div key={task.taskId} className="border rounded-lg p-4 bg-white shadow-sm">
                                   <div className="flex justify-between items-center mb-3">
                                     <h4 className="text-lg font-medium text-gray-900">
-                                      Task {task.taskId}
+                                      {task.task.name}
                                     </h4>
                                     <CustomCheckbox
                                       id={`task-${task.taskId}`}
@@ -555,6 +557,7 @@ export const CreateClientInvoicePage = () => {
           </div>
         </form>
       </Form>
+    </div>
     </div>
   );
 };

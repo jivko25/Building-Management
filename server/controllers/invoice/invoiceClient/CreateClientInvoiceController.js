@@ -99,7 +99,8 @@ const createClientInvoice = async (req, res, next) => {
         paid: false,
         is_artisan_invoice: false,
         created_at: currentDate,
-        updated_at: currentDate
+        updated_at: currentDate,
+        creator_id: req.user.id
       },
       { transaction: t }
     );
@@ -196,7 +197,8 @@ const createClientInvoice = async (req, res, next) => {
           price_per_unit: parseFloat(defaultPricing.manager_price),
           total_price: parseFloat(workItem.quantity) * parseFloat(defaultPricing.manager_price),
           created_at: currentDate,
-          updated_at: currentDate
+          updated_at: currentDate,
+          creator_id: req.user.id
         },
         { transaction: t }
       );

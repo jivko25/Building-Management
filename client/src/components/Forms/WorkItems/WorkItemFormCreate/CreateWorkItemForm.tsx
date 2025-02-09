@@ -45,8 +45,10 @@ const CreateWorkItemForm = ({ handleSubmit, isPending }: CreateWorkItemFormProps
       });
       if (foundedDefaultPrice) {
         const measureName = foundedDefaultPrice?.measure?.name.toLocaleLowerCase();
+        const activityName = foundedDefaultPrice?.activity?.name.toLocaleLowerCase();
         setMeasureValue(measureName || "");
-        setShowQuantity(measureName !== 'hour');
+        setShowQuantity(!(measureName === 'hour' && activityName === 'hour'));
+
       }
     }
   }, [artisanId, defaultPricing, defaultPricingsResponse]);
@@ -68,7 +70,7 @@ const CreateWorkItemForm = ({ handleSubmit, isPending }: CreateWorkItemFormProps
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2 mb-2">
           <ArtisanSingleSelector name="artisan" label="Select artisan" />
-          <DefaultPricingSelector name="default_pricing" label="Activity" artisan_id={artisanId} />
+          <DefaultPricingSelector name="default_pricing" label="Activity" artisan_id={artisanId} project_id={params.id} />
           {showQuantity && (
             <div className="flex items-center justify-center content-center flex-col">
               <FormFieldInput name="quantity" label="Quantity" type="number" className="pl-10" Icon={Calculator} />

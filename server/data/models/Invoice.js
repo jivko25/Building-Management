@@ -66,9 +66,18 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 1,
         comment: "Due date in weeks"
+      },
+      creator_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_users",
+          key: "id"
+        }
       }
     },
     {
+
       tableName: "tbl_invoices",
       underscored: true
     }

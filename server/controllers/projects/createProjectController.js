@@ -9,12 +9,12 @@ const createProject = async (req, res, next) => {
   try {
     console.log("Creating new project with data:", req.body);
 
-    const existingProject = await Project.findOne({ where: { name } });
+    const existingProject = await Project.findOne({ where: { name, creator_id: req.user.id } });
     if (existingProject) {
       throw new ApiError(400, `${name} already exists!`);
     }
 
-    const company = await Company.findOne({ where: { name: company_name } });
+    const company = await Company.findOne({ where: { name: company_name, creator_id: req.user.id } });
     if (!company) {
       throw new ApiError(404, "Company not found!");
     }
