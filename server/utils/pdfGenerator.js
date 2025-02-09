@@ -20,6 +20,18 @@ const getLanguageCode = languageId => {
   return languageMap[languageId] || "en"; // default to English if invalid ID
 };
 
+// Функция за изчисляване на номера на седмицата от дата
+const getWeekNumber = date => {
+  const currentDate = new Date(date);
+  const startDate = new Date(currentDate.getFullYear(), 0, 1);
+  const days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
+
+  const weekNumber = Math.ceil((days + startDate.getDay() + 1) / 7);
+
+  // Връщаме числото директно, без водеща нула
+  return weekNumber;
+};
+
 const createInvoicePDF = async (invoiceId, languageId) => {
   let browser;
   try {
@@ -106,18 +118,6 @@ const createInvoicePDF = async (invoiceId, languageId) => {
     const dueDate = new Date(invoice.invoice_date);
     dueDate.setDate(dueDate.getDate() + invoice.due_date_weeks * 7);
 
-    // Функция за изчисляване на номера на седмицата от дата
-    const getWeekNumber = date => {
-      const currentDate = new Date(date);
-      const startDate = new Date(currentDate.getFullYear(), 0, 1);
-      const days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
-
-      const weekNumber = Math.ceil((days + startDate.getDay() + 1) / 7);
-
-      // Връщаме числото директно, без водеща нула
-      return weekNumber;
-    };
-
     // Preparing the data for the template
     const data = {
       invoiceNumber: formattedInvoiceNumber,
@@ -196,6 +196,9 @@ const createInvoicePDF = async (invoiceId, languageId) => {
           body { 
             font-family: Calibri, sans-serif;
             padding: 20px;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 100px; /* място за payment-instructions */
           }
           h1, h2, h3 { 
             color: black;
@@ -352,14 +355,31 @@ const createInvoicePDF = async (invoiceId, languageId) => {
           }
           /* Стилове за текста под таблицата */
           .payment-instructions {
-            margin-top: 20px;
-            font-size: 10pt;
+            position: fixed;
+            bottom: 50px;
+            left: 20px;
+            right: 20px;
+            padding: 10px 0;
+            background-color: white;
           }
           .payment-instructions p {
             margin: 4px 0;
           }
           .width-full {
             width: 100%;
+          }
+          .vat-section {
+            margin-top: 50px;
+            margin-bottom: 50px;
+          }
+          .payment-instructions {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
+            padding: 10px 0;
+            background-color: white;
+            border-top: 1px solid #e0e0e0;
           }
         </style>
       </head>
@@ -447,47 +467,49 @@ const createInvoicePDF = async (invoiceId, languageId) => {
         <!-- Footer container -->
         <div class="footer-container width-full">
           <!-- VAT Breakdown Table -->
-          <table class="vat-table width-full">
-            <tr>
-              <td style="text-align: left"><strong>Total excl. VAT</strong></td>
-              <td style="text-align: center"><strong>VAT%</strong></td>
-              <td style="text-align: center"><strong>Over</strong></td>
-              <td style="text-align: right">${data.totalAmount.toFixed(2)} €</td>
-            </tr>
-            <tr>
-              <td></td>
-              <td style="text-align: center">0%</td>
-              <td style="text-align: center">-</td>
-              <td style="text-align: right">-</td>
-            </tr>
-            <tr>
-              <td></td>
-              <td style="text-align: center">9%</td>
-              <td style="text-align: center">-</td>
-              <td style="text-align: right">-</td>
-            </tr>
-            <tr>
-              <td></td>
-              <td style="text-align: center">21%</td>
-              <td style="text-align: center">-</td>
-              <td style="text-align: right">-</td>
-            </tr>
-            <tr>
-              <td></td>
-              <td style="text-align: center">Shifted</td>
-              <td style="text-align: center">${data.totalAmount.toFixed(2)} €</td>
-              <td style="text-align: right">-</td>
-            </tr>
-            <tr class="total-row">
-              <td colspan="3" style="text-align: left">Total</td>
-              <td style="text-align: right">${data.totalAmount.toFixed(2)} €</td>
-            </tr>
-          </table>
+          <div class="vat-section">
+            <table class="vat-table width-full">
+              <tr>
+                <td style="text-align: left"><strong>Total excl. VAT</strong></td>
+                <td style="text-align: center"><strong>VAT%</strong></td>
+                <td style="text-align: center"><strong>Over</strong></td>
+                <td style="text-align: right">${data.totalAmount.toFixed(2)} €</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td style="text-align: center">0%</td>
+                <td style="text-align: center">-</td>
+                <td style="text-align: right">-</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td style="text-align: center">9%</td>
+                <td style="text-align: center">-</td>
+                <td style="text-align: right">-</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td style="text-align: center">21%</td>
+                <td style="text-align: center">-</td>
+                <td style="text-align: right">-</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td style="text-align: center">Shifted</td>
+                <td style="text-align: center">${data.totalAmount.toFixed(2)} €</td>
+                <td style="text-align: right">-</td>
+              </tr>
+              <tr class="total-row">
+                <td colspan="3" style="text-align: left">Total</td>
+                <td style="text-align: right">${data.totalAmount.toFixed(2)} €</td>
+              </tr>
+            </table>
+          </div>
 
-          <!-- Payment instructions -->
+          <!-- Fixed Payment instructions -->
           <div class="payment-instructions">
-            <p>* Please transfer the amount of <span class="bolded">${data.totalAmount.toFixed(2)} €</span> by date <span class="bolded">${data.dueDate}</span> to IBAN <span class="bolded">${data.companyIBAN}</span></p>
-            <p style="margin-left: 10px;">by specifying the invoice number.</p>
+            <p>* ${t.paymentInstructions} <span class="bolded">${data.totalAmount.toFixed(2)} €</span> ${t.byDate} <span class="bolded">${data.dueDate}</span></p>
+            <p style="margin-left: 10px;">${t.specifyInvoiceNumber}</p>
           </div>
         </div>
       </body>
@@ -541,10 +563,11 @@ const createInvoicePDF = async (invoiceId, languageId) => {
   }
 };
 
-const createArtisanInvoicePDF = async invoiceId => {
+const createArtisanInvoicePDF = async (invoiceId, languageId = 1) => {
   let browser;
   try {
     console.log("Starting PDF generation for artisan invoice:", invoiceId);
+    const languageCode = getLanguageCode(languageId);
     const invoice = await Invoice.findOne({
       where: { id: invoiceId },
       include: [
@@ -594,6 +617,7 @@ const createArtisanInvoicePDF = async invoiceId => {
       const numPrice = typeof price === "string" ? parseFloat(price) : price;
       return numPrice ? numPrice.toFixed(2) : "0.00";
     };
+    const t = translations[languageCode];
 
     const groupItemsByProjectAndActivity = items => {
       return items.reduce((groups, item) => {
@@ -737,31 +761,55 @@ const createArtisanInvoicePDF = async invoiceId => {
             tfoot td {
               padding-top: 12px;
             }
+
+                      .payment-instructions {
+            position: fixed;
+            bottom: 50px;
+            left: 20px;
+            right: 20px;
+            padding: 10px 0;
+            background-color: white;
+          }
+
+          .vat-section {
+          margin-top: 40px}
           </style>
         </head>
         <body>
           <div class="header-section">
             <div class="company-main-info">
-              <div class="name">${invoice.artisan.name}</div>
-              <div class="info-row">${invoice.artisan.address || ""}</div>
+              <div class="name">${invoice.company.name}</div>
+              <div class="info-row">${invoice.company.address || ""}</div>
+              <div class="info-row">
+                <span class="info-label">VAT Number</span>
+                <span>${invoice.company.vat_number || ""}</span>
+              </div>
+            </div>
+            <div class="company-logo">
+              ${invoice.company.logo_url ? `<img class="logo" src="${invoice.company.logo_url}" alt="Company Logo">` : ""}
             </div>
           </div>
 
           <div class="invoice-details">
             <div class="invoice-left">
               <div class="info-row">
-                <span class="info-label">Invoice</span> ${invoice.invoice_number}
-              </div>
-              <div class="info-row">
-                <span class="info-label">Date of issue:</span> ${formatDate(invoice.invoice_date)}
-              </div>
-              <div class="info-row">
-                <span class="info-label">Due date:</span> ${formatDate(invoice.due_date)}
-              </div>
+                          <div class="info-row">
+              <span class="info-label">${t.invoice}: ${invoice.invoice_number}</span> 
+            </div>
+
+              <span class="info-label">${t.dateOfIssue}:</span> ${formatDate(invoice.invoice_date)}
+            </div>
+            <div class="info-row">
+              <span class="info-label">${t.dueDate}:</span> ${formatDate(invoice.due_date)}
+            </div>
+            <div class="info-row">
+              <span class="info-label">${t.reference}:</span> Week ${getWeekNumber(invoice.invoice_date)}
+
+            </div>
             </div>
 
             <div class="invoice-right">
-              <div class="info-row">${invoice.artisan.user?.full_name || ""}</div>
+              <div class="info-row">${invoice.artisan.name || ""}</div>
               <div class="info-row">${invoice.artisan.email || ""}</div>
               <div class="info-row">${invoice.artisan.number || ""}</div>
             </div>
@@ -770,10 +818,11 @@ const createArtisanInvoicePDF = async invoiceId => {
           <table>
             <thead>
               <tr>
-                <th>Activity</th>
-                <th class="amount">Quantity</th>
-                <th class="amount">Price per unit</th>
-                <th class="amount">Total</th>
+                <th>${t.description}</th>
+                <th class="amount">${t.quantity}</th>
+                <th class="amount">${t.pricePerUnit}</th>
+                <th class="amount">${t.total}</th>
+
               </tr>
             </thead>
             <tbody>
@@ -782,11 +831,12 @@ const createArtisanInvoicePDF = async invoiceId => {
                   project => `
                     <tr>
                       <td class="project-header">
-                        Location: ${project.location || "N/A"} - ${project.name || "N/A"}
+                        ${t.location}: ${project.location || "N/A"} - ${project.name || "N/A"}
                       </td>
                       <td></td>
                       <td></td>
                       <td></td>
+
                     </tr>
                     ${Object.values(project.activities)
                       .map(
@@ -806,11 +856,58 @@ const createArtisanInvoicePDF = async invoiceId => {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="3" style="text-align: right; font-weight: bold;">Total:</td>
+                <td colspan="3" style="text-align: right; font-weight: bold;">Total excl. VAT</td>
                 <td class="amount" style="font-weight: bold;">${parseFloat(invoice.total_amount).toFixed(2)} €</td>
               </tr>
             </tfoot>
           </table>
+
+          <!-- VAT Table -->
+          <div class="vat-section">
+            <table class="vat-table">
+              <tr>
+                <td></td>
+                <td style="text-align: center">VAT%</td>
+                <td style="text-align: center">Over</td>
+                <td style="text-align: right">-</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td style="text-align: center">0%</td>
+                <td style="text-align: center">-</td>
+                <td style="text-align: right">-</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td style="text-align: center">9%</td>
+                <td style="text-align: center">-</td>
+                <td style="text-align: right">-</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td style="text-align: center">21%</td>
+                <td style="text-align: center">-</td>
+                <td style="text-align: right">-</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td style="text-align: center">Shifted</td>
+                <td style="text-align: center">${parseFloat(invoice.total_amount).toFixed(2)} €</td>
+                <td style="text-align: right">-</td>
+              </tr>
+              <tr class="total-row">
+                <td colspan="3" style="text-align: left">Total</td>
+                <td style="text-align: right">${parseFloat(invoice.total_amount).toFixed(2)} €</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Fixed Payment instructions -->
+          <div class="payment-instructions">
+            <p>* ${t.paymentInstructions} <span class="bolded">${parseFloat(invoice.total_amount).toFixed(2)} €</span> ${t.byDate} <span class="bolded">${formatDate(invoice.due_date)}</span></p>
+            <p style="margin-left: 10px;">${t.specifyInvoiceNumber}</p>
+          </div>
+
         </body>
       </html>
     `;

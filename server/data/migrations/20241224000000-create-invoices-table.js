@@ -86,6 +86,14 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
+      },
+      creator_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "tbl_users",
+          key: "id" 
+        }
       }
     });
     console.log("Invoices table created successfully!");
