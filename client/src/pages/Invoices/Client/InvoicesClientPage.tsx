@@ -119,7 +119,7 @@ export const InvoicesClientPage = () => {
 
   const paidTemplate = (rowData: Invoice) => {
     return (
-      <Tag value={rowData.paid ? "Yes" : "No"} severity={rowData.paid ? "success" : "danger"} />
+      <Tag value={rowData.paid ? t("Yes") : t("No")} severity={rowData.paid ? "success" : "danger"} />
     );
   };
 
