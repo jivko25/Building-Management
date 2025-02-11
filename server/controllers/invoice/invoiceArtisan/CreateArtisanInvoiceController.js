@@ -137,10 +137,11 @@ const createArtisanInvoice = async (req, res, next) => {
           task_id: workItem.task.id,
           activity_id: workItem.activity.id,
           measure_id: workItem.measure.id,
-          quantity: workItem.quantity,
-          price_per_unit: defaultPricing.artisan_price,
-          total_price: workItem.quantity * defaultPricing.artisan_price,
+          quantity: workItem.hours ? workItem.hours : workItem.quantity,
+          price_per_unit: workItem.total_artisan_price / (workItem.hours ? workItem.hours : workItem.quantity),
+          total_price: workItem.total_artisan_price,
           creator_id: req.user.id
+
         },
         { transaction: t }
       );

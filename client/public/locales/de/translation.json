@@ -355,5 +355,7 @@
   "Profit": "Gewinn",
   "Income by activity": "Einnahmen nach Aktivität",
   "Unpaid to artisan": "Unbezahlter Handwerker",
-  "Paid to artisan": "Bezahlter Handwerker"
+  "Paid to artisan": "Bezahlter Handwerker",
+  "Yes": "Ja",
+  "No": "Nein"
 }

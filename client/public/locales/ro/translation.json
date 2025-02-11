@@ -355,5 +355,9 @@
   "Total unpaid to artisan": "Total neplătit artizan",
   "Total paid to artisan": "Total plătit artizan",
   "Profit": "Profit",
-  "Income by activity": "Venit după activitate"
+  "Income by activity": "Venit după activitate",
+  "Unpaid to artisan": "Neplătit artizan",
+  "Paid to artisan": "Plătit artizan",
+  "Yes": "Da",
+  "No": "Nu"
 }

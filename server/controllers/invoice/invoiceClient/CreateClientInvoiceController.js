@@ -194,8 +194,8 @@ const createClientInvoice = async (req, res, next) => {
           project_id: workItem.task.project.id,
           task_id: workItem.task.id,
           quantity: parseFloat(workItem.quantity),
-          price_per_unit: parseFloat(defaultPricing.manager_price),
-          total_price: parseFloat(workItem.quantity) * parseFloat(defaultPricing.manager_price),
+          price_per_unit: workItem.total_manager_price / workItem.quantity,
+          total_price: workItem.total_manager_price,
           created_at: currentDate,
           updated_at: currentDate,
           creator_id: req.user.id

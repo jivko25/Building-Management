@@ -355,5 +355,9 @@
   "Total unpaid to artisan": "общее количество не оплаченных специалистов",
   "Total paid to artisan": "общее количество оплаченных специалистов",
   "Profit": "профит",
-  "Income by activity": "доход по активности"
+  "Income by activity": "доход по активности",
+  "Unpaid to artisan": "неоплаченная цена специалиста",
+  "Paid to artisan": "оплаченная цена специалиста",
+  "Yes": "да",
+  "No": "нет" 
 }
