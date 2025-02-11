@@ -351,5 +351,9 @@
   "Total unpaid to artisan": "Łączna nieopłacona cena szkolenia",
   "Total paid to artisan": "Łączna opłacona cena szkolenia",
   "Profit": "Zysk",
-  "Income by activity": "Przychód po działaniu"
+  "Income by activity": "Przychód po działaniu",
+  "Unpaid to artisan": "Nieopłacona cena szkolenia",
+  "Paid to artisan": "Opłacona cena szkolenia",
+  "Yes": "Tak",
+  "No": "Nie"
 }

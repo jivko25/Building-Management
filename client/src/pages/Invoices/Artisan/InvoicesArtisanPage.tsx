@@ -16,6 +16,7 @@ import { IconField } from "primereact/iconfield";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import { useTranslation } from "react-i18next";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tag } from "primereact/tag";
 
 export const InvoicesArtisanPage = () => {
   const navigate = useNavigate();
@@ -130,8 +131,12 @@ export const InvoicesArtisanPage = () => {
   };
 
   const paidTemplate = (rowData: ArtisanInvoice) => {
-    return rowData.paid ? "Yes" : "No";
+    return (
+      <Tag value={rowData.paid ? t("Yes") : t("No")} severity={rowData.paid ? "success" : "danger"} />
+    );
   };
+
+
 
   const actionTemplate = (rowData: ArtisanInvoice) => {
     return (
