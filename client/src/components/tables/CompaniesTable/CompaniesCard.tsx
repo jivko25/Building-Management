@@ -2,7 +2,7 @@ import React from "react";
 import EditCompany from "@/components/Forms/Companies/CompanyFormEdit/EditCompany";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Company } from "@/types/company-types/companyTypes";
-import { Eye, Upload } from "lucide-react";
+import { Eye, Upload, Trash2 } from "lucide-react";
 import apiClient from "@/api/axiosConfig";
 
 type CompaniesCardProps = {
@@ -33,6 +33,16 @@ const CompaniesCard = ({ companies }: CompaniesCardProps) => {
     window.open(logoUrl, "_blank");
   };
 
+  const handleDeleteLogo = async (companyId: string) => {
+    try {
+      await apiClient.delete(`/companies/${companyId}/image`);
+      console.log("Logo deleted successfully");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting logo:", error);
+    }
+  };
+
   return (
     <>
       {companies &&
@@ -44,13 +54,22 @@ const CompaniesCard = ({ companies }: CompaniesCardProps) => {
             <TableCell className="text-center font-semibold">
               <div className="flex justify-center items-center gap-2">
                 {company.logo_url && (
-                  <button
-                    onClick={() => handleViewLogo(company.logo_url!)}
-                    title="View Logo"
-                    className="text-blue-500 hover:text-blue-700"
-                  >
-                    <Eye className="w-5 h-5" />
-                  </button>
+                  <>
+                    <button
+                      onClick={() => handleViewLogo(company.logo_url!)}
+                      title="View Logo"
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      <Eye className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteLogo(company.id!)}
+                      title="Delete Logo"
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </>
                 )}
                 <label className="text-green-500 hover:text-green-700 cursor-pointer">
                   <Upload className="w-5 h-5" />
