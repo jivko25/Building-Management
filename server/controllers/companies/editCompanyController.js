@@ -3,6 +3,7 @@ const db = require("../../data/index.js");
 const s3Service = require("../../services/s3Service");
 const { Company } = db;
 const ApiError = require("../../utils/apiError");
+const { Op } = require("sequelize");
 
 const editCompany = async (req, res, next) => {
   const company_id = req.params.id;
@@ -75,10 +76,52 @@ const uploadCompanyLogo = async (req, res) => {
   }
 };
 
+const deleteCompanyLogo = async (req, res, next) => {
+  try {
+    const companyId = req.params.id; // Променено от image_id на id
+    
+    // Намираме компанията по ID
+    const company = await Company.findByPk(companyId);
+    if (!company || !company.logo_url) {
+      return res.status(404).json({
+        message: "Company or logo not found!"
+      });
+    }
 
+    // Извличане на ключа (името на файла) от logo_url
+    const bucketRegion = process.env.BUCKET_REGION;
+    const bucketName = process.env.BUCKET_NAME;
+    const s3Prefix = `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/`;
 
+    if (!company.logo_url.startsWith(s3Prefix)) {
+      return res.status(400).json({
+        message: `Invalid S3 URL format!`
+      });
+    }
+
+    const fileName = company.logo_url.replace(s3Prefix, "");
+
+    // Изтриване на файла от S3
+    await s3Service.deleteImageAsync(fileName);
+
+    // Изтриване на референцията към логото в базата данни
+    await company.update({ logo_url: null });
+
+    res.status(200).json({
+      message: "Logo deleted successfully!"
+    });
+  } catch (error) {
+    console.error("Error during logo deletion:", error);
+    res.status(500).json({
+      message: "Logo deletion failed!",
+      error: error.message || error
+    });
+    next(error);
+  }
+};
 
 module.exports = {
   editCompany,
-  uploadCompanyLogo
+  uploadCompanyLogo,
+  deleteCompanyLogo
 };
