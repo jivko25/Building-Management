@@ -8,6 +8,18 @@ import { format } from "date-fns";
 import { Calendar, DollarSign, Hammer } from "lucide-react";
 
 const TaskInformationCard = ({ project }: { project: ProjectTask }) => {
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return "Invalid date";
+      }
+      return format(date, "PPP");
+    } catch {
+      return "Invalid date";
+    }
+  };
+
   return (
     <>
       {project && (
@@ -45,7 +57,12 @@ const TaskInformationCard = ({ project }: { project: ProjectTask }) => {
               <div className="relative">
                 <Calendar size={15} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <Separator className="absolute left-8 top-1/2 transform -translate-y-1/2" orientation="vertical" />
-                <Input disabled type="text" placeholder={format(project.taskProjectData.start_date as string, "PPP")} className="mt-2 pl-10" />
+                <Input 
+                  disabled 
+                  type="text" 
+                  placeholder={formatDate(project.taskProjectData.start_date as string)} 
+                  className="mt-2 pl-10" 
+                />
               </div>
             </div>
             <div className="relative">
@@ -55,7 +72,12 @@ const TaskInformationCard = ({ project }: { project: ProjectTask }) => {
               <div className="relative">
                 <Calendar size={15} className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <Separator className="absolute left-8 top-1/2 transform -translate-y-1/2" orientation="vertical" />
-                <Input disabled type="text" placeholder={format(project.taskProjectData.end_date as string, "PPP")} className="mt-2 pl-10" />
+                <Input 
+                  disabled 
+                  type="text" 
+                  placeholder={formatDate(project.taskProjectData.end_date as string)} 
+                  className="mt-2 pl-10" 
+                />
               </div>
             </div>
             <div className="relative">

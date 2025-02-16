@@ -68,7 +68,6 @@ const editUser = async (req, res, next) => {
         full_name: user.full_name,
         username: user.username,
         email: user.email,
-        role: user.role,
         status: user.status,
         manager_id: user.manager_id,
         creator_id: user.creator_id
