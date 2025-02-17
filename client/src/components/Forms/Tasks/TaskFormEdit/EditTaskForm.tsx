@@ -9,11 +9,10 @@ import StatusSelector from "@/components/common/FormElements/FormStatusSelector"
 import FormTextareaInput from "@/components/common/FormElements/FormTextareaInput";
 import { Separator } from "@/components/ui/separator";
 import { useTaskFormHooks } from "@/hooks/forms/useTaskForm";
-import { useCachedData } from "@/hooks/useQueryHook";
+import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { TaskSchema } from "@/models/task/taskSchema";
-import { Task } from "@/types/task-types/taskTypes";
-import { findItemById } from "@/utils/helpers/findItemById";
 import { ClipboardList, DollarSign, Hammer } from "lucide-react";
+import { useEffect } from "react";
 import { FormProvider } from "react-hook-form";
 
 type EditTaskFormProps = {
@@ -24,32 +23,38 @@ type EditTaskFormProps = {
 };
 
 const EditTaskForm = ({ id, taskId, isPending, handleSubmit }: EditTaskFormProps) => {
-  const task = useCachedData<Task>({
-    queryKey: ["projects", id, "tasks"],
-    selectFn: data => {
-      const foundTask = findItemById<Task>(data as Task[], taskId, task => task.id as string);
-      console.log("Found task in cache:", foundTask);
-      return {
-        ...foundTask,
-        activity: foundTask?.activityName,
-        measure: foundTask?.measureName,
-        price_per_measure: foundTask?.price_per_measure
-      };
+  const { data: task, isLoading, refetch } = useFetchDataQuery<any>({
+    URL: `/projects/${id}/tasks/${taskId}`,
+    queryKey: ["projects", id, "tasks", taskId],
+    options: {
+      refetchOnMount: true,
+      staleTime: 0
     }
   });
 
   const { useEditTaskForm } = useTaskFormHooks();
-  const form = useEditTaskForm({
-    ...task,
-    artisans: task?.artisans?.map((a: any) => a.name) || []
-  });
 
+  useEffect(() => {
+    if (taskId) {
+      refetch();
+    }
+  }, [taskId, refetch]);
+  
+  // Трансформираме данните преди да ги подадем на формата
+  const transformedTask = task ? {
+    ...task,
+    activity: task.activity?.name || "",
+    measure: task.measure?.name || "",
+    artisans: task.artisans?.map((artisan: any) => artisan.name) || []
+  } : {};
+
+  const form = useEditTaskForm(transformedTask);
+
+  // Създаваме placeholder за артисаните
   const artisanPlaceholder = task?.artisans?.map((artisan: any) => artisan.name).join(", ") || "Select artisans";
 
-  if (task) {
-    task.activity = task?.activity || "";
-    task.measure = task?.measure || "";
-    task.artisans = task?.artisans || [];
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -62,17 +67,32 @@ const EditTaskForm = ({ id, taskId, isPending, handleSubmit }: EditTaskFormProps
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-1 content-around gap-2 pt-1.5">
-          <ArtisanSelector name="artisans" label="Select artisans" placeholder={artisanPlaceholder} />
+          <ArtisanSelector 
+            name="artisans" 
+            label="Select artisans" 
+            placeholder={artisanPlaceholder}
+          />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-1 content-around gap-2 pt-1.5">
-          <ActivitySelector name="activity" label="Select activity" defaultVal={task && task.activity} placeholder={task?.activity} />
+          <ActivitySelector 
+            name="activity" 
+            label="Select activity" 
+            defaultVal={transformedTask.activity}
+          />
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 sm:grid-cols-2 content-around gap-2 mb-4">
-          <StatusSelector label="Status" name="status" defaultVal={task && task.status} />
-          <MeasureSelector name="measure" label="Select measure" defaultVal={task && task.measure} placeholder={task?.measure} />
+          <StatusSelector 
+            label="Status" 
+            name="status" 
+            defaultVal={task?.status}
+          />
+          <MeasureSelector 
+            name="measure" 
+            label="Select measure" 
+            defaultVal={transformedTask.measure}
+          />
         </div>
-
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2 pt-1.5">
           <FormDatePicker name="start_date" label="Select new start date" selected={new Date(`${task && task.start_date}`).toLocaleDateString().slice(0, 10)} />

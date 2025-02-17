@@ -76,11 +76,11 @@ const createTask = async (req, res, next) => {
       name,
       activity_id: activityRecord.id,
       measure_id: measureRecord.id,
-      total_price,
-      total_work_in_selected_measure,
-      start_date,
-      end_date,
-      note,
+      total_price: total_price || null,
+      total_work_in_selected_measure: total_work_in_selected_measure || null,
+      start_date: start_date || null,
+      end_date: end_date || null,
+      note: note || null,
       status
     });
 

@@ -6,8 +6,8 @@ export type Task = {
     id?: string;
     name?: string;
     artisans?: any;
-    activity?: string;
-    measure?: string;
+    activity?: any;
+    measure?: any;
     artisanName?: string;
     activityName?: string;
     measureName?: string;
