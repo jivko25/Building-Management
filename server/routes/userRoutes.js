@@ -7,7 +7,7 @@ const { getAllActiveUsers } = require("../controllers/user/getAllActiveUsers");
 const { editUser } = require("../controllers/user/editUserController");
 const { createUser } = require("../controllers/user/createUserController");
 const { getManagers } = require("../controllers/user/getManagersController");
-const { addManagerToReadonly, removeManagerFromReadonly, updateManagerReadonly } = require("../controllers/user/updateManagerReadonlyController");
+const { addManagerToReadonly, removeManagerFromReadonly, updateManagerReadonly, updateManagerLimit } = require("../controllers/user/updateManagerReadonlyController");
 
 const router = express.Router();
 
@@ -15,6 +15,7 @@ router.get("/users/managers", authenticateToken, getManagers);
 router.patch("/users/managers/add-to-readonly/:id", authenticateToken, addManagerToReadonly);
 router.patch("/users/managers/remove-from-readonly/:id", authenticateToken, removeManagerFromReadonly);
 router.patch("/users/managers/update-readonly/:id", authenticateToken, updateManagerReadonly);
+router.patch("/users/managers/update-limit/:id", authenticateToken, updateManagerLimit);
 router.get("/users/active", authenticateToken, getAllActiveUsers);
 router.get("/users", authenticateToken, getUsers);
 router.get("/users/:id", authenticateToken, getUserById);

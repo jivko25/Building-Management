@@ -44,6 +44,11 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         allowNull: true,
         defaultValue: false
+      },
+      user_limit: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 10
       }
     });
   },

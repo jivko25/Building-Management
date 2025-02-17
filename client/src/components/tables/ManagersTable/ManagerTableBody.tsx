@@ -14,6 +14,7 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import apiClient from "@/api/axiosConfig";
 import { useTranslation } from "react-i18next";
+import { InputNumber } from "primereact/inputnumber";
 
 const ManagersTableBody = () => {
   const { t } = useTranslation();
@@ -109,6 +110,39 @@ const ManagersTableBody = () => {
     );
   };
 
+  const updateUserLimit = (manager: User, newLimit: number) => {
+    apiClient
+      .patch(`/users/managers/update-limit/${manager.id}`, { user_limit: newLimit })
+      .then(response => {
+        console.log("User limit updated:", response.data);
+      })
+      .catch(error => {
+        console.error("Error updating user limit:", error);
+      });
+  };
+
+  const userLimitBodyTemplate = (rowData: User) => {
+    return (
+      <InputNumber 
+        value={rowData.user_limit} 
+        onValueChange={(e: any) => {
+          if (e.value !== null) {
+            rowData.user_limit = e.value;
+            updateUserLimit(rowData, e.value);
+          }
+        }}
+        min={0}
+        showButtons
+        buttonLayout="horizontal"
+        style={{ width: '150px' }}
+        decrementButtonClassName="p-button-secondary" 
+        incrementButtonClassName="p-button-secondary"
+        incrementButtonIcon="pi pi-plus" 
+        decrementButtonIcon="pi pi-minus" 
+      />
+    );
+  };
+
   if (isPending) {
     return <ActivitiesLoader activity={managers} />;
   }
@@ -126,6 +160,13 @@ const ManagersTableBody = () => {
         <Column field="email" header={t("Email")} filter sortable filterPlaceholder={t("Search by email")} style={{ minWidth: "12rem" }} />
         <Column field="role" header={t("Role")} filter sortable filterPlaceholder={t("Search by role")} style={{ minWidth: "12rem" }} />
         <Column field="readonly" header={t("Readonly")} body={readonlyBodyTemplate} filter sortable filterElement={statusFilterTemplate} style={{ minWidth: "12rem" }} />
+        <Column 
+          field="user_limit" 
+          header={t("User Limit")} 
+          body={userLimitBodyTemplate} 
+          sortable 
+          style={{ minWidth: "12rem" }} 
+        />
       </DataTable>
     </div>
   );

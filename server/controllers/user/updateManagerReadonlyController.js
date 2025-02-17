@@ -97,8 +97,38 @@ const updateManagerReadonly = async (req, res, next) => {
     }
 };
 
+const updateManagerLimit = async (req, res, next) => {
+    const managerId = req.params.id;
+    const { user_limit } = req.body;
+
+    const isAdmin = req.user.role === "admin";
+    if (!isAdmin) {
+        return next(new ApiError(403, "You are not authorized to access this resource!"));
+    }
+
+    try {
+        const manager = await User.findByPk(managerId);
+        if (!manager) {
+            throw new ApiError(404, "Manager not found.");
+        }
+
+        manager.user_limit = user_limit;
+        await manager.save();
+        
+        res.status(200).json({
+            success: true,
+            message: "Manager limit updated successfully",
+            data: manager
+        });
+    } catch (error) {
+        next(new ApiError(500, "Internal Server Error", error));
+    }
+};
+
+
 module.exports = {
     addManagerToReadonly,
     removeManagerFromReadonly,
-    updateManagerReadonly
+    updateManagerReadonly,
+    updateManagerLimit
 };
