@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { format, getDay, startOfWeek, endOfWeek } from "date-fns";
+import { format, getDay } from "date-fns";
 import apiClient from "@/api/axiosConfig";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
