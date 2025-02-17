@@ -85,7 +85,7 @@ const getWeeklyReports = async (req, res, next) => {
           activity,
           totalQuantity: data.totalQuantity,
           totalHours: data.totalHours,
-          price: data.totalPrice / data.totalQuantity,
+          price: data.totalPrice / (data.totalQuantity === 0 ? data.totalHours : data.totalQuantity),
           total: data.totalPrice,
           artisans: Array.from(data.artisans),
           tasks: Array.from(data.tasks)
@@ -105,10 +105,34 @@ const getWeeklyReports = async (req, res, next) => {
 };
 
 // Помощни функции за изчисляване на дати
+const getWeekNumber = (date) => {
+  // Копираме датата, за да не модифицираме оригинала
+  const currentDate = new Date(date);
+  
+  // Намираме първия ден на годината
+  const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+  
+  // Намираме първия понеделник на годината
+  startOfYear.setDate(startOfYear.getDate() + (1 - startOfYear.getDay() || 7));
+  
+  // Изчисляваме разликата в дни
+  const days = Math.floor((currentDate - startOfYear) / (24 * 60 * 60 * 1000));
+  
+  // Изчисляваме номера на седмицата
+  const weekNumber = Math.ceil((days + 1) / 7);
+  
+  return weekNumber;
+};
+
 const getWeekStartDate = (weekNumber) => {
   const date = new Date();
+  // Изчисляваме правилната седмица
   date.setDate(date.getDate() + (weekNumber - getWeekNumber(date)) * 7);
+  // Връщаме към понеделник
   date.setDate(date.getDate() - date.getDay() + 1);
+  // Нулираме часа, минутите, секундите и милисекундите
+  date.setHours(0, 0, 0, 0);
+  
   return date;
 };
 
@@ -116,11 +140,6 @@ const getWeekEndDate = (weekNumber) => {
   const date = getWeekStartDate(weekNumber);
   date.setDate(date.getDate() + 6);
   return date;
-};
-
-const getWeekNumber = (date) => {
-  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-  return Math.ceil((((date - firstDayOfYear) / 86400000) + firstDayOfYear.getDay() + 1) / 7) - 1;
 };
 
 module.exports = {
