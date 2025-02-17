@@ -1,15 +1,18 @@
 //client\src\components\common\FormElements\FormMeasureSelector.tsx
 import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { Measure } from "@/types/measure-types/measureTypes";
 import { TableFormSelectType } from "@/types/table-types/tableTypes";
 import { useFormContext } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { PaginatedData } from "../Pagination/Pagination";
+import { t } from "i18next";
 
-const MeasureSelector = ({ label, name, placeholder, defaultVal }: TableFormSelectType) => {
-  const { control } = useFormContext();
-
+const MeasureSelector = ({ label, name, defaultVal }: TableFormSelectType) => {
+  const { control, setValue } = useFormContext();
+  const [selectedMeasure, setSelectedMeasure] = useState(defaultVal);
+  
   const { data: measures } = useFetchDataQuery<PaginatedData<Measure>>({
     URL: "/measures",
     queryKey: ["measures"],
@@ -18,6 +21,13 @@ const MeasureSelector = ({ label, name, placeholder, defaultVal }: TableFormSele
     }
   });
 
+  useEffect(() => {
+    if (defaultVal) {
+      setValue(name, defaultVal);
+      setSelectedMeasure(defaultVal);
+    }
+  }, [defaultVal, name, setValue]);
+  
   return (
     <FormField
       control={control}
@@ -25,21 +35,23 @@ const MeasureSelector = ({ label, name, placeholder, defaultVal }: TableFormSele
       render={({ field }) => (
         <FormItem>
           <FormLabel className="font-semibold">{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={defaultVal}>
+          <Select onValueChange={(value: any) => {
+            field.onChange(value)
+            setSelectedMeasure(value)
+            }} defaultValue={selectedMeasure}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={placeholder} />
+                <SelectValue placeholder={selectedMeasure || t("Select measure")} >
+                  {selectedMeasure}
+                </SelectValue>
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              <SelectGroup>
-                {measures &&
-                  measures.data.map(measure => (
-                    <SelectItem key={measure.id} value={measure.name}>
-                      {measure.name}
-                    </SelectItem>
-                  ))}
-              </SelectGroup>
+              {measures?.data.map(measure => (
+                <SelectItem key={measure.id} value={measure.name}>
+                  {measure.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </FormItem>

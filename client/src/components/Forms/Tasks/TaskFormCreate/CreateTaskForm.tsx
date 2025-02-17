@@ -27,8 +27,8 @@ const CreateTaskForm = ({ handleSubmit, isPending }: CreateTaskFormProps) => {
       <form id="task-form" onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="grid grid-cols-2 md:grid-cols-1 gap-2 mb-2">
           <FormFieldInput type="text" label="Task name" name="name" className="pl-10" Icon={ClipboardList} />
-          <FormFieldInput type="number" label="Total work in measure" name="total_work_in_selected_measure" className="pl-10" Icon={Hammer} />
-          <FormFieldInput type="text" label="Total price" name="total_price" className="pl-10" Icon={DollarSign} />
+          <FormFieldInput type="number" label="Total work in measure" name="total_work_in_selected_measure" className="pl-10" Icon={Hammer}/>
+          <FormFieldInput type="text" label="Total price" name="total_price" className="pl-10" Icon={DollarSign}/>
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-1 content-around gap-2 mb-2">
@@ -47,7 +47,7 @@ const CreateTaskForm = ({ handleSubmit, isPending }: CreateTaskFormProps) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2 pt-1.5">
           <FormDatePicker name="start_date" label="Select new start date" />
-          <FormDatePicker name="end_date" label="Select new end date" />
+          <FormDatePicker name="end_date" label="Select new end date"/>
         </div>
         <Separator className="mt-2 mb-2" />
         <FormTextareaInput name="note" label="Task note" placeholder="Task notes..." type="text" />
