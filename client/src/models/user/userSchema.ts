@@ -23,7 +23,9 @@ export const userSchema = z.object({
   }),
   status: z.enum(["active", "inactive"], {
     message: "Please select status"
-  })
+  }),
+  user_limit: z.number().min(0).default(10),
+  readonly: z.boolean().default(false)
 });
 
 export const editUserSchema = z.object({
@@ -88,7 +90,8 @@ export const userDefaultValues: User = {
   role: "user",
   status: "active",
   email: "",
-  readonly: false
+  readonly: false,
+  user_limit: 10
 };
 
 export const resetPasswordSchema = z.object({

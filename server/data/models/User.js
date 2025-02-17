@@ -59,6 +59,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         allowNull: true,
         defaultValue: false
+      },
+      user_limit: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 10
       }
     },
     {

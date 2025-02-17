@@ -22,6 +22,24 @@ const createUser = async (req, res, next) => {
       manager_id = req.user.id;
     }
 
+    if (req.user?.role === "manager") {
+
+      
+      const currentUserCount = await User.count({
+        where: { creator_id: req.user.id }
+      });
+
+      const { user_limit } = await User.findOne({
+        where: { id: req.user.id },
+        attributes: ["user_limit"]
+      });
+      console.log(currentUserCount, user_limit, 'currentUserCount, currentUserLimit.user_limit');
+
+      if (currentUserCount >= user_limit) {
+        throw new ApiError(400, "You have reached your user limit!");
+      }
+    }
+
     const newUser = await User.create({
       full_name,
       username,
