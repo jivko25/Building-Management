@@ -26,6 +26,7 @@ export type User = {
   status: "active" | "inactive";
   role: "user" | "manager" | "admin";
   readonly: boolean;
+  user_limit?: number;
 };
 
 export interface PasswordResetFormData {

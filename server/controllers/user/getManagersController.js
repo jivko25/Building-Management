@@ -15,7 +15,7 @@ const getManagers = async (req, res, next) => {
       where: {
         role: "manager"
       },
-      attributes: ["id", "full_name", "username", "role", "status", "readonly", "email"]
+      attributes: ["id", "full_name", "username", "role", "status", "readonly", "email", "user_limit"]
     });
 
     res.status(200).json({
