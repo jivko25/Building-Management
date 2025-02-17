@@ -58,14 +58,15 @@ const editTask = async (req, res, next) => {
     let activityRecord, measureRecord;
     
     if (activity) {
-      activityRecord = await Activity.findOne({ where: { name: activity } });
+      activityRecord = await Activity.findOne({ where: { name: activity, creator_id: req.user.id } });
       if (!activityRecord) {
         throw new ApiError(404, `Activity "${activity}" not found!`);
       }
     }
 
     if (measure) {
-      measureRecord = await Measure.findOne({ where: { name: measure } });
+      measureRecord = await Measure.findOne({ where: { name: measure, creator_id: req.user.id } });
+      
       if (!measureRecord) {
         throw new ApiError(404, `Measure "${measure}" not found!`);
       }
@@ -76,11 +77,11 @@ const editTask = async (req, res, next) => {
       ...(name && { name }),
       ...(activityRecord && { activity_id: activityRecord.id }),
       ...(measureRecord && { measure_id: measureRecord.id }),
-      ...(total_price && { total_price }),
-      ...(total_work_in_selected_measure && { total_work_in_selected_measure }),
-      ...(start_date && { start_date }),
-      ...(end_date && { end_date }),
-      ...(note !== undefined && { note }),
+      total_price: total_price || null,
+      total_work_in_selected_measure: total_work_in_selected_measure || null,
+      start_date: start_date || null,
+      end_date: end_date || null,
+      note: note || null,
       ...(status && { status })
     };
 
