@@ -87,8 +87,6 @@ const editTask = async (req, res, next) => {
 
     const updatedTask = await task.update(updateData);
 
-    console.log("Task updated:", updatedTask.id);
-
     // Взимане на обновената задача с всички връзки
     const taskWithRelations = await Task.findByPk(taskId, {
       include: [
