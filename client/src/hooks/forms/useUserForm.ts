@@ -3,7 +3,7 @@ import { useDynamicForm } from "./dynamicForm/useDynamicForm";
 import { EditUserSchema, editUserSchema, userDefaultValues, userSchema, UserSchema } from "@/models/user/userSchema";
 
 export const useUserFormHooks = () => {
-  const { useCreateForm } = useDynamicForm<UserSchema>(userSchema, userDefaultValues);
+  const { useCreateForm } = useDynamicForm<UserSchema>(userSchema as any, userDefaultValues);
   const { useEditForm } = useDynamicForm<EditUserSchema>(editUserSchema, userDefaultValues);
 
   return {
