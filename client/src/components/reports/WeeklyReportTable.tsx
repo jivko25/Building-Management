@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { format, getDay } from "date-fns";
+import { format, getDay, startOfWeek, endOfWeek } from "date-fns";
 import apiClient from "@/api/axiosConfig";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { bg } from "date-fns/locale"; // За български локал
 
 type Activity = {
   activity: string;
@@ -51,12 +52,43 @@ export const WeeklyReportTable = ({ projectId }: { projectId: string }) => {
 
   // Функция за получаване на текущата седмица
   function getCurrentWeekNumber() {
-    const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 1);
-    const diff = now.getTime() - start.getTime();
-    const oneWeek = 1000 * 60 * 60 * 24 * 7;
-    return Math.ceil(diff / oneWeek);
+    const date = new Date();
+    // Копираме датата
+    const target = new Date(date.valueOf());
+    // Намираме четвъртък (ISO седмиците се определят от четвъртък)
+    const dayNr = (date.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNr + 3);
+    // Намираме първи януари
+    const jan4 = new Date(target.getFullYear(), 0, 4);
+    // Намираме четвъртък на първата седмица
+    const dayDiff = (target.getTime() - jan4.getTime()) / 86400000;
+    // Изчисляваме седмицата
+    return 1 + Math.ceil(dayDiff / 7);
   }
+
+  // Функция за получаване на диапазона от дати за седмицата
+  const getWeekDateRange = (weekNumber: number) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const firstThursday = new Date(year, 0, 4);
+    
+    // Намираме първия понеделник на първата ISO седмица
+    const firstMonday = new Date(firstThursday);
+    firstMonday.setDate(firstThursday.getDate() - ((firstThursday.getDay() + 6) % 7));
+    
+    // Изчисляваме началната дата на желаната седмица
+    const weekStart = new Date(firstMonday);
+    weekStart.setDate(firstMonday.getDate() + (weekNumber - 1) * 7);
+    
+    // Изчисляваме крайната дата (неделя)
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    
+    return {
+      start: format(weekStart, "dd.MM.yyyy", { locale: bg }),
+      end: format(weekEnd, "dd.MM.yyyy", { locale: bg })
+    };
+  };
 
   // Добавяме нов useEffect за зареждане на общото обобщение
   useEffect(() => {
@@ -193,7 +225,12 @@ export const WeeklyReportTable = ({ projectId }: { projectId: string }) => {
         {/* Weekly Report Section */}
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-            <CardTitle>Weekly Report - Week {currentWeek}</CardTitle>
+            <div>
+              <CardTitle>Weekly Report - Week {currentWeek}</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                {getWeekDateRange(currentWeek).start} - {getWeekDateRange(currentWeek).end}
+              </p>
+            </div>
             <div className="flex items-center gap-2">
               <Button 
                 variant="outline" 
