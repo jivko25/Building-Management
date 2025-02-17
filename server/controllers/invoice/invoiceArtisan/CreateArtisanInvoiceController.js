@@ -109,7 +109,6 @@ const createArtisanInvoice = async (req, res, next) => {
 
     // Create invoice items
     for (const workItem of workItems) {
-      console.log(workItem, 'workitem');
       const defaultPricing = await DefaultPricing.findOne({
         attributes: ["id", "activity_id", "measure_id", "project_id", "manager_price", "artisan_price"],
         where: {
@@ -123,11 +122,9 @@ const createArtisanInvoice = async (req, res, next) => {
         throw new Error(`Default pricing not found for project ${workItem.project_id}, activity ${workItem.activity.id}, measure ${workItem.measure.id}`);
       }
 
-      if (!defaultPricing?.artisan_price) {
-        throw new Error(`Artisan price not set for project ${workItem.project_id}, activity ${workItem.activity.id}, measure ${workItem.measure.id}`);
-      }
-
-      
+      const quantity = workItem.hours || workItem.quantity;
+      const totalPrice = parseFloat(workItem.total_artisan_price);
+      const pricePerUnit = quantity > 0 ? totalPrice / parseFloat(quantity) : 0;
 
       const invoiceItem = await InvoiceItem.create(
         {
@@ -137,23 +134,26 @@ const createArtisanInvoice = async (req, res, next) => {
           task_id: workItem.task.id,
           activity_id: workItem.activity.id,
           measure_id: workItem.measure.id,
-          quantity: workItem.hours ? workItem.hours : workItem.quantity,
-          price_per_unit: workItem.total_artisan_price / (workItem.hours ? workItem.hours : workItem.quantity),
-          total_price: workItem.total_artisan_price,
+          quantity: parseFloat(quantity),
+          price_per_unit: parseFloat(pricePerUnit),
+          total_price: parseFloat(totalPrice),
           creator_id: req.user.id
-
         },
         { transaction: t }
       );
 
-      totalAmount += invoiceItem.total_price;
+      totalAmount += parseFloat(invoiceItem.total_price);
 
-      // Mark work item as invoiced
       await workItem.update({ is_artisan_invoiced: true }, { transaction: t });
     }
 
-    // Update invoice total
-    await invoice.update({ total_amount: totalAmount }, { transaction: t });
+    // Update invoice total с чисто число
+    await invoice.update(
+      { 
+        total_amount: parseFloat(totalAmount)
+      }, 
+      { transaction: t }
+    );
 
     await t.commit();
 
@@ -206,11 +206,7 @@ const createArtisanInvoice = async (req, res, next) => {
   } catch (error) {
     await t.rollback();
     console.error("Error creating artisan invoice:", error);
-    res.status(400).json({
-      success: false,
-      status: "error",
-      message: error.message
-    });
+    next(error);
   }
 };
 

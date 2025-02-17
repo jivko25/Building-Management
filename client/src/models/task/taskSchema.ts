@@ -24,15 +24,21 @@ export const baseTaskSchema = z.object({
   // Незадължителни полета
   total_price: z.coerce.number().nullable().optional(),
   total_work_in_selected_measure: z.coerce.number().nullable().optional(),
-  start_date: z.string().nullable().optional(),
-  end_date: z.string().nullable().optional(),
+  start_date: z
+    .union([z.string(), z.date(), z.null()])
+    .optional()
+    .transform(val => val ? new Date(val) : null),
+  end_date: z
+    .union([z.string(), z.date(), z.null()])
+    .optional()
+    .transform(val => val ? new Date(val) : null),
   note: z.string().max(100).nullable().optional(),
 });
 
 export const taskSchema = baseTaskSchema.refine(
   data => {
     if (data.start_date && data.end_date) {
-      return new Date(data.end_date) >= new Date(data.start_date);
+      return data.end_date >= data.start_date;
     }
     return true;
   },

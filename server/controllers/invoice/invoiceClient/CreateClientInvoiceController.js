@@ -185,6 +185,10 @@ const createClientInvoice = async (req, res, next) => {
         throw new ApiError(404, `No default pricing found for activity ${workItem.activity.name} in project ${workItem.task.project.name}`);
       }
 
+      const quantity = workItem.hours || workItem.quantity;
+      const pricePerUnit = parseFloat(workItem.total_manager_price) / quantity;
+      const totalPrice = parseFloat(workItem.total_manager_price);
+
       const invoiceItem = await InvoiceItem.create(
         {
           invoice_id: invoice.id,
@@ -193,9 +197,9 @@ const createClientInvoice = async (req, res, next) => {
           measure_id: workItem.measure.id,
           project_id: workItem.task.project.id,
           task_id: workItem.task.id,
-          quantity: parseFloat(workItem.quantity),
-          price_per_unit: workItem.total_manager_price / workItem.quantity,
-          total_price: workItem.total_manager_price,
+          quantity: quantity,
+          price_per_unit: Number(pricePerUnit.toFixed(2)),
+          total_price: Number(totalPrice.toFixed(2)),
           created_at: currentDate,
           updated_at: currentDate,
           creator_id: req.user.id
@@ -203,14 +207,19 @@ const createClientInvoice = async (req, res, next) => {
         { transaction: t }
       );
 
-      totalAmount += invoiceItem.total_price;
+      totalAmount += Number(invoiceItem.total_price);
 
       // Маркираме работния елемент като фактуриран
       await workItem.update({ is_client_invoiced: true }, { transaction: t });
     }
 
-    // Обновяваме общата сума на фактурата
-    await invoice.update({ total_amount: totalAmount }, { transaction: t });
+    // Обновяваме общата сума на фактурата с форматирано число
+    await invoice.update(
+      { 
+        total_amount: Number(totalAmount.toFixed(2)) 
+      }, 
+      { transaction: t }
+    );
 
     await t.commit();
 
@@ -246,15 +255,7 @@ const createClientInvoice = async (req, res, next) => {
   } catch (error) {
     await t.rollback();
     console.error("Error creating invoice:", error);
-    if (error instanceof ApiError) {
-      res.status(error.statusCode).json({
-        success: false,
-        status: error.status,
-        message: error.message
-      });
-    } else {
-      next(new ApiError(500, "Internal Server Error"));
-    }
+    next(error);
   }
 };
 
