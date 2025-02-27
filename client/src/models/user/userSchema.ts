@@ -48,10 +48,10 @@ export const editUserSchema = z.object({
 
 
 export const loginFormSchema = z.object({
-  username: z.string().min(5, {
+  username: z.string().min(1, {
     message: "Wrong username or password"
   }),
-  password: z.string().min(5, {
+  password: z.string().min(1, {
     message: "Wrong username or password"
   })
 });
