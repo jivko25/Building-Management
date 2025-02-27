@@ -83,6 +83,14 @@ body:has(#register-form) {
   label {
     color: white !important;
   }
+  .error-message-text {
+    color: red !important;
+  }
+  .language-select-container {
+    button {
+      background-color: white !important;
+    }
+  }
 }
 
 form {

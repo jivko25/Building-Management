@@ -357,5 +357,25 @@
   "Unpaid to artisan": "Unbezahlter Handwerker",
   "Paid to artisan": "Bezahlter Handwerker",
   "Yes": "Ja",
-  "No": "Nein"
+  "No": "Nein",
+  "Register": "Registrieren",
+  "Enter your details below to create a new account": "Geben Sie Ihre Details unten ein, um ein neues Konto zu erstellen",
+  "Already have an account? Login": "Sie haben bereits ein Konto? Anmelden",
+  "Username": "Benutzername",
+  "Password": "Passwort",
+  "Full Name": "Vollständiger Name",
+  "Email": "E-Mail",
+  "I accept the": "Ich akzeptiere die",
+  "terms and conditions": "Nutzungsbedingungen",
+  "Select Language": "Sprache auswählen",
+  "Forgot Password": "Passwort vergessen",
+  "Enter your email below to reset your password": "Geben Sie Ihre E-Mail-Adresse unten ein, um Ihr Passwort zurückzusetzen",
+  "Email has been sent successfully!": "E-Mail wurde erfolgreich gesendet!",
+  "Enter your new password below": "Geben Sie Ihr neues Passwort unten ein",
+  "New Password": "Neues Passwort",
+  "Reset Password": "Passwort zurücksetzen",
+  "Reset your password": "Ihr Passwort zurücksetzen",
+  "Reset your password by entering your new password below": "Ihr Passwort zurücksetzen, indem Sie Ihr neues Passwort unten eingeben",
+  "Reset your password by entering your email below": "Ihr Passwort zurücksetzen, indem Sie Ihre E-Mail-Adresse unten eingeben"
+
 }
