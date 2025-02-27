@@ -8,6 +8,10 @@ const editMeasure = async (req, res, next) => {
     const { id } = req.params;
     const { name } = req.body;
 
+    if(id == 1) {
+      throw new ApiError(400, "You cannot edit the default measure");
+    }
+
     const measure = await Measure.findByPk(id);
 
     if (!measure) {
