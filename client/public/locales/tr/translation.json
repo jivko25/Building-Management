@@ -329,5 +329,13 @@
   "Reset Password": "Şifreyi Sıfırla",
   "Reset your password": "Şifrenizi sıfırlamak için aşağıdaki bilgileri giriniz",
   "Reset your password by entering your new password below": "Yeni şifrenizi aşağıya giriniz",
-  "Reset your password by entering your email below": "Şifrenizi sıfırlamak için aşağıdaki e-posta adresinizi giriniz"
+  "Reset your password by entering your email below": "Şifrenizi sıfırlamak için aşağıdaki e-posta adresinizi giriniz",
+  "Welcome": "Hoş Geldiniz",
+  "Enter your details below to login to your account": "Giriş yapmak için aşağıdaki bilgileri giriniz",
+  "Forgot your password?": "Şifrenizi mi unuttunuz?",
+  "Don't have an account? Register": "Hesabınız yok mu? Kayıt olun",
+  "VAT number must be at least 7 characters.": "Vergi numarası en az 7 karakter olmalıdır",
+  "VAT number cannot exceed 15 characters.": "Vergi numarası en fazla 15 karakter olmalıdır",
+  "IBAN must be at least 17 characters.": "IBAN en az 17 karakter olmalıdır",
+  "IBAN cannot exceed 34 characters.": "IBAN en fazla 34 karakter olmalıdır"
 }
