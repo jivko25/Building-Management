@@ -376,6 +376,13 @@
   "Reset Password": "Passwort zurücksetzen",
   "Reset your password": "Ihr Passwort zurücksetzen",
   "Reset your password by entering your new password below": "Ihr Passwort zurücksetzen, indem Sie Ihr neues Passwort unten eingeben",
-  "Reset your password by entering your email below": "Ihr Passwort zurücksetzen, indem Sie Ihre E-Mail-Adresse unten eingeben"
-
+  "Reset your password by entering your email below": "Ihr Passwort zurücksetzen, indem Sie Ihre E-Mail-Adresse unten eingeben",
+  "Welcome": "Willkommen",
+  "Enter your details below to login to your account": "Geben Sie Ihre Details unten ein, um sich bei Ihrem Konto anzumelden",
+  "Forgot your password?": "Passwort vergessen?",
+  "Don't have an account? Register": "Sie haben noch kein Konto? Registrieren",
+  "VAT number must be at least 7 characters.": "Die Umsatzsteuer-ID muss mindestens 7 Zeichen lang sein.",
+  "VAT number cannot exceed 15 characters.": "Die Umsatzsteuer-ID darf 15 Zeichen nicht überschreiten.",
+  "IBAN must be at least 17 characters.": "Die IBAN muss mindestens 17 Zeichen lang sein.",
+  "IBAN cannot exceed 34 characters.": "Die IBAN darf 34 Zeichen nicht überschreiten."
 }

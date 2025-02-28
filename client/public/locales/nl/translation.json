@@ -376,5 +376,13 @@
   "Reset Password": "Wachtwoord resetten",
   "Reset your password": "Uw wachtwoord resetten",
   "Reset your password by entering your new password below": "Uw wachtwoord resetten door uw nieuwe wachtwoord hieronder in te voeren",
-  "Reset your password by entering your email below": "Uw wachtwoord resetten door uw e-mailadres hieronder in te voeren"
+  "Reset your password by entering your email below": "Uw wachtwoord resetten door uw e-mailadres hieronder in te voeren",
+  "Welcome": "Welkom",
+  "Enter your details below to login to your account": "Voer uw gegevens hieronder in om u aan te melden bij uw account",
+  "Forgot your password?": "Wachtwoord vergeten?",
+  "Don't have an account? Register": "Hebt u geen account? Registreer",
+  "VAT number must be at least 7 characters.": "BTW-nummer moet minstens 7 tekens lang zijn.",
+  "VAT number cannot exceed 15 characters.": "BTW-nummer mag niet meer dan 15 tekens bevatten.",
+  "IBAN must be at least 17 characters.": "IBAN moet minstens 17 tekens lang zijn.",
+  "IBAN cannot exceed 34 characters.": "IBAN mag niet meer dan 34 tekens bevatten."
 }

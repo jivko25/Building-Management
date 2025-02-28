@@ -375,5 +375,17 @@
   "Reset Password": "Нулиране на парола",
   "Reset your password": "Нулиране на вашата парола",
   "Reset your password by entering your new password below": "Нулиране на вашата парола чрез въвеждане на новата парола по-долу",
-  "Reset your password by entering your email below": "Нулиране на вашата парола чрез въвеждане на вашата електронна поща по-долу"
+  "Reset your password by entering your email below": "Нулиране на вашата парола чрез въвеждане на вашата електронна поща по-долу",
+  "Welcome": "Добре дошли",
+  "Enter your details below to login to your account": "Въведете вашите данни по-долу, за да влезете в вашият акаунт",
+  "Forgot your password?": "Забравена ли е вашата парола?",
+  "Don't have an account? Register": "Нямате акаунт? Регистрация",
+  "VAT number must be at least 7 characters.": "ДДС номер трябва да бъде поне 7 символа",
+  "VAT number cannot exceed 15 characters.": "ДДС номер не може да надвишава 15 символа",
+  "IBAN must be at least 17 characters.": "IBAN трябва да бъде поне 17 символа",
+  "IBAN cannot exceed 34 characters.": "IBAN не може да надвишава 34 символа",
+  "VAT number must be at least 3 characters.": "ДДС номер трябва да бъде поне 3 символа",
+  "VAT number cannot exceed 50 characters.": "ДДС номер не може да надвишава 50 символа",
+  "IBAN must be at least 3 characters.": "IBAN трябва да бъде поне 3 символа",
+  "IBAN cannot exceed 50 characters.": "IBAN не може да надвишава 50 символа"
 }
