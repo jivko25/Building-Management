@@ -374,5 +374,13 @@
   "Reset Password": "Zresetuj hasło",
   "Reset your password": "Zresetuj swoje hasło",
   "Reset your password by entering your new password below": "Zresetuj swoje hasło, wprowadzając nowe hasło poniżej",
-  "Reset your password by entering your email below": "Zresetuj swoje hasło, wprowadzając swój email poniżej"
+  "Reset your password by entering your email below": "Zresetuj swoje hasło, wprowadzając swój email poniżej",
+  "Welcome": "Witaj",
+  "Enter your details below to login to your account": "Wprowadź swoje dane poniżej, aby się zalogować do swojego konta",
+  "Forgot your password?": "Zapomniałeś hasła?",
+  "Don't have an account? Register": "Nie masz jeszcze konta? Zarejestruj się",
+  "VAT number must be at least 7 characters.": "Numer VAT musi mieć co najmniej 7 znaków.",
+  "VAT number cannot exceed 15 characters.": "Numer VAT nie może przekroczyć 15 znaków.",
+  "IBAN must be at least 17 characters.": "IBAN musi mieć co najmniej 17 znaków.",
+  "IBAN cannot exceed 34 characters.": "IBAN nie może przekroczyć 34 znaków."
 }

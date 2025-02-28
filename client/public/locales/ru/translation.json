@@ -378,5 +378,13 @@
   "Reset Password": "сбросить пароль",
   "Reset your password": "сбросить пароль",
   "Reset your password by entering your new password below": "сбросить пароль, введя новый пароль ниже",
-  "Reset your password by entering your email below": "сбросить пароль, введя ваш email ниже"
+  "Reset your password by entering your email below": "сбросить пароль, введя ваш email ниже",
+  "Welcome": "добро пожаловать",
+  "Enter your details below to login to your account": "введите ваши данные ниже, чтобы войти в свой аккаунт",
+  "Forgot your password?": "забыли пароль?",
+  "Don't have an account? Register": "нет аккаунта? зарегистрироваться",
+  "VAT number must be at least 7 characters.": "номер НДС должен быть не менее 7 символов",
+  "VAT number cannot exceed 15 characters.": "номер НДС не может превышать 15 символов",
+  "IBAN must be at least 17 characters.": "IBAN должен быть не менее 17 символов",
+  "IBAN cannot exceed 34 characters.": "IBAN не может превышать 34 символов"
 }

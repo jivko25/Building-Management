@@ -378,5 +378,13 @@
   "Reset Password": "Resetați parola",
   "Reset your password": "Resetați parola",
   "Reset your password by entering your new password below": "Resetați parola, introducând noua parolă mai jos",
-  "Reset your password by entering your email below": "Resetați parola, introducând adresa dvs. de email mai jos"
+  "Reset your password by entering your email below": "Resetați parola, introducând adresa dvs. de email mai jos",
+  "Welcome": "Bine ați venit",
+  "Enter your details below to login to your account": "Introduceți detaliile de mai jos pentru a vă loga în contul dvs.",
+  "Forgot your password?": "Parola a fost uitată?",
+  "Don't have an account? Register": "Nu aveți un cont? Înregistrare",
+  "VAT number must be at least 7 characters.": "Numărul de TVA trebuie să aibă minim 7 caractere.",
+  "VAT number cannot exceed 15 characters.": "Numărul de TVA nu poate depăși 15 caractere.",
+  "IBAN must be at least 17 characters.": "IBAN trebuie să aibă minim 17 caractere.",
+  "IBAN cannot exceed 34 characters.": "IBAN nu poate depăși 34 caractere."
 }
