@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import useRegisterUser from "@/hooks/useRegisterUser";
 import AuthLayout from "@/components/layouts/AuthLayout";
+import FormErrors from "@/components/common/FormElements/FormErrors";
 
 const UserRegisterForm = () => {
   const { form, onSubmit, error, isLoading } = useRegisterUser();
@@ -19,9 +20,9 @@ const UserRegisterForm = () => {
 
   return (
     <AuthLayout>
-      <TermsAndConditionsModal 
-        visible={termsModalVisible} 
-        onHide={() => setTermsModalVisible(false)} 
+      <TermsAndConditionsModal
+        visible={termsModalVisible}
+        onHide={() => setTermsModalVisible(false)}
       />
       <div className="grid gap-6 border border-1 rounded-lg p-8">
         <div className="grid gap-2 text-center">
@@ -37,38 +38,38 @@ const UserRegisterForm = () => {
           className="grid gap-4"
         >
           <FormProvider {...form}>
-            <FormFieldInput 
-              name="username" 
-              label={t("Username")} 
-              type="text" 
-              className="pl-10 text-white" 
+            <FormFieldInput
+              name="username"
+              label={t("Username")}
+              type="text"
+              className="pl-10 text-white"
               Icon={User}
             />
-            <FormFieldInput 
-              name="password" 
-              label={t("Password")} 
-              type="password" 
-              className="pl-10 text-white" 
+            <FormFieldInput
+              name="password"
+              label={t("Password")}
+              type="password"
+              className="pl-10 text-white"
               Icon={Lock}
             />
-            <FormFieldInput 
-              name="full_name" 
-              label={t("Full Name")} 
-              type="text" 
-              className="pl-10 text-white" 
+            <FormFieldInput
+              name="full_name"
+              label={t("Full Name")}
+              type="text"
+              className="pl-10 text-white"
               Icon={User}
             />
-            <FormFieldInput 
-              name="email" 
-              label={t("Email")} 
-              type="text" 
-              className="pl-10 text-white" 
+            <FormFieldInput
+              name="email"
+              label={t("Email")}
+              type="text"
+              className="pl-10 text-white"
               Icon={User}
             />
 
             <div className="flex flex-col gap-2">
               <div className="flex items-center space-x-2">
-                <Checkbox 
+                <Checkbox
                   id="terms"
                   checked={form.watch("terms") || false}
                   onChange={e => form.setValue("terms", e.checked as boolean)}
@@ -76,8 +77,8 @@ const UserRegisterForm = () => {
                 />
                 <Label htmlFor="terms" className="text-sm text-gray-300">
                   {t("I accept the")} {" "}
-                  <Button 
-                    variant="link" 
+                  <Button
+                    variant="link"
                     className="p-0 text-blue-500 hover:underline"
                     onClick={() => setTermsModalVisible(true)}
                   >
@@ -92,12 +93,13 @@ const UserRegisterForm = () => {
               )}
             </div>
 
-            <DialogFooter 
-              disabled={!form.formState.isDirty || isLoading || !form.watch("terms")} 
-              label={t("Submit")} 
-              formName="register-form" 
-              className="mt-6" 
+            <DialogFooter
+              disabled={!form.formState.isDirty || isLoading || !form.watch("terms")}
+              label={t("Submit")}
+              formName="register-form"
+              className="mt-6"
             />
+            <FormErrors error={error} />
           </FormProvider>
         </form>
 
