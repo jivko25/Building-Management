@@ -7,11 +7,14 @@ const editActivity = async (req, res, next) => {
   const activityId = req.params.id;
   const { name, status } = req.body;
 
-  if(activityId == 1) {
-    throw new ApiError(400, "You cannot edit the default activity");
-  }
+  console.log(activityId);
+  
 
+  
   try {
+    if(activityId == 1) {
+      throw new ApiError(400, "You cannot edit the default activity");
+    }
     const activity = await Activity.findByPk(activityId);
 
     if (!activity) {
