@@ -185,7 +185,7 @@ const createClientInvoice = async (req, res, next) => {
         throw new ApiError(404, `No default pricing found for activity ${workItem.activity.name} in project ${workItem.task.project.name}`);
       }
 
-      const quantity = workItem.hours || workItem.quantity;
+      const quantity =  workItem.quantity || workItem.hours;
       const pricePerUnit = parseFloat(workItem.total_manager_price) / quantity;
       const totalPrice = parseFloat(workItem.total_manager_price);
 

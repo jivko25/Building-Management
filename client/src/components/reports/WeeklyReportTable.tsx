@@ -289,7 +289,7 @@ export const WeeklyReportTable = ({ projectId }: { projectId: string }) => {
             stripedRows
             tableStyle={{ width: '100%' }}
             footer={`Total Price: $${(report?.totalPrice || 0)?.toFixed(2)}`}
-            className="text-xs sm:text-sm"
+            className="text-xs sm:text-sm limited-width-mobile-table"
             scrollable
             scrollHeight="500px"
           >

@@ -10,7 +10,8 @@ const createClient = async (req, res, next) => {
     const existingClient = await Client.findOne({
       where: {
         client_company_name,
-        client_name
+        client_name,
+        creator_id: req.user.id
       }
     });
 

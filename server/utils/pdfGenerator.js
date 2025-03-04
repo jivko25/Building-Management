@@ -163,20 +163,30 @@ const createInvoicePDF = async (invoiceId, languageId) => {
           };
         }
 
-        // Групираме по име на активност
-        if (!groups[projectKey].activities[item.activity]) {
-          groups[projectKey].activities[item.activity] = {
+        // Преобразуваме стойностите в числа и форматираме до 2 десетични знака
+        const quantity = parseFloat(item.quantity) || 0;
+        const pricePerUnit = parseFloat(item.price_per_unit) || 0;
+        
+        // Форматираме цената за ключа с 2 десетични знака
+        const formattedPrice = pricePerUnit.toFixed(2);
+        const activityKey = `${item.activity}_${formattedPrice}`;
+
+        // Групираме по име на активност и форматирана цена за единица
+        if (!groups[projectKey].activities[activityKey]) {
+          groups[projectKey].activities[activityKey] = {
             name: item.activity,
             quantity: 0,
-            price_per_unit: item.price_per_unit,
+            price_per_unit: pricePerUnit,
             total: 0
           };
         }
 
         // Сумираме количествата
-        groups[projectKey].activities[item.activity].quantity += item.quantity;
-        // Преизчисляваме общата сума
-        groups[projectKey].activities[item.activity].total = groups[projectKey].activities[item.activity].quantity * groups[projectKey].activities[item.activity].price_per_unit;
+        groups[projectKey].activities[activityKey].quantity += quantity;
+        
+        // Преизчисляваме общата сума и форматираме до 2 десетични знака
+        groups[projectKey].activities[activityKey].total = 
+          parseFloat((groups[projectKey].activities[activityKey].quantity * pricePerUnit).toFixed(2));
 
         return groups;
       }, {});
@@ -632,18 +642,25 @@ const createArtisanInvoicePDF = async (invoiceId, languageId = 1) => {
           };
         }
 
+        // Създаваме уникален ключ за активността, включващ цената
         const activityName = item.activity?.name || "Unknown Activity";
-        if (!groups[projectKey].activities[activityName]) {
-          groups[projectKey].activities[activityName] = {
+        const pricePerUnit = parseFloat(item.price_per_unit) || 0;
+        const activityPriceKey = `${activityName}_${pricePerUnit.toFixed(2)}`;
+
+        // Използваме комбинирания ключ за групиране
+        if (!groups[projectKey].activities[activityPriceKey]) {
+          groups[projectKey].activities[activityPriceKey] = {
             name: activityName,
             quantity: 0,
-            price_per_unit: item.price_per_unit || 0,
+            price_per_unit: pricePerUnit,
             total: 0
           };
         }
 
-        groups[projectKey].activities[activityName].quantity += parseFloat(item.quantity) || 0;
-        groups[projectKey].activities[activityName].total = groups[projectKey].activities[activityName].quantity * (parseFloat(groups[projectKey].activities[activityName].price_per_unit) || 0);
+        const quantity = parseFloat(item.quantity) || 0;
+        groups[projectKey].activities[activityPriceKey].quantity += quantity;
+        groups[projectKey].activities[activityPriceKey].total = 
+          parseFloat((groups[projectKey].activities[activityPriceKey].quantity * pricePerUnit).toFixed(2));
 
         return groups;
       }, {});

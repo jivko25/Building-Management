@@ -119,9 +119,9 @@ export default function ManagerReportsPage() {
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div className="flex md:gap-60 min-h-screen bg-background">
+    <div className="flex md:gap-60 min-h-screen bg-background mb-10">
       <Sidebar />
-      <div className="flex-1 py-6 px-4 md:px-8">
+      <div className="flex-1 py-6 px-4 md:px-8 width-limiter">
         <Card className="shadow-lg">
           <CardHeader className="border-b pb-4">
             <CardTitle className="text-2xl font-bold">Мениджърски отчети</CardTitle>
@@ -210,7 +210,7 @@ export default function ManagerReportsPage() {
               rows={10}
               totalRecords={reports.length}
               lazy={false}
-              className="shadow-sm"
+              className="shadow-sm limited-width-mobile-table"
             >
               <Column 
                 field="activity" 
