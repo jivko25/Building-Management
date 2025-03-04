@@ -39,8 +39,10 @@ table {
 .p-datatable {
   @media (max-width: 786px) {
     overflow-x: scroll;
-    width: 100vw;
-  }
+    width: 85vw;
+    margin-left: auto;
+    margin-right: auto;
+    }
 
   .p-datatable-tbody {
     > tr {
@@ -48,6 +50,12 @@ table {
         color: #000000 !important;
       }
     }
+  }
+}
+
+.limited-width-mobile-table {
+  @media (max-width: 768px) {
+    width: unset !important;
   }
 }
 
@@ -591,4 +599,34 @@ form::-webkit-scrollbar-thumb:hover {
 .p-datatable-footer {
   background-color: #F8F9FC !important;
   color: #6B7280 !important;
+}
+
+.width-limiter {
+  max-width: 95vw;
+}
+
+.container {
+  @media (max-width: 768px) {
+    padding-left: calc(5vw / 2) !important;
+    padding-right: calc(5vw / 2) !important;
+  }
+}
+
+.form-edit {
+  padding-left: 1px !important;
+  padding-right: 1px !important;
+}
+
+.p-inputwrapper.p-component {
+  padding: 0 !important;
+}
+
+.p-checkbox-box {
+  background-color: white !important;
+  border: 1px solid #6B7280 !important;
+}
+
+.p-datatable .p-datatable-tfoot > tr > td {
+  background-color: transparent;
+  color: #000000;
 }

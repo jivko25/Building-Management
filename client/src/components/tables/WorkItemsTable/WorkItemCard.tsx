@@ -62,7 +62,7 @@ const WorkItemCard: React.FC<UserProjectWorkItemsTableProps> = ({
 
   return (
     <div className="card w-full">
-      <DataTable value={workItems} paginator rows={10} tableStyle={{ minWidth: "50rem" }}>
+      <DataTable value={workItems} paginator rows={10} tableStyle={{ minWidth: "50rem" }} className="limited-width-mobile-table">
         <Column field="activity.name" header="Activity" sortable style={{ width: "20%" }}></Column>
         <Column
           field="artisan.name"

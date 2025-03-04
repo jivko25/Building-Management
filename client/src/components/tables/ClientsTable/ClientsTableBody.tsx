@@ -48,7 +48,7 @@ const ClientsTableBody = () => {
   }
 
   return (
-    <div className="flex flex-col flex-1 py-8 items-center md:px-0">
+    <div className="flex flex-col flex-1 py-8 items-center md:px-0 width-limiter">
       <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
         <SearchBar handleSearch={handleSearch} placeholder={t("Search clients...")} search={search} />
         <CreateClient />
