@@ -4,11 +4,12 @@ import Breadcrumb from "./Breadcrumb";
 import apiClient from "@/api/axiosConfig";
 import CreateTask from "@/components/Forms/Tasks/TaskFormCreate/CreateTask";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const TasksBreadcrumbs = () => {
   const { id } = useParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const { t } = useTranslation();
   const handleButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click(); // Отваря файловата система
@@ -40,21 +41,21 @@ const TasksBreadcrumbs = () => {
         <Breadcrumb
           items={[
             {
-              label: "Projects",
+              label: t("Projects"),
               href: "/projects"
             },
             {
-              label: "Tasks",
+              label: t("Tasks"),
               href: `/projects/${id}/tasks`
             }
           ]}
         />
       </div>
-      <div className="flex flex-row items-center border rounded-lg mx-8 p-4 backdrop-blur-sm project-cards-wrapper gap-3">
+      <div className="flex md:flex-row flex-col items-center border rounded-lg mx-8 p-4 backdrop-blur-sm project-cards-wrapper gap-3">
         <CreateTask />
-        <Button variant="outline" onClick={handleButtonClick}>
+        <Button variant="outline" onClick={handleButtonClick} className="md:w-auto w-full">
           <i className="pi pi-upload mr-3" style={{ color: "white", fontSize: "12px" }}></i>
-          Upload Image
+          {t("Upload Image")}
         </Button>
         <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
       </div>
