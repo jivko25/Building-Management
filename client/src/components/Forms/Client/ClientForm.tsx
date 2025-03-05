@@ -53,6 +53,7 @@ const ClientForm = ({ form, onSubmit, defaultValues }: ClientFormProps) => {
         <FormInput control={form.control} name="client_company_name" label={t("Company Name")} placeholder={t("Enter company name")} />
         <FormInput control={form.control} name="client_name" label={t("Client Name")} placeholder={t("Enter client name")} />
         <FormInput control={form.control} name="client_company_address" label={t("Address")} placeholder={t("Enter company address")} />
+        <FormInput control={form.control} name="postal_code" label={t("Postal Code")} placeholder={t("Enter postal code")} />
         <FormInput control={form.control} name="client_company_iban" label={t("IBAN")} placeholder={t("Enter company IBAN")} />
         <FormInput control={form.control} name="client_company_vat_number" label={t("VAT Number")} placeholder={t("Enter company VAT number")} />
         <FormEmailList control={form.control} name="client_emails" label={t("Email Addresses")} placeholder={t("Add email address")} />
