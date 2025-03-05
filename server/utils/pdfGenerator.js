@@ -47,7 +47,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
         {
           model: Client,
           as: "client",
-          attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails", "client_company_vat_number", "due_date"]
+          attributes: ["client_company_name", "client_name", "client_company_address", "client_company_iban", "client_emails", "client_company_vat_number", "due_date", "postal_code"]
         },
         {
           model: InvoiceItem,
@@ -137,6 +137,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
       clientName: invoice.client.client_name,
       clientAddress: invoice.client.client_company_address,
       clientVATNumber: invoice.client.client_company_vat_number,
+      clientPostalCode: invoice.client.postal_code,
       items: invoice.items.map(item => ({
         activity: item.activity.name,
         project_location: item.project.location,
@@ -399,6 +400,7 @@ const createInvoicePDF = async (invoiceId, languageId) => {
           <div class="company-main-info">
             <div class="name">${data.clientCompanyName}</div>
             <div class="info-row">${data.clientAddress}</div>
+            <div class="info-row">${data.clientPostalCode}</div>
             <div class="info-row">
               <span class="info-label">${t.vatNumber}</span>
               <span>${data.clientVATNumber}</span>

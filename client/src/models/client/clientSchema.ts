@@ -11,6 +11,11 @@ export const clientSchema = z.object({
   client_company_address: z.string().min(5, {
     message: "Address must be at least 5 characters"
   }),
+  postal_code: z.string().min(4, {
+    message: "Postal code must be at least 4 characters"
+  }).max(10, {
+    message: "Postal code cannot exceed 10 characters"
+  }),
   client_company_iban: z.string().min(5, {
     message: "IBAN must be at least 5 characters"
   }),
@@ -34,13 +39,14 @@ export const clientSchema = z.object({
     message: "Due date must be at least 1 week"
   }).max(52, {
     message: "Due date cannot exceed 52 weeks"
-  })
+  }),
 });
 
 export const clientDefaultValues: Client = {
   client_company_name: "",
   client_name: "",
   client_company_address: "",
+  postal_code: "",
   client_company_iban: "",
   client_emails: [],
   status: "active",
