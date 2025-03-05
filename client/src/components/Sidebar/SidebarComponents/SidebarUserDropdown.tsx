@@ -11,10 +11,11 @@ import { PopoverClose } from "@radix-ui/react-popover";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/config";
+
 const SidebarUserDropdown = () => {
   // const { theme, setTheme } = useTheme();
   // const [isChecked, setIsChecked] = useState<boolean>(false);
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -42,6 +43,15 @@ const SidebarUserDropdown = () => {
     }
   };
 
+  // Филтриране на линковете според ролята на потребителя
+  const filteredLinks = sidebarUserItems.links.filter(link => {
+    if (user?.role === 'user') {
+      // Ако потребителят е с роля 'user', скриваме prices и reports
+      return !['prices', 'reports'].includes(link.label);
+    }
+    return true; // Показваме всички линкове за други роли
+  });
+
   return (
     <PopoverContent className="w-[180px] p-0">
       <>
@@ -54,10 +64,15 @@ const SidebarUserDropdown = () => {
           </PopoverClose>
         </div> */}
         <Separator />
-        {sidebarUserItems.links.map((link, index) => (
+        {filteredLinks.map((link, index) => (
           <PopoverClose key={index} asChild>
             <Link to={link.href}>
-              <SidebarButton className="w-full p-1.5 text-sm" size="sm" icon={link.icon} onClick={() => handleItemClick(t(link.label), link.href)}>
+              <SidebarButton 
+                className="w-full p-1.5 text-sm" 
+                size="sm" 
+                icon={link.icon} 
+                onClick={() => handleItemClick(t(link.label), link.href)}
+              >
                 {t(link.label)}
               </SidebarButton>
             </Link>
