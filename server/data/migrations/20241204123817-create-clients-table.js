@@ -12,6 +12,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
+      postal_code: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       client_name: {
         type: Sequelize.STRING,
         allowNull: false

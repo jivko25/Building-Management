@@ -2,6 +2,7 @@ export type Client = {
   id?: number;
   client_company_name: string;
   client_name: string;
+  postal_code: string;
   client_company_address: string;
   client_company_iban: string;
   client_emails: string[];

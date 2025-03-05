@@ -11,6 +11,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true
       },
+      postal_code: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        comment: "Postal code of the client's address"
+      },
       client_name: {
         type: DataTypes.STRING,
         allowNull: false
