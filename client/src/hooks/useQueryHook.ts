@@ -59,7 +59,7 @@ export const useGetInfiniteData = <TData>({ URL, queryKey }: FetchQueryOptions):
   });
 };
 
-export const useFetchDataQuery = <TData>({ URL, queryKey, options }: FetchDataQueryOptions<TData>) => {
+export const useFetchDataQuery = <TData>({ URL, queryKey, options, enabled = true }: FetchDataQueryOptions<TData>) => {
   console.log("Fetching data query from:", URL);
   return useQuery({
     queryKey,
@@ -68,6 +68,7 @@ export const useFetchDataQuery = <TData>({ URL, queryKey, options }: FetchDataQu
       console.log("Query response:", response);
       return response;
     },
+    enabled,
     ...options
   });
 };

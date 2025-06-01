@@ -14,6 +14,7 @@ import { ResponseMessageType } from "@/types/response-message/responseMessageTyp
 import ResponseMessage from "@/components/common/ResponseMessages/ResponseMessage";
 import { Project } from "@/types/project-types/projectTypes";
 import { useTranslation } from "react-i18next";
+import apiClient from "@/api/axiosConfig";
 
 export default function AllDefaultValuesTable({ artisanId, artisanName }: { artisanId: string; artisanName: string }) {
   const { t } = useTranslation();
@@ -111,9 +112,9 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
   const deleteDefaultPricing = async (defaultPriceId: string) => {
     console.log(defaultPriceId);
     try {
-      await deleteEntity(`/default-pricing/${defaultPriceId}`, { id: defaultPriceId });
+      // await deleteEntity(`/default-pricing/${defaultPriceId}`, { id: defaultPriceId });
+      apiClient.delete(`/default-pricing/${defaultPriceId}`).then(() => refetch())
       setResponseMessage({ type: "success", message: t("Values deleted successfully!") });
-      refetch();
     } catch (error) {
       console.error(error);
       setResponseMessage({ type: "error", message: t("Something went wrong!") });
@@ -122,14 +123,14 @@ export default function AllDefaultValuesTable({ artisanId, artisanName }: { arti
 
   return (
     <div className="w-full flex flex-col justify-center items-center overflow-auto">
-      <DataTable 
-        value={defaultPricings} 
+      <DataTable
+        value={defaultPricings}
         header={header}
-        showGridlines 
-        stripedRows 
-        paginator 
-        rows={10} 
-        tableStyle={{ minWidth: "50rem" }} 
+        showGridlines
+        stripedRows
+        paginator
+        rows={10}
+        tableStyle={{ minWidth: "50rem" }}
         emptyMessage="No default prices found"
       >
         <Column field="activity" header={t("Activity")} body={activityBodyTemplate} className="text-sm md:text-base" sortable />

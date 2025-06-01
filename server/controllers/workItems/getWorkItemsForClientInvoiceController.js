@@ -12,16 +12,12 @@ const getWorkItemsForClientInvoice = async (req, res, next) => {
     // Конвертираме стринговите параметри в числа, ако съществуват
     const whereClause = {};
 
-    if (!company_id && !client_id && !project_id) {
-      whereClause.creator_id = req.user.id;
-    }
+    whereClause.creator_id = req.user.id;
 
-    
-    
     if (company_id) whereClause.company_id = parseInt(company_id);
     if (client_id) whereClause.client_id = parseInt(client_id);
     if (project_id) whereClause.id = parseInt(project_id); // За проекта използваме id
-    
+
     console.log(whereClause, 'whereClause');
 
     console.log("📋 Constructed where clause:", whereClause);
@@ -86,7 +82,7 @@ const getWorkItemsForClientInvoice = async (req, res, next) => {
     const workItems = workItemsResponse.filter(item => projectIds.includes(item.project_id));
 
     console.log(workItems, 'workItems');
-    
+
 
     console.log(`📦 Found ${workItems.length} work items`);
 

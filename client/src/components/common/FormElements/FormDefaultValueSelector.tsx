@@ -7,56 +7,71 @@ import { Input } from "@/components/ui/input";
 import { useFetchDataQuery } from "@/hooks/useQueryHook";
 import { DefaultPricingResponse } from "@/types/defaultPricingType/defaultPricingTypes";
 
-const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_id, project_id }: TableFormSelectType) => {
+const DefaultPricingSelector = ({
+  label,
+  name,
+  placeholder,
+  defaultVal,
+  artisan_id,
+  project_id,
+}: TableFormSelectType) => {
   const { control, setValue } = useFormContext();
 
   const { data: defaultPricingsResponse } = useFetchDataQuery<DefaultPricingResponse>({
-    URL: artisan_id ? `/default-pricing/${artisan_id}${project_id ? `?project_id=${project_id}` : ""}` : `/default-pricing`,
-    queryKey: ["default-pricing", artisan_id, project_id]
+    URL: artisan_id ? `/default-pricing/${artisan_id}${project_id ? `?project_id=${project_id}` : ""}` : null as any,
+    queryKey: ["default-pricing", artisan_id, project_id],
+    enabled: !!artisan_id,
   });
 
-  useEffect(() => {
-    if (defaultVal) {
-      setValue(name, defaultVal);
-    }
-  }, [defaultVal]);
-
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState(""); // Дебаунсната стойност
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase();
     setSearchQuery(value);
 
-    // Дебаунсинг
-    if (debounceTimeout.current) {
-      clearTimeout(debounceTimeout.current);
-    }
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
 
     debounceTimeout.current = setTimeout(() => {
       setDebouncedQuery(value);
-    }, 500); // Забавяне с 300ms
+    }, 1500);
   };
 
-  // Филтриране на данните
   const defaultPricings = defaultPricingsResponse?.data || [];
+
   const filteredPricings = Array.from(
     new Map(
       defaultPricings
-        .filter((item: any) => 
-          `${item?.activity?.name || ""}/${item?.measure?.name || ""}`.toLowerCase().includes(debouncedQuery)
+        .filter((item: any) =>
+          `${item?.activity?.name || ""}/${item?.measure?.name || ""}`
+            .toLowerCase()
+            .includes(debouncedQuery)
         )
-        .map(item => [`${item.activity_id}-${item.measure_id}`, item])
+        .map((item) => [`${item.activity_id}-${item.measure_id}`, item])
     ).values()
   );
 
-  const formulateDefaultPricingLabel = (pricing: any) => {
-    if (pricing?.activity.name === undefined || pricing?.measure?.name === undefined) {
-      return "";
-    }
-    return `${pricing?.activity.name}/${pricing?.measure.name}`;
-  };
+  console.error(  {label,
+    name,
+    placeholder,
+    defaultVal,
+    artisan_id,
+    project_id, defaultPricings}, 'props');
+  
+
+  // ⚠️ Само ако:
+  // - имаме defaultVal
+  // - имаме данни
+  // - полето е празно (не е избрано нищо още)
+  useEffect(() => {
+    setValue(name, defaultVal);
+  }, [defaultVal, defaultPricings, name, setValue, ]);
+
+  console.log(defaultPricings.find((item) => item.id == defaultVal)?.activity?.name +
+    "/" +
+    defaultPricings.find((item) => item.id == defaultVal)?.measure?.name, defaultVal);
+
 
   return (
     <FormField
@@ -65,24 +80,28 @@ const DefaultPricingSelector = ({ label, name, placeholder, defaultVal, artisan_
       render={({ field }) => (
         <FormItem>
           <FormLabel className="font-semibold">{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={defaultVal}>
+          <Select onValueChange={field.onChange} value={field.value}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder={placeholder}>
-                  {formulateDefaultPricingLabel(
-                    defaultPricings?.find(pricing => {
-                      console.log(pricing.id == field.value);
-
-                      return pricing.id == field.value;
-                    })
-                  ) || placeholder}
+                  {
+                    defaultPricings.find((item) => {
+                      console.log(field.value, 'fieldValue')
+                      return item.id == field.value})?.activity?.name +
+                    "/" +
+                    defaultPricings.find((item) => item.id == field.value)?.measure?.name
+                  }
                 </SelectValue>
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              {/* Search Input Field */}
-              <Input type="text" placeholder="Search..." value={searchQuery} onChange={handleSearchChange} className="p-2 border border-gray-300 rounded mb-2" />
-              {/* Филтрирани опции */}
+              <Input
+                type="text"
+                placeholder="Търси..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="p-2 border border-gray-300 rounded mb-2"
+              />
               {filteredPricings.map((item: any) => (
                 <SelectItem key={item.id} value={item.id}>
                   {item?.activity?.name}/{item?.measure?.name}

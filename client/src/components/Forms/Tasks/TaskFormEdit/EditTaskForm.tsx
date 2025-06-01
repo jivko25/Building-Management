@@ -37,8 +37,15 @@ const EditTaskForm = ({ id, taskId, isPending, handleSubmit }: EditTaskFormProps
   useEffect(() => {
     if (taskId) {
       refetch();
+      const formattedTask = task ? {
+        ...task,
+        activity: task.activity?.name || "",
+        measure: task.measure?.name || "",
+        artisans: task.artisans?.map((artisan: any) => artisan.name) || []
+      } : {};
+      form.reset(formattedTask)
     }
-  }, [taskId, refetch]);
+  }, [taskId, refetch, isLoading]);
   
   // Трансформираме данните преди да ги подадем на формата
   const transformedTask = task ? {

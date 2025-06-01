@@ -33,9 +33,7 @@ const TaskItemStatusSelector = ({ label, name, defaultVal }: TableFormSelectType
           }} defaultValue={selectedStatus}>
             <FormControl>
               <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder={selectedStatus || t("Select status")}>
-                  {selectedStatus}
-                </SelectValue>
+                <SelectValue placeholder={selectedStatus || t("Select status")}/>
               </SelectTrigger>
             </FormControl>
             <SelectContent>
