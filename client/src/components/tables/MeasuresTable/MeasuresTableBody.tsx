@@ -1,56 +1,53 @@
-// src/components/tables/MeasuresTable/MeasuresTableBody.tsx
-import { TableCell } from "@/components/ui/table";
-import { Ruler } from "lucide-react";
-
-import { TableRow } from "@/components/ui/table";
-
-import MeasuresCard from "./MeasuresCard";
-
-import ConditionalRenderer from "@/components/common/ConditionalRenderer/ConditionalRenderer";
-
-import { Table } from "@/components/ui/table";
-
-import { TableBody } from "@/components/ui/table";
-
+import React from "react";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import MeasuresLoader from "@/utils/SkeletonLoader/Measures/MeasuresLoader";
+import { CircleAlert, Ruler } from "lucide-react";
 import ErrorMessage from "@/components/common/FormMessages/ErrorMessage";
+import Pagination from "@/components/common/Pagination/Pagination";
+import SearchBar from "@/components/common/SearchBar/SearchBar";
 import CreateMeasure from "@/components/Forms/Measures/MeasureFormCreate/CreateMeasure";
-import { useFetchDataQuery } from "@/hooks/useQueryHook";
-
+import ConditionalRenderer from "@/components/common/ConditionalRenderer/ConditionalRenderer";
+import useSearchParamsHook from "@/hooks/useSearchParamsHook";
+import useSearchHandler from "@/hooks/useSearchHandler";
+import { useGetPaginatedData } from "@/hooks/useQueryHook";
+import MeasuresHeader from "./MeasuresHeader";
+import MeasuresCard from "./MeasuresCard";
+import { useTranslation } from "react-i18next";
 import { Measure } from "@/types/measure-types/measureTypes";
 
-import MeasuresLoader from "@/utils/SkeletonLoader/Measures/MeasuresLoader";
-import MeasuresHeader from "./MeasuresHeader";
-import { CircleAlert } from "lucide-react";
-import { useTranslation } from "react-i18next";
-
-interface MeasureResponse {
-  success: boolean;
-  data: Measure[];
-}
 const MeasuresTableBody = () => {
   const { t } = useTranslation();
+  const { itemsLimit, page, setSearchParams } = useSearchParamsHook();
+
+  const { search, handleSearch, debounceSearchTerm } = useSearchHandler({
+    setSearchParams
+  });
+
   const {
     data: measuresResponse,
-    isPending,
     isError
-  } = useFetchDataQuery<MeasureResponse>({
+  } = useGetPaginatedData<Measure>({
     URL: "/measures",
-    queryKey: ["measures"]
-  }) as { data: MeasureResponse; isPending: boolean; isError: boolean };
+    queryKey: ["measures"],
+    limit: itemsLimit,
+    page,
+    search: debounceSearchTerm
+  });
 
-  console.log("📏 Measures data:", measuresResponse);
-
-  if (isPending) {
-    return <MeasuresLoader measures={measuresResponse?.data} />;
-  }
+  const totalPages: number | undefined = measuresResponse?.totalPages;
 
   if (isError) {
-    return <ErrorMessage title="Oops..." Icon={CircleAlert} />;
+    return <ErrorMessage title={t("Oops...")} Icon={CircleAlert} />;
   }
 
   return (
-    <div className="flex w-full flex-col flex-1 py-8 items-center md:px-0">
-      <div className="flex gap-4 items-end justify-end w-full mb-4 md:w-2/3">
+    <div className="flex flex-col flex-1 py-8 items-center md:px-0">
+      <div className="flex flex-col-reverse md:flex-col-reverse lg:flex-row gap-4 w-full mb-4 md:w-2/3 justify-between">
+        <SearchBar
+          handleSearch={handleSearch}
+          placeholder={t("Search measures...")}
+          search={search}
+        />
         <CreateMeasure />
       </div>
       <Table className="w-full min-w-full">
@@ -58,13 +55,13 @@ const MeasuresTableBody = () => {
         <TableBody>
           <ConditionalRenderer
             data={measuresResponse?.data || []}
-            renderData={data => <MeasuresCard measures={data as Measure[]} />}
+            renderData={(data) => <MeasuresCard measures={data as Measure[]} />}
             noResults={{
               title: t("No measures found"),
               description: t("It looks like you haven't added any measures yet."),
               Icon: Ruler
             }}
-            wrapper={content => (
+            wrapper={(content) => (
               <TableRow>
                 <TableCell colSpan={2} className="text-center text-3xl">
                   {content}
@@ -74,6 +71,11 @@ const MeasuresTableBody = () => {
           />
         </TableBody>
       </Table>
+      <Pagination
+        setSearchParams={setSearchParams}
+        page={page}
+        totalPages={totalPages}
+      />
     </div>
   );
 };

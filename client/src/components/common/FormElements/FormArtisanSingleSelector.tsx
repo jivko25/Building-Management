@@ -33,8 +33,6 @@ const ArtisanSingleSelector = ({ label, name, placeholder }: TableFormSelectType
               <SelectTrigger>
                 <SelectValue placeholder={placeholder || "Select artisan"} defaultValue={artisans?.find(artisan => artisan.id == field.value)?.name || placeholder}>
                   {artisans?.find(artisan => {
-                    console.log(artisan.id == field.value);
-
                     return artisan.id == field.value;
                   })?.name || placeholder}
                 </SelectValue>

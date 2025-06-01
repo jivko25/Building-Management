@@ -96,8 +96,10 @@ const EditWorkItemForm = ({ handleSubmit, isPending, workItemId }: EditWorkItemF
       });
       if (foundedDefaultPrice) {
         const measureName = foundedDefaultPrice?.measure?.name.toLocaleLowerCase();
+        const activityName = foundedDefaultPrice?.activity?.name.toLocaleLowerCase();
+        
         setMeasureValue(measureName || "");
-        setShowQuantity(measureName !== 'hour');
+        setShowQuantity(measureName !== 'hour' || activityName !== 'hour');
       }
     }
   }, [artisanId, defaultPricing, defaultPricingsResponse]);
@@ -136,7 +138,11 @@ const EditWorkItemForm = ({ handleSubmit, isPending, workItemId }: EditWorkItemF
               <p className="text-xs text-gray-500 text-wrap">{measureValue}</p>
             </div>
           )}
-          <FormFieldInput name="hours" label="Hours" type="number" className="pl-10" Icon={Clock} />
+          {
+            !showQuantity && (
+              <FormFieldInput name="hours" label="Hours" type="number" className="pl-10" Icon={Clock} />
+            )
+          }
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2">

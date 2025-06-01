@@ -27,7 +27,7 @@ const MeasureSelector = ({ label, name, defaultVal }: TableFormSelectType) => {
       setSelectedMeasure(defaultVal);
     }
   }, [defaultVal, name, setValue]);
-  
+
   return (
     <FormField
       control={control}
@@ -41,9 +41,7 @@ const MeasureSelector = ({ label, name, defaultVal }: TableFormSelectType) => {
             }} defaultValue={selectedMeasure}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={selectedMeasure || t("Select measure")} >
-                  {selectedMeasure}
-                </SelectValue>
+                <SelectValue placeholder={selectedMeasure || t("Select measure")} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>

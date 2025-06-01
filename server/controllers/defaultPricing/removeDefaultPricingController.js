@@ -5,6 +5,8 @@ const ApiError = require("../../utils/apiError");
 const removeDefaultPricing = async (req, res, next) => {
     try {
         const defaultPricingId = req.params.id;
+        console.log(defaultPricingId, 'remove');
+        
         const defaultPricing = await DefaultPricing.findByPk(defaultPricingId);
         if (!defaultPricing) {
             throw new ApiError(404, "Default pricing not found!");

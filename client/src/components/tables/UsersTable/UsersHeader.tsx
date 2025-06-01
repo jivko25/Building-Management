@@ -8,6 +8,7 @@ const UsersHeader = () => {
   const userHeaders: HeaderItems[] = [
     { key: "name", label: t("Name, Surname"), width: "w-20rem", align: "left" },
     { key: "user", label: t("User"), width: "w-20rem", align: "center" },
+    { key: "role", label: t("Role"), width: "w-20rem", align: "center" },
     { key: "options", label: t("Options"), width: "w-12.5rem", align: "right" }
   ];
 
