@@ -138,7 +138,8 @@ export const CreateClientInvoicePage = () => {
         toast.error("Error fetching work items");
         return { data: [], total: 0, totalPages: 0 };
       }
-    }
+    },
+    enabled: !!form.watch('company_id') && !!form.watch('client_company_id')
   });
 
   // Add error states
@@ -451,7 +452,7 @@ export const CreateClientInvoicePage = () => {
             />
           </div>
 
-          {form.watch("company_id") !== 0 && (
+          {/* {form.watch("company_id") !== 0 && (
             <div className="mt-6">
               <h2 className="text-xl font-semibold mb-4">{t("Select Projects")}</h2>
               <div className="grid grid-cols-3 gap-4 p-4 border rounded-lg bg-white shadow-sm">
@@ -460,7 +461,7 @@ export const CreateClientInvoicePage = () => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
           {workItemsResponse && workItemsResponse.data && (
             <div className="mt-8">
@@ -515,7 +516,7 @@ export const CreateClientInvoicePage = () => {
                                         id={`workItem-${workItem.id}`}
                                         value={workItem.id}
                                         label={`${workItem.activity.name || 'No description'}`}
-                                        sublabel={`Task ${workItem.task_id}`}
+                                        sublabel={`Task ${workItem.task.name}`}
                                         rightText={`${workItem.start_date ? new Date(workItem.start_date).toLocaleDateString() : 'No date'}`}
                                         checked={form.watch("selected_work_items")?.includes(workItem.id)}
                                         onChange={e => handleWorkItemChange(workItem.id, e.target.checked)}

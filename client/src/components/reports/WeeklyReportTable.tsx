@@ -326,13 +326,13 @@ export const WeeklyReportTable = ({ projectId }: { projectId: string }) => {
               sortable
               align="right"
             />
-            <Column 
+            {/* <Column 
               field="price" 
               header="Price" 
               body={priceBodyTemplate}
               sortable
               align="right"
-            />
+            /> */}
             <Column 
               field="total" 
               header="Total" 

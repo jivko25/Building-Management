@@ -1,4 +1,4 @@
-//server\controllers\user\getUsersController.js
+// server/controllers/user/getUsersController.js
 const db = require("../../data/index.js");
 const User = db.User;
 const { Op } = db.Sequelize;
@@ -41,17 +41,45 @@ const getUsers = async (req, res, next) => {
 };
 
 function buildWhereClause(role, currentUserId, searchTerm) {
-  const whereClause = {};
+  // Нека съберем всички подусловия в един обект чрез Op.and
+  const clauses = [];
 
+  // 1) Ако е "manager", показваме само потребители, които
+  //    - са създадени от текущия (creator_id = currentUserId) ИЛИ
+  //    - самия текущ потребител (id = currentUserId)
   if (role === "manager") {
-    whereClause[Op.or] = [{ creator_id: currentUserId }, { id: currentUserId }];
+    clauses.push({
+      [Op.or]: [
+        { creator_id: currentUserId },
+        { id: currentUserId }
+      ]
+    });
   }
 
+  // 2) Ако има търсене (searchTerm ≠ null), искаме да филтрираме по full_name или по username
   if (searchTerm) {
-    whereClause[Op.or] = [{ full_name: { [Op.like]: searchTerm } }, { username: { [Op.like]: searchTerm } }];
+    clauses.push({
+      [Op.or]: [
+        { full_name: { [Op.like]: searchTerm } },
+        { username: { [Op.like]: searchTerm } }
+      ]
+    });
   }
 
-  return whereClause;
+  // Ако няма нито едно подусловие, връщаме празен обект (няма допълнителен WHERE)
+  if (clauses.length === 0) {
+    return {};
+  }
+
+  // Ако имаме 1 условие, го връщаме директно:
+  if (clauses.length === 1) {
+    return clauses[0];
+  }
+
+  // Ако имаме 2 (или повече), комбинираме ги с Op.and:
+  return {
+    [Op.and]: clauses
+  };
 }
 
 module.exports = {

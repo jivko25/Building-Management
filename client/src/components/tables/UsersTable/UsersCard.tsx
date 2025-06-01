@@ -14,6 +14,7 @@ const UsersCard = ({ users }: UsersCardProps) => {
         <TableRow key={user.id}>
           <TableCell className="font-semibold">{user.full_name}</TableCell>
           <TableCell className="text-center font-semibold">{user.username}</TableCell>
+          <TableCell className="text-center font-semibold">{user.role}</TableCell>
           <TableCell className="text-end font-semibold w-[200px]">
             <EditUser userId={user.id!} />
           </TableCell>

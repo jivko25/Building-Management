@@ -45,6 +45,11 @@ const UserRegisterForm = () => {
               className="pl-10 text-white"
               Icon={User}
             />
+            {form.formState.errors.username && (
+              <span className="text-red-500 text-sm">
+                {form.formState.errors.username.message}
+              </span>
+            )}
             <FormFieldInput
               name="password"
               label={t("Password")}
@@ -52,6 +57,11 @@ const UserRegisterForm = () => {
               className="pl-10 text-white"
               Icon={Lock}
             />
+            {form.formState.errors.password && (
+              <span className="text-red-500 text-sm">
+                {form.formState.errors.password.message}
+              </span>
+            )}
             <FormFieldInput
               name="full_name"
               label={t("Full Name")}
@@ -59,6 +69,11 @@ const UserRegisterForm = () => {
               className="pl-10 text-white"
               Icon={User}
             />
+            {form.formState.errors.full_name && (
+              <span className="text-red-500 text-sm">
+                {form.formState.errors.full_name.message}
+              </span>
+            )}
             <FormFieldInput
               name="email"
               label={t("Email")}
@@ -66,6 +81,11 @@ const UserRegisterForm = () => {
               className="pl-10 text-white"
               Icon={User}
             />
+            {form.formState.errors.email && (
+              <span className="text-red-500 text-sm">
+                {form.formState.errors.email.message}
+              </span>
+            )}
 
             <div className="flex flex-col gap-2">
               <div className="flex items-center space-x-2">
@@ -94,7 +114,6 @@ const UserRegisterForm = () => {
             </div>
 
             <DialogFooter
-              disabled={!form.formState.isDirty || isLoading || !form.watch("terms")}
               label={t("Submit")}
               formName="register-form"
               className="mt-6"

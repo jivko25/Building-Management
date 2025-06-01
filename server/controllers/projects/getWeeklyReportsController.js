@@ -125,21 +125,31 @@ const getWeekNumber = (date) => {
 };
 
 const getWeekStartDate = (weekNumber) => {
-  const date = new Date();
+  const now = new Date();
   // Изчисляваме правилната седмица
-  date.setDate(date.getDate() + (weekNumber - getWeekNumber(date)) * 7);
+  now.setDate(now.getDate() + (weekNumber - getWeekNumber(now)) * 7);
   // Връщаме към понеделник
-  date.setDate(date.getDate() - date.getDay() + 1);
-  // Нулираме часа, минутите, секундите и милисекундите
-  date.setHours(0, 0, 0, 0);
-  
-  return date;
+  const day = now.getDay(); // 0 (Sun) to 6 (Sat)
+  const diffToMonday = (day === 0 ? -6 : 1 - day); // Ако е неделя, връщаме се 6 назад
+  now.setDate(now.getDate() + diffToMonday);
+
+  // Връщаме UTC дата със занулени часове
+  return new Date(Date.UTC(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    0, 0, 0, 0
+  ));
 };
 
+
 const getWeekEndDate = (weekNumber) => {
-  const date = getWeekStartDate(weekNumber);
-  date.setDate(date.getDate() + 6);
-  return date;
+  const startDate = getWeekStartDate(weekNumber);
+  const endDate = new Date(startDate);
+  endDate.setUTCDate(endDate.getUTCDate() + 6); // неделя
+  endDate.setUTCHours(23, 59, 59, 999);          // край на деня
+
+  return endDate;
 };
 
 module.exports = {

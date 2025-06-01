@@ -17,6 +17,7 @@ export interface FetchQueryOptions {
 
 export interface FetchDataQueryOptions<TData> extends FetchQueryOptions {
   options?: UseFetchQueryOptions<TData>;
+  enabled?: boolean;
 }
 
 export interface UseGetPaginatedDataTypes extends FetchQueryOptions {

@@ -110,7 +110,7 @@ export const CreateArtisanInvoicePage = () => {
   const { data: workItemsData, isLoading: isLoadingWorkItems } = useQuery({
     queryKey: ["workItems", selectedCompanyId, selectedArtisanId],
     queryFn: () => artisanInvoiceService.getWorkItemsForInvoice(selectedCompanyId, selectedArtisanId),
-    enabled: true
+    enabled: !!selectedCompanyId && !!selectedArtisanId 
   });
 
   const handleCompanyChange = (value: string | string[]) => {
