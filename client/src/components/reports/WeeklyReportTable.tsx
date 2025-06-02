@@ -170,9 +170,9 @@ export const WeeklyReportTable = ({ projectId }: { projectId: string }) => {
     );
   };
 
-  const priceBodyTemplate = (rowData: Activity) => {
-    return `$${rowData.price?.toFixed(2)}`;
-  };
+  // const priceBodyTemplate = (rowData: Activity) => {
+  //   return `$${rowData.price?.toFixed(2)}`;
+  // };
 
   const totalBodyTemplate = (rowData: Activity) => {
     return `$${rowData.total?.toFixed(2)}`;

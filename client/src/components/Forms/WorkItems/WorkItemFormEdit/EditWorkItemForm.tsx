@@ -99,7 +99,7 @@ const EditWorkItemForm = ({ handleSubmit, isPending, workItemId }: EditWorkItemF
         const activityName = foundedDefaultPrice?.activity?.name.toLocaleLowerCase();
         
         setMeasureValue(measureName || "");
-        setShowQuantity(measureName !== 'hour' || activityName !== 'hour');
+        setShowQuantity(measureName !== 'hour' && activityName !== 'hour');
       }
     }
   }, [artisanId, defaultPricing, defaultPricingsResponse]);
@@ -132,12 +132,10 @@ const EditWorkItemForm = ({ handleSubmit, isPending, workItemId }: EditWorkItemF
         <div className="grid grid-cols-1 sm:grid-cols-2 content-around gap-2 mb-2">
           <ArtisanSingleSelector name="artisan" label="Select artisan" defaultVal={userWorkItem?.artisan_id?.toString()} />
             <DefaultPricingSelector name="default_pricing" label="Activity" artisan_id={artisanId as any || artisanIdValue} defaultVal={defaultPricingValue as any} />
-          {showQuantity && (
             <div className="flex items-center justify-center content-center flex-col">
               <FormFieldInput name="quantity" label="Quantity" type="number" className="pl-10" Icon={Calculator} />
               <p className="text-xs text-gray-500 text-wrap">{measureValue}</p>
             </div>
-          )}
           {
             !showQuantity && (
               <FormFieldInput name="hours" label="Hours" type="number" className="pl-10" Icon={Clock} />

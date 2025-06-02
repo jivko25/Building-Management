@@ -14,8 +14,7 @@ import { ResponseMessageType } from "@/types/response-message/responseMessageTyp
 import ResponseMessage from "@/components/common/ResponseMessages/ResponseMessage";
 import { Project } from "@/types/project-types/projectTypes";
 import { useTranslation } from "react-i18next";
-import axios from "axios";
-import apiClient from "@/api/axiosConfig";
+
 export default function ManagerAllDefaultValuesTable() {
   const { t } = useTranslation();
   const [globalFilter, setGlobalFilter] = useState<string>("");
