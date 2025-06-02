@@ -85,9 +85,15 @@ const EditCompanyForm = ({ company_id, handleSubmit, isPending }: EditCompanyFor
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-1 gap-2 mb-2">
           <FormFieldInput type="text" label={t("Company  MOL")} name="mol" className="pl-10" Icon={User} />
+          <p className="text-red-500">{form.formState.errors?.mol?.message}</p>
+
           <FormFieldInput type="email" label={t("Company email")} name="email" className="pl-10" Icon={Mail} />
           <FormFieldInput type="text" label={t("Company IBAN")} name="iban" className="pl-10" Icon={FileDigit} />
+          <p className="text-red-500">{form.formState.errors?.iban?.message}</p>
+
           <FormFieldInput type="text" label={t("Company VAT number")} name="vat_number" className="pl-10" Icon={FileDigit} />
+          <p className="text-red-500">{form.formState.errors?.vat_number?.message}</p>
+
         </div>
         <Separator className="mt-4 mb-2" />
         <div className="grid grid-cols-2 gap-2 mb-2">

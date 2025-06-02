@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Client } from "@/types/client-types/clientTypes";
+import { ibanRegex, vatRegex } from "../company/companySchema";
 
 export const clientSchema = z.object({
   client_company_name: z.string().min(2, {
@@ -16,9 +17,11 @@ export const clientSchema = z.object({
   }).max(10, {
     message: "Postal code cannot exceed 10 characters"
   }),
-  client_company_iban: z.string().min(5, {
-    message: "IBAN must be at least 5 characters"
-  }),
+  client_company_iban: z
+    .string()
+    .min(15, { message: "IBAN must be at least 15 characters." }) // минималната дължина варира, но най-често е 15
+    .max(34, { message: "IBAN cannot exceed 34 characters." })
+    .regex(ibanRegex, { message: "Invalid IBAN format." }),
   client_emails: z.array(
     z.string().email({
       message: "Invalid email format"
@@ -27,9 +30,11 @@ export const clientSchema = z.object({
   status: z.enum(["active", "inactive"], {
     message: "Please select status"
   }),
-  client_company_vat_number: z.string().min(5, {
-    message: "VAT number must be at least 5 characters"
-  }),
+  client_company_vat_number: z
+  .string()
+  .min(7, { message: "VAT number must be at least 7 characters." })
+  .max(15, { message: "VAT number cannot exceed 15 characters." })
+  .regex(vatRegex, { message: "VAT number must contain only letters and digits, no spaces or symbols." }),
   invoice_language_id: z.number({
     required_error: "Please select a language",
   }),
