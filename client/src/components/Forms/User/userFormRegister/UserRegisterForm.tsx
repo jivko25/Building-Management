@@ -14,7 +14,7 @@ import AuthLayout from "@/components/layouts/AuthLayout";
 import FormErrors from "@/components/common/FormElements/FormErrors";
 
 const UserRegisterForm = () => {
-  const { form, onSubmit, error, isLoading } = useRegisterUser();
+  const { form, onSubmit, error } = useRegisterUser();
   const [termsModalVisible, setTermsModalVisible] = useState(false);
   const { t } = useTranslation();
 

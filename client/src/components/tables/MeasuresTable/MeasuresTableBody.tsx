@@ -1,6 +1,4 @@
-import React from "react";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import MeasuresLoader from "@/utils/SkeletonLoader/Measures/MeasuresLoader";
 import { CircleAlert, Ruler } from "lucide-react";
 import ErrorMessage from "@/components/common/FormMessages/ErrorMessage";
 import Pagination from "@/components/common/Pagination/Pagination";

@@ -1,5 +1,4 @@
 // src/components/tables/MeasuresTable/MeasuresCard.tsx
-import React from "react";
 import EditMeasure from "@/components/Forms/Measures/MeasureFormEdit/EditMeasure";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Measure } from "@/types/measure-types/measureTypes";
@@ -7,7 +6,6 @@ import { Trash2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import apiClient from "@/api/axiosConfig";
-import { toast } from "sonner";
 
 type MeasuresCardProps = {
   measures: Measure[];
@@ -22,7 +20,7 @@ const MeasuresCard = ({ measures }: MeasuresCardProps) => {
       await apiClient.delete(`/measures/${id}`);
       // След успешно изтриване – принудително презареждаме query-а "measures"
       queryClient.invalidateQueries({ queryKey: ["measures"] });
-    } catch (error) {
+    } catch (error: any) {
       alert(error.response.data.message);
       console.error("Error deleting measure:", error);
       // Можете да покажете тук съобщение за грешка
