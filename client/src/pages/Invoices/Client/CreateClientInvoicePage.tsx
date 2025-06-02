@@ -62,25 +62,25 @@ export const CreateClientInvoicePage = () => {
 
   const clients = clientsData || [];
 
-  const { data: projectsData, refetch: refetchProjects } = useQuery({
-    queryKey: ["projects"],
-    queryFn: async () => {
-      const company_id = form.getValues("company_id");
-      if (!company_id) return [];
+  // const { data: projectsData, refetch: refetchProjects } = useQuery({
+  //   queryKey: ["projects"],
+  //   queryFn: async () => {
+  //     const company_id = form.getValues("company_id");
+  //     if (!company_id) return [];
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/projects`, {
-        credentials: "include"
-      });
-      const data = await response.json();
-      console.log("🏗️ All projects data:", data);
+  //     const response = await fetch(`${import.meta.env.VITE_API_URL}/projects`, {
+  //       credentials: "include"
+  //     });
+  //     const data = await response.json();
+  //     console.log("🏗️ All projects data:", data);
 
-      const filteredProjects = data.filter((project: any) => project.company_id === company_id);
-      console.log("🏗️ Filtered projects for company:", filteredProjects);
+  //     const filteredProjects = data.filter((project: any) => project.company_id === company_id);
+  //     console.log("🏗️ Filtered projects for company:", filteredProjects);
 
-      return filteredProjects;
-    },
-    enabled: false
-  });
+  //     return filteredProjects;
+  //   },
+  //   enabled: false
+  // });
 
   // const projects = projectsData || [];
 
@@ -248,7 +248,7 @@ export const CreateClientInvoicePage = () => {
   const handleCompanyChange = (company_id: number) => {
     console.log("Selected company ID:", company_id);
     form.setValue("company_id", company_id);
-    refetchProjects();
+    // refetchProjects();
   };
 
   // const handleProjectChange = (projectId: number, isChecked: boolean) => {
