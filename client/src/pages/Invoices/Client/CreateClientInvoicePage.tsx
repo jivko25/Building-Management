@@ -82,7 +82,7 @@ export const CreateClientInvoicePage = () => {
     enabled: false
   });
 
-  const projects = projectsData || [];
+  // const projects = projectsData || [];
 
   const form = useForm<z.infer<typeof createClientInvoiceSchema>>({
     resolver: zodResolver(createClientInvoiceSchema),
