@@ -251,23 +251,23 @@ export const CreateClientInvoicePage = () => {
     refetchProjects();
   };
 
-  const handleProjectChange = (projectId: number, isChecked: boolean) => {
-    const currentSelected = form.watch("selected_projects") || [];
+  // const handleProjectChange = (projectId: number, isChecked: boolean) => {
+  //   const currentSelected = form.watch("selected_projects") || [];
 
-    if (isChecked) {
-      console.log("Adding project:", projectId);
-      form.setValue("selected_projects", [...currentSelected, projectId]);
-    } else {
-      console.log("Removing project:", projectId);
-      form.setValue(
-        "selected_projects",
-        currentSelected.filter((id: number) => id !== projectId)
-      );
-    }
+  //   if (isChecked) {
+  //     console.log("Adding project:", projectId);
+  //     form.setValue("selected_projects", [...currentSelected, projectId]);
+  //   } else {
+  //     console.log("Removing project:", projectId);
+  //     form.setValue(
+  //       "selected_projects",
+  //       currentSelected.filter((id: number) => id !== projectId)
+  //     );
+  //   }
 
-    // Clear selected work items when changing projects
-    form.setValue("selected_work_items", []);
-  };
+  //   // Clear selected work items when changing projects
+  //   form.setValue("selected_work_items", []);
+  // };
 
   const handleWorkItemChange = (workItemId: number, isChecked: boolean) => {
     const currentSelected = form.watch("selected_work_items") || [];

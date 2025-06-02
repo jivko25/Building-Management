@@ -9,7 +9,6 @@ import { useState, useEffect } from "react";
 import ArtisanAction from "./ArtisanAction";
 import { Button } from "@/components/ui/button";
 import { Trash2 as Trash } from "lucide-react";
-import { deleteEntity } from "@/api/apiCall";
 import { ResponseMessageType } from "@/types/response-message/responseMessageTypes";
 import ResponseMessage from "@/components/common/ResponseMessages/ResponseMessage";
 import { Project } from "@/types/project-types/projectTypes";
